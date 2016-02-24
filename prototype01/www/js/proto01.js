@@ -26,7 +26,6 @@ function proto01(){
 
 		if(text <= 0){
 
-			this.childNodes[1].innerHTML = "."
 			console.log(this)
 		 	currentview.finishInteraction(this.childNodes[0].id,this.id)
 
@@ -161,20 +160,21 @@ proto01.prototype.finishInteraction = function(id,gid){
 	var group = d3.select("#" + gid)
 	console.log("---------",group.on("click", ""))
 
-	var target = d3.select("#" + id)
+	var bug = d3.select("#" + id)
 		.attr("xlink:href", "svgs/ladybug-flying.svg")
 		.attr({
 			width: 116,
 			height: 130,
 			clicked: "true" 
 		})
-		.on("click","")
 
-		console.log(target.attr("clicked"))
-		target.attr("x", target.attr("x")-32)
+		console.log(group.select("text"))
 
-		console.log(" --  ", target.attr("bugId"))
-		currentview.setBugsData(target.attr("bugId"),"speed", 0.5)
+		console.log(bug.attr("clicked"))
+		bug.attr("x", bug.attr("x")-32)
+
+		console.log(" --  ", bug.attr("bugId"))
+		currentview.setBugsData(bug.attr("bugId"),"speed", 0.5)
 
 }
 
