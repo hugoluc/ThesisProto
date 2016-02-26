@@ -25,7 +25,8 @@ var Chooser = function() {
     $('#choose-game01').on('click', function() {
       console.log("-------------")
        clickStart('container-chooser','container-exp');
-       currentview = new proto01(true);
+       currentview = new proto02();
+       //currentview.init()
 		})
 
 		$('#choose-game02').on('click', function() {

@@ -26,12 +26,13 @@ function proto01(){
 
 		if(text <= 0){
 
-			currentview.finishInteraction(this.childNodes[0].id)
+			console.log(this)
+		 	currentview.finishInteraction(this.childNodes[0].id,this.id)
+
 
 		}
 
 
-		console.log(this.childNodes[0].id)
 		this.childNodes[1].innerHTML = text
 
 	}
@@ -132,9 +133,10 @@ function proto01(){
 							.attr({
 								width: 71,
 								height: 84,
-								clicked: "true" 
+								clicked: "false" 
 							})
 						target.attr("x", target.attr("x")+32)
+						ladyBugs[i][0].on("click",ladyTouch)
 
 					}
 
@@ -153,10 +155,12 @@ function proto01(){
 
 }
 
-proto01.prototype.finishInteraction = function(id){
+proto01.prototype.finishInteraction = function(id,gid){
 
+	var group = d3.select("#" + gid)
+	console.log("---------",group.on("click", ""))
 
-	var target = d3.select("#" + id)
+	var bug = d3.select("#" + id)
 		.attr("xlink:href", "svgs/ladybug-flying.svg")
 		.attr({
 			width: 116,
@@ -164,11 +168,13 @@ proto01.prototype.finishInteraction = function(id){
 			clicked: "true" 
 		})
 
-		console.log(target.attr("clicked"))
-		target.attr("x", target.attr("x")-32)
+		console.log(group.select("text"))
 
-		console.log(" --  ", target.attr("bugId"))
-		currentview.setBugsData(target.attr("bugId"),"speed", 0.5)
+		console.log(bug.attr("clicked"))
+		bug.attr("x", bug.attr("x")-32)
+
+		console.log(" --  ", bug.attr("bugId"))
+		currentview.setBugsData(bug.attr("bugId"),"speed", 0.5)
 
 }
 
