@@ -12,13 +12,13 @@ var screen_width = window.innerWidth,
 //   "sky1_1024x600.jpg","sky2_1024x600.jpg","sky3_1024x600.jpg","sky4_1024x600.jpg"]
 
 var init_screen = function() {
-  // .select("body")
-  screen = d3.select("#container-exp").append("svg")
-    .attr({
-      width: screen_width,
-      height: screen_height
-    })
-    .attr("id", "screen");
+  // // .select("body")
+  // screen = d3.select("#container-exp").append("svg")
+  //   .attr({
+  //     width: screen_width,
+  //     height: screen_height
+  //   })
+  //   .attr("id", "screen");
 };
 
 // var setup_screen = function() {

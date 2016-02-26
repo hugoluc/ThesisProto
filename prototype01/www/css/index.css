@@ -17,3 +17,20 @@
     height: 50;
 
 }
+
+#header-exp{
+
+	position: relative;
+	margin-top: 0;
+	background: blue;
+	height: 80px;
+	z-index: 2;
+
+}
+
+canvas{
+
+	position: relative;
+
+
+}

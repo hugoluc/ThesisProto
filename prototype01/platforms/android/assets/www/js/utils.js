@@ -5,6 +5,15 @@ function shuffle(o) {
   return o;
 }
 
+function getAngle(x,y,_x,_y){
+
+  var oposite = _x - x;
+  var adjacent = _y - y;
+  var hipotenuse = Math.sqrt((oposite*oposite)+(adjacent*adjacent))
+  var sinOfAngleX = oposite / hipotenuse
+  return Math.asin(sinOfAngleX)
+}
+
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max-min)) + min;
 }
