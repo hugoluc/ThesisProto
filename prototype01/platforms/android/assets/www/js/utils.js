@@ -11,7 +11,7 @@ function getAngle(x,y,_x,_y){
   var adjacent = _y - y;
   var hipotenuse = Math.sqrt((oposite*oposite)+(adjacent*adjacent))
   var sinOfAngleX = oposite / hipotenuse
-  return Math.asin(sinOfAngleX)
+  return Math.asin(sinOfAngleX)/0.9
 }
 
 function getRandomInt(min, max) {
@@ -38,3 +38,34 @@ function getRandomColor() {
     return color;
 
 }
+
+
+function ClockTimer(){
+
+  this.date = new Date();
+
+};
+
+ClockTimer.prototype.start = function(_length){
+
+  this.setTime = _length;
+  this.startTime = Date.now();
+
+};
+
+ClockTimer.prototype.timeOut = function() {
+
+//  console.log("---------------\nElapsed:" + this.date.getMilliseconds()-this.start + "\nAlarm:" + this.length + "\n-----------------")
+
+
+
+  if(Date.now()-this.startTime > this.setTime){
+    return true;
+  }else{
+    console.log("------->>SET-TIME: " + this.setTime)
+    console.log("------->>START-TIME: " + this.startTime)
+    console.log("----------->>NOE: " + Date.now())
+    return false;
+  }
+
+};

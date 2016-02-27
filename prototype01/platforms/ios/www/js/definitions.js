@@ -1,6 +1,6 @@
 // // Android tablet dimensions
-var screen_width = 1024,
-    screen_height = 600; // 768
+var screen_width = window.innerWidth,
+    screen_height = window.innerHeight; // 768
 
 // var screen; // fullscreen svg for each task
 
@@ -12,13 +12,13 @@ var screen_width = 1024,
 //   "sky1_1024x600.jpg","sky2_1024x600.jpg","sky3_1024x600.jpg","sky4_1024x600.jpg"]
 
 var init_screen = function() {
-  // .select("body")
-  screen = d3.select("#container-exp").append("svg")
-    .attr({
-      width: screen_width,
-      height: screen_height
-    })
-    .attr("id", "screen");
+  // // .select("body")
+  // screen = d3.select("#container-exp").append("svg")
+  //   .attr({
+  //     width: screen_width,
+  //     height: screen_height
+  //   })
+  //   .attr("id", "screen");
 };
 
 // var setup_screen = function() {

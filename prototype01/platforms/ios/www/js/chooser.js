@@ -1,25 +1,15 @@
 
 var Chooser = function() {
 
+    // hide experiment and show chooser
     clickStart('container-exp','container-chooser');
 
-    language = 'swahili'; // default
 
-    $("#language").change(function() {
 
-      var head= document.getElementsByTagName('head')[0];
-      var script= document.createElement('script');
-      script.type= 'text/javascript';
-      script.src= "../static/js/language/"+$(this).val()+".js";
-      head.appendChild(script);
-      language = $(this).val();
-      console.log(language);
-    });
-
+    // determine the size of the choosers based on the number of games unlocked
+      // -(determine if we show all games and make them not clickable or show only the unlcoked ones)
     var availableGames = 3
-
     for(var i=0; i<availableGames; i++ ){
-
 
       size = window.innerWidth/availableGames
       console.log(size)
@@ -28,14 +18,15 @@ var Chooser = function() {
         .css("top", i*(100/availableGames)+"%")
         .css("height", size)
         .css("background", getRandomColor())
-    
+      }
 
-    }
 
+    //put click funcintion in to chooser button
     $('#choose-game01').on('click', function() {
       console.log("-------------")
        clickStart('container-chooser','container-exp');
-       currentview = new DropGame();
+       currentview = new proto02();
+       //currentview.init()
 		})
 
 		$('#choose-game02').on('click', function() {

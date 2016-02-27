@@ -8,13 +8,17 @@
          <link rel="stylesheet" type="text/css" href="css/reset.css">
          <link rel="stylesheet" type="text/css" href="css/index.css">
 
+        <script src="lib/pixi.js" type="text/javascript"></script>
+        <script src="lib/d3-timer.js" type="text/javascript"></script>
         <script src="lib/jquery.js" type="text/javascript"></script>
-        <script src="lib/d3.v3.min.js" type="text/javascript"></script>   
+        <script src="lib/d3.v3.min.js" type="text/javascript"></script>
+        <script src="lib/stats.min.js"></script> 
 
         <script src="js/utils.js" type="text/javascript"></script>
         <script src="js/chooser.js" type="text/javascript"></script>
-        <script src="js/proto01.js" type="text/javascript"></script>
+        <script src="js/proto02.js" type="text/javascript"></script>
         <script src="js/definitions.js" type="text/javascript"></script>
+
 
        <!-- starting point -->
         <script type="text/javascript">
@@ -33,6 +37,7 @@
                 $(".btn").each(function(i) {
                    $(this).delay((i + 1) * 250).fadeIn();
                 });
+
                 init_screen(); // create screen svg once, and then add/remove background for each task..
 
             });
@@ -41,10 +46,7 @@
         <title>Prototype01</title>
     </head>
 
-
     <body>
-
-
         <!-- Home Page with button to choose games -->
         <div id="container-chooser">
 
@@ -53,14 +55,12 @@
             <div id="choose-game03" class="choser">3</div>
         
         </div>
-
-
         <!--  Game COntainer to be filled based on the chooser options  -->
-        <div id="container-exp">    
-        GAMES
+        <div id="container-exp">
+
+            <div id="header-exp"></div>
+
         </div>
-
-
     </body>
 
 </html>
