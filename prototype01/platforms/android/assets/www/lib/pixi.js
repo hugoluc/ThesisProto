@@ -20017,6 +20017,8 @@ Object.defineProperties(MovieClip.prototype, {
         },
         set: function (value)
         {
+            console.log(value)
+
             if(value[0] instanceof core.Texture)
             {
                 this._textures = value;
@@ -20028,8 +20030,10 @@ Object.defineProperties(MovieClip.prototype, {
                 this._durations = [];
                 for(var i = 0; i < value.length; i++)
                 {
+                    console.log("-->", value[i].texture) 
                     this._textures.push(value[i].texture);
                     this._durations.push(value[i].time);
+                
                 }
             }
         }

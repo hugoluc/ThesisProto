@@ -24,7 +24,10 @@ var assets = new Assets();
 
 PIXI.loader
     .add('sprites/backGrounds/BackGround-01.png')
-    .add('sprites/ladyBug/ladyBug_Walk.json')
+    .add('sprites/ladyBug/ladyBug_WalkV3.json')
+    .add('sprites/ladyBug/ladyBug_fly.json')
+    .add('sprites/ladyBug/ladtBug_flyStatic.png')
+    .add('sprites/ladyBug/ladtBug_dead.png')
     .load(onAssetsLoaded);
 
 function onAssetsLoaded(){
@@ -62,7 +65,6 @@ function update() {
                 
             // create an array of textures from an image path
             var frames = [];
-
             for (var i = 0; i < 4; i++) {
                 
                var val = i < 10 ? '0' + i : i;
@@ -70,8 +72,19 @@ function update() {
                 // magically works since the spritesheet was loaded with the pixi loader
                 frames.push(PIXI.Texture.fromFrame('ladyBug_Walk-0' + (i+1) + '.png'));
             }
+            this.sprites.ladybugWalk = frames
+            
 
-            this.sprites.ladybugWalk = frames 
+
+            var frames = [];
+            for (var i = 0; i < 4; i++) {
+                
+               var val = i < 10 ? '0' + i : i;
+
+                // magically works since the spritesheet was loaded with the pixi loader
+                frames.push(PIXI.Texture.fromFrame('ladtBug_fly-0' + (i+1) + '.png'));
+            }
+            this.sprites.ladybugFly = frames
 
 
             //**************************************************************************
@@ -108,18 +121,33 @@ function update() {
             y: 0,
         }
 
+        this.sprite = {}
         // sprite variables
-        this.sprite = new PIXI.extras.MovieClip(assets.sprites.ladybugWalk);
-        this.sprite.animationSpeed = 0.1;
-        this.sprite.play();
-        this.sprite.scale.x = 1;
-        this.sprite.scale.y = 1;    
-        this.container.addChild(this.sprite);
+       // this.sprite = new PIXI.extras.MovieClip(assets.sprites.ladybugFly);//ladybugWalk);
+        this.sprite.walk = new PIXI.extras.MovieClip(assets.sprites.ladybugWalk);
+        this.sprite.walk.animationSpeed = 0.1;
+        this.sprite.walk.play();
+        this.sprite.walk.scale.x = 0.34;
+        this.sprite.walk.scale.y = 0.34;    
+        this.container.addChild(this.sprite.walk);
+
+        this.sprite.fly = new PIXI.extras.MovieClip(assets.sprites.ladybugFly);
+        this.sprite.fly.animationSpeed = 0.1;
+        this.sprite.fly.alpha = 0;
+        this.sprite.fly.scale.x = 0.34;
+        this.sprite.fly.scale.y = 0.34;    
+        this.container.addChild(this.sprite.fly);
+
+        this.sprite.dead = PIXI.Sprite.fromImage('sprites/ladyBug/ladtBug_dead.png');
+        this.sprite.dead.alpha = 0;
+        this.sprite.dead.scale.x = 0.34;
+        this.sprite.dead.scale.y = 0.34; 
+        this.container.addChild(this.sprite.dead);
 
         //number variables
-        this.number =  new PIXI.Text("12", {font:"30px Arial", fill:"blue", stroke:"green", strokeThickness: 3, });
-        this.number.x = this.sprite.x + (this.sprite.width/2) - this.number.width/2
-        this.number.y = this.sprite.y + (this.sprite.height/2) - this.number.height/2
+        this.number =  new PIXI.Text("12", {font:"30px Arial", fill:"red", stroke:"red", strokeThickness: 0, });
+        this.number.x = this.sprite.walk.x + (this.sprite.walk.width/2) - (this.number.width/2)
+        this.number.y = this.sprite.walk.y + (this.sprite.walk.height/2) - (this.number.height/2)
         this.container.addChild(this.number)
 
         stage.addChild(this.container)
@@ -130,19 +158,29 @@ function update() {
         this.angle = 0;
         this.start = {};
         this.end = {};
-        this.waiting = false;
+        this.state = "walk";
     };
 
     LadyBug.prototype.setUp = function(freeIds){
 
+        this.sprite.walk.play();
+        this.sprite.walk.alpha = 1;
+
+        this.sprite.fly.stop()
+        this.sprite.fly.alpha = 0;
+
+        this.sprite.dead.alpha = 0;
+        //this.sprite.dead.renderable  = false;
+
+
         // reset 
-        this.waiting = false;
+        this.state = "walk";
         this.correctAnswear = getRandomInt(2,5); 
         this.number.text = this.correctAnswear;
         this.container.ySpeed = 8/this.number.text;
-        this.sprite.animationSpeed = 0.2/Math.sqrt(this.number.text);
+        this.sprite.walk.animationSpeed = 0.2/Math.sqrt(this.number.text);
 
-        var moduleCount = window.innerWidth/this.sprite.width 
+        var moduleCount = window.innerWidth/this.sprite.walk.width 
         //console.log(Math.floor(moduleCount))
 
         if(freeIds == undefined ){
@@ -151,11 +189,11 @@ function update() {
             var moduleId = freeIds[getRandomInt(0,freeIds.length)];
         }
 
-        this.start.x = moduleId * this.sprite.width;
+        this.start.x = moduleId * this.sprite.walk.width;
         this.start.y = window.innerHeight;
        
-        this.end.x = getRandomInt(this.start.x-this.sprite.width*2,this.start.x+this.sprite.width*2); 
-        this.end.y = -this.sprite.height;
+        this.end.x = getRandomInt(this.start.x-this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2); 
+        this.end.y = -this.sprite.walk.height;
         if(this.end.x > stage.width){
             this.end.x = stage.width;
         }else if(this.end.x < 0){
@@ -180,28 +218,70 @@ function update() {
         this.container.y = this.container.y - this.container.ySpeed;
         this.container.x = this.container.x - this.container.xSpeed;
 
-        if(this.waiting){
-            
-            if(this.timer.timeOut()){
+        switch(this.state){
 
-                this.container.ySpeed = 10
+            case "walk":
 
-            };
+                if(this.container.y  < this.end.y){
+
+                    this.container.y = this.start.y;
+                    this.setUp();
+
+                };
+
+                break;
+
+            case "fly":
+
+                console.log(">>>>>>>>fly")
+                this.sprite.walk.stop();
+                this.sprite.walk.alpha = 0;
+
+                this.sprite.fly.play()
+                this.sprite.fly.alpha = 1;
+
+                if(this.timer.timeOut()){
+
+                    this.container.ySpeed = 10;
+
+                    if(this.container.y  < this.end.y){
+
+                        this.container.y = this.start.y;
+                        this.setUp();
+
+                    }
+
+                };
+
+                break;
+
+            case "dead":
+
+                console.log(this.timer.getElapsed())
+                
+                if(this.timer.getElapsed() > 1200){
+
+                    this.sprite.dead.alpha =  this.sprite.dead.alpha - 0.05;
+
+                    if(this.timer.timeOut()){
+
+                        this.state = "walk";
+                        this.setUp();
+
+                    }  
+
+                }
+
+
+                break;
         
-        }
+        };
 
-        if(this.container.y  < this.end.y){
 
-            this.container.y = this.start.y;
-            this.setUp();
-
-        }
     };
 
 
     LadyBug.prototype.click = function(){
-
-        //console.log(this.number.text,thisRound.trial.correct.value)
 
         // check if its corret
         if(this.correctAnswear == thisRound.trial.correct.value){
@@ -211,17 +291,26 @@ function update() {
             thisRound.trial.answer();  
 
             if(this.number.text == 0){
-        
+
+                this.number.text = ""        
                 this.timer.start(300);
-                this.waiting = true
+                this.state = "fly"
                 this.container.ySpeed = 0;
                 this.container.xSpeed = 0;
-                this.sprite.animationSpeed = 0;
+                this.sprite.walk.animationSpeed = 0;
+
                 
             }else if(this.number.text < 0){
 
-                this.waiting = false;
-
+                this.sprite.fly.stop();
+                this.sprite.fly.alpha = 0;
+                this.sprite.dead.alpha = 1;
+                this.sprite.renderable = true;
+                this.number.text = ""
+                this.container.ySpeed = 0;
+                this.container.xSpeed = 0;
+                this.timer.start(1500);
+                this.state = "dead";
             };
 
         }    
@@ -237,6 +326,8 @@ function update() {
         this.score = 0;
         this.language = "english"
         this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-01.png');
+        this.background.height = window.innerHeight;
+       
         stage.addChild(this.background);
 
     }

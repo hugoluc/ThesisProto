@@ -55,17 +55,21 @@ ClockTimer.prototype.start = function(_length){
 
 ClockTimer.prototype.timeOut = function() {
 
-//  console.log("---------------\nElapsed:" + this.date.getMilliseconds()-this.start + "\nAlarm:" + this.length + "\n-----------------")
-
-
 
   if(Date.now()-this.startTime > this.setTime){
     return true;
   }else{
-    console.log("------->>SET-TIME: " + this.setTime)
-    console.log("------->>START-TIME: " + this.startTime)
-    console.log("----------->>NOE: " + Date.now())
+   // console.log("------->>SET-TIME: " + this.setTime)
+    //console.log("------->>START-TIME: " + this.startTime)
+    //console.log("----------->>NOE: " + Date.now())
     return false;
   }
+
+
+};
+
+ClockTimer.prototype.getElapsed = function(){
+
+  return Date.now() - this.startTime;
 
 };

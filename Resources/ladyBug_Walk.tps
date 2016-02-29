@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.0.2</string>
         <key>fileName</key>
-        <string>/Users/hugogoulartdelucena/Desktop/ldywalk.tps</string>
+        <string>/Users/hugogoulartdelucena/Desktop/ThesisProto/Resources/ladyBug_Walk.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -147,7 +147,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>ThesisProto/prototype01/www/sprites/ladyBug/ladyBug_Walk.json</filename>
+                <filename>../prototype01/www/sprites/ladyBug/ladyBug_Walk.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -192,10 +192,10 @@
         </struct>
         <key>fileList</key>
         <array>
-            <filename>ThesisProto/prototype01/www/sprites/ladyBug/ladyBug_Walk-01.png</filename>
-            <filename>ThesisProto/prototype01/www/sprites/ladyBug/ladyBug_Walk-02.png</filename>
-            <filename>ThesisProto/prototype01/www/sprites/ladyBug/ladyBug_Walk-03.png</filename>
-            <filename>ThesisProto/prototype01/www/sprites/ladyBug/ladyBug_Walk-04.png</filename>
+            <filename>ladyBug_Walk-01.png</filename>
+            <filename>ladyBug_Walk-02.png</filename>
+            <filename>ladyBug_Walk-03.png</filename>
+            <filename>ladyBug_Walk-04.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
