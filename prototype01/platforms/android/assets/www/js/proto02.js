@@ -40,12 +40,13 @@ function update() {
     if(statsBol)stats.begin()
 
 
+    renderer.render(stage);
     thisRound.play()
     // update the canvas with new parameters
-    renderer.render(stage);//---------------->> Thing that renders the whole stage
+
+//---------------->> Thing that renders the whole stage
+
     requestAnimationFrame(update);
-
-
     if(statsBol)stats.end()
 }
 
@@ -90,16 +91,18 @@ function update() {
             //**************************************************************************
             //change to foor loop using language file
             //*************************************************************************
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "zero" + '.mp3' ))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "one" + '.mp3' ))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "two" + '.mp3' ))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "three" + '.mp3' ))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "four" + '.mp3' ))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "six" + '.mp3' ))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "seven" + '.mp3' ))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "eight" + '.mp3' ))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "nine" + '.mp3' ))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "zero" + '.mp3'))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "one" + '.mp3'))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "two" + '.mp3'))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "three" + '.mp3'))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "four" + '.mp3'))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "five" + '.mp3'))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "six" + '.mp3'))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "seven" + '.mp3'))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "eight" + '.mp3'))
+            this.sounds.push(new Audio('audio/' + 'english' + '/' + "nine" + '.mp3'))
             this.sounds.push(new Audio('audio/' + 'english' + '/' + "ten" + '.mp3' ))
+
 
     }
 
@@ -111,6 +114,8 @@ function update() {
     function LadyBug(){
 
         var _this = this
+
+
         // container variables
         this.container = new PIXI.Container()
         this.container.interactive = true
@@ -122,8 +127,9 @@ function update() {
         }
 
         this.sprite = {}
+    
+
         // sprite variables
-       // this.sprite = new PIXI.extras.MovieClip(assets.sprites.ladybugFly);//ladybugWalk);
         this.sprite.walk = new PIXI.extras.MovieClip(assets.sprites.ladybugWalk);
         this.sprite.walk.animationSpeed = 0.1;
         this.sprite.walk.play();
@@ -145,8 +151,8 @@ function update() {
         this.container.addChild(this.sprite.dead);
 
         //number variables
-        this.number =  new PIXI.Text("12", {font:"30px Arial", fill:"red", stroke:"red", strokeThickness: 0, });
-        this.number.x = this.sprite.walk.x + (this.sprite.walk.width/2) - (this.number.width/2)
+        this.number =  new PIXI.Text("12", {font:"30px Arial", fill:"red", stroke:"red", strokeThickness: 1, });
+        this.number.x = this.sprite.walk.x + (this.sprite.walk.width/2) - (this.number.width/2) + 7
         this.number.y = this.sprite.walk.y + (this.sprite.walk.height/2) - (this.number.height/2)
         this.container.addChild(this.number)
 
@@ -159,6 +165,7 @@ function update() {
         this.start = {};
         this.end = {};
         this.state = "walk";
+        this.playQueue = [];
     };
 
     LadyBug.prototype.setUp = function(freeIds){
@@ -170,18 +177,14 @@ function update() {
         this.sprite.fly.alpha = 0;
 
         this.sprite.dead.alpha = 0;
-        //this.sprite.dead.renderable  = false;
 
-
-        // reset 
         this.state = "walk";
-        this.correctAnswear = getRandomInt(2,5); 
-        this.number.text = this.correctAnswear;
+        this.startNumber = getRandomInt(2,5); 
+        this.number.text = this.startNumber;
         this.container.ySpeed = 8/this.number.text;
         this.sprite.walk.animationSpeed = 0.2/Math.sqrt(this.number.text);
 
         var moduleCount = window.innerWidth/this.sprite.walk.width 
-        //console.log(Math.floor(moduleCount))
 
         if(freeIds == undefined ){
             var moduleId = getRandomInt(0,Math.floor(moduleCount));
@@ -209,7 +212,6 @@ function update() {
         this.container.y = this.start.y;
 
         return moduleId;
-
     }
 
     LadyBug.prototype.move = function(){
@@ -233,7 +235,6 @@ function update() {
 
             case "fly":
 
-                console.log(">>>>>>>>fly")
                 this.sprite.walk.stop();
                 this.sprite.walk.alpha = 0;
 
@@ -246,6 +247,7 @@ function update() {
 
                     if(this.container.y  < this.end.y){
 
+                        thisRound.trial.answer(true)
                         this.container.y = this.start.y;
                         this.setUp();
 
@@ -256,8 +258,6 @@ function update() {
                 break;
 
             case "dead":
-
-                console.log(this.timer.getElapsed())
                 
                 if(this.timer.getElapsed() > 1200){
 
@@ -276,20 +276,25 @@ function update() {
                 break;
         
         };
-
-
     };
-
 
     LadyBug.prototype.click = function(){
 
+        console.log("-------CLICK----------")
+
+
+        var _this = this;
         // check if its corret
-        if(this.correctAnswear == thisRound.trial.correct.value){
-        
+        if(this.startNumber == thisRound.trial.correct.value){
+
+            console.log("click over:--",this.number.text)
+
+            // // add feedback sound to the queue
+
             this.number.text--;
-            //console.log("true")
             thisRound.trial.answer();  
 
+            // flyes if it reaches 0
             if(this.number.text == 0){
 
                 this.number.text = ""        
@@ -299,7 +304,7 @@ function update() {
                 this.container.xSpeed = 0;
                 this.sprite.walk.animationSpeed = 0;
 
-                
+            // kills if it click one more time    
             }else if(this.number.text < 0){
 
                 this.sprite.fly.stop();
@@ -311,7 +316,24 @@ function update() {
                 this.container.xSpeed = 0;
                 this.timer.start(1500);
                 this.state = "dead";
-            };
+
+            }else if (this.number.text > 0){
+
+                // if(this.playQueue.length <= 0){
+
+
+                //     console.log("--------------------------------")
+                //     this.playQueue.push(this.number.text)
+                //     assets.sounds[this.number.text].play()
+                //     assets.sounds[this.number.text].playbackRate = 1.5
+                //     assets.sounds[this.number.text].addEventListener("ended", function(){_this.playNext()})
+
+                // }else{
+
+                //     this.playQueue.push(this.number.text)
+                
+                // }              
+            }
 
         }    
     }
@@ -355,7 +377,7 @@ function update() {
             correct : 
             {
                 type: "number",
-                value: 3,
+                value: getRandomInt(2,4),
             }
         
         }
@@ -386,13 +408,60 @@ function update() {
         this.ladyBugs = [];
         this.stimuli = _stimuli;
         this.correct = _correct;
-        this.corrects = 0;
+        this.correctImput = 0;
+        this.playQueue = []
 
         //this.stimuli.value.play()
 
     }
 
+
+    Trial.prototype.playNext= function(){
+
+
+        // console.log("-----------")
+
+        // console.log(assets.sounds[this.playQueue[0]].pause())
+        // console.log("SONG ENDED")
+        // console.log("--<", this.playQueue)
+        // this.playQueue.splice(0, 1);
+
+        // if(this.playQueue.length == 1){
+
+        //     var _this = this;
+        //     console.log("-- queue full! -- ")
+        //     console.log("--<", this.playQueue)
+        //     assets.sounds[this.playQueue[0]].play()
+        //     assets.sounds[this.playQueue[0]].playbackRate = 1.5
+
+        // }else{
+
+        //     var _this = this;
+        //     console.log("-- queue full! -- ")
+        //     console.log("--<", this.playQueue)
+        //     assets.sounds[this.playQueue[0]].play()
+        //     assets.sounds[this.playQueue[0]].playbackRate = 1.5
+
+        // }
+
+    }
+
     Trial.prototype.init = function(){
+
+        this.UI = new PIXI.Container()
+        
+        this.circle = new PIXI.Graphics()
+        this.circle.lineStyle(0);
+        this.circle.beginFill(0x02d1aa);
+        this.circle.drawCircle(canvas.width-40, canvas.height-40,150);
+        this.circle.endFill();
+        this.UI.addChild(this.circle);
+
+        this.cNumber =  new PIXI.Text(thisRound.trial.correct.value, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
+        this.cNumber.x = canvas.width-100
+        this.cNumber.y = canvas.height-150
+        this.UI.addChild(this.cNumber);
+        stage.addChild(this.UI)
 
         for (var i=0; i<5; i++){
 
@@ -405,19 +474,50 @@ function update() {
 
     Trial.prototype.play = function(){
 
-        for (var i=0; i<this.ladyBugs.length; i++){
+        /* 
+        Check for the amout of correct imput
+        necessery to move to new task
+        */ 
+        if(this.correctImput >= 1){
+            for (var i=0; i<this.ladyBugs.length; i++){
 
-            this.ladyBugs[i].move()
+                // this.ladyBugs[i].flyAll()
 
+            }
+
+            this.correct.value = getRandomInt(2,5)
+            this.cNumber.text = this.correct.value
+            this.correctImput = 0            
+
+            //thisRound.init()
+        }else{
+
+            for (var i=0; i<this.ladyBugs.length; i++){
+
+                this.ladyBugs[i].move()
+
+
+            }
+        }
+    }
+
+    /*
+    *********************************************************************
+    Handles the answer given by the user
+    TRUE = answeras is exacly iqual to the aspected answerer
+    other parameter could be passed to specify a partial ansewer
+    like for exaple a smashed bug (correct identificantion but wrong counting)
+    *********************************************************************
+    */
+    Trial.prototype.answer = function(_correct){
+
+        if(_correct){
+            this.correctImput++;
         }
 
     }
 
-
-    Trial.prototype.answer = function(_correct){
-
-        this.corrects = _correct;
-
-    }
-
 }
+
+
+

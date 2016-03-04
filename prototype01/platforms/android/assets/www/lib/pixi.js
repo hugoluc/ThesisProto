@@ -20017,7 +20017,6 @@ Object.defineProperties(MovieClip.prototype, {
         },
         set: function (value)
         {
-            console.log(value)
 
             if(value[0] instanceof core.Texture)
             {

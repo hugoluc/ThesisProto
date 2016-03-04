@@ -11,7 +11,7 @@ function getAngle(x,y,_x,_y){
   var adjacent = _y - y;
   var hipotenuse = Math.sqrt((oposite*oposite)+(adjacent*adjacent))
   var sinOfAngleX = oposite / hipotenuse
-  return Math.asin(sinOfAngleX)/0.9
+  return Math.asin(sinOfAngleX)
 }
 
 function getRandomInt(min, max) {
