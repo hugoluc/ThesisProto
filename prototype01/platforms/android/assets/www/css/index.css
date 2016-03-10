@@ -13,24 +13,41 @@
 
 #header-exp{
 
-    background : black;
-    height: 50;
+	position: absolute;
+	margin-top: 0;
+	height: 8%;
+    width: 100%;
+	z-index: 2;
+    background: black;
 
 }
 
-#header-exp{
 
-	position: relative;
-	margin-top: 0;
-	background: gray;
-	height: 80px;
-	z-index: 2;
+#back{
+    width : 120;
+}
 
+
+#score{
+
+    height: 200%;
+    right: 0;
+    position: absolute;
+
+}
+
+
+#bar {
+    height: 120%;
+    width: 100%;
+    position : absolute;
+    margin-left: 0;
+    z-index: -1
 }
 
 canvas{
 
-	position: relative;
+    margin-top : 10%;
 
 
 }

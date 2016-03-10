@@ -1,4 +1,3 @@
-
 function proto02(){
 
 
@@ -12,15 +11,25 @@ if(statsBol){
     stats.domElement.style.zIndex = 10;
 }
 
+var header = document.getElementById("header-exp").style.height = window.innerHeight*0.08
+
 //crete canvas
-var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight-51);
+var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight-header+1);
 var canvas = document.getElementById("container-exp").appendChild(renderer.view);
-canvas.style.marginTop = "0px"
+canvas.style.marginTop = header
 
 // create the root of the scene graph and main classes
 var stage = new PIXI.Container();
 var thisRound = new Round();
 var assets = new Assets();
+
+var teste = 0
+
+this.destroy = function(){
+
+    finishGame = true;
+
+}
 
 PIXI.loader
     .add('sprites/backGrounds/BackGround-01.png')
@@ -36,18 +45,50 @@ function onAssetsLoaded(){
     update();
 }
 
+var finishGame = false
+var previousTime = Date.now();
+var MS_PER_UPDATE = 16.66667;
+var lag = 0
+
+var updates = 0
+var renders = 0
+
 function update() {
-    if(statsBol)stats.begin()
 
+    if(finishGame){
+        thisRound.destroy()
+        finishGame = false
+        return
+    }
 
-    renderer.render(stage);
-    thisRound.play()
-    // update the canvas with new parameters
+        if(statsBol)stats.begin()
 
-//---------------->> Thing that renders the whole stage
+        var current = Date.now();
+        var elapsed = current - previousTime;
+        previousTime = current;
+        lag = lag + elapsed;
 
-    requestAnimationFrame(update);
-    if(statsBol)stats.end()
+        //console.log("-------------------")
+
+        while (lag >= MS_PER_UPDATE){
+            
+            //console.log(lag)
+            thisRound.play(lag/MS_PER_UPDATE);
+           
+            lag = lag - MS_PER_UPDATE;
+            updates++
+
+        }
+        // update the canvas with new parameters
+
+        //---------------->> Thing that renders the whole stage
+        renderer.render(stage);
+        renders++
+
+        requestAnimationFrame(update);
+        
+        if(statsBol)stats.end()
+        
 }
 
 /*
@@ -74,8 +115,6 @@ function update() {
                 frames.push(PIXI.Texture.fromFrame('ladyBug_Walk-0' + (i+1) + '.png'));
             }
             this.sprites.ladybugWalk = frames
-            
-
 
             var frames = [];
             for (var i = 0; i < 4; i++) {
@@ -168,6 +207,30 @@ function update() {
         this.playQueue = [];
     };
 
+    LadyBug.prototype.checkOutOfScreen = function(){
+        if (this.container.x < 0 || this.container.x > canvas.width || this.container.y+this.container.width < 0 || this.container.y > canvas.height){
+            return true
+        }else {
+            return false
+        };
+    }
+    
+    LadyBug.prototype.destroy = function(){
+
+        stage.removeChild(this.container)
+        //this.container.destroy(true)
+        this.container.removeChildren(0,this.container.length)
+        this.sprite.walk.destroy(true)
+        this.sprite.fly.destroy(true)
+        this.sprite.dead.destroy(true)
+        this.container.destroy(true)
+        this.number.destroy(true)
+        console.log(this.container)
+        this.state = "destroy"
+
+    }
+
+
     LadyBug.prototype.setUp = function(freeIds){
 
         this.sprite.walk.play();
@@ -214,11 +277,21 @@ function update() {
         return moduleId;
     }
 
-    LadyBug.prototype.move = function(){
+    LadyBug.prototype.move = function(_state){
+
+        if(this.state == "destroy"){
+            return
+        }
+
+        if (_state != undefined){
+            this.state = _state;
+        };
 
         //console.log(this.container.y)
         this.container.y = this.container.y - this.container.ySpeed;
         this.container.x = this.container.x - this.container.xSpeed;
+
+
 
         switch(this.state){
 
@@ -270,13 +343,33 @@ function update() {
 
                     }  
 
+
                 }
 
+                break;
+
+            case "destroy":
 
                 break;
         
         };
     };
+
+    LadyBug.prototype.forceFly = function(){
+
+        this.sprite.walk.stop();
+        this.sprite.walk.alpha = 0;
+
+        this.sprite.fly.play()
+        this.sprite.fly.alpha = 1;
+
+        this.number.text = "";
+        this.container.rotation = 0;
+        this.container.ySpeed = 10;
+        this.container.xSpeed = 0;
+        this.sprite.walk.animationSpeed = 0;
+
+    }
 
     LadyBug.prototype.click = function(){
 
@@ -317,6 +410,7 @@ function update() {
                 this.timer.start(1500);
                 this.state = "dead";
 
+
             }else if (this.number.text > 0){
 
                 // if(this.playQueue.length <= 0){
@@ -348,12 +442,11 @@ function update() {
         this.score = 0;
         this.language = "english"
         this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-01.png');
-        this.background.height = window.innerHeight;
-       
+        // this.background.height = canvas.height;
+        
         stage.addChild(this.background);
 
     }
-
 
     /*
     ------
@@ -386,8 +479,8 @@ function update() {
 
     }
 
-    Round.prototype.play = function(){
-        this.trial.play()
+    Round.prototype.play = function(_updateTime){
+        this.trial.play(_updateTime)
     }
 
     Round.prototype.init = function(){
@@ -395,6 +488,15 @@ function update() {
         var specsthis = this.getNextTri();
         this.trial = new Trial(specsthis[0],specsthis[1]);
         this.trial.init();
+    }
+
+    Round.prototype.destroy = function(){
+
+        this.trial.destroy()
+        stage.removeChild(this.background)
+        this.background.destroy(true,true)
+
+
     }
 
 /*
@@ -410,8 +512,22 @@ function update() {
         this.correct = _correct;
         this.correctImput = 0;
         this.playQueue = []
+        this.correctSet = false;
 
         //this.stimuli.value.play()
+
+    }
+
+    Trial.prototype.destroy = function(){
+
+        for(var i=0; i<this.ladyBugs.length; i++){
+            this.ladyBugs[i].destroy()
+        }
+
+        this.UI.removeChildren(0,this.UI.children.length)
+        this.circle.destroy(true.true)
+        this.cNumber.destroy(true,true)
+        stage.removeChild(this.UI)
 
     }
 
@@ -443,63 +559,154 @@ function update() {
         //     assets.sounds[this.playQueue[0]].playbackRate = 1.5
 
         // }
-
     }
 
     Trial.prototype.init = function(){
 
-        this.UI = new PIXI.Container()
-        
-        this.circle = new PIXI.Graphics()
-        this.circle.lineStyle(0);
-        this.circle.beginFill(0x02d1aa);
-        this.circle.drawCircle(canvas.width-40, canvas.height-40,150);
-        this.circle.endFill();
-        this.UI.addChild(this.circle);
 
-        this.cNumber =  new PIXI.Text(thisRound.trial.correct.value, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
-        this.cNumber.x = canvas.width-100
-        this.cNumber.y = canvas.height-150
-        this.UI.addChild(this.cNumber);
-        stage.addChild(this.UI)
-
-        for (var i=0; i<5; i++){
+        for (var i=0; i<8; i++){
 
             this.ladyBugs.push(new LadyBug())
             this.ladyBugs[i].setUp()
 
         }
 
+        this.UI = new PIXI.Container()
+        this.UI.customAnimation = new animation(this.UI)
+
+        this.trialTimer = new ClockTimer();
+
+        this.circle = new PIXI.Graphics()
+        this.circle.lineStyle(0);
+        this.circle.beginFill(0x02d1aa);
+        this.circle.drawCircle(0,0,100);
+        this.circle.endFill();
+        this.UI.addChild(this.circle);
+        this.circle.x = 80, 
+        this.circle.y = canvas.height-60;
+
+        this.cNumber =  new PIXI.Text(thisRound.trial.correct.value, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
+        this.cNumber.x = 50
+        this.cNumber.y = canvas.height-120
+        this.UI.addChild(this.cNumber);
+
+        stage.addChild(this.UI)
+        this.trialState = "play";
     }
 
-    Trial.prototype.play = function(){
+    Trial.prototype.play = function(_updateTime){
 
-        /* 
-        Check for the amout of correct imput
-        necessery to move to new task
-        */ 
-        if(this.correctImput >= 1){
-            for (var i=0; i<this.ladyBugs.length; i++){
+        switch(this.trialState){
 
-                // this.ladyBugs[i].flyAll()
+            case "play":
 
-            }
+                for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].move() };
+                
+                if(this.correctImput >= 1){//------------------------------------------------------------------------------------------
+                
+                    for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
 
-            this.correct.value = getRandomInt(2,5)
-            this.cNumber.text = this.correct.value
-            this.correctImput = 0            
+                    this.trialState = "showNext"
+                    this.showNextState = "flyall"             
 
-            //thisRound.init()
-        }else{
+                }                    
 
-            for (var i=0; i<this.ladyBugs.length; i++){
+                break;  
 
-                this.ladyBugs[i].move()
+            case "showNext":
+
+                if(this.showNextNumber()){
+
+                    this.correctImput = 0;
+                    for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].state = "walk"  };
+                    this.trialState = "play";
+
+                };
+
+                break;
+
+            };
+        };
+
+    Trial.prototype.showNextNumber = function(){
 
 
-            }
+        switch(this.showNextState){
+
+            case "flyall":
+                
+                var next = true;
+
+                for (var i=0; i<this.ladyBugs.length; i++){
+                    
+                    if(!this.ladyBugs[i].checkOutOfScreen()){
+                        next = false
+                    }
+                    
+                    this.ladyBugs[i].move("noReset")
+                };
+
+                if(next){
+                  
+                    var dest = {}
+                    dest.x = renderer.width/2 - this.UI.getBounds().width/2
+                    dest.y = renderer.height/2 - this.UI.getBounds().height/2
+
+                    this.showNextState = "center"; 
+                    this.UI.customAnimation.init({x:dest.x,y:dest.y},1000)
+                
+                }       
+
+                break;
+
+            case "center":
+
+                if(this.UI.customAnimation.run()){
+                    this.showNextState = "change";
+                    this.trialTimer.start(1000)
+                } 
+
+                break;
+
+
+            case "change":
+
+
+                if(!this.correctSet && this.trialTimer.getElapsed() > 500){
+
+                    this.correct.value = getRandomInt(2,5)
+                    this.cNumber.text = this.correct.value
+                    this.correctSet = true;
+                }
+
+                if(this.trialTimer.timeOut()){
+                    
+                    var dest = {}
+                    dest.x = 0
+                    dest.y = renderer.height- this.UI.getBounds().height
+
+                    this.UI.customAnimation.init({x:dest.x,y:dest.y},1000)
+                    this.showNextState = "corner"
+                }
+
+                break;
+
+            case "corner":
+                 
+                if(this.UI.customAnimation.run()){
+
+                    this.showNextState = "flyall"
+                    this.correctSet = false;
+                    return true
+                }
+
+                break;
+
         }
-    }
+
+        return false
+
+    };
 
     /*
     *********************************************************************
@@ -515,7 +722,7 @@ function update() {
             this.correctImput++;
         }
 
-    }
+    };
 
 }
 

@@ -1,7 +1,6 @@
 function proto01(){
 
 	var self = this
-
 	var container = d3.select("#screen")
 	var ladyBugs = []
 

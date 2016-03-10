@@ -15622,6 +15622,9 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 
     this._texture = null;
     this.shader = null;
+
+    console.log("1---------")
+
 };
 
 // some helper functions..
@@ -24155,7 +24158,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         }
 
         if(displayObject.interactive)
-        {
+        {   
+
             func(displayObject, hit); 
         }
     }
