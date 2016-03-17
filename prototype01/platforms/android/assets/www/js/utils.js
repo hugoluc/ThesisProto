@@ -14,6 +14,13 @@ function getAngle(x,y,_x,_y){
   return Math.asin(sinOfAngleX)
 }
 
+function getDistance(x,y,_x,_y){
+  var oposite = _x - x;
+  var adjacent = _y - y;
+  var hipotenuse = Math.sqrt((oposite*oposite)+(adjacent*adjacent))
+  return hipotenuse
+}
+
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max-min)) + min;
 }
@@ -89,8 +96,8 @@ ClockTimer.prototype.getElapsed = function(){
 
     return Date.now() - this.startTime;
 
-
 };
+
 
 function animation(obj){
 
@@ -149,6 +156,7 @@ animation.prototype.run = function(){
     this.StartTime = Date.now();
     this.lastTime = Date.now();
     this.timeSet = true;
+
   }
 
 
@@ -168,10 +176,10 @@ animation.prototype.run = function(){
     }else{
 
       //if linear: 
-      var p0 = {x:99.0, y:0.0};
-      var p1 = {x:99.0, y:0.0};
-      var p2 = {x:99.0, y:1.0};
-      var p3 = {x:99.0, y:1.0};
+      var p0 = {x:1.0, y:0.0};
+      var p1 = {x:1.0, y:0.0};
+      var p2 = {x:1.0, y:1.0};
+      var p3 = {x:1.0, y:1.0};
 
       var t = elapsed / this.anLength;
       var speed = this.bezier(t, p0, p1, p2, p3);
@@ -211,7 +219,6 @@ animation.prototype.bezier = function(_t,_p0,_p1,_p2,_p3){
   py = py + (3 * _uu * _t * _p1.y); //second term
   py = py + (3 * _u * _tt * _p2.y); //third term
   py = py + (_ttt * _p3.y); //fourth term
-
 
   return {x:px,y:py}
 

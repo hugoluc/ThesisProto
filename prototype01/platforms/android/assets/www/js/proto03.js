@@ -74,10 +74,10 @@ lillySmall.prototype.init = function(_value,_position,_size,_id){
 	this.id = _id;
 	this.connections = [];
 	this.value = _value;
-	this.posdId = _position.id
-	this.pos = _position.pos;
+	this.pos = _position;
 	this.size = _size; 
 
+	console.log(_size)
 
 	if(_value > 0){
 
@@ -143,11 +143,6 @@ lillySmall.prototype.init = function(_value,_position,_size,_id){
 lillySmall.prototype.clickStart = function(_this,_event){
 
 	//change lillypad to selected
-	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	console.log("clicked over:", this.id)
-	console.log("Pos_ID:", this.posdId)
-	console.log("connectios:", this.connections)
-	console.log("----------------------------")
 	_this.data = _event.data;
     _this.dragging = true;
 
@@ -155,21 +150,20 @@ lillySmall.prototype.clickStart = function(_this,_event){
 
 lillySmall.prototype.clickEnd = function(_this){
 
+	console.log(">>>>>>>", this.id)
 	//change lillypad to selected
-
-
-	if(!this.dragging) return
-
     _this.dragging = false;
     this.dragging = false;
-
-    if(!this.trial.CheckLink(_this.data.getLocalPosition(_this.parent),this.id || this.connections.length > 1)){
-
-    	this.trial.removeStick()    	
     
-    }else{
-    	this.connected = true;
-    }
+    console.log(_this.data.getLocalPosition(_this.parent))
+
+    // if(!this.trial.CheckLink(_this.data.getLocalPosition(_this.parent))){
+
+    // 	this.trial.removeStick()    	
+    
+    // }else{
+    // 	this.connected = true;
+    // }
 
 
 };
@@ -221,46 +215,25 @@ lillySmall.prototype.drag = function(_this){
 
     }
 
-	Trial.prototype.CheckLink = function(_data,_id){
+	Trial.prototype.CheckLink = function(_data){
 	
-
 		for(var i=0; i<this.lillySmall.length; i++){
 
-			if(this.lillySmall[i].circle.containsPoint(_data)){			
+			if(this.lillySmall[i].circle.containsPoint(_data)){
 
+				return true;				
 
-				for(var j =0; j < this.lillySmall[_id].connections.length; j++){
+				for(var i =0; i < this.lillySmall[i].connections.length; i++){
 
-					if(this.lillySmall[_id].connections[j] == i){
-						return false;
-					}	
-				
+					//this.checkLoop(i,this.lillySmall[i])			
 				}
 
-				this.lillySmall[_id].connections.push(i)
-				console.log("droped over:", i)
-				console.log(">>>>>>>>>>id:" + _id + "--" +  this.lillySmall[_id].connections)
 
-
-				for(var j =0; j < this.lillySmall[i].connections.length; j++){
-
-					console.log(j)
-					this.checkLoop(i,this.lillySmall[i].connections[j])			
-				
-				}
-
-				if(this.loop){
-
-					console.log("LOOP DETECTED!!!")
-					console.log(this.lillySmall[_id].connections)
-					this.lillySmall[_id].connections.splice(this.lillySmall[_id].connections.length-1,1)
-					console.log(this.lillySmall[_id].connections)
-					return false;					
-				
-				}else{
-				
-					return true					
-				}
+				// if(this.loop){
+				// 	return false;					
+				// }else{
+				// 	return true					
+				// }
 
 			}
 
@@ -273,18 +246,17 @@ lillySmall.prototype.drag = function(_this){
 
 	Trial.prototype.checkLoop = function(_origin,_target){
 
-		console.log(">>>>",_origin,_target)
-
 		if(_target == _origin){
 			
 			this.loop = true;
 		
 		}else{
 
+			console.log("---------------------",this.lillySmall[_target] )
 			var newTargets = this.lillySmall[_target].connections;
 			
 			for(var i =0; i < newTargets.length; i++){
-				this.checkLoop(_origin,newTargets[i])				
+			this.prototype.checkLoop(_origin,newTargets[i])				
 			}
 
 
@@ -296,9 +268,10 @@ lillySmall.prototype.drag = function(_this){
     Trial.prototype.createStick = function(_data){
 
     	// console.log("-------------")
+    	console.log(this.sticks)
     	var stick = new PIXI.Graphics()
 	    stick.lineStyle(0);
-	    stick.beginFill(0x996630);
+	    stick.beginFill(0x02dddd);
 	    stick.drawRect(0,0,1,10);
 	    stick.endFill();
 		stage.addChild(stick);
@@ -381,6 +354,8 @@ lillySmall.prototype.drag = function(_this){
 
     	var allPos = []
 
+    	console.log()
+
 
     	for(var i=0;i<this.specs.moduleWidthCount-1;i++){
     		
@@ -414,6 +389,9 @@ lillySmall.prototype.drag = function(_this){
     		this.matrixAvailable.push(i)	
     	}
 
+    	console.log(allPos.length)
+    	console.log(this.matrixAvailable.length)
+
     	return allPos
     }
 
@@ -423,7 +401,7 @@ lillySmall.prototype.drag = function(_this){
     	var i = this.matrixAvailable[aPos]
     	this.matrixAvailable.splice(aPos,1)
 
-    	return {pos:this.posMatrix[i], id:i}
+    	return this.posMatrix[i] 
     }
 
     Trial.prototype.init = function(){
@@ -435,15 +413,10 @@ lillySmall.prototype.drag = function(_this){
         for (var i=0; i<this.stimuli.extras.size; i++){    	
 
         	lilipadValues.push(getRandomInt(this.stimuli.extras.min,this.stimuli.extras.max))
-		
+
 		}
         
-
-        if(lilipadValues.length > this.posMatrix.length){
-        
-        	throw "SCREEN TOO SMALL!"
-        
-        }
+        console.log("-----",this.specs)
 
        	for (var i=0; i<lilipadValues.length; i++){
 

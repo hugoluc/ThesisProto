@@ -1,85 +1,6 @@
+var proto2loaded = false
+
 function proto02(){
-
-//place fps elements 
-var statsBol = false;
-if(statsBol){
-    stats = new Stats(); 
-    document.body.appendChild( stats.domElement );
-    stats.domElement.style.position = "absolute";
-    stats.domElement.style.top = "0px";
-    stats.domElement.style.zIndex = 10;
-}
-
-// create the root of the scene graph and main classes
-var stage = new PIXI.Container();
-var thisRound = new Round();
-var assets = new Assets();
-
-var teste = 0
-
-this.destroy = function(){
-
-    finishGame = true;
-    session.hide()
-
-}
-
-PIXI.loader
-    .add('sprites/backGrounds/BackGround-01.png')
-    .add('sprites/ladyBug/ladyBug_WalkV3.json')
-    .add('sprites/ladyBug/ladyBug_fly.json')
-    .add('sprites/ladyBug/ladtBug_flyStatic.png')
-    .add('sprites/ladyBug/ladtBug_dead.png')
-    .load(onAssetsLoaded);
-
-function onAssetsLoaded(){
-    assets.load()
-    session.show()
-    thisRound.init()    
-    update();
-}
-
-var finishGame = false
-var previousTime = Date.now();
-var MS_PER_UPDATE = 16.66667;
-var lag = 0
-
-function update() {
-
-    if(finishGame){
-        console.log("-----")
-        thisRound.destroy()
-        finishGame = false
-        currentview = new Chooser()
-    }
-
-        if(statsBol)stats.begin()
-
-        var current = Date.now();
-        var elapsed = current - previousTime;
-        previousTime = current;
-        lag = lag + elapsed;
-
-        //console.log("-------------------")
-
-        while (lag >= MS_PER_UPDATE){
-            
-            //console.log(lag)
-            thisRound.play(lag/MS_PER_UPDATE);
-            lag = lag - MS_PER_UPDATE;
-
-        }
-        // update the canvas with new parameters
-
-        //---------------->> Thing that renders the whole stage
-        //renderer.render(stage);
-        session.render(stage)
-
-        requestAnimationFrame(update);
-        
-        if(statsBol)stats.end()
-        
-}
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -92,7 +13,7 @@ function update() {
         this.sounds = [];
 
     }
-
+    
     Assets.prototype.load = function(){
                 
             // create an array of textures from an image path
@@ -135,6 +56,13 @@ function update() {
 
     }
 
+    Assets.prototype.destroy = function(){
+    
+        this.sprites = []
+        this.sounds = []
+
+    }
+
 /*
 -------------------------------------------------------------------------------------------------------------
                                               Class: LadyBug
@@ -143,7 +71,6 @@ function update() {
     function LadyBug(){
 
         var _this = this
-
 
         // container variables
         this.container = new PIXI.Container()
@@ -156,7 +83,8 @@ function update() {
         }
 
         this.sprite = {}
-    
+
+        console.log(assets.sprites.ladybugWalk)
 
         // sprite variables
         this.sprite.walk = new PIXI.extras.MovieClip(assets.sprites.ladybugWalk);
@@ -165,6 +93,8 @@ function update() {
         this.sprite.walk.scale.x = 0.34;
         this.sprite.walk.scale.y = 0.34;    
         this.container.addChild(this.sprite.walk);
+
+
 
         this.sprite.fly = new PIXI.extras.MovieClip(assets.sprites.ladybugFly);
         this.sprite.fly.animationSpeed = 0.1;
@@ -208,14 +138,12 @@ function update() {
     LadyBug.prototype.destroy = function(){
 
         stage.removeChild(this.container)
-        //this.container.destroy(true)
         this.container.removeChildren(0,this.container.length)
-        this.sprite.walk.destroy(true)
-        this.sprite.fly.destroy(true)
-        this.sprite.dead.destroy(true)
-        this.container.destroy(true)
-        this.number.destroy(true)
-        console.log(this.container)
+        this.sprite.walk.destroy(true,true)
+        this.sprite.fly.destroy(true,true)
+        this.sprite.dead.destroy(true,true)
+        this.container.destroy(true,true)
+        this.number.destroy(true,true)
         this.state = "destroy"
 
     }
@@ -277,7 +205,6 @@ function update() {
             this.state = _state;
         };
 
-        //console.log(this.container.y)
         this.container.y = this.container.y - this.container.ySpeed;
         this.container.x = this.container.x - this.container.xSpeed;
 
@@ -486,7 +413,6 @@ function update() {
         stage.removeChild(this.background)
         this.background.destroy(true,true)
 
-
     }
 
 /*
@@ -494,7 +420,6 @@ function update() {
                                                 Class: Trial
 -------------------------------------------------------------------------------------------------------------
 */
-
     function Trial(_stimuli,_correct){
 
         this.ladyBugs = [];
@@ -518,6 +443,7 @@ function update() {
         this.circle.destroy(true.true)
         this.cNumber.destroy(true,true)
         stage.removeChild(this.UI)
+        this.UI.destroy(true,true)
 
     }
 
@@ -560,6 +486,7 @@ function update() {
             this.ladyBugs[i].setUp()
 
         }
+
 
         this.UI = new PIXI.Container()
         this.UI.customAnimation = new animation(this.UI)
@@ -713,6 +640,103 @@ function update() {
         }
 
     };
+
+
+/*
+-------------------------------------------------------------------------------------------------------------
+                                        Global variables and fucntions
+-------------------------------------------------------------------------------------------------------------
+*/
+
+//place fps elements 
+var statsBol = true;
+if(statsBol){
+
+    stats = new Stats(); 
+    document.body.appendChild( stats.domElement );
+    stats.domElement.style.position = "absolute";
+    stats.domElement.style.top = "0px";
+    stats.domElement.style.zIndex = 10;
+}
+
+
+// create the root of the scene graph and main classes
+var stage = new PIXI.Container();
+var thisRound = new Round();
+var assets = new Assets();
+
+
+this.destroy = function(){
+    finishGame = true;
+    session.hide()
+}
+
+function onAssetsLoaded(){
+    assets.load()
+    session.show()
+    thisRound.init()  
+    update();
+}
+
+if(!proto2loaded){
+
+    console.log("--------------------------------------")
+
+    PIXI.loader
+    .add('sprites/ladyBug/ladyBug_WalkV3.json')
+    .add('sprites/ladyBug/ladyBug_fly.json')
+    .add('sprites/ladyBug/ladtBug_flyStatic.png')
+    .add('sprites/ladyBug/ladtBug_dead.png')
+    .load(onAssetsLoaded);
+
+    proto2loaded = true;
+
+}else{
+
+    onAssetsLoaded();
+
+}
+
+var finishGame = false
+var previousTime = Date.now();
+var MS_PER_UPDATE = 16.66667;
+var lag = 0
+
+function update() {
+
+    if(finishGame){
+
+        thisRound.destroy()
+        finishGame = false
+        currentview = new Chooser(assets)
+
+    }
+
+        if(statsBol)stats.begin()
+
+        var current = Date.now();
+        var elapsed = current - previousTime;
+        previousTime = current;
+        lag = lag + elapsed;
+
+
+        while (lag >= MS_PER_UPDATE){
+            
+            thisRound.play(lag/MS_PER_UPDATE);
+            lag = lag - MS_PER_UPDATE;
+
+        }
+
+        // update the canvas with new parameters
+        //---------------->> Thing that renders the whole stage
+        session.render(stage)
+
+        requestAnimationFrame(update);
+        
+        if(statsBol)stats.end()
+        
+}
+
 
 }
 
