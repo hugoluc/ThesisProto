@@ -34,13 +34,33 @@ function proto03(){
 
 function lillyFinal(){
 
+    this.specs = {}
+    this.specs.size = 100
+    this.specs.x = session.canvas.width-100;
+    this.specs.y = session.canvas.height/2;
+    this.conections = []
+
 }
 
 
 lillyFinal.prototype.init = function(_value){
 
-	//get final number
-	//draw lillypad on screen
+        this.value = _value
+        this.lillypad = new PIXI.Graphics()
+        this.lillypad.lineStyle(0);
+        this.lillypad.beginFill(0x02d1aa);
+        this.lillypad.drawCircle(0,0,this.specs.size);
+        this.lillypad.endFill();
+        stage.addChild(this.lillypad)
+        this.lillypad.x = this.specs.x
+        this.lillypad.y = this.specs.y
+
+        this.cNumber =  new PIXI.Text(this.value, {font:"100px Arial", weight:"black", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
+        this.cNumber.x = this.lillypad.x - (this.specs.size/2)
+        this.cNumber.y = this.lillypad.y - (this.specs.size/2)
+
+        stage.addChild(this.cNumber)
+
 }
 
 lillyFinal.prototype.display = function(_currentValue){
@@ -58,144 +78,152 @@ lillyFinal.prototype.display = function(_currentValue){
 */
 
 
-function lillySmall(_trial){
+    function lillySmall(_trial){
 
-	this.trial = _trial
-	this.state = "notSelected"
-	this.valueObjects = []
+    	this.trial = _trial
+    	this.selected = true
+    	this.valueObjects = []
 
-}
-
-
-lillySmall.prototype.init = function(_value,_position,_size,_id){
-
-	var _this = this;
-
-	this.id = _id;
-	this.connections = [];
-	this.value = _value;
-	this.posdId = _position.id
-	this.pos = _position.pos;
-	this.size = _size; 
-
-
-	if(_value > 0){
-
-		//draw ents
-		for(var i=0; i<_value; i++){
-			this.valueObjects.push("ents")			
-		}
-
-	}else{
-
-		//draw ents
-		for(var i=0; i<_value; i++){
-			this.valueObjects.push("ents")			
-		}
-
-	}
-
-    this.container = new PIXI.Container()
-    this.trialTimer = new ClockTimer();
-
-    this.circle = new PIXI.Graphics()
-    this.circle.lineStyle(0);
-    this.circle.beginFill(0x02d1aa);
-    this.circle.drawCircle(0,0,this.size/2);
-    this.circle.endFill();
-    this.circle.interactive = true;
-    this.circle.buttonMode = true;
-
-	this.circle
-		//touchstart
-		.on('mousedown', click)
-        .on('touchstart', click)    
-        //touch ende
-		.on('mouseup', function(){_this.clickEnd(this)})
-        .on('mouseupoutside', function(){_this.clickEnd(this)})   
-        .on('touchend', function(){_this.clickEnd(this)})
-        .on('touchendoutside', function(){_this.clickEnd(this)})    
-        //drag
-        .on('mousemove', function(){_this.drag(this)})
-        .on('touchmove', function(){_this.drag(this)});
-
-    function click(_event){
-    	_this.clickStart(this,_event)
-    }
-
-    this.container.addChild(this.circle);
-    this.circle.x = this.pos.x+this.size/2;
-    this.circle.y = this.pos.y+this.size/2;
-
-    this.cNumber =  new PIXI.Text(this.value, {font:"100px Arial", weight:"black", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
-    this.cNumber.x = this.pos.x + this.size/4;
-    this.cNumber.y = this.pos.y
-    this.container.addChild(this.cNumber);
-
-    stage.addChild(this.container)
-	//create images
-	//position
-	//create number
-	//
-
-};
-
-lillySmall.prototype.clickStart = function(_this,_event){
-
-	//change lillypad to selected
-	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	console.log("clicked over:", this.id)
-	console.log("Pos_ID:", this.posdId)
-	console.log("connectios:", this.connections)
-	console.log("----------------------------")
-	_this.data = _event.data;
-    _this.dragging = true;
-
-};
-
-lillySmall.prototype.clickEnd = function(_this){
-
-	//change lillypad to selected
-
-
-	if(!this.dragging) return
-
-    _this.dragging = false;
-    this.dragging = false;
-
-    if(!this.trial.CheckLink(_this.data.getLocalPosition(_this.parent),this.id || this.connections.length > 1)){
-
-    	this.trial.removeStick()    	
-    
-    }else{
-    	this.connected = true;
     }
 
 
-};
+    lillySmall.prototype.init = function(_value,_position,_size,_id){
 
-lillySmall.prototype.drag = function(_this){
+    	var _this = this;
 
-	//change lillypad to selected
-	if(_this.dragging){
-
-		if(!this.dragging){
-			this.stick = this.trial.createStick(_this.data.getLocalPosition(_this.parent));
-			this.dragging = true;
-		};
-
-		this.trial.moveStick(_this.data.getLocalPosition(_this.parent))
-
-	};
+        this.value = _value
+    	this.id = _id;
+    	this.connections = [];
+    	this.value = _value;
+    	this.posdId = _position.id
+    	this.pos = _position.pos;
+    	this.size = _size; 
 
 
-};
+    	if(_value > 0){
+
+    		//draw ents
+    		for(var i=0; i<_value; i++){
+    			this.valueObjects.push("ents")			
+    		}
+
+    	}else{
+
+    		//draw ents
+    		for(var i=0; i<_value; i++){
+    			this.valueObjects.push("ents")			
+    		}
+
+    	}
+
+        this.container = new PIXI.Container()
+        this.trialTimer = new ClockTimer();
+
+        this.circle = new PIXI.Graphics()
+        this.circle.lineStyle(0);
+        this.circle.beginFill(0x02d1aa);
+        this.circle.drawCircle(0,0,this.size/2);
+        this.circle.endFill();
+        this.circle.interactive = true;
+        this.circle.buttonMode = true;
+
+    	this.circle
+    		//touchstart
+    		.on('mousedown', click)
+            .on('touchstart', click)    
+            //touch ende
+    		.on('mouseup', function(){_this.clickEnd(this)})
+            .on('mouseupoutside', function(){_this.clickEnd(this)})   
+            .on('touchend', function(){_this.clickEnd(this)})
+            .on('touchendoutside', function(){_this.clickEnd(this)})    
+            //drag
+            .on('mousemove', function(){_this.drag(this)})
+            .on('touchmove', function(){_this.drag(this)});
+
+        function click(_event){
+        	_this.clickStart(this,_event)
+        }
+
+        this.container.addChild(this.circle);
+        this.circle.x = this.pos.x+this.size/2;
+        this.circle.y = this.pos.y+this.size/2;
+
+        this.cNumber =  new PIXI.Text(this.value, {font:"100px Arial", weight:"black", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
+        this.cNumber.x = this.pos.x + this.size/4;
+        this.cNumber.y = this.pos.y
+        this.container.addChild(this.cNumber);
+
+        stage.addChild(this.container)
+    	//create images
+    	//position
+    	//create number
+    	//
+
+    };
+
+    lillySmall.prototype.clickStart = function(_this,_event){
+
+
+        /***********************************
+        
+        FIX THIS! 
+        CHECK TO SEE IF THE FIRST POINT ON CLICK IS OVER THE ACTUAL CIRCLE
+        IN ORDER TO PREVENDE CREATION OF STICKS OUTSITE THE LILLYPAD!
+
+        ************************************/
+
+        if(this.connections.length > 1){
+            console.log("THIS LILYPAD HAS TOO MANY CONECTIONS!")
+            return
+        }else if(!this.selected){
+            console.log("THIS LILYPAD IS NOT THE SELECTED ONE")
+            return
+
+        }
+
+    	//change lillypad to selected
+    	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    	console.log("clicked over:", this.id)
+    	console.log("Pos_ID:", this.posdId)
+    	console.log("connectios:", this.connections)
+    	console.log("----------------------------")
+    	_this.data = _event.data;
+        _this.dragging = true;
+    };
+
+    lillySmall.prototype.clickEnd = function(_this){
+
+    	//change lillypad to selected
+
+    	if(!this.dragging) return
+
+        _this.dragging = false;
+        this.dragging = false;
+
+        this.trial.CheckLink(_this.data.getLocalPosition(_this.parent),this.id)
+    };
+
+    lillySmall.prototype.drag = function(_this){
+
+    	//change lillypad to selected
+    	if(_this.dragging){
+
+    		if(!this.dragging){
+    			this.stick = this.trial.createStick(_this.data.getLocalPosition(_this.parent));
+    			this.dragging = true;
+    		};
+
+    		this.trial.moveStick(_this.data.getLocalPosition(_this.parent))
+
+    	};
+    };
 
 /*
 -------------------------------------------------------------------------------------------------------------
                                                 Class: Trial
 -------------------------------------------------------------------------------------------------------------
 */
+
     function Trial(_stimuli,_correct){
 		
 		/*----------------------
@@ -218,78 +246,205 @@ lillySmall.prototype.drag = function(_this){
         this.matrixAvailable = []
         this.specs = this.getSpecs()
         this.posMatrix = this.getMatrixPosition()
+        this.lillyLinkd = []
+        this.operation = 0
+    }
+
+    Trial.prototype.init = function(){
+
+        this.lillyFinal.init(this.correct.value)
+
+        var lilipadValues = this.stimuli.correctValues
+
+        for (var i=0; i<this.stimuli.extras.size; i++){     
+
+            lilipadValues.push(getRandomInt(this.stimuli.extras.min,this.stimuli.extras.max))
+        
+        }
+        
+
+        if(lilipadValues.length > this.posMatrix.length){
+        
+            throw "SCREEN TOO SMALL!"
+        
+        }
+
+        for (var i=0; i<lilipadValues.length; i++){
+
+            var pos = getRandomInt(0,this.posMatrix.length) 
+            this.lillySmall.push(new lillySmall(this))
+            this.lillySmall[i].init(lilipadValues[i],this.getPos(i),this.specs.moduleSize,i)
+
+        }
+    
+    }
+
+    //creates links between lillypads if allowed
+	Trial.prototype.CheckLink = function(_dropPoint,_id){
+
+        var noLink = true;
+
+        if(this.sticks.length == 1){
+            for(var i=0; i<this.lillySmall.length; i++){
+                this.lillySmall[i].selected = false;                
+            }            
+        }
+
+        //check which lillypad the stick was droped over
+        for(var i=0; i<this.lillySmall.length; i++){
+
+            if(this.lillySmall[i].circle.containsPoint(_dropPoint)){ 
+
+                console.log("DROPED OVER: " + i)
+
+                if(this.lillySmall[i].connections.length > 1){
+                    console.log("the target has too many connections!")
+                    this.removeStick();
+                    return;
+
+                }
+
+                for(var j=0; j<this.lillySmall[i].connections.length;j++){
+
+                    if(this.lillySmall[i].connections[j] == _id){
+                        
+                        this.removeStick();
+                        return;             
+                    
+                    }
+
+                }
+
+                //add links fisrt and remove later if lop is detected
+                this.lillySmall[_id].connections.push(i);
+                this.lillySmall[i].connections.push(_id);
+
+                this.checkLoop(_id,i,_id)
+
+                if(this.loop){
+
+                    console.log("DELETING CONECTIONS AND ERASING STICK")
+                    console.log("-------------------------------------")
+
+                    console.log("removing link from: "+_id)
+                    console.log("before: " +  this.lillySmall[_id].connections)
+                    this.lillySmall[_id].connections.splice(this.lillySmall[_id].connections.length-1,1);
+                    console.log("after: " +  this.lillySmall[_id].connections)
+
+                    console.log("removing link from: "+i)
+                    console.log("before: " +  this.lillySmall[i].connections)
+                    this.lillySmall[i].connections.splice(this.lillySmall[i].connections.length-1,1);
+                    console.log("before: " +  this.lillySmall[i].connections)
+                    this.removeStick();
+                    noLink = false;
+
+                }else{
+
+                    this.lillySmall[i].selected = true;
+                    this.sticks[this.sticks.length-1].id = [_id,i]
+                    this.updateOperation(_id,i);
+                }
+
+                return;
+
+            }
+
+        }
+
+        if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
+
+            this.lillyFinal.conections.push(_id)
+            console.log("FINISH TASk!!")
+
+            if(this.operation == this.lillyFinal.value){
+
+                this.getLinearOperation()
+                console.log("correct")
+
+            }else{
+
+                console.log("wrong!")
+
+            }
+
+            return;
+            //this.checkAnswers
+
+        }
+
+        if(noLink){
+
+             this.removeStick();
+
+        }    
+	}
+
+    this.getLinearOperation = function(){
+
+        var _this = this
+
+        var getNext = function(origin,_this){
+
+
+        }
+
 
     }
 
-	Trial.prototype.CheckLink = function(_data,_id){
-	
+    Trial.prototype.updateOperation = function(_origin,_target){
 
-		for(var i=0; i<this.lillySmall.length; i++){
-
-			if(this.lillySmall[i].circle.containsPoint(_data)){			
-
-
-				for(var j =0; j < this.lillySmall[_id].connections.length; j++){
-
-					if(this.lillySmall[_id].connections[j] == i){
-						return false;
-					}	
-				
-				}
-
-				this.lillySmall[_id].connections.push(i)
-				console.log("droped over:", i)
-				console.log(">>>>>>>>>>id:" + _id + "--" +  this.lillySmall[_id].connections)
+        if(this.lillySmall[_origin].connections.length <= 1){
+            console.log("-----")
+            this.lillyLinkd.push([this.lillySmall[_origin].id, this.lillySmall[_origin].value])
+        }
 
 
-				for(var j =0; j < this.lillySmall[i].connections.length; j++){
+        if(this.lillySmall[_target].connections.length <= 1){
+            this.lillyLinkd.push([this.lillySmall[_target].id, this.lillySmall[_target].value])            
+        }
 
-					console.log(j)
-					this.checkLoop(i,this.lillySmall[i].connections[j])			
-				
-				}
+        this.operation = 0;
 
-				if(this.loop){
+        for(var i=0;i<this.lillyLinkd.length;i++){
 
-					console.log("LOOP DETECTED!!!")
-					console.log(this.lillySmall[_id].connections)
-					this.lillySmall[_id].connections.splice(this.lillySmall[_id].connections.length-1,1)
-					console.log(this.lillySmall[_id].connections)
-					return false;					
-				
-				}else{
-				
-					return true					
-				}
+            this.operation = this.operation + this.lillyLinkd[i][1]
+            console.log(this.operation)
+        }
+    }
 
-			}
+	Trial.prototype.checkLoop = function(_origin,_target,_last){
 
-		}
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        console.log("checking loop")
+        console.log("origin: " + _origin )
+        console.log("target: " +  _target )
+        console.log("last: " + _last )
+        console.log("----")
 
-		return false;
-		//containsPoint
-	
-	}
+        if(_target == _origin){
+            console.log("<<LOOP DETECTED>>")
+            this.loop = true;
+            return;
+        }else{
 
-	Trial.prototype.checkLoop = function(_origin,_target){
+            var newTargets = this.lillySmall[_target].connections;
+            
+            for(var i =0; i < newTargets.length; i++){
 
-		console.log(">>>>",_origin,_target)
+                console.log("target:" + newTargets[i])
+            
+                if(newTargets[i] != _last){
 
-		if(_target == _origin){
-			
-			this.loop = true;
-		
-		}else{
+                    console.log("CALLING ON: " + [_origin,newTargets[i],_target])
+                    this.checkLoop(_origin,newTargets[i],_target)
 
-			var newTargets = this.lillySmall[_target].connections;
-			
-			for(var i =0; i < newTargets.length; i++){
-				this.checkLoop(_origin,newTargets[i])				
-			}
+                }
+               
+            
+            }
 
 
-		}
-		
+        }	
 	}
 
 
@@ -306,9 +461,9 @@ lillySmall.prototype.drag = function(_this){
 	    stick.y = _data.y;
     	this.sticks.push(stick)
 
+
     	// console.log(stick.pivot = 10)
     	// console.log("-------------")
-
     }
 
 
@@ -324,18 +479,20 @@ lillySmall.prototype.drag = function(_this){
     		angle = -angle + Math.PI;
     	}
     	this.sticks[this.sticks.length-1].rotation = angle - Math.PI/2
-
     }
 
 
     Trial.prototype.removeStick = function(){
 
+
     	stage.removeChild(this.sticks[this.sticks.length-1])
+
+        console.log(this.sticks[this.sticks.length-1])
+
     	this.sticks[this.sticks.length-1].destroy()
     	this.sticks.splice(this.sticks.length-1,1)
     	// console.log(">>>>>")
     	// console.log(this.sticks)
-
     }
 
 	Trial.prototype.getSpecs = function(){
@@ -378,19 +535,19 @@ lillySmall.prototype.drag = function(_this){
 
     Trial.prototype.getMatrixPosition = function(){
 
+        console.log(this.specs.moduleWidthCount,this.specs.moduleHeightCount)
 
     	var allPos = []
 
 
     	for(var i=0;i<this.specs.moduleWidthCount-1;i++){
-    		
+
     		for(var j=0;j<this.specs.moduleHeightCount;j++){
 
-    			
-    			var offset = j%2
+    			offset = j%2
 
     			if(offset == 1 && i==this.specs.moduleWidthCount-2){
-
+                    
     				continue
 
     			}else{
@@ -399,22 +556,29 @@ lillySmall.prototype.drag = function(_this){
 
 			    		allPos.push({
 
-			    			x:(this.specs.widthInter*i)+this.specs.margingW+((this.specs.widthInter/2)*offset)+this.specs.canvasMargin,
-			    			y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin, 
+                            id: i,
+                            pos:{
+                                x:(this.specs.widthInter*i)+this.specs.margingW+((this.specs.widthInter/2)*offset)+this.specs.canvasMargin,
+                                y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin,                                 
+                            }
+
 			    	
 			    		})
 
 					}
     			}
+
 			
 			}
+
+
     	}
 
     	for(var i=0; i<allPos.length; i++){
     		this.matrixAvailable.push(i)	
     	}
 
-    	return allPos
+        return allPos
     }
 
     Trial.prototype.getPos = function(_i){
@@ -423,48 +587,9 @@ lillySmall.prototype.drag = function(_this){
     	var i = this.matrixAvailable[aPos]
     	this.matrixAvailable.splice(aPos,1)
 
-    	return {pos:this.posMatrix[i], id:i}
+
+    	return this.posMatrix[i]
     }
-
-    Trial.prototype.init = function(){
-
-    	this.lillyFinal.init()
-
-    	var lilipadValues = this.stimuli.correctValues
-
-        for (var i=0; i<this.stimuli.extras.size; i++){    	
-
-        	lilipadValues.push(getRandomInt(this.stimuli.extras.min,this.stimuli.extras.max))
-		
-		}
-        
-
-        if(lilipadValues.length > this.posMatrix.length){
-        
-        	throw "SCREEN TOO SMALL!"
-        
-        }
-
-       	for (var i=0; i<lilipadValues.length; i++){
-
-        	var pos = getRandomInt(0,this.posMatrix.length) 
-            this.lillySmall.push(new lillySmall(this))
-            this.lillySmall[i].init(lilipadValues[i],this.getPos(i),this.specs.moduleSize,i)
-
-        }
-
-	    this.circle = new PIXI.Graphics()
-	    this.circle.lineStyle(0);
-	    this.circle.beginFill(0x02d1aa);
-	    this.circle.drawCircle(0,0,100);
-	    this.circle.endFill();
-		stage.addChild(this.circle)
-	    this.circle.x = session.canvas.width-100;
-	    this.circle.y = session.canvas.height/2;
-
-
-
-	}
 
     Trial.prototype.play = function(_updateTime){
 
@@ -526,7 +651,7 @@ lillySmall.prototype.drag = function(_this){
 				extras : {
 					min : 1,
 					max : 3,
-					size : 3, 
+					size : 10, 
 				}
             },
 
