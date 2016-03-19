@@ -35,7 +35,7 @@ function proto03(){
 function lillyFinal(){
 
     this.specs = {}
-    this.specs.size = 100
+    this.specs.size = 120
     this.specs.x = session.canvas.width-100;
     this.specs.y = session.canvas.height/2;
     this.conections = []
@@ -172,21 +172,7 @@ lillyFinal.prototype.display = function(_currentValue){
 
         ************************************/
 
-        if(this.connections.length > 1){
-            console.log("THIS LILYPAD HAS TOO MANY CONECTIONS!")
-            return
-        }else if(!this.selected){
-            console.log("THIS LILYPAD IS NOT THE SELECTED ONE")
-            return
-
-        }
-
     	//change lillypad to selected
-    	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    	console.log("clicked over:", this.id)
-    	console.log("Pos_ID:", this.posdId)
-    	console.log("connectios:", this.connections)
-    	console.log("----------------------------")
     	_this.data = _event.data;
         _this.dragging = true;
     };
@@ -240,17 +226,18 @@ lillyFinal.prototype.display = function(_currentValue){
 
     	this.sticks = []
 
-    	this.trialState = "intro"
+    	this.trialState = "play"
         this.lillySmall = [];
         this.lillyFinal = new lillyFinal();
         this.matrixAvailable = []
         this.specs = this.getSpecs()
         this.posMatrix = this.getMatrixPosition()
-        this.lillyLinkd = []
         this.operation = 0
+        this.fadeStick = false;
     }
 
     Trial.prototype.init = function(){
+
 
         this.lillyFinal.init(this.correct.value)
 
@@ -273,21 +260,30 @@ lillyFinal.prototype.display = function(_currentValue){
 
             var pos = getRandomInt(0,this.posMatrix.length) 
             this.lillySmall.push(new lillySmall(this))
-            this.lillySmall[i].init(lilipadValues[i],this.getPos(i),this.specs.moduleSize,i)
+            this.lillySmall[i].init(lilipadValues[i],this.getPos(i),this.specs.lillyWidth,i)
 
         }
+
+        this.stick = new PIXI.Graphics()
+        this.stick.lineStyle(0);
+        this.stick.beginFill(0x996630);
+        this.stick.drawRect(0,0,1,10);
+        this.stick.endFill();
+        stage.addChild(this.stick);
     
     }
 
     //creates links between lillypads if allowed
 	Trial.prototype.CheckLink = function(_dropPoint,_id){
 
-        var noLink = true;
+        var conected = false;
 
-        if(this.sticks.length == 1){
-            for(var i=0; i<this.lillySmall.length; i++){
-                this.lillySmall[i].selected = false;                
-            }            
+        if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
+
+            console.log("END!")
+            this.updateOperation(_id,"final")
+            return
+
         }
 
         //check which lillypad the stick was droped over
@@ -295,171 +291,72 @@ lillyFinal.prototype.display = function(_currentValue){
 
             if(this.lillySmall[i].circle.containsPoint(_dropPoint)){ 
 
+                if(i == _id){
+                    this.stick.alpha = 0
+                    return  
+                } 
+
                 console.log("DROPED OVER: " + i)
+                conected = true
 
-                if(this.lillySmall[i].connections.length > 1){
-                    console.log("the target has too many connections!")
-                    this.removeStick();
-                    return;
+                this.updateOperation(_id,i)
 
-                }
-
-                for(var j=0; j<this.lillySmall[i].connections.length;j++){
-
-                    if(this.lillySmall[i].connections[j] == _id){
-                        
-                        this.removeStick();
-                        return;             
-                    
-                    }
-
-                }
-
-                //add links fisrt and remove later if lop is detected
-                this.lillySmall[_id].connections.push(i);
-                this.lillySmall[i].connections.push(_id);
-
-                this.checkLoop(_id,i,_id)
-
-                if(this.loop){
-
-                    console.log("DELETING CONECTIONS AND ERASING STICK")
-                    console.log("-------------------------------------")
-
-                    console.log("removing link from: "+_id)
-                    console.log("before: " +  this.lillySmall[_id].connections)
-                    this.lillySmall[_id].connections.splice(this.lillySmall[_id].connections.length-1,1);
-                    console.log("after: " +  this.lillySmall[_id].connections)
-
-                    console.log("removing link from: "+i)
-                    console.log("before: " +  this.lillySmall[i].connections)
-                    this.lillySmall[i].connections.splice(this.lillySmall[i].connections.length-1,1);
-                    console.log("before: " +  this.lillySmall[i].connections)
-                    this.removeStick();
-                    noLink = false;
-
-                }else{
-
-                    this.lillySmall[i].selected = true;
-                    this.sticks[this.sticks.length-1].id = [_id,i]
-                    this.updateOperation(_id,i);
-                }
-
-                return;
+                return;    
 
             }
 
         }
 
-        if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
+        if(conected){
 
-            this.lillyFinal.conections.push(_id)
-            console.log("FINISH TASk!!")
+            this.removeStick()
 
-            if(this.operation == this.lillyFinal.value){
+        }else{
 
-                this.getLinearOperation()
-                console.log("correct")
-
-            }else{
-
-                console.log("wrong!")
-
-            }
-
-            return;
-            //this.checkAnswers
-
+            this.stick.alpha = 0
         }
-
-        if(noLink){
-
-             this.removeStick();
-
-        }    
-	}
-
-    this.getLinearOperation = function(){
-
-        var _this = this
-
-        var getNext = function(origin,_this){
-
-
-        }
-
-
+    	
     }
+
 
     Trial.prototype.updateOperation = function(_origin,_target){
 
-        if(this.lillySmall[_origin].connections.length <= 1){
-            console.log("-----")
-            this.lillyLinkd.push([this.lillySmall[_origin].id, this.lillySmall[_origin].value])
-        }
+        if(_target == "final"){
 
+            //this.countdown(_origin,target)
+            //this.animateAnts(_origin,target)
 
-        if(this.lillySmall[_target].connections.length <= 1){
-            this.lillyLinkd.push([this.lillySmall[_target].id, this.lillySmall[_target].value])            
-        }
+            this.lillySmall[_origin].cNumber.text = 0;
+            this.lillySmall[_origin].value = 0;
+            this.fadeStick = true;
+            //this.removeStick();
 
-        this.operation = 0;
-
-        for(var i=0;i<this.lillyLinkd.length;i++){
-
-            this.operation = this.operation + this.lillyLinkd[i][1]
-            console.log(this.operation)
-        }
-    }
-
-	Trial.prototype.checkLoop = function(_origin,_target,_last){
-
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        console.log("checking loop")
-        console.log("origin: " + _origin )
-        console.log("target: " +  _target )
-        console.log("last: " + _last )
-        console.log("----")
-
-        if(_target == _origin){
-            console.log("<<LOOP DETECTED>>")
-            this.loop = true;
-            return;
         }else{
 
-            var newTargets = this.lillySmall[_target].connections;
+            var sum = this.lillySmall[_origin].value + this.lillySmall[_target].value;
+
+            this.lillySmall[_origin].cNumber.text = 0;
+            this.lillySmall[_target].cNumber.text = sum;
+
+            this.lillySmall[_origin].value = 0;
+            this.lillySmall[_target].value = sum;
+            this.fadeStick = true;
             
-            for(var i =0; i < newTargets.length; i++){
+        }
 
-                console.log("target:" + newTargets[i])
-            
-                if(newTargets[i] != _last){
+        // countDown number periodicly
+        // move ents along the stick
+        // count up the target
 
-                    console.log("CALLING ON: " + [_origin,newTargets[i],_target])
-                    this.checkLoop(_origin,newTargets[i],_target)
-
-                }
-               
-            
-            }
-
-
-        }	
-	}
+    }
 
 
     Trial.prototype.createStick = function(_data){
 
     	// console.log("-------------")
-    	var stick = new PIXI.Graphics()
-	    stick.lineStyle(0);
-	    stick.beginFill(0x996630);
-	    stick.drawRect(0,0,1,10);
-	    stick.endFill();
-		stage.addChild(stick);
-	    stick.x = _data.x;
-	    stick.y = _data.y;
-    	this.sticks.push(stick)
+	    this.stick.x = _data.x;
+	    this.stick.y = _data.y;
+        this.stick.alpha = 1
 
 
     	// console.log(stick.pivot = 10)
@@ -473,24 +370,27 @@ lillyFinal.prototype.display = function(_currentValue){
     	// console.log(this.sticks)
     	// console.log(">>move")
     	this.loop = false;
-    	this.sticks[this.sticks.length-1].width = getDistance(this.sticks[this.sticks.length-1].x,this.sticks[this.sticks.length-1].y,_data.x,_data.y)
-    	var angle = getAngle(this.sticks[this.sticks.length-1].x,this.sticks[this.sticks.length-1].y,_data.x,_data.y)
-    	if (this.sticks[this.sticks.length-1].y < _data.y){
+
+    	this.stick.width = getDistance(this.stick.x,this.stick.y,_data.x,_data.y)
+    	var angle = getAngle(this.stick.x,this.stick.y,_data.x,_data.y)
+    	if (this.stick.y < _data.y){
     		angle = -angle + Math.PI;
     	}
-    	this.sticks[this.sticks.length-1].rotation = angle - Math.PI/2
+    	this.stick.rotation = angle - Math.PI/2
     }
 
 
     Trial.prototype.removeStick = function(){
 
 
-    	stage.removeChild(this.sticks[this.sticks.length-1])
+        if(this.stick.alpha > 0){
 
-        console.log(this.sticks[this.sticks.length-1])
+            //animate alpha with animate function
+            this.stick.alpha = this.stick.alpha -  0.1
 
-    	this.sticks[this.sticks.length-1].destroy()
-    	this.sticks.splice(this.sticks.length-1,1)
+        }else{
+            this.fadeStick = false
+        }
     	// console.log(">>>>>")
     	// console.log(this.sticks)
     }
@@ -499,16 +399,17 @@ lillyFinal.prototype.display = function(_currentValue){
 
 		var obj = {}
 
-		obj.canvasMargin = 50
-		obj.width = session.canvas.width-(2*obj.canvasMargin);
+		obj.canvasMargin = 30
+        obj.bigLillypadWidth = 280;
+        obj.lillyWidth = 130;
+        obj.margin = 15
+		
+        obj.width = session.canvas.width-(2*obj.canvasMargin)-obj.bigLillypadWidth-obj.lillyWidth/2;
 		obj.height = session.canvas.height-(2*obj.canvasMargin);
-		obj.bigLillypadWidth = 400;
-    	obj.lillyWidth = 90;
-    	obj.margin = obj.lillyWidth*0.1
 
     	obj.moduleSize = obj.lillyWidth+(obj.margin*2)
     	
-    	obj.moduleWidthCount = Math.floor((obj.width-obj.bigLillypadWidth)/obj.moduleSize)
+    	obj.moduleWidthCount = Math.floor(obj.width/obj.moduleSize)
     	obj.moduleHeightCount = Math.floor(obj.height/obj.moduleSize);
 
     	obj.widthInter = obj.width/obj.moduleWidthCount
@@ -518,6 +419,7 @@ lillyFinal.prototype.display = function(_currentValue){
     	obj.margingH = (obj.heightInter - obj.lillyWidth)/2
 
     	return obj
+
 	}    
 
     Trial.prototype.destroy = function(){
@@ -539,35 +441,21 @@ lillyFinal.prototype.display = function(_currentValue){
 
     	var allPos = []
 
-
-    	for(var i=0;i<this.specs.moduleWidthCount-1;i++){
+    	for(var i=0;i<this.specs.moduleWidthCount;i++){
 
     		for(var j=0;j<this.specs.moduleHeightCount;j++){
 
     			offset = j%2
 
-    			if(offset == 1 && i==this.specs.moduleWidthCount-2){
-                    
-    				continue
+	    		allPos.push({
 
-    			}else{
-
-    				if(true){//j>0 && j<this.specs.moduleHeightCount-1){
-
-			    		allPos.push({
-
-                            id: i,
-                            pos:{
-                                x:(this.specs.widthInter*i)+this.specs.margingW+((this.specs.widthInter/2)*offset)+this.specs.canvasMargin,
-                                y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin,                                 
-                            }
-
-			    	
-			    		})
-
-					}
-    			}
-
+                    id: i,
+                    pos:{
+                        x:(this.specs.widthInter*i)+this.specs.margingW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
+                        y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin+getRandomInt(-20,20),                                 
+                    }
+	    	
+	    		})
 			
 			}
 
@@ -593,6 +481,7 @@ lillyFinal.prototype.display = function(_currentValue){
 
     Trial.prototype.play = function(_updateTime){
 
+
         switch(this.trialState){
 
             case "intro":
@@ -601,7 +490,11 @@ lillyFinal.prototype.display = function(_currentValue){
                 break;  
 
             case "play":
-
+                
+                if(this.fadeStick){
+                    
+                    this.removeStick()
+                }
 
                 break;
 
@@ -651,7 +544,7 @@ lillyFinal.prototype.display = function(_currentValue){
 				extras : {
 					min : 1,
 					max : 3,
-					size : 10, 
+					size : 3, 
 				}
             },
 
