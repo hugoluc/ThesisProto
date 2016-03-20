@@ -1,4 +1,4 @@
-var proto2loaded = false
+var proto2loaded = false;
 
 function proto02(){
 
@@ -8,59 +8,40 @@ function proto02(){
 -------------------------------------------------------------------------------------------------------------
 */
     function Assets(){
-
         this.sprites = {};
         this.sounds = [];
-
     }
-    
+
     Assets.prototype.load = function(){
-                
+
             // create an array of textures from an image path
             var frames = [];
             for (var i = 0; i < 4; i++) {
-                
-               var val = i < 10 ? '0' + i : i;
-
-                // magically works since the spritesheet was loaded with the pixi loader
-                frames.push(PIXI.Texture.fromFrame('ladyBug_Walk-0' + (i+1) + '.png'));
+              var val = i < 10 ? '0' + i : i;
+              // magically works since the spritesheet was loaded with the pixi loader
+              frames.push(PIXI.Texture.fromFrame('ladyBug_Walk-0' + (i+1) + '.png'));
             }
             this.sprites.ladybugWalk = frames
 
             var frames = [];
             for (var i = 0; i < 4; i++) {
-                
-               var val = i < 10 ? '0' + i : i;
-
-                // magically works since the spritesheet was loaded with the pixi loader
-                frames.push(PIXI.Texture.fromFrame('ladtBug_fly-0' + (i+1) + '.png'));
+              var val = i < 10 ? '0' + i : i;
+              // magically works since the spritesheet was loaded with the pixi loader
+              frames.push(PIXI.Texture.fromFrame('ladtBug_fly-0' + (i+1) + '.png'));
             }
             this.sprites.ladybugFly = frames
 
-
-            //**************************************************************************
-            //change to foor loop using language file
-            //*************************************************************************
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "zero" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "one" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "two" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "three" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "four" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "five" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "six" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "seven" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "eight" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "nine" + '.mp3'))
-            this.sounds.push(new Audio('audio/' + 'english' + '/' + "ten" + '.mp3' ))
-
+            // load all number audio files
+            for (var i = 0; i < numbers.length; i++) {
+              this.sounds.push(new Audio('audio/' + language + '/' + numbers[i].audio + '.mp3'));
+            }
+            //this.sounds.push(new Audio('audio/' + 'english' + '/' + "zero" + '.mp3'))
 
     }
 
     Assets.prototype.destroy = function(){
-    
         this.sprites = []
         this.sounds = []
-
     }
 
 /*
@@ -91,22 +72,20 @@ function proto02(){
         this.sprite.walk.animationSpeed = 0.1;
         this.sprite.walk.play();
         this.sprite.walk.scale.x = 0.34;
-        this.sprite.walk.scale.y = 0.34;    
+        this.sprite.walk.scale.y = 0.34;
         this.container.addChild(this.sprite.walk);
-
-
 
         this.sprite.fly = new PIXI.extras.MovieClip(assets.sprites.ladybugFly);
         this.sprite.fly.animationSpeed = 0.1;
         this.sprite.fly.alpha = 0;
         this.sprite.fly.scale.x = 0.34;
-        this.sprite.fly.scale.y = 0.34;    
+        this.sprite.fly.scale.y = 0.34;
         this.container.addChild(this.sprite.fly);
 
         this.sprite.dead = PIXI.Sprite.fromImage('sprites/ladyBug/ladtBug_dead.png');
         this.sprite.dead.alpha = 0;
         this.sprite.dead.scale.x = 0.34;
-        this.sprite.dead.scale.y = 0.34; 
+        this.sprite.dead.scale.y = 0.34;
         this.container.addChild(this.sprite.dead);
 
         //number variables
@@ -134,7 +113,7 @@ function proto02(){
             return false
         };
     }
-    
+
     LadyBug.prototype.destroy = function(){
 
         stage.removeChild(this.container)
@@ -160,12 +139,12 @@ function proto02(){
         this.sprite.dead.alpha = 0;
 
         this.state = "walk";
-        this.startNumber = getRandomInt(2,5); 
+        this.startNumber = getRandomInt(2,5);
         this.number.text = this.startNumber;
         this.container.ySpeed = 8/this.number.text;
         this.sprite.walk.animationSpeed = 0.2/Math.sqrt(this.number.text);
 
-        var moduleCount = window.innerWidth/this.sprite.walk.width 
+        var moduleCount = window.innerWidth/this.sprite.walk.width
 
         if(freeIds == undefined ){
             var moduleId = getRandomInt(0,Math.floor(moduleCount));
@@ -175,8 +154,8 @@ function proto02(){
 
         this.start.x = moduleId * this.sprite.walk.width;
         this.start.y = window.innerHeight;
-       
-        this.end.x = getRandomInt(this.start.x-this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2); 
+
+        this.end.x = getRandomInt(this.start.x-this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2);
         this.end.y = -this.sprite.walk.height;
         if(this.end.x > stage.width){
             this.end.x = stage.width;
@@ -248,7 +227,7 @@ function proto02(){
                 break;
 
             case "dead":
-                
+
                 if(this.timer.getElapsed() > 1200){
 
                     this.sprite.dead.alpha =  this.sprite.dead.alpha - 0.05;
@@ -258,7 +237,7 @@ function proto02(){
                         this.state = "walk";
                         this.setUp();
 
-                    }  
+                    }
 
 
                 }
@@ -268,7 +247,7 @@ function proto02(){
             case "destroy":
 
                 break;
-        
+
         };
     };
 
@@ -302,19 +281,19 @@ function proto02(){
             // // add feedback sound to the queue
 
             this.number.text--;
-            thisRound.trial.answer();  
+            thisRound.trial.answer();
 
             // flyes if it reaches 0
             if(this.number.text == 0){
 
-                this.number.text = ""        
+                this.number.text = ""
                 this.timer.start(300);
                 this.state = "fly"
                 this.container.ySpeed = 0;
                 this.container.xSpeed = 0;
                 this.sprite.walk.animationSpeed = 0;
 
-            // kills if it click one more time    
+            // kills if it click one more time
             }else if(this.number.text < 0){
 
                 this.sprite.fly.stop();
@@ -342,11 +321,11 @@ function proto02(){
                 // }else{
 
                 //     this.playQueue.push(this.number.text)
-                
-                // }              
+
+                // }
             }
 
-        }    
+        }
     }
 
 /*
@@ -360,7 +339,7 @@ function proto02(){
         this.language = "english"
         this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-01.png');
         // this.background.height = canvas.height;
-        
+
         stage.addChild(this.background);
 
     }
@@ -375,21 +354,21 @@ function proto02(){
     Round.prototype.getNextTri = function(){
 
         var specs = {
-            
+
             // This will be displayed to user
-            stimuli : 
+            stimuli :
             {
-                type: "sound",                              
+                type: "sound",
                 value: new Audio('audio/' + this.language + '/' + "three" + ".mp3"),
             },
 
-            //This will the what the users needs to imput/select
-            correct : 
+            //This will the what the users needs to input/select
+            correct :
             {
                 type: "number",
                 value: getRandomInt(2,4),
             }
-        
+
         }
 
         return [specs.stimuli, specs.correct]
@@ -450,7 +429,6 @@ function proto02(){
 
     Trial.prototype.playNext= function(){
 
-
         // console.log("-----------")
 
         // console.log(assets.sounds[this.playQueue[0]].pause())
@@ -479,7 +457,6 @@ function proto02(){
 
     Trial.prototype.init = function(){
 
-
         for (var i=0; i<8; i++){
 
             this.ladyBugs.push(new LadyBug())
@@ -499,7 +476,7 @@ function proto02(){
         this.circle.drawCircle(0,0,100);
         this.circle.endFill();
         this.UI.addChild(this.circle);
-        this.circle.x = 80, 
+        this.circle.x = 80,
         this.circle.y = session.canvas.height-60;
 
         this.cNumber =  new PIXI.Text(thisRound.trial.correct.value, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
@@ -518,17 +495,17 @@ function proto02(){
             case "play":
 
                 for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].move() };
-                
+
                 if(this.correctImput >= 1){//------------------------------------------------------------------------------------------
-                
+
                     for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
 
                     this.trialState = "showNext"
-                    this.showNextState = "flyall"             
+                    this.showNextState = "flyall"
 
-                }                    
+                }
 
-                break;  
+                break;
 
             case "showNext":
 
@@ -547,32 +524,31 @@ function proto02(){
 
     Trial.prototype.showNextNumber = function(){
 
-
         switch(this.showNextState){
 
             case "flyall":
-                
+
                 var next = true;
 
                 for (var i=0; i<this.ladyBugs.length; i++){
-                    
+
                     if(!this.ladyBugs[i].checkOutOfScreen()){
                         next = false
                     }
-                    
+
                     this.ladyBugs[i].move("noReset")
                 };
 
                 if(next){
-                  
+
                     var dest = {}
                     dest.x = renderer.width/2 - this.UI.getBounds().width/2
                     dest.y = renderer.height/2 - this.UI.getBounds().height/2
 
-                    this.showNextState = "center"; 
+                    this.showNextState = "center";
                     this.UI.customAnimation.init({x:dest.x,y:dest.y},1000)
-                
-                }       
+
+                }
 
                 break;
 
@@ -581,7 +557,7 @@ function proto02(){
                 if(this.UI.customAnimation.run()){
                     this.showNextState = "change";
                     this.trialTimer.start(1000)
-                } 
+                }
 
                 break;
 
@@ -597,7 +573,7 @@ function proto02(){
                 }
 
                 if(this.trialTimer.timeOut()){
-                    
+
                     var dest = {}
                     dest.x = 0
                     dest.y = renderer.height- this.UI.getBounds().height
@@ -609,7 +585,7 @@ function proto02(){
                 break;
 
             case "corner":
-                 
+
                 if(this.UI.customAnimation.run()){
 
                     this.showNextState = "flyall"
@@ -628,9 +604,9 @@ function proto02(){
     /*
     *********************************************************************
     Handles the answer given by the user
-    TRUE = answeras is exacly iqual to the aspected answerer
+    TRUE = answeras is exacly iqual to the expected answerer
     other parameter could be passed to specify a partial ansewer
-    like for exaple a smashed bug (correct identificantion but wrong counting)
+    like for exaple a smashed bug (correct identification but wrong counting)
     *********************************************************************
     */
     Trial.prototype.answer = function(_correct){
@@ -644,15 +620,15 @@ function proto02(){
 
 /*
 -------------------------------------------------------------------------------------------------------------
-                                        Global variables and fucntions
+                                        Global variables and functions
 -------------------------------------------------------------------------------------------------------------
 */
 
-//place fps elements 
+//place fps elements
 var statsBol = true;
 if(statsBol){
 
-    stats = new Stats(); 
+    stats = new Stats();
     document.body.appendChild( stats.domElement );
     stats.domElement.style.position = "absolute";
     stats.domElement.style.top = "0px";
@@ -674,24 +650,24 @@ this.destroy = function(){
 function onAssetsLoaded(){
     assets.load()
     session.show()
-    thisRound.init()  
+    thisRound.init()
     update();
 }
 
 if(!proto2loaded){
 
-    console.log("--------------------------------------")
+    console.log("--------------------------------------");
 
     PIXI.loader
-    .add('sprites/ladyBug/ladyBug_WalkV3.json')
-    .add('sprites/ladyBug/ladyBug_fly.json')
-    .add('sprites/ladyBug/ladtBug_flyStatic.png')
-    .add('sprites/ladyBug/ladtBug_dead.png')
-    .load(onAssetsLoaded);
+      .add('sprites/ladyBug/ladyBug_WalkV3.json')
+      .add('sprites/ladyBug/ladyBug_fly.json')
+      .add('sprites/ladyBug/ladtBug_flyStatic.png')
+      .add('sprites/ladyBug/ladtBug_dead.png')
+      .load(onAssetsLoaded);
 
     proto2loaded = true;
 
-}else{
+} else{
 
     onAssetsLoaded();
 
@@ -705,40 +681,31 @@ var lag = 0
 function update() {
 
     if(finishGame){
-
-        thisRound.destroy()
-        finishGame = false
-        currentview = new Chooser(assets)
-
+        thisRound.destroy();
+        finishGame = false;
+        currentview = new Chooser(assets);
     }
 
-        if(statsBol)stats.begin()
+    if(statsBol) stats.begin();
 
-        var current = Date.now();
-        var elapsed = current - previousTime;
-        previousTime = current;
-        lag = lag + elapsed;
+    var current = Date.now();
+    var elapsed = current - previousTime;
+    previousTime = current;
+    lag = lag + elapsed;
 
+    while (lag >= MS_PER_UPDATE){
+      thisRound.play(lag/MS_PER_UPDATE);
+      lag = lag - MS_PER_UPDATE;
+    }
 
-        while (lag >= MS_PER_UPDATE){
-            
-            thisRound.play(lag/MS_PER_UPDATE);
-            lag = lag - MS_PER_UPDATE;
+    // update the canvas with new parameters
+    //---------------->> Thing that renders the whole stage
+    session.render(stage)
 
-        }
+    requestAnimationFrame(update);
 
-        // update the canvas with new parameters
-        //---------------->> Thing that renders the whole stage
-        session.render(stage)
-
-        requestAnimationFrame(update);
-        
-        if(statsBol)stats.end()
-        
+    if(statsBol) stats.end()
 }
 
 
 }
-
-
-
