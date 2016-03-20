@@ -8,6 +8,8 @@
          <link rel="stylesheet" type="text/css" href="css/reset.css">
          <link rel="stylesheet" type="text/css" href="css/index.css">
 
+        <!-- third-party libraries -->
+        <script src="lib/store.min.js"></script>
         <script src="lib/pixi.js" type="text/javascript"></script>
         <script src="lib/d3-timer.js" type="text/javascript"></script>
         <script src="lib/jquery.js" type="text/javascript"></script>
@@ -19,6 +21,8 @@
 
         <script src="js/utils.js" type="text/javascript"></script>
         <script src="js/chooser.js" type="text/javascript"></script>
+        <script src="js/adaptiveAI.js" type="text/javascript"></script>
+        <script src="js/PriorityQueue.js" type="text/javascript"></script>
         <script src="js/proto02.js" type="text/javascript"></script>
         <script src="js/proto03.js" type="text/javascript"></script
         <script src="js/definitions.js" type="text/javascript"></script>
@@ -28,6 +32,7 @@
         <script type="text/javascript">
             //var language; // = "swahili";
             var language = "english";
+            var user = initStorage();
 
             $(document).ready(function() {
                 $('.btn').hide();

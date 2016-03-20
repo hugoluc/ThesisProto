@@ -40,8 +40,8 @@ function proto02(){
     }
 
     Assets.prototype.destroy = function(){
-        this.sprites = []
-        this.sounds = []
+        this.sprites = [];
+        this.sounds = [];
     }
 
 /*
@@ -51,19 +51,19 @@ function proto02(){
 */
     function LadyBug(){
 
-        var _this = this
+        var _this = this;
 
         // container variables
-        this.container = new PIXI.Container()
-        this.container.interactive = true
-        this.container.buttonMode = true
-        this.container.mousedown = this.container.touchstart = function(){ _this.click() }
+        this.container = new PIXI.Container();
+        this.container.interactive = true;
+        this.container.buttonMode = true;
+        this.container.mousedown = this.container.touchstart = function(){ _this.click(); }
         this.container.pivot = {
             x: 0,
             y: 0,
         }
 
-        this.sprite = {}
+        this.sprite = {};
 
         console.log(assets.sprites.ladybugWalk)
 
