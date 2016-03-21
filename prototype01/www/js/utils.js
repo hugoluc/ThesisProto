@@ -7,11 +7,7 @@ function shuffle(o) {
 
 function getAngle(x,y,_x,_y){
 
-  var oposite = _x - x;
-  var adjacent = _y - y;
-  var hipotenuse = Math.sqrt((oposite*oposite)+(adjacent*adjacent))
-  var sinOfAngleX = oposite / hipotenuse
-  return Math.asin(sinOfAngleX)
+  return -Math.atan2(x - _x, y - _y)
 }
 
 function getDistance(x,y,_x,_y){
@@ -58,6 +54,7 @@ ClockTimer.prototype.start = function(_length){
     this.timerStarted = true;
     this.setTime = _length;
     this.startTime = Date.now();
+    this.last = Date.now();
 
 };
 
@@ -65,7 +62,6 @@ ClockTimer.prototype.start = function(_length){
 ClockTimer.prototype.timerRunnnig = function(){
 
   return this.timerStarted
-
 
 }
 
@@ -98,7 +94,6 @@ ClockTimer.prototype.getElapsed = function(){
 
 };
 
-
 function animation(obj){
 
   this.timeSet = false;
@@ -121,6 +116,7 @@ animation.prototype.init = function(dest,length,style){
   this.style = style || "linear";
 
   var start = {};
+
   start.x = this.obj.getBounds().x || this.obj.x
   start.y = this.obj.getBounds().y || this.obj.y
 

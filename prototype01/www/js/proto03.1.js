@@ -32,43 +32,43 @@ function proto03(){
 -------------------------------------------------------------------------------------------------------------
 */
 
-function lillyFinal(){
+    function lillyFinal(){
 
-    this.specs = {}
-    this.specs.size = 120
-    this.specs.x = session.canvas.width-100;
-    this.specs.y = session.canvas.height/2;
-    this.conections = []
+        this.specs = {}
+        this.specs.size = 120
+        this.specs.x = session.canvas.width-100;
+        this.specs.y = session.canvas.height/2;
+        this.conections = []
 
-}
+    }
 
 
-lillyFinal.prototype.init = function(_value){
+    lillyFinal.prototype.init = function(_value){
 
-        this.value = _value
-        this.lillypad = new PIXI.Graphics()
-        this.lillypad.lineStyle(0);
-        this.lillypad.beginFill(0x02d1aa);
-        this.lillypad.drawCircle(0,0,this.specs.size);
-        this.lillypad.endFill();
-        stage.addChild(this.lillypad)
-        this.lillypad.x = this.specs.x
-        this.lillypad.y = this.specs.y
+            this.value = _value
+            this.lillypad = new PIXI.Graphics()
+            this.lillypad.lineStyle(0);
+            this.lillypad.beginFill(0x02d1aa);
+            this.lillypad.drawCircle(0,0,this.specs.size);
+            this.lillypad.endFill();
+            stage.addChild(this.lillypad)
+            this.lillypad.x = this.specs.x
+            this.lillypad.y = this.specs.y
 
-        this.cNumber =  new PIXI.Text(this.value, {font:"100px Arial", weight:"black", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
-        this.cNumber.x = this.lillypad.x - (this.specs.size/2)
-        this.cNumber.y = this.lillypad.y - (this.specs.size/2)
+            this.cNumber =  new PIXI.Text(this.value, {font:"100px Arial", weight:"black", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
+            this.cNumber.x = this.lillypad.x - (this.specs.size/2)
+            this.cNumber.y = this.lillypad.y - (this.specs.size/2)
 
-        stage.addChild(this.cNumber)
+            stage.addChild(this.cNumber)
 
-}
+    }
 
-lillyFinal.prototype.display = function(_currentValue){
+    lillyFinal.prototype.display = function(_currentValue){
 
-	// animate lillypad
-	//check how many ants are conected and chanche aperance
+    	// animate lillypad
+    	//check how many ants are conected and chanche aperance
 
-}
+    }
 
 
 /*
@@ -83,13 +83,13 @@ lillyFinal.prototype.display = function(_currentValue){
     	this.trial = _trial
     	this.selected = true
     	this.valueObjects = []
-
+        this.antsDivision = []
     }
 
 
-    lillySmall.prototype.init = function(_value,_position,_size,_id){
-
-    	var _this = this;
+    lillySmall.prototype.init = function(_value,_position,_size,_id,_antSize){
+    	
+        var _this = this;
 
         this.value = _value
     	this.id = _id;
@@ -99,31 +99,12 @@ lillyFinal.prototype.display = function(_currentValue){
     	this.pos = _position.pos;
     	this.size = _size; 
 
-
-    	if(_value > 0){
-
-    		//draw ents
-    		for(var i=0; i<_value; i++){
-    			this.valueObjects.push("ents")			
-    		}
-
-    	}else{
-
-    		//draw ents
-    		for(var i=0; i<_value; i++){
-    			this.valueObjects.push("ents")			
-    		}
-
-    	}
-
         this.container = new PIXI.Container()
         this.trialTimer = new ClockTimer();
 
-        this.circle = new PIXI.Graphics()
-        this.circle.lineStyle(0);
-        this.circle.beginFill(0x02d1aa);
-        this.circle.drawCircle(0,0,this.size/2);
-        this.circle.endFill();
+        this.circle = new PIXI.Sprite.fromImage("sprites/lillypad/small-01.png")
+        this.circle.width = this.size*1.3
+        //this.circle.drawCircle(0,0,this.size/2);
         this.circle.interactive = true;
         this.circle.buttonMode = true;
 
@@ -145,12 +126,14 @@ lillyFinal.prototype.display = function(_currentValue){
         }
 
         this.container.addChild(this.circle);
-        this.circle.x = this.pos.x+this.size/2;
-        this.circle.y = this.pos.y+this.size/2;
+        this.circle.x = this.pos.x-this.size*0.3;
+        this.circle.y = this.pos.y-this.size*0.3;
 
-        this.cNumber =  new PIXI.Text(this.value, {font:"100px Arial", weight:"black", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
-        this.cNumber.x = this.pos.x + this.size/4;
-        this.cNumber.y = this.pos.y
+        this.cNumber =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"black", fill:"#427010", stroke:"#098478", strokeThickness: 1, });
+        this.cNumber.x = this.pos.x + this.size*0.39;
+        this.cNumber.y = this.pos.y + this.size*0.34;
+        this.cNumber.anchor.x = 0.5
+        this.cNumber.anchor.y = 0.5
         this.container.addChild(this.cNumber);
 
         stage.addChild(this.container)
@@ -158,6 +141,8 @@ lillyFinal.prototype.display = function(_currentValue){
     	//position
     	//create number
     	//
+
+        this.getAntsDivision(_antSize)
 
     };
 
@@ -204,6 +189,74 @@ lillyFinal.prototype.display = function(_currentValue){
     	};
     };
 
+    lillySmall.prototype.getAntsDivision = function(_antSize,_divisions){
+
+        var n = _divisions || this.size
+        var ant = []
+
+        for (var i=0; i<this.value; i++){
+
+            var angle = ((2*Math.PI)/this.value)*i 
+
+            this.antsDivision.push({
+
+                x : this.circle.x + (n*0.7) + (Math.cos(angle) * (n*0.35)) - _antSize.width,
+                y : this.circle.y + (n*0.7) + (Math.sin(angle) * (n*0.35)) - _antSize.height
+            
+            }) 
+
+        }
+    };
+
+
+/*
+-------------------------------------------------------------------------------------------------------------
+                                                Class: Ant
+-------------------------------------------------------------------------------------------------------------
+*/
+
+    function Ant(_size,_pos,_id){
+
+        this.size = _size;
+        this.pos = _pos;
+        this.id = _id;
+        this.sprite =  new PIXI.Sprite.fromImage("sprites/lillypad/ant.png")
+        this.sprite.width = this.size.width;
+        this.sprite.height = this.size.height;
+        stage.addChild(this.sprite)        
+        this.sprite.x = this.pos.x
+        this.sprite.y = this.pos.y
+
+        this.animation = new animation(this.sprite)
+        this.AnimationStart = false
+        this.lillyId = _id
+        this.state = -1
+    }
+
+    Ant.prototype.setTrajectory = function(_trajectory,_length){
+
+
+        this.length = 100
+        this.trajectory = _trajectory
+        this.state = 0
+        
+        this.animation.init(this.trajectory[0],this.length)
+
+    }
+
+    Ant.prototype.move = function(){
+
+        if(this.state < this.trajectory.length){
+
+            if(this.animation.run()){
+                this.animation.init(this.trajectory[this.state],this.length)
+                this.state++
+            }
+
+        }
+    
+    }
+
 /*
 -------------------------------------------------------------------------------------------------------------
                                                 Class: Trial
@@ -224,6 +277,9 @@ lillyFinal.prototype.display = function(_currentValue){
 		------------------------*/
     	this.correct = _correct
 
+
+        this.clock = new ClockTimer()
+
     	this.sticks = []
 
     	this.trialState = "play"
@@ -234,10 +290,21 @@ lillyFinal.prototype.display = function(_currentValue){
         this.posMatrix = this.getMatrixPosition()
         this.operation = 0
         this.fadeStick = false;
-    }
+        this.ants = {
+        
+            size : {
+                width : 6,
+                height : 10,
+            },
+            sprites : [],
+        }
+        this.antsToAnimate = {
+            origin : [],
+            target : []
+        }
+    };
 
     Trial.prototype.init = function(){
-
 
         this.lillyFinal.init(this.correct.value)
 
@@ -249,7 +316,6 @@ lillyFinal.prototype.display = function(_currentValue){
         
         }
         
-
         if(lilipadValues.length > this.posMatrix.length){
         
             throw "SCREEN TOO SMALL!"
@@ -258,20 +324,35 @@ lillyFinal.prototype.display = function(_currentValue){
 
         for (var i=0; i<lilipadValues.length; i++){
 
+            // create small liilypads 
             var pos = getRandomInt(0,this.posMatrix.length) 
             this.lillySmall.push(new lillySmall(this))
-            this.lillySmall[i].init(lilipadValues[i],this.getPos(i),this.specs.lillyWidth,i)
+            this.lillySmall[i].init(lilipadValues[i], this.getPos(i), this.specs.lillyWidth, i, this.ants.size)
+
+            //crete ants 
+
+            for(var j = 0;j<lilipadValues[i];j++){
+                
+                var pos = this.lillySmall[i].antsDivision[j]
+            
+                this.ants.sprites.push(
+            
+                    new Ant(this.ants.size, pos, i)
+                    
+                    )
+            
+            }
 
         }
 
+        // create stick
         this.stick = new PIXI.Graphics()
         this.stick.lineStyle(0);
         this.stick.beginFill(0x996630);
         this.stick.drawRect(0,0,1,10);
         this.stick.endFill();
         stage.addChild(this.stick);
-    
-    }
+    };
 
     //creates links between lillypads if allowed
 	Trial.prototype.CheckLink = function(_dropPoint,_id){
@@ -299,6 +380,7 @@ lillyFinal.prototype.display = function(_currentValue){
                 console.log("DROPED OVER: " + i)
                 conected = true
 
+                this.moveStick(true,i)
                 this.updateOperation(_id,i)
 
                 return;    
@@ -314,86 +396,150 @@ lillyFinal.prototype.display = function(_currentValue){
         }else{
 
             this.stick.alpha = 0
-        }
-    	
-    }
-
+        }	
+    };
 
     Trial.prototype.updateOperation = function(_origin,_target){
 
         if(_target == "final"){
 
-            //this.countdown(_origin,target)
-            //this.animateAnts(_origin,target)
+            this.moveAnts(_origin,_target)
+            this.countDownTargets = [_origin,_target]
+            this.countDown = true;
+            this.clock.start(3000/this.lillySmall[_origin].value)
 
-            this.lillySmall[_origin].cNumber.text = 0;
-            this.lillySmall[_origin].value = 0;
-            this.fadeStick = true;
-            //this.removeStick();
 
         }else{
 
-            var sum = this.lillySmall[_origin].value + this.lillySmall[_target].value;
+            //get new location for ants
+            var sum = this.lillySmall[_target].value + this.lillySmall[_origin].value
+            this.lillySmall[_target].getAntsDivision(this.ants.size,sum)
 
-            this.lillySmall[_origin].cNumber.text = 0;
-            this.lillySmall[_target].cNumber.text = sum;
+            var posCount = 0
 
-            this.lillySmall[_origin].value = 0;
-            this.lillySmall[_target].value = sum;
-            this.fadeStick = true;
+            var t0 = {
+                x: this.stick.x,
+                y: this.stick.y
+            }
+            
+            var t1 = {
+                x : Math.cos(this.stick.angle) * this.stick.width,
+                y : Math.sin(this.stick.angle) * this.stick.width
+            }
+
+
+            for(var i = 0; i<this.ants.sprites.length; i++){
+
+                console.log(this.ants.sprites[i].id)
+
+                if(this.ants.sprites[i].id == _origin){
+
+                    var t2 = this.lillySmall[_target].antsDivision[posCount]
+
+                    var trajectory = [t0,t1,t2]
+
+                    this.ants.sprites[i].setTrajectory(trajectory,length)
+                    this.antsToAnimate.origin.push(i)
+                    posCount++
+
+                }else if(this.ants.sprites[i].id == _target){
+
+                    var trajectory = [
+
+                        //t0
+                        this.lillySmall[_target].antsDivision[posCount],
+
+                    ]
+                    
+                    this.ants.sprites[i].setTrajectory(trajectory,length)
+                    
+                    this.antsToAnimate.target.push(i)
+                    posCount++
+                }
+
+            }
+
+
+
+            // set countdown
+            this.countDownTargets = [_origin,_target] 
+            this.countDown = true;
+            this.clock.start(2000/this.lillySmall[_origin].value)
             
         }
+    };
 
-        // countDown number periodicly
-        // move ents along the stick
-        // count up the target
+    Trial.prototype.moveAnts = function(){
 
-    }
+        for(var i=0; i<this.antosToAnimate; i++){
 
+            this.ants.sprites[this.antosToAnimate[i]].animation.run()
+        
+        }
+    };
 
     Trial.prototype.createStick = function(_data){
 
-    	// console.log("-------------")
-	    this.stick.x = _data.x;
-	    this.stick.y = _data.y;
-        this.stick.alpha = 1
+        this.fadeStick = false
+    	
+        // console.log("-------------")
+        for(var i = 0; i<this.lillySmall.length; i++){
+
+            if(this.lillySmall[i].circle.containsPoint(_data)){
+
+                this.stick.startX = this.lillySmall[i].circle.x;
+                this.stick.startY = this.lillySmall[i].circle.y;
+                this.stick.alpha = 1
+
+            }
+
+        }
+
+
 
 
     	// console.log(stick.pivot = 10)
     	// console.log("-------------")
-    }
+    };
+
+    Trial.prototype.moveStick = function(_data,_lillyId){
+
+        var lillyOffset = (this.specs.lillyWidth*0.7)
+
+        if(_data == true){
+
+            var angle = getAngle(this.stick.startX+lillyOffset,this.stick.startY+lillyOffset,this.lillySmall[_lillyId].circle.x+lillyOffset,this.lillySmall[_lillyId].circle.y+lillyOffset)
+            this.stick.angle = angle
+            this.stick.rotation = angle + Math.PI*1.5;
+            this.stick.width = getDistance(this.stick.x,this.stick.y,this.lillySmall[_lillyId].circle.x+lillyOffset,this.lillySmall[_lillyId].circle.y+lillyOffset) - (this.lillywith*0.5)            
+            return
+        }      
+
+    	var angle = getAngle(this.stick.startX + lillyOffset, this.stick.startY + lillyOffset, _data.x, _data.y)
+        this.stick.angle = angle
+    	this.stick.rotation = angle + Math.PI*1.5
 
 
-    Trial.prototype.moveStick = function(_data){
+        var adj = Math.cos(angle)*(this.lillywith/2)*0.9
+        var opos = Math.sin(angle)*(this.lillywith/2)*0.9
 
-    	// console.log(">>move")
-    	// console.log(this.sticks)
-    	// console.log(">>move")
-    	this.loop = false;
+        this.stick.x = this.stick.startX + opos + (this.specs.lillyWidth*0.7);
+        this.stick.y = this.stick.startY - adj + (this.specs.lillyWidth*0.65);
 
-    	this.stick.width = getDistance(this.stick.x,this.stick.y,_data.x,_data.y)
-    	var angle = getAngle(this.stick.x,this.stick.y,_data.x,_data.y)
-    	if (this.stick.y < _data.y){
-    		angle = -angle + Math.PI;
-    	}
-    	this.stick.rotation = angle - Math.PI/2
-    }
-
+        this.stick.width = getDistance(this.stick.x,this.stick.y,_data.x,_data.y)
+    };
 
     Trial.prototype.removeStick = function(){
-
 
         if(this.stick.alpha > 0){
 
             //animate alpha with animate function
-            this.stick.alpha = this.stick.alpha -  0.1
+            this.stick.alpha = this.stick.alpha -  0.15
 
         }else{
             this.fadeStick = false
         }
-    	// console.log(">>>>>")
-    	// console.log(this.sticks)
-    }
+    };
 
 	Trial.prototype.getSpecs = function(){
 
@@ -418,9 +564,9 @@ lillyFinal.prototype.display = function(_currentValue){
     	obj.margingW = (obj.widthInter - obj.lillyWidth)/2
     	obj.margingH = (obj.heightInter - obj.lillyWidth)/2
 
+        this.lillywith = obj.lillyWidth
     	return obj
-
-	}    
+	};   
 
     Trial.prototype.destroy = function(){
 
@@ -433,11 +579,9 @@ lillyFinal.prototype.display = function(_currentValue){
         // this.cNumber.destroy(true,true)
         // stage.removeChild(this.UI)
         // this.UI.destroy(true,true)
-    }
+    };
 
     Trial.prototype.getMatrixPosition = function(){
-
-        console.log(this.specs.moduleWidthCount,this.specs.moduleHeightCount)
 
     	var allPos = []
 
@@ -467,7 +611,7 @@ lillyFinal.prototype.display = function(_currentValue){
     	}
 
         return allPos
-    }
+    };
 
     Trial.prototype.getPos = function(_i){
 
@@ -477,7 +621,40 @@ lillyFinal.prototype.display = function(_currentValue){
 
 
     	return this.posMatrix[i]
-    }
+    };
+
+    Trial.prototype.countNumber = function(){
+            
+        if(this.lillySmall[this.countDownTargets[0]].value > 0){
+
+            if(this.clock.timeOut()){
+
+                if(this.countDownTargets[1] == "final"){
+
+                    this.lillySmall[this.countDownTargets[0]].value--
+                    this.lillySmall[this.countDownTargets[0]].cNumber.text--
+                    this.clock.start(this.clock.setTime)
+
+                }else{
+
+                    this.lillySmall[this.countDownTargets[0]].value--
+                    this.lillySmall[this.countDownTargets[1]].value++
+
+                    this.lillySmall[this.countDownTargets[0]].cNumber.text--
+                    this.lillySmall[this.countDownTargets[1]].cNumber.text++
+                    this.clock.start(this.clock.setTime)
+
+                }
+
+            }
+
+        }else{
+
+            this.fadeStick = true;
+            this.countDown = false;
+
+        }
+    };
 
     Trial.prototype.play = function(_updateTime){
 
@@ -490,11 +667,17 @@ lillyFinal.prototype.display = function(_currentValue){
                 break;  
 
             case "play":
-                
+
                 if(this.fadeStick){
                     
                     this.removeStick()
+
+                }else if(this.countDown){
+
+                    this.countNumber()
+
                 }
+
 
                 break;
 
@@ -507,7 +690,7 @@ lillyFinal.prototype.display = function(_currentValue){
 
 
             };
-        };
+    };
 
 
 /*
@@ -519,11 +702,10 @@ lillyFinal.prototype.display = function(_currentValue){
 
         this.score = 0;
         this.language = "english"
-        this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-01.png');
-        // this.background.height = canvas.height;
+        this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-04.png');
+        this.background.height = session.canvas.height;
         
         stage.addChild(this.background);
-
     }
 
     /*
@@ -542,8 +724,8 @@ lillyFinal.prototype.display = function(_currentValue){
             {
                 correctValues : [4,5,2],
 				extras : {
-					min : 1,
-					max : 3,
+					min : 15,
+					max : 20,
 					size : 3, 
 				}
             },
@@ -558,7 +740,6 @@ lillyFinal.prototype.display = function(_currentValue){
         }
 
         return [specs.stimuli, specs.correct]
-
     }
 
     Round.prototype.play = function(_updateTime){
@@ -608,7 +789,9 @@ function onAssetsLoaded(){
 
 if(proto3loaded){
 
-    PIXI.loader.load(onAssetsLoaded);
+    PIXI.loader
+    .add('sprites/lillypad/small-01.png')
+    .load(onAssetsLoaded);
 
     proto3loaded = true;
 
