@@ -102,7 +102,8 @@ function animation(obj){
 
 }
 
-animation.prototype.init = function(dest,length,style){
+animation.prototype.init = function(dest,length,offset){
+
 
   this.finished = false;
   this.timeSet = false;
@@ -112,8 +113,10 @@ animation.prototype.init = function(dest,length,style){
     y : dest.y,
   } 
   
+  this.offset = offset || 0;
   this.anLength = length || 2000;
-  this.style = style || "linear";
+
+
 
   var start = {};
 
@@ -145,54 +148,45 @@ animation.prototype.run = function(){
   if(this.finished){
     return true
   }
+
+  var last = this.now;
+  this.now = Date.now();
+  var frameTime = this.now - last;
+
   
   if(!this.timeSet){
-
-    //console.log("start",this.startPos)    
+   
     this.StartTime = Date.now();
     this.lastTime = Date.now();
     this.timeSet = true;
+    frameTime =  0
 
   }
 
 
-  var last = this.now;
-  this.now = Date.now();
-  // FIXME, first frame is wrong
-  var frameTime = this.now - last;
+  var elapsed = this.now - this.StartTime
 
-  var now = Date.now();
-  var elapsed = now - this.StartTime;
-
-  if(Math.abs(this.speed.x * elapsed) < Math.abs(this.distance.x) || Math.abs(this.speed.y * elapsed) < Math.abs(this.distance.y)){
-
-    var s = false
-    if(s){
-        
-    }else{
-
-      //if linear: 
-      var p0 = {x:1.0, y:0.0};
-      var p1 = {x:1.0, y:0.0};
-      var p2 = {x:1.0, y:1.0};
-      var p3 = {x:1.0, y:1.0};
-
-      var t = elapsed / this.anLength;
-      var speed = this.bezier(t, p0, p1, p2, p3);
-
-      this.obj.x = this.startPos.x + speed.y * this.distance.x; 
-      this.obj.y = this.startPos.y + speed.y * this.distance.y;
-    }
-    
-    return false;
-
-  }else{
-
+  if(elapsed >= this.anLength+this.offset){
+  
     this.obj.x =  this.startPos.x + (this.speed.x * this.anLength) 
     this.obj.y =  this.startPos.y + (this.speed.y * this.anLength) 
     this.finished = true;
+
     return true
-  
+
+  }else{
+
+    if(elapsed >= this.offset){
+      
+      this.obj.x = this.obj.x + frameTime * this.speed.x
+      this.obj.y = this.obj.y + frameTime * this.speed.y      
+    
+    }
+
+    
+    return false
+
+
   }
 
 }

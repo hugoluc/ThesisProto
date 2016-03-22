@@ -3,7 +3,6 @@ var Chooser = function(_sos) {
 
     // hide experiment and show chooser
     clickStart('container-exp','container-chooser');
-
     var availableGames = 3
     for(var i=0; i<availableGames; i++ ){
 
