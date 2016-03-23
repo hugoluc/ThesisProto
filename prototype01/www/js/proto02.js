@@ -1,7 +1,7 @@
 var proto2loaded = false;
 var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
 // modify game dynamics if scoreDifferential reaches +3 or -3
-var walkSpeed = 9; // +1 if 3x correct; -1 if 3x incorrect
+var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
 var numFoils = 8; // +2 if 3x correct, -1 if 3x incorrect
 
 
@@ -55,7 +55,6 @@ function proto02(){
 -------------------------------------------------------------------------------------------------------------
 */
     function LadyBug(){
-
         var _this = this;
 
         // container variables
@@ -133,8 +132,8 @@ function proto02(){
     }
 
 
-    LadyBug.prototype.setUp = function(freeIds){
-
+    LadyBug.prototype.setUp = function(xpos){ // freeIds
+        freeIds = null;
         this.sprite.walk.play();
         this.sprite.walk.alpha = 1;
 
@@ -157,7 +156,8 @@ function proto02(){
             var moduleId = freeIds[getRandomInt(0,freeIds.length)];
         }
 
-        this.start.x = moduleId * this.sprite.walk.width;
+        //this.start.x = moduleId * this.sprite.walk.width;
+        this.start.x = xpos;
         this.start.y = window.innerHeight;
 
         this.end.x = getRandomInt(this.start.x-this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2);
@@ -273,7 +273,7 @@ function proto02(){
 
         var _this = this;
         // check if its correct
-        if(this.startNumber == thisRound.trial.correct.value){
+        if(this.startNumber == thisRound.trial.stimuli.id){
             scoreDifferential += 1;
 
             //console.log("click over:--",this.number.text)
@@ -341,31 +341,7 @@ function proto02(){
 
     }
 
-    /*
-    ------
-     Get next spects from the user queue
-     *TO-DO: Replace values to queue values
-    ------
-    */
-
-    Round.prototype.getNextTri = function(stim){
-        var specs = {
-            // This will be displayed to user
-            stimuli :
-            {
-                type: "sound",
-                value: new Audio('audio/' + this.language + '/' + stim.audio + ".mp3"),
-            },
-            //This will be what the users needs to input/select
-            correct :
-            {
-                type: "number",
-                value: stim.id //getRandomInt(2,4),
-            }
-        }
-
-        return [specs.stimuli, specs.correct]
-    }
+    // Round.prototype.getNextTri = function(stim){ }
 
     Round.prototype.play = function(_updateTime){
         this.trial.play(_updateTime)
@@ -374,10 +350,10 @@ function proto02(){
     Round.prototype.init = function(){
       queuesToUpdate['numberstim'] = true;
       stim = stimQueues['numberstim'].pop();
-      var audstim = new Audio('audio/' + language + '/' + stim.audio + ".mp3")
-      audstim.play()
-      var specsthis = this.getNextTri(stim);
-      this.trial = new Trial(specsthis[0],specsthis[1]); // then we recycle this trial...for now
+      //var audstim = new Audio('audio/' + language + '/' + stim.audio + ".mp3")
+      //audstim.play()
+      //var specsthis = this.getNextTri(stim);
+      this.trial = new Trial(stim); // then we recycle this trial...for now (could make a loop here)
       this.trial.init();
     }
 
@@ -392,10 +368,10 @@ function proto02(){
                                                 Class: Trial
 -------------------------------------------------------------------------------------------------------------
 */
-    function Trial(_stimuli,_correct){
+    function Trial(_stimuli){
       this.ladyBugs = [];
       this.stimuli = _stimuli;
-      this.correct = _correct;
+      this.correct = _stimuli.id;
       this.correctImput = 0;
       this.playQueue = []
       this.correctSet = false;
@@ -439,38 +415,35 @@ function proto02(){
     }
 
     Trial.prototype.init = function(){
+      interval = Math.floor(screen_width / (numFoils + 1.0));
 
-      //interval = Math.floor(screen_width / self.objects.length);
-      //for(var i=0; i<numFoils; i++) {
-        //var xpos = getRandomInt(stim_diam+10 + interval*i, interval*(i+1) - stim_diam-10);
-        for (var i=0; i<numFoils; i++){
+      for (var i=0; i<numFoils; i++){
+        var xpos = getRandomInt(20 + interval*i, interval*(i+1) - 20);
+        this.ladyBugs.push(new LadyBug());
+        this.ladyBugs[i].setUp(xpos); // i+2 ??
+      }
 
-            this.ladyBugs.push(new LadyBug())
-            this.ladyBugs[i].setUp(i+2); //
+      this.UI = new PIXI.Container()
+      this.UI.customAnimation = new animation(this.UI)
 
-        }
+      this.trialTimer = new ClockTimer();
 
-        this.UI = new PIXI.Container()
-        this.UI.customAnimation = new animation(this.UI)
+      this.circle = new PIXI.Graphics()
+      this.circle.lineStyle(0);
+      this.circle.beginFill(0x02d1aa);
+      this.circle.drawCircle(0,0,100);
+      this.circle.endFill();
+      this.UI.addChild(this.circle);
+      this.circle.x = 80,
+      this.circle.y = session.canvas.height-60;
 
-        this.trialTimer = new ClockTimer();
+      this.cNumber =  new PIXI.Text(thisRound.trial.stimuli.id, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
+      this.cNumber.x = 50
+      this.cNumber.y = session.canvas.height-120
+      this.UI.addChild(this.cNumber);
 
-        this.circle = new PIXI.Graphics()
-        this.circle.lineStyle(0);
-        this.circle.beginFill(0x02d1aa);
-        this.circle.drawCircle(0,0,100);
-        this.circle.endFill();
-        this.UI.addChild(this.circle);
-        this.circle.x = 80,
-        this.circle.y = session.canvas.height-60;
-
-        this.cNumber =  new PIXI.Text(thisRound.trial.correct.value, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
-        this.cNumber.x = 50
-        this.cNumber.y = session.canvas.height-120
-        this.UI.addChild(this.cNumber);
-
-        stage.addChild(this.UI)
-        this.trialState = "play";
+      stage.addChild(this.UI)
+      this.trialState = "play";
     }
 
     Trial.prototype.play = function(_updateTime){
@@ -550,8 +523,8 @@ function proto02(){
                 if(!this.correctSet && this.trialTimer.getElapsed() > 500){
                     this.stimuli = stimQueues['numberstim'].pop();
                     console.log(this.stimuli);
-                    this.correct.value = this.stimuli.id;
-                    this.cNumber.text = this.correct.value;
+                    this.correct = this.stimuli.id;
+                    this.cNumber.text = this.stimuli.id;
                     this.correctSet = true;
                     var audstim = new Audio('audio/' + language + '/' + this.stimuli.audio + ".mp3")
                     audstim.play()
