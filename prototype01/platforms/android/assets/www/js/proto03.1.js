@@ -141,6 +141,9 @@ function proto03(){
 
     lillySmall.prototype.clickStart = function(_this,_event){
 
+        if(!thisRound.trial.AnimationDone){
+            return
+        }
 
         /***********************************
         
@@ -221,6 +224,7 @@ function proto03(){
 
         this.animation = new animation(this.sprite)
         this.AnimationStart = false
+        this.AnimationDone = false
         this.state = -1
         this.trajectory  = []
     }
@@ -241,7 +245,7 @@ function proto03(){
         this.trajectory = _trajectory || []
         this.state = 0
         
-        this.animation.init(this.trajectory[0],1000,_offset)
+        this.animation.init(this.trajectory[0],500,_offset)
     }
 
     Ant.prototype.move = function(){
@@ -249,20 +253,27 @@ function proto03(){
         if(this.state < this.trajectory.length){
 
             if(this.animation.run()){
+
                 this.state++
 
                 if(this.state != this.trajectory.length){
                    
-                    this.animation.init(this.trajectory[this.state],1000)                       
-                }
+                    this.animation.init(this.trajectory[this.state],500)                       
+                };
 
-            }
+            };
 
             return false
-        }
-        
-        return true
-    }
+
+        }else{
+
+            this.AnimationDone = true;
+            return true
+
+
+        }   
+    
+    };
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -297,6 +308,7 @@ function proto03(){
         this.posMatrix = this.getMatrixPosition()
         this.operation = 0
 
+        this.AnimationDone = true;
         this.fadeStick = false;
         this.performOperation = false;
         
@@ -456,16 +468,41 @@ function proto03(){
 
     Trial.prototype.setAnimateAnts = function(_origin,_target){
 
-        var t0 = {
-            x: this.stick.x,
-            y: this.stick.y
-        }
-        
-        var t1 = {
+        this.AnimationDone = false
 
-            x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
-            y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width)
+        if(this.stick.angle < 0){
+            
+            var t0 = {
+                x: this.stick.x,
+                y: this.stick.y - this.stick.height
+            }
+            
+            var t1 = {
+
+                x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
+                y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width) - this.stick.height
+            }
+
+        
+        }else{
+
+            var t0 = {
+                x: this.stick.x,
+                y: this.stick.y
+            }
+
+            var t1 = {
+
+                x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
+                y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width)
+            }
+
+
+
+
         }
+
+
         
         var offset = {
             v : 200,
@@ -548,11 +585,14 @@ function proto03(){
 
     Trial.prototype.animateAnts = function(_target){
         
-        var done = true
+        var done = true 
+       // console.log("---------START-----------" + done)
 
         for(var i = 0; i<this.antsToAnimate.target.length; i++){
 
-            if(!this.ants.sprites[this.antsToAnimate.target[i]].move()){
+            //console.log(this.ants.sprites[this.antsToAnimate.target[i]].AnimationDone)
+
+            if(!this.ants.sprites[this.antsToAnimate.target[i]].move()  || !this.ants.sprites[this.antsToAnimate.target[i]].AnimationDone){
                 done = false;
             }
 
@@ -560,7 +600,10 @@ function proto03(){
 
         for(var i = 0; i<this.antsToAnimate.origin.length; i++){
 
-            if(this.ants.sprites[this.antsToAnimate.origin[i]].move()){
+            //console.log(this.ants.sprites[this.antsToAnimate.origin[i]].AnimationDone)
+
+
+            if(!this.ants.sprites[this.antsToAnimate.origin[i]].move() || !this.ants.sprites[this.antsToAnimate.origin[i]].AnimationDone){
                 done = false;
             }
 
@@ -568,6 +611,8 @@ function proto03(){
 
 
         if(done){
+
+            this.AnimationDone = true;
 
             var newId = this.antsToAnimate.id.target
 
@@ -621,7 +666,7 @@ function proto03(){
             var angle = getAngle(this.stick.startX+lillyOffset,this.stick.startY+lillyOffset,this.lillySmall[_lillyId].circle.x+lillyOffset,this.lillySmall[_lillyId].circle.y+lillyOffset)
             this.stick.angle = angle
             this.stick.rotation = angle + Math.PI*1.5;
-            this.stick.width = getDistance(this.stick.x,this.stick.y,this.lillySmall[_lillyId].circle.x+lillyOffset,this.lillySmall[_lillyId].circle.y+lillyOffset) - (this.lillywith*0.5)            
+            this.stick.width = getDistance(this.stick.x,this.stick.y,this.lillySmall[_lillyId].circle.x+lillyOffset,this.lillySmall[_lillyId].circle.y+lillyOffset) - (this.lillywith*0.45)            
             
             return
         }      

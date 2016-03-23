@@ -15,19 +15,19 @@ function getDistance(x,y,_x,_y){
   var adjacent = _y - y;
   var hipotenuse = Math.sqrt((oposite*oposite)+(adjacent*adjacent))
   return hipotenuse
-}
+};
 
 function getRandomInt(min, max) {
+  
   return Math.floor(Math.random() * (max-min)) + min;
-}
-
+};
 // hides one page and shows the next
 function clickStart(hide, show) {
 
         document.getElementById(hide).style.display="none";
         document.getElementById(show).style.display = "block";
         window.scrollTo(0,0);
-}
+};
 
 function getRandomColor() {
 
@@ -39,14 +39,18 @@ function getRandomColor() {
     }
 
     return color;
+};
 
-}
+/*
+-------------------------------------------------------------------------------------------------------------
+                                                Class: Clock
+-------------------------------------------------------------------------------------------------------------
+*/
 
 
 function ClockTimer(){
 
   this.timerStarted = false;
-
 };
 
 ClockTimer.prototype.start = function(_length){
@@ -55,52 +59,46 @@ ClockTimer.prototype.start = function(_length){
     this.setTime = _length;
     this.startTime = Date.now();
     this.last = Date.now();
-
 };
-
-
-ClockTimer.prototype.timerRunnnig = function(){
-
-  return this.timerStarted
-
-}
 
 ClockTimer.prototype.timeOut = function() {
 
-  //console.log(Date.now()-this.startTime)
   if(Date.now()-this.startTime > this.setTime){
     return true;
   }else{
     
-    //console.log("------->>SET-TIME: " + this.setTime)
-    //console.log("------->>START-TIME: " + this.startTime)
-    //console.log("----------->>NOE: " + Date.now())
     return false;
   }
-
 };
 
+ClockTimer.prototype.timerRunnnig = function(){
+
+  return this.timerStarted
+};
 
 ClockTimer.prototype.cancel = function(){
 
   this.timerStarted = false
-
-}
-
+};
 
 ClockTimer.prototype.getElapsed = function(){
 
     return Date.now() - this.startTime;
-
 };
+
+/*
+-------------------------------------------------------------------------------------------------------------
+                                                Class: Animation
+-------------------------------------------------------------------------------------------------------------
+*/
+
 
 function animation(obj){
 
   this.timeSet = false;
   this.lastTime = 0;
   this.obj = obj;
-
-}
+};
 
 animation.prototype.init = function(dest,length,offset){
 
@@ -140,8 +138,7 @@ animation.prototype.init = function(dest,length,offset){
   // console.log("dest",this.dest.x,this.dest.y)
   // console.log("distance:","x:" + this.distance.x ,"y:" +this.distance.y);
   // console.log("speed:", "x:" +this.speed.x ,"y:" + this.speed.y);
-
-}
+};
 
 animation.prototype.run = function(){
 
@@ -188,9 +185,7 @@ animation.prototype.run = function(){
 
 
   }
-
-}
-
+};
 
 animation.prototype.bezier = function(_t,_p0,_p1,_p2,_p3){
 
@@ -211,5 +206,4 @@ animation.prototype.bezier = function(_t,_p0,_p1,_p2,_p3){
   py = py + (_ttt * _p3.y); //fourth term
 
   return {x:px,y:py}
-
-}
+};
