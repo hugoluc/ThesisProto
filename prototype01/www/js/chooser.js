@@ -18,17 +18,17 @@ var Chooser = function(_sos) {
 
     game1.onclick =  function(){
       console.log("")
-       clickStart('container-chooser','container-exp');
-       currentview = new proto02();
+      clickStart('container-chooser','container-exp');
+      currentview = new proto02();
     }
 
     var game2 = document.getElementById("choose-game02")
 
     game2.onclick =  function(){
       console.log("")
-       clickStart('container-chooser','container-exp');
-       currentview = new proto03();
-     }
+      clickStart('container-chooser','container-exp');
+      currentview = new proto03();
+    }
 
 
 };

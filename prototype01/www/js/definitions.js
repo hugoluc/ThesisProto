@@ -52,8 +52,8 @@ var init_screen = function() {
 // };
 
 // // try: <audio preload="auto"> <source="" /></audio>
-var correct_sound = new Audio('../static/audio/correct.wav');
-var incorrect_sound = new Audio('../static/audio/birdcry.mp3');
+var correct_sound = new Audio('../audio/correct.wav');
+var incorrect_sound = new Audio('../audio/birdcry.mp3');
 
 // // database stuff
 // // should create a unique session ID each time and store under that
@@ -85,8 +85,8 @@ var incorrect_sound = new Audio('../static/audio/birdcry.mp3');
 // // basic stimulus definition with image, text, audio, and sequence of correct/incorrect
 // // (maybe also lag since previous presentation, in absolute time and trials?)
 function Stimulus() {
-    var evt = window.event || arguments[1] || arguments.callee.caller.arguments[0];
-    var target = evt.target || evt.srcElement;
+    //var evt = window.event || arguments[1] || arguments.callee.caller.arguments[0];
+    //var target = evt.target || evt.srcElement;
     var options = {};
     if (arguments[0]) options = arguments[0];
     var default_args = {
@@ -94,7 +94,8 @@ function Stimulus() {
         'image'  :  '',
         'text'   :  '',
         'audio'  :  '',
-        'seq'    :  []
+        'seq'    :  [],
+        'priority' : 2
     }
     for (var index in default_args) {
         if (typeof options[index] == "undefined") options[index] = default_args[index];
