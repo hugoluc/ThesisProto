@@ -227,15 +227,14 @@ function proto03(){
         this.AnimationDone = false
         this.state = -1
         this.trajectory  = []
-    }
+    };
 
     Ant.prototype.init = function(){
 
         stage.addChild(this.sprite)
         this.sprite.x = this.pos.x
         this.sprite.y = this.pos.y
-
-    }
+    };
 
     Ant.prototype.setTrajectory = function(_trajectory,_length,_offset){
 
@@ -246,7 +245,7 @@ function proto03(){
         this.state = 0
         
         this.animation.init(this.trajectory[0],500,_offset)
-    }
+    };
 
     Ant.prototype.move = function(){
 
@@ -272,7 +271,6 @@ function proto03(){
 
 
         }   
-    
     };
 
 /*
@@ -469,50 +467,43 @@ function proto03(){
     Trial.prototype.setAnimateAnts = function(_origin,_target){
 
         this.AnimationDone = false
-
-        if(this.stick.angle < 0){
             
-            var t0 = {
-                x: this.stick.x,
-                y: this.stick.y - this.stick.height
-            }
-            
-            var t1 = {
-
-                x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
-                y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width) - this.stick.height
-            }
-
+        var t0 = {
+            x: this.stick.x,
+            y: this.stick.y,
+        }
         
-        }else{
+        var t1 = {
 
-            var t0 = {
-                x: this.stick.x,
-                y: this.stick.y
-            }
-
-            var t1 = {
-
-                x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
-                y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width)
-            }
-
-
-
-
+            x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
+            y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width),
         }
 
-
-        
         var offset = {
             v : 200,
             tar : 0,
             ori : 0,
         }
 
-        var posCount = 0
 
-        if(_target == "final"){
+        var posCount = 0
+        
+        if(this.stick.angle < 0){
+            t0.y = t0.y - this.stick.height
+            t1.y = t1.y - this.stick.height
+        }
+
+        if(this.stick.angle < -Math.PI/2 || this.stick.angle > Math.PI/2){
+
+            t0.x = t0.x - this.ants.size.width
+            t1.x = t1.x - this.ants.size.width
+            
+            console.log("[[[[")
+        }
+        console.log(this.stick.angle)
+
+
+        if(_target == "final"){ // > if you droped the stick over the final circle
 
             for(var i = 0; i<this.ants.sprites.length; i++){
 
@@ -537,7 +528,7 @@ function proto03(){
                 }   
             }     
 
-        }else{
+        }else{ // if you dropped the stick over a small lillypad
 
 
             var val = this.lillySmall[_target].value       
@@ -564,12 +555,7 @@ function proto03(){
                 }else if(this.ants.sprites[i].id == _target){
 
 
-                    var trajectory = [
-
-                        //t0
-                        this.lillySmall[_target].antsDivision[posCount],
-
-                    ]
+                    var trajectory = [ this.lillySmall[_target].antsDivision[posCount] ]
                     
                     this.ants.sprites[i].setTrajectory(trajectory,length,(offset.v * offset.tar))
                     
