@@ -220,6 +220,8 @@ function proto03(){
         this.sprite =  new PIXI.Sprite.fromImage("sprites/lillypad/ant.png")
         this.sprite.width = this.size.width;
         this.sprite.height = this.size.height;
+        this.sprite.anchor.x = 0.5
+        this.sprite.anchor.y = 0.5
         stage.addChild(this.sprite)        
 
         this.animation = new animation(this.sprite)
@@ -227,6 +229,7 @@ function proto03(){
         this.AnimationDone = false
         this.state = -1
         this.trajectory  = []
+        this.angles = []
     };
 
     Ant.prototype.init = function(){
@@ -236,8 +239,15 @@ function proto03(){
         this.sprite.y = this.pos.y
     };
 
-    Ant.prototype.setTrajectory = function(_trajectory,_length,_offset){
+    Ant.prototype.rotate = function(_n){
 
+        
+        this.sprite.rotation = this.angles[_n];
+
+
+    }
+
+    Ant.prototype.setTrajectory = function(_trajectory,_length,_offset){
 
 
         this.length = 100
@@ -245,14 +255,37 @@ function proto03(){
         this.state = 0
         
         this.animation.init(this.trajectory[0],500,_offset)
+        this.angles = []
+
+
+        // fix correct angles for ants in the ogirin lilluypad 
+
+        for(var i = 0; i<this.trajectory.length; i++){
+
+            if(i == 0 ){
+
+                this.angles.push(getAngle(  this.sprite.x,this.sprite.y,this.trajectory[i].x,this.trajectory[i].y  )) 
+                    
+            }else{
+
+                this.angles.push(getAngle( this.trajectory[i-1].x,this.trajectory[i-1].y,this.trajectory[i].x,this.trajectory[i].y )) 
+
+            }
+        
+        }
+
+        this.rotate(this.state)
+
     };
 
     Ant.prototype.move = function(){
 
         if(this.state < this.trajectory.length){
 
-            if(this.animation.run()){
+            this.rotate(this.state)
 
+            if(this.animation.run()){
+                
                 this.state++
 
                 if(this.state != this.trajectory.length){
@@ -383,9 +416,8 @@ function proto03(){
     //creates links between lillypads if allowed
 	Trial.prototype.CheckLink = function(_dropPoint,_id){
 
-        var conected = false;
 
-
+        // FINAL MOVE:
         if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
 
             if(this.lillySmall[_id].value == this.correct.value){
@@ -398,10 +430,7 @@ function proto03(){
 
             }
 
-            // console.log("END!")
-            // this.updateOperation(_id,"final")
             return
-
         }
 
         //check which lillypad the stick was droped over
@@ -414,8 +443,6 @@ function proto03(){
                     return  
                 } 
 
-                conected = true
-
                 this.moveStick(true,i)
                 this.updateOperation(_id,i)
 
@@ -424,34 +451,26 @@ function proto03(){
             }
 
         }
-
-        if(conected){
-
-            this.removeStick()
-
-        }else{
-
-            this.stick.alpha = 0
-        }	
     };
 
     Trial.prototype.updateOperation = function(_origin,_target){
 
         if(_target == "final"){
 
+            this.performOperation = true;
+
             this.moveAnts(_origin,_target)
             this.countDownTargets = [_origin,_target]
-            this.performOperation = true;
             this.clock.start(3000/this.lillySmall[_origin].value)
 
             this.setAnimateAnts(_origin,_target)
 
-
         }else{
+
+            this.performOperation = true;
 
             // set countdown
             this.countDownTargets = [_origin,_target] 
-            this.performOperation = true;
             this.clock.start(1000/this.lillySmall[_origin].value)
          
             //update value for lillypads
@@ -480,7 +499,7 @@ function proto03(){
         }
 
         var offset = {
-            v : 200,
+            val : 200,
             tar : 0,
             ori : 0,
         }
@@ -519,7 +538,7 @@ function proto03(){
 
                     var trajectory = [t0,t1,t2]
 
-                    this.ants.sprites[i].setTrajectory(trajectory,length,(offset.v * offset.ori))
+                    this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.ori))
                     this.antsToAnimate.origin.push(i)
                     offset.ori++
                     posCount++
@@ -547,7 +566,7 @@ function proto03(){
 
                     var trajectory = [t0,t1,t2]
 
-                    this.ants.sprites[i].setTrajectory(trajectory,length,(offset.v * offset.ori))
+                    this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.ori))
                     this.antsToAnimate.origin.push(i)
                     offset.ori++
                     posCount++
@@ -557,7 +576,7 @@ function proto03(){
 
                     var trajectory = [ this.lillySmall[_target].antsDivision[posCount] ]
                     
-                    this.ants.sprites[i].setTrajectory(trajectory,length,(offset.v * offset.tar))
+                    this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.tar))
                     
                     this.antsToAnimate.target.push(i)
                     offset.tar++
@@ -599,6 +618,8 @@ function proto03(){
         if(done){
 
             this.AnimationDone = true;
+            this.performOperation = false;
+            this.fadeStick = true;
 
             var newId = this.antsToAnimate.id.target
 
@@ -672,13 +693,16 @@ function proto03(){
 
     Trial.prototype.removeStick = function(){
 
-        if(this.stick.alpha > 0){
+        if(this.stick.alpha >= 0){
 
             //animate alpha with animate function
             this.stick.alpha = this.stick.alpha -  0.15
 
         }else{
-            this.fadeStick = false
+
+            console.log("--------")
+            this.fadeStick = false;
+        
         }
     };
 
@@ -806,12 +830,15 @@ function proto03(){
 
             case "play":
 
+            console.log(this.fadeStick)
+
                 if(this.fadeStick){
                     
                     this.removeStick()
 
                 }else if(this.performOperation){
                    
+                    console.log("other")
                 
                     this.countNumber()
                     this.animateAnts()
