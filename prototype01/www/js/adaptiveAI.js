@@ -46,7 +46,7 @@ function initStorage() {
     return(null);
   }
   user = store.get('user');
-  //user = null; // for testing defaults
+  user = null; // for testing defaults
   if(user==null) {
     user = getRandomInt(1,999999999);
     console.log('first time! assigned userID: ' + user);

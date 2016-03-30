@@ -284,7 +284,7 @@ function proto02(){
             // flyes if it reaches 0
             if(this.number.text == 0) {
               // play feedback sound
-              correct_sound.play();
+              correct_sound.play(); // GK: why doesn't this play?
               this.number.text = ""
               this.timer.start(300);
               this.state = "fly"
@@ -479,6 +479,12 @@ function proto02(){
         };
 
     Trial.prototype.showNextNumber = function(){
+      // GK: when do we lose previous trial.stimuli???
+      // push back onto queue (once..) for later GK: ideally would do this in round loop, between trials
+      //this.stimuli.priority += .5;
+      //stimQueues['numberstim'].push(this.stimuli);
+      //console.log('pushed '+this.stimuli.id+' back on queue');
+
       // GK somehwere here do the star + score
         switch(this.showNextState){
 

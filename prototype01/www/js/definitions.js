@@ -2,11 +2,32 @@
 var screen_width = window.innerWidth,
     screen_height = window.innerHeight; // 768
 
+// // try: <audio preload="auto"> <source="" /></audio>
+var correct_sound = new Audio('../audio/correct.wav');
+var incorrect_sound = new Audio('../audio/birdcry.mp3');
+
 // var screen; // fullscreen svg for each task
 
 // var nextTrial = null; // for setTimeout so we can clearTimeout
 
-// var score = 0; // get from summarydata for each game type (or one for all?)
+var score = 0; // get from summarydata for each game type (or one for all?)
+
+// stimuli for the ant game
+var addition = [
+  {sum:"1", options:["1","0","0"]},
+  {sum:"2", options:["1","1","0"]},
+  {sum:"3", options:["2","1","0"]},
+  {sum:"4", options:["2","2","1","0"]},
+  {sum:"4", options:["1","1","3","0"]},
+  {sum:"5", options:["1","1","2","3"]},
+  {sum:"5", options:["2","2","1","4"]},
+  {sum:"6", options:["1","1","2","3"]},
+  {sum:"6", options:["3","3","1","2"]},
+  {sum:"7", options:["1","2","3","1","2"]},
+  {sum:"7", options:["2","2","2","4","1"]},
+  {sum:"8", options:["4","2","2","1","0"]},
+  {sum:"8", options:["5","3","2","1","2"]},
+];
 
 // var background_image_files = ["plains1.png","plains2.png","sky0_1024x600.jpg",
 //   "sky1_1024x600.jpg","sky2_1024x600.jpg","sky3_1024x600.jpg","sky4_1024x600.jpg"]
@@ -50,10 +71,6 @@ var init_screen = function() {
 
 //     return background;
 // };
-
-// // try: <audio preload="auto"> <source="" /></audio>
-var correct_sound = new Audio('../audio/correct.wav');
-var incorrect_sound = new Audio('../audio/birdcry.mp3');
 
 // // database stuff
 // // should create a unique session ID each time and store under that
