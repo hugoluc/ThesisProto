@@ -30,5 +30,12 @@ var Chooser = function(_sos) {
       currentview = new proto03();
     }
 
+    var game3 = document.getElementById("choose-game03")
+
+    game3.onclick =  function(){
+      console.log("starting spellingGame");
+      clickStart('container-chooser','container-exp');
+      currentview = new spellingGame();
+    }
 
 };
