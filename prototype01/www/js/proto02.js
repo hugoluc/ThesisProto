@@ -532,8 +532,9 @@ function proto02(){
                     this.correct = this.stimuli.id;
                     this.cNumber.text = this.stimuli.id;
                     this.correctSet = true;
-                    var audstim = new Audio('audio/' + language + '/' + this.stimuli.audio + ".mp3")
-                    audstim.play()
+                    //var audstim = new Audio('audio/' + language + '/' + this.stimuli.audio + ".mp3");
+                    //audstim.play()
+                    assets.sounds[this.stimuli.id-1].play();
                 }
 
                 if(this.trialTimer.timeOut()){
