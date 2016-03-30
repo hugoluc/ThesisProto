@@ -1,75 +1,180 @@
-var allcanvas;
+function proto01(){
 
-function proto01(canvas){
+	var self = this
+	var container = d3.select("#screen")
+	var ladyBugs = []
 
-	if(canvas){
+	var ladyBugSize = {
+		width : 71,
+		height : 84
+	}
+	
+	var lastPos = getRandomInt(0+(ladyBugSize.width/2),window.innerWidth-(ladyBugSize.width/2))
 
+	this.setBugsData = function(pos,attribute,value){
 
-		allcanvas = true;
+		console.log("--",ladyBugs[pos][1][attribute])
+		ladyBugs[pos][1][attribute] = value 
 
-	}else{
-		var container = d3.select("#screen")
+	}
 
-		var ladyBugs = []
+	function ladyTouch (){
 
-		for (var i=0; i<10; i++ ){
+		var text = this.childNodes[1].innerHTML
+		text = parseInt(text) - 1
 
-			var lady = container.append("svg:image").attr("xlink:href", "svgs/ladybug.svg")
-			.attr({
-			  x: getRandomInt(0,window.innerWidth),
-			  y: window.innerHeight-100,
-			  width: 70,
-			  height: 70,
-			})
-			.attr("id", "lady-" + i)
-			.attr("class", "bug")
-			.attr("transform", function(d) {return "translate(0,0)"})
-			.on("touchstart", function(){
-				console.log("somehting")
-			})
+		if(text <= 0){
 
-	    	ladyBugs.push(lady)
+			console.log(this)
+		 	currentview.finishInteraction(this.childNodes[0].id,this.id)
+
 
 		}
 
-		var timer_ret_val = false
-		var duration = 1000
-		var targetX = 100
-		var last = 0
-		var t = 0
-		var t_x = 0
+
+		this.childNodes[1].innerHTML = text
+
+	}
+
+	function getBugSpecs(last){
+
+		var bugSpecs = {
+
+			y : 700,
+			t : 0,
+			start : getRandomInt(0+(ladyBugSize.width*2),window.innerWidth-(ladyBugSize.width*2)),
+			number : getRandomInt(1,6),
+
+		}
+
+		bugSpecs.speed = 0.3/bugSpecs.number
+		bugSpecs.end = bugSpecs.start + getRandomInt(-50,50)
 
 
+		return bugSpecs
 
-		d3.timer(function(elapsed) {
+	}
 
-		    t = elapsed - last
-			last = elapsed;
+	for (var i=0; i<5; i++ ){
 
-			console.log("-->",elapsed)
-			console.log("->",last)
-			console.log(">",t )
+		var specs = getBugSpecs(lastPos)
+
+		var ladyGroup = container.append("g")
+					.attr("id", "ladyGroup" + i)
+					.on("click", ladyTouch)
+
+		var lady = ladyGroup.append("svg:image").attr("xlink:href", "svgs/ladybug.png")
+		.attr({
+		  x: specs.start,
+		  y: specs.y,
+		  width: ladyBugSize.width,
+		  height: ladyBugSize.height,
+		  bugId : i
+		})
+		.attr("id", "lady-" + i)
+		.attr("class", "bug")
+
+
+		var number = ladyGroup.append("text")
+		
+		number.attr({
+
+			x : specs.start+30,
+			y : 700+55,
+
+
+		}).attr("font-family", "sans-serif")
+		.attr("font-size", "20px")
+		.attr("fill", "red")
+		.text(specs.number);
+
+
+    	ladyBugs.push([ladyGroup,specs])
+
+	}
+
+	var timer_ret_val = false
+	var duration = 1200
+	var targetX = 100
+	var last = 0
+	var t_x = 0
+	var t_y = 0
+	var total = 0
+
+	d3.timer(function(elapsed) {
+
+	    var t = elapsed - last
+		last = elapsed;
+		total = total + t
+		//console.log("fps=",1000/t)
+	    
+	    update(t);
+	    return timer_ret_val;
+	});
+
+	function update(t){
+
 		    
-		    update();
-		    return timer_ret_val;
-		},20);
+	    for (var i=0; i<ladyBugs.length; i++){
 
-		function update(){
+			    t_x = 0
+				t_y = ladyBugs[i][1].t + t * ladyBugs[i][1].speed
+				ladyBugs[i][1].t = t_y
 
-		    t_x = t_x - (t * targetX) / duration 
-		    
-		    console.log("--------------", t_x)
-			    
-		    for (var i=0; i<ladyBugs.length; i++){
+				//console.log(t_y)
 
-				//ladyBugs[i].attr("y", t_x);
-		    	ladyBugs[i].attr("transform", function(d) {return "translate(100," + t_x + ")";});
+				if(ladyBugs[i][1].t > window.innerHeight+400){
+
+
+					if(ladyBugs[i][0].select("image").attr("clicked") == "true"){
+
+						var target = ladyBugs[i][0].select("image").attr("xlink:href", "svgs/ladybug.svg")
+							.attr({
+								width: 71,
+								height: 84,
+								clicked: "false" 
+							})
+						target.attr("x", target.attr("x")+32)
+						ladyBugs[i][0].on("click",ladyTouch)
+
+					}
+
+					ladyBugs[i][1] = getBugSpecs()
+					ladyBugs[i][0].attr("transform",  "translate(0,0)");	
+					ladyBugs[i][0].select("image").attr("x", ladyBugs[i][1].start)
+					ladyBugs[i][0].select("text").attr("x", ladyBugs[i][1].start+30).text(ladyBugs[i][1].number)
+
+				}
+
+				ladyBugs[i][0].attr("transform",  "translate("+ -t_x +"," + -t_y + ")");	
 
 		    }
-		}
+	    
 	}
 
 }
 
+proto01.prototype.finishInteraction = function(id,gid){
+
+	var group = d3.select("#" + gid)
+	console.log("---------",group.on("click", ""))
+
+	var bug = d3.select("#" + id)
+		.attr("xlink:href", "svgs/ladybug-flying.svg")
+		.attr({
+			width: 116,
+			height: 130,
+			clicked: "true" 
+		})
+
+		console.log(group.select("text"))
+
+		console.log(bug.attr("clicked"))
+		bug.attr("x", bug.attr("x")-32)
+
+		console.log(" --  ", bug.attr("bugId"))
+		currentview.setBugsData(bug.attr("bugId"),"speed", 0.5)
+
+}
 
 

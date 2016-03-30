@@ -1,31 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 19.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 45.8 54.6" style="enable-background:new 0 0 45.8 54.6;" xml:space="preserve">
+	 viewBox="-369.8 250.3 70 83.7" style="enable-background:new -369.8 250.3 70 83.7;" xml:space="preserve">
+<style type="text/css">
+	.st0{opacity:0.11;fill:#020202;enable-background:new    ;}
+	.st1{fill:none;stroke:#424242;stroke-width:1.2228;stroke-miterlimit:10;}
+	.st2{fill:#424242;}
+	.st3{fill:none;stroke:#424242;stroke-width:1.2708;stroke-miterlimit:10;}
+	.st4{fill:#DB260E;}
+	.st5{fill:none;stroke:#871E16;stroke-width:1.5385;stroke-miterlimit:10;}
+	.st6{opacity:0.83;fill:#FFFFFF;stroke:#898888;stroke-width:0.8803;stroke-miterlimit:10;}
+</style>
 <g>
-	<path style="opacity:0.11;fill-rule:evenodd;clip-rule:evenodd;fill:#020202;" d="M39.5,32.7c0,12.1-8.9,21.9-19.8,21.9
-		S0,44.8,0,32.7c0-6.5,2.4-15,6.5-17.7c8.3-5.7,8.1,0,13.2,0c4.8,0,7.2-5.8,12.3-1.9C36.3,16.1,39.5,25.9,39.5,32.7z"/>
-	<path style="fill:none;stroke:#424242;stroke-width:0.7948;stroke-miterlimit:10;" d="M36.5,25.9c0,0,4.7,5.1,9,0.4"/>
-	<path style="fill:none;stroke:#424242;stroke-width:0.7948;stroke-miterlimit:10;" d="M9.6,25.9c0,0-4.7,5.1-9,0.4"/>
-	<ellipse style="fill-rule:evenodd;clip-rule:evenodd;fill:#424242;" cx="23.2" cy="6.9" rx="5.8" ry="3.9"/>
-	<path style="fill-rule:evenodd;clip-rule:evenodd;fill:#424242;" d="M32.9,9.4C29.2,2.8,29.2,10,24,10s-7.3-6.3-9.7-0.7
-		c-1.8,4,4.2,7.9,9.3,7.9S35,13.2,32.9,9.4z"/>
-	<path style="fill:none;stroke:#424242;stroke-width:0.7948;stroke-miterlimit:10;" d="M36.3,17.6c0,0,6.6-1.9,4.4-7.8"/>
-	<path style="fill:none;stroke:#424242;stroke-width:0.7948;stroke-miterlimit:10;" d="M42.7,48.9c0,0,2.7-6.3-3.3-8.4"/>
-	<path style="fill:none;stroke:#424242;stroke-width:0.826;stroke-miterlimit:10;" d="M3.1,48.8c0,0-2.8-6.6,3.4-8.7"/>
-	<path style="fill:none;stroke:#424242;stroke-width:0.7948;stroke-miterlimit:10;" d="M9.9,18.4c0,0-6.6-1.9-4.4-7.8"/>
-	<path style="fill:none;stroke:#424242;stroke-width:0.7948;stroke-miterlimit:10;" d="M23.7,8c0,0-6.6-1.9-4.4-7.8"/>
-	<path style="fill:none;stroke:#424242;stroke-width:0.7948;stroke-miterlimit:10;" d="M22.3,8c0,0,6.6-1.9,4.4-7.8"/>
-	<path style="fill-rule:evenodd;clip-rule:evenodd;fill:#DB260E;" d="M43,31.1C43,43.1,34.2,53,23.2,53S3.5,43.1,3.5,31.1
-		c0-6.5,2.4-15,6.5-17.7c8.3-5.7,8.1,0,13.2,0c4.8,0,7.2-5.8,12.3-1.9C39.7,14.5,43,24.3,43,31.1z"/>
-	<line style="fill:none;stroke:#871E16;stroke-miterlimit:10;" x1="23.2" y1="13.3" x2="23.2" y2="53"/>
-	<circle style="fill:#424242;" cx="15.3" cy="19.1" r="3.5"/>
-	<circle style="fill:#424242;" cx="31.7" cy="19.1" r="3.5"/>
-	<circle style="fill:#424242;" cx="7.7" cy="28.3" r="3.5"/>
-	<circle style="fill:#424242;" cx="38.4" cy="28.3" r="3.5"/>
-	<circle style="fill:#424242;" cx="27.1" cy="28.3" r="3.5"/>
-	<circle style="fill:#424242;" cx="19.2" cy="28.3" r="3.5"/>
-	<circle style="fill:#424242;" cx="15.1" cy="39" r="5.3"/>
-	<circle style="fill:#424242;" cx="30" cy="39" r="5.3"/>
+	<path class="st0" d="M-309,300.3c0,18.6-13.7,33.7-30.5,33.7c-16.8,0-30.3-15.1-30.3-33.7c0-10,3.7-23.1,10-27.2
+		c12.8-8.8,12.5,0,20.3,0c7.4,0,11.1-8.9,18.9-2.9C-313.9,274.8-309,289.8-309,300.3z"/>
+	<path class="st1" d="M-313.6,289.8c0,0,7.2,7.8,13.8,0.6"/>
+	<path class="st1" d="M-355,289.8c0,0-7.2,7.8-13.8,0.6"/>
+	<ellipse class="st2" cx="-334.1" cy="260.6" rx="8.9" ry="6"/>
+	<path class="st2" d="M-319.1,264.5c-5.7-10.2-5.7,0.9-13.7,0.9s-11.2-9.7-14.9-1.1c-2.8,6.2,6.5,12.2,14.3,12.2
+		C-325.6,276.5-315.9,270.3-319.1,264.5z"/>
+	<path class="st1" d="M-313.9,277.1c0,0,10.2-2.9,6.8-12"/>
+	<path class="st1" d="M-304.1,325.2c0,0,4.2-9.7-5.1-12.9"/>
+	<path class="st3" d="M-365,325.1c0,0-4.3-10.2,5.2-13.4"/>
+	<path class="st1" d="M-354.5,278.3c0,0-10.2-2.9-6.8-12"/>
+	<path class="st1" d="M-333.3,262.3c0,0-10.2-2.9-6.8-12"/>
+	<path class="st1" d="M-335.4,262.3c0,0,10.2-2.9,6.8-12"/>
+	<path class="st4" d="M-303.6,297.8c0,18.5-13.5,33.7-30.5,33.7c-16.9,0-30.3-15.2-30.3-33.7c0-10,3.7-23.1,10-27.2
+		c12.8-8.8,12.5,0,20.3,0c7.4,0,11.1-8.9,18.9-2.9C-308.7,272.3-303.6,287.4-303.6,297.8z"/>
+	<line class="st5" x1="-334.1" y1="270.5" x2="-334.1" y2="331.5"/>
+	<circle class="st2" cx="-346.2" cy="279.4" r="5.4"/>
+	<circle class="st2" cx="-321" cy="279.4" r="5.4"/>
+	<circle class="st2" cx="-357.9" cy="293.5" r="5.4"/>
+	<circle class="st2" cx="-310.7" cy="293.5" r="5.4"/>
+	<circle class="st2" cx="-328.1" cy="293.5" r="5.4"/>
+	<circle class="st2" cx="-340.2" cy="293.5" r="5.4"/>
+	<circle class="st2" cx="-346.5" cy="310" r="8.2"/>
+	<circle class="st2" cx="-323.6" cy="310" r="8.2"/>
 </g>
+<circle class="st6" cx="-334.1" cy="298.9" r="20.5"/>
 </svg>
