@@ -54,9 +54,10 @@ function proto02(){
                                               Class: LadyBug
 -------------------------------------------------------------------------------------------------------------
 */
-    function LadyBug(){
+    function LadyBug(value){
         var _this = this;
 
+        this.startNumber = value; //getRandomInt(1,7);
         // container variables
         this.container = new PIXI.Container();
         this.container.interactive = true;
@@ -132,8 +133,7 @@ function proto02(){
     }
 
 
-    LadyBug.prototype.setUp = function(xpos){ // freeIds
-        freeIds = null;
+    LadyBug.prototype.setUp = function(freeIds){ // xpos
         this.sprite.walk.play();
         this.sprite.walk.alpha = 1;
 
@@ -143,21 +143,22 @@ function proto02(){
         this.sprite.dead.alpha = 0;
 
         this.state = "walk";
-        this.startNumber = getRandomInt(1,7); // GK: max should be the target
         this.number.text = this.startNumber;
-        this.container.ySpeed = walkSpeed / Math.log(this.number.text+2); //8/this.number.text;
-        this.sprite.walk.animationSpeed = .05*walkSpeed/Math.log(this.number.text+2);
+        this.container.ySpeed = walkSpeed / Math.log(this.number.text+5); //8/this.number.text;
+        this.sprite.walk.animationSpeed = .05*walkSpeed/Math.log(this.number.text+4);
 
         var moduleCount = window.innerWidth/this.sprite.walk.width;
 
-        if(freeIds == undefined ){
+        if(freeIds == null){
             var moduleId = getRandomInt(0,Math.floor(moduleCount));
         }else{ // GK: make non-overlapping
             var moduleId = freeIds[getRandomInt(0,freeIds.length)];
         }
 
-        //this.start.x = moduleId * this.sprite.walk.width;
-        this.start.x = xpos;
+        console.log("modCount: "+moduleCount+" freeIds: "+freeIds);
+
+        this.start.x = moduleId * this.sprite.walk.width;
+        //this.start.x =  //xpos;
         this.start.y = window.innerHeight;
 
         this.end.x = getRandomInt(this.start.x-this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2);
@@ -170,7 +171,7 @@ function proto02(){
 
         this.container.xSpeed = (this.start.x-this.end.x)/(this.start.y - this.end.y)
         if(this.start.x > this.end.x){ this.container.xSpeed*-1}
-
+        console.log(this.start.x); // whyy
 
         this.container.rotation = getAngle(this.start.x,this.start.y,this.end.x,this.end.y)
         this.container.x = this.start.x;
@@ -180,6 +181,7 @@ function proto02(){
     }
 
     LadyBug.prototype.move = function(_state){
+
 
         if(this.state == "destroy"){
             return
@@ -191,8 +193,6 @@ function proto02(){
 
         this.container.y = this.container.y - this.container.ySpeed;
         this.container.x = this.container.x - this.container.xSpeed;
-
-
 
         switch(this.state){
 
@@ -331,14 +331,12 @@ function proto02(){
 -------------------------------------------------------------------------------------------------------------
 */
     function Round(){
-
         this.score = 0;
         this.language = "english"
         this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-01.png');
         // this.background.height = canvas.height;
 
         stage.addChild(this.background);
-
     }
 
     // Round.prototype.getNextTri = function(stim){ }
@@ -353,8 +351,10 @@ function proto02(){
       //var audstim = new Audio('audio/' + language + '/' + stim.audio + ".mp3")
       //audstim.play()
       //var specsthis = this.getNextTri(stim);
-      this.trial = new Trial(stim); // then we recycle this trial...for now (could make a loop here)
-      this.trial.init();
+      //while (!quit) {
+        this.trial = new Trial(stim); // then we recycle this trial...for now (could make a loop here)
+        this.trial.init();
+      //}
     }
 
     Round.prototype.destroy = function(){
@@ -414,13 +414,27 @@ function proto02(){
         // }
     }
 
+    Trial.prototype.getFoils = function() {
+      // get numFoils foils that are within +/-3 of the target number
+      var corNum = parseInt(this.correct)
+      var min = corNum < 3 ? 0 : corNum - 3;
+      var foils = [];
+      for (var i = 0; i < numFoils; i++) {
+        foils.push( getRandomInt(min, corNum + 3) );
+      }
+      return(foils);
+    }
+
     Trial.prototype.init = function(){
       interval = Math.floor(screen_width / (numFoils + 1.0));
-
+      this.foils = this.getFoils();
+      this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
+      this.foils = shuffle(this.foils);
+      console.log(this.foils);
       for (var i=0; i<numFoils; i++){
         var xpos = getRandomInt(20 + interval*i, interval*(i+1) - 20);
-        this.ladyBugs.push(new LadyBug());
-        this.ladyBugs[i].setUp(xpos); // i+2 ??
+        this.ladyBugs.push(new LadyBug(this.foils[i]));
+        this.ladyBugs[i].setUp(); // i+2 ?? xpos ?
       }
 
       this.UI = new PIXI.Container()
@@ -437,13 +451,13 @@ function proto02(){
       this.circle.x = 80,
       this.circle.y = session.canvas.height-60;
 
-      this.cNumber =  new PIXI.Text(thisRound.trial.stimuli.id, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
+      this.cNumber =  new PIXI.Text(this.correct, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
       this.cNumber.x = 50
       this.cNumber.y = session.canvas.height-120
       this.UI.addChild(this.cNumber);
 
       stage.addChild(this.UI)
-      this.trialState = "play";
+      this.trialState = "play"; // GK: was "play"
     }
 
     Trial.prototype.play = function(_updateTime){
@@ -451,8 +465,11 @@ function proto02(){
         switch(this.trialState){
 
             case "play":
-                for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].move() };
+                for (var i=0; i<this.ladyBugs.length; i++){
+                  this.ladyBugs[i].move()
+                };
                 correct_sound.play();
+
                 if(this.correctImput >= 1){//------------------------------------------------------------------------------------------
 
                     for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
@@ -465,6 +482,7 @@ function proto02(){
                 break;
 
             case "showNext":
+
                 if(this.showNextNumber()){
 
                     this.correctImput = 0;
@@ -485,7 +503,7 @@ function proto02(){
       //stimQueues['numberstim'].push(this.stimuli);
       //console.log('pushed '+this.stimuli.id+' back on queue');
 
-      // GK somehwere here do the star + score
+      // GK somewhere here do the star + score
         switch(this.showNextState){
 
             case "flyall":

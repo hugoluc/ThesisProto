@@ -45,6 +45,7 @@ function initStorage() {
     console.log('Local storage is not supported: disable "Private Mode" or upgrade to a modern browser.');
     return(null);
   }
+  //store.clear(); // for testing with a clean slate
   user = store.get('user');
   user = null; // for testing defaults
   if(user==null) {
