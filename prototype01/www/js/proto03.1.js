@@ -81,11 +81,9 @@ function proto03(){
             this.cNumber.y = this.lillypad.y - (this.specs.size/2)
 
             stage.addChild(this.cNumber)
-
     };
 
     lillyFinal.prototype.display = function(_currentValue){
-
     	// animate lillypad
     };
 
@@ -298,11 +296,23 @@ function proto03(){
 
     lillySmall.prototype.animate = function(){
 
-        this.ang = (this.ang + 0.05) % (Math.PI*2);
-        this.circle.width =  this.size + Math.sin(this.ang) * 2;
-        this.circle.height =  this.size + Math.sin(this.ang) * 2;
-        this.circle.rotation = Math.sin(this.ang) * 0.02;
+        if(this.fade){
+
+            this.circle.alpha -= 0.01;
+            this.ripples.alpha -= 0.1;
+            this.cNumber.alpha -= 0.01
+
+
+        }else{
+        
+            this.ang = (this.ang + 0.05) % (Math.PI*2);
+            this.circle.width =  this.size + Math.sin(this.ang) * 2;
+            this.circle.height =  this.size + Math.sin(this.ang) * 2;
+            this.circle.rotation = Math.sin(this.ang) * 0.02;
+        
+        }
     };
+
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -444,7 +454,8 @@ function proto03(){
         this.AnimationDone = true;
         this.fadeStick = false;
         this.performOperation = false;
-        
+        this.countDone = false;
+
         this.ants = {
         
             size : {
@@ -613,15 +624,18 @@ function proto03(){
 
 
             this.performOperation = true;
+            this.countDone = false;
+
 
             this.countDownTargets = [_origin,_target]
-            this.clock.start(3000/this.lillySmall[_origin].value)
+            this.clock.start(1000/this.lillySmall[_origin].value)
 
             this.setAnimateAnts(_origin,_target)
 
         }else{
 
             this.performOperation = true;
+            this.countDone = false;
 
             // set countdown
             this.countDownTargets = [_origin,_target] 
@@ -737,8 +751,8 @@ function proto03(){
         }
     };
 
-    Trial.prototype.animateAnts = function(_target){
-        
+    Trial.prototype.animateAnts = function(_origin,_target){
+
         var done = true 
        // console.log("---------START-----------" + done)
 
@@ -769,7 +783,6 @@ function proto03(){
         if(done){
 
             this.AnimationDone = true;
-            this.performOperation = false;
             this.fadeStick = true;
 
             var newId = this.antsToAnimate.id.target
@@ -980,6 +993,7 @@ function proto03(){
 
     Trial.prototype.countNumber = function(){
 
+        console.log(this.lillySmall[this.countDownTargets[0]].cNumber.text)
             
         if(this.lillySmall[this.countDownTargets[0]].cNumber.text > 0){
 
@@ -1000,11 +1014,9 @@ function proto03(){
 
             }
 
-            return false
-
         }else{
 
-            return true
+            this.countDone = true;
 
         }
     };
@@ -1028,6 +1040,8 @@ function proto03(){
             case "intro":
                 
 
+
+
                 break;  
 
             case "play":
@@ -1048,6 +1062,10 @@ function proto03(){
                 
                     this.countNumber()
                     this.animateAnts()
+
+                    if(this.countDone && this.AnimationDone){
+                        this.performOperation = false
+                    }
                     
                 }
 
@@ -1056,15 +1074,24 @@ function proto03(){
 
             case "finished":
 
+                if(this.fadeStick){
+                    this.removeStick()
+                }
 
                 if(this.performOperation){
                 
                     this.countNumber()
                     this.animateAnts()
 
-                    if(!this.performOperation){
-                        this.clock.start(1000)
+
+                    console.log(this.countDone, this.AnimationDone)
+                    if(this.countDone && this.AnimationDone){
+                        this.clock.start(3000)
+                        this.performOperation = false
                     }
+
+                    
+
 
                 }else{
 
