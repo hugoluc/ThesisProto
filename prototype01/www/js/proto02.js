@@ -680,7 +680,7 @@ function update() {
         storeSession();
         thisRound.destroy();
         finishGame = false;
-        currentview = new Chooser(assets);
+        currentview = new Chooser(); // return assets??
     }
 
     if(statsBol) stats.begin();

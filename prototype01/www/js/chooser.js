@@ -3,7 +3,7 @@ var Chooser = function(_sos) {
 
     // hide experiment and show chooser
     clickStart('container-exp','container-chooser');
-    var availableGames = 3
+    var availableGames = 4
     for(var i=0; i<availableGames; i++ ){
 
       size = window.innerWidth/availableGames
@@ -36,6 +36,15 @@ var Chooser = function(_sos) {
       console.log("starting spellingGame");
       clickStart('container-chooser','container-exp');
       currentview = new spellingGame();
+    }
+
+    var game4 = document.getElementById("choose-game04")
+
+    game4.onclick =  function(){
+      console.log("starting wordGuess");
+      init_screen();
+      clickStart('container-chooser','container-exp');
+      currentview = new WordGame();
     }
 
 };

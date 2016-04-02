@@ -10,15 +10,15 @@ function spellingGame(){
   }
 
   Assets.prototype.load = function(){
-    var bg_texture = PIXI.Texture.fromImage("../svgs/sky-grass.svg");
+    var bg_texture = PIXI.Texture.fromImage("svgs/sky-grass.svg");
     this.sprites.background = new PIXI.Sprite(bg_texture);
-    var sun = new PIXI.Texture.fromImage("../svgs/sun.svg")
+    var sun = new PIXI.Texture.fromImage("svgs/sun.svg")
     this.sprites.sun = new PIXI.Sprite(sun);
-    var smiley = PIXI.Texture.fromImage("../svgs/smiley.svg"); //'_assets/basics/bunny.png');
+    var smiley = PIXI.Texture.fromImage("svgs/smiley.svg"); //'_assets/basics/bunny.png');
     this.sprites.smiley = new PIXI.Sprite(smiley);
-    var cloud = PIXI.Texture.fromImage("../svgs/cloud-1.svg");
+    var cloud = PIXI.Texture.fromImage("svgs/cloud-1.svg");
     this.sprites.cloud = new PIXI.Sprite(cloud);
-    var rainbow = PIXI.Texture.fromImage("../svgs/rainbow.svg");
+    var rainbow = PIXI.Texture.fromImage("svgs/rainbow.svg");
     this.sprites.rainbow = new PIXI.Sprite(rainbow);
 
     // load all alphabet audio files
@@ -57,7 +57,7 @@ function spellingGame(){
     this.sprite = new PIXI.Sprite(assets.sprites.background);
     this.sprite.scale.x = 2.5; //screen_width / bg.width;
     this.sprite.scale.y = 2.1;//screen_height / bg.height;
-    stage.addChild(this.sprite);
+    //stage.addChild(this.sprite);
   }
 
 
@@ -97,6 +97,7 @@ function spellingGame(){
     this.container.isClicked = false;
     this.container.position.x = getRandomInt(-150,-50);
     this.container.position.y = getRandomInt(100,510);
+    console.log(assets.sprites);
     this.sprite = new PIXI.Sprite(assets.sprites.cloud); //
     //this.sprite = {};
     // center the sprite's anchor point
@@ -129,7 +130,7 @@ function spellingGame(){
     this.speed = speed + Math.random(); // + or * difficulty
     this.offset = getRandomInt(1,20);
 
-    stage.addChild(this.container);
+    //stage.addChild(this.container);
   }
 
   // make bigger with click
@@ -162,13 +163,60 @@ function spellingGame(){
       }
   }
 
+  /*
+  -------------------------------------------------------------------------------------------------------------
+                                                  Class: Round
+  -------------------------------------------------------------------------------------------------------------
+  */
+      function Round(){
+          this.score = 0;
+          this.language = "english"
+          //this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-01.png');
+          // this.background.height = canvas.height;
+          this.background = new Background();
+          stage.addChild(this.background.sprite);
+      }
+
+      // Round.prototype.getNextTri = function(stim){ }
+
+      Round.prototype.play = function(_updateTime){
+          //this.trial.play(_updateTime)
+      }
+
+      Round.prototype.init = function(){
+        //queuesToUpdate['numberstim'] = true;
+        //stim = stimQueues['numberstim'].pop();
+        //var audstim = new Audio('audio/' + language + '/' + stim.audio + ".mp3")
+        //audstim.play()
+        //var specsthis = this.getNextTri(stim);
+        //while (!quit) {
+          //this.trial = new Trial(stim); // then we recycle this trial...for now (could make a loop here)
+          //this.trial.init();
+        //}
+        this.stim = Stimulus("A", true);
+        stage.addChild(this.stim.container);
+      }
+
+      Round.prototype.destroy = function(){
+          this.trial.destroy()
+          stage.removeChild(this.background)
+          this.background.destroy(true,true)
+      }
 
 
-  var stage = new PIXI.Container();
 
-  //var thisRound = new Round();
+
+/*
+-------------------------------------------------------------------------------------------------------------
+                                        Global variables and functions
+-------------------------------------------------------------------------------------------------------------
+*/
+
+  stage = new PIXI.Container(); // these were private (var stage)
   var assets = new Assets();
-  var bg = new Background();
+  var thisRound = new Round();
+
+  //var bg = new Background();
   var sun = new Sun();
   var onscreen = [];
   var rainbow = Rainbow();
@@ -177,7 +225,16 @@ function spellingGame(){
   //stim_container.addChild(createStimulus("B", false));
   //stage.addChild(stim_container);
 
+  //place fps elements
+  var statsBol = true;
+  if(statsBol){
 
+      stats = new Stats();
+      document.body.appendChild( stats.domElement );
+      stats.domElement.style.position = "absolute";
+      stats.domElement.style.top = "0px";
+      stats.domElement.style.zIndex = 10;
+  }
 
   this.destroy = function(){
       finishGame = true;
@@ -187,19 +244,19 @@ function spellingGame(){
   function onAssetsLoaded(){
       assets.load()
       session.show()
-      //thisRound.init()
+      thisRound.init()
       update();
   }
 
-  if(!proto2loaded){
+  if(!game_loaded){
     console.log("--------------------------------------");
-    // PIXI.loader
-    //   .add("../svgs/sun.svg")
-    //   .add("../svgs/sky-grass.svg")
-    //   .add("../svgs/rainbow.svg")
-    //   .add("../svgs/cloud-1.svg")
-    //   .load(onAssetsLoaded);
-    proto2loaded = true;
+    PIXI.loader
+      .add("svgs/sun.svg")
+      .add("svgs/sky-grass.svg")
+      .add("svgs/rainbow.svg")
+      .add("svgs/cloud-1.svg")
+      .load(onAssetsLoaded);
+    game_loaded = true;
   } else{
     onAssetsLoaded();
 
@@ -210,11 +267,38 @@ function spellingGame(){
     }
   }
 
+  var finishGame = false
+  var previousTime = Date.now();
+  var MS_PER_UPDATE = 16.66667;
+  var lag = 0
+
   var offset = 2
   var tick = 0;
-  // start animating
-  animate();
-  function animate() {
+
+  // animation loop
+  function update() {
+
+      if(finishGame){
+          console.log('finishGame - storing session!');
+          storeSession();
+          thisRound.destroy();
+          finishGame = false;
+          currentview = new Chooser(); // return assets? that's why nodes increase..
+      }
+
+      if(statsBol) stats.begin();
+
+      var current = Date.now();
+      var elapsed = current - previousTime;
+      previousTime = current;
+      lag = lag + elapsed;
+
+      while (lag >= MS_PER_UPDATE){
+        thisRound.play(lag/MS_PER_UPDATE);
+        //adjustGameDynamics()
+        lag = lag - MS_PER_UPDATE;
+      }
+
       for (var i = 0; i < onscreen.length; i++) {
         st = onscreen[i];
         if(st.position.x > bounds.width) {
@@ -226,15 +310,12 @@ function spellingGame(){
         }
       }
       sun.rotation -= .001;
-      //stim_container.position.x += .7;
-      //stim_container.scale.y = 0.97 + Math.sin(tick + offset) * 0.02;
-      //onscreen[0].rotation += 0.1;
-      //onscreen[1].rotation -= 0.1;
-      //onscreen[2].rotation -= 0.2;
-      //onscreen[1].position.x -= 1;
-      //onscreen[2].scale.x -= 0.01;
+
+      // update the canvas with new parameters
+      //---------------->> Thing that renders the whole stage
       tick += .1;
-      session.render(stage);
-      requestAnimationFrame(animate);
+      session.render(stage)
+      requestAnimationFrame(update);
+      if(statsBol) stats.end()
   }
 }
