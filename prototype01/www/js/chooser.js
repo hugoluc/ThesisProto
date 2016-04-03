@@ -18,7 +18,6 @@ var Chooser = function() {
     var game1 = document.getElementById("choose-game01")
 
     game1.onclick =  function(){
-
       console.log("")
       clickStart('container-chooser','container-exp');
       currentview = new proto02();
@@ -28,7 +27,6 @@ var Chooser = function() {
     var game2 = document.getElementById("choose-game02")
 
     game2.onclick =  function(){
-
       console.log("")
       clickStart('container-chooser','container-exp');
       currentview = new proto03();
@@ -59,6 +57,7 @@ var Chooser = function() {
       clickStart('container-chooser','container-exp');
       currentview = new proto04();
      }
+
 
   session.stats.end()
 

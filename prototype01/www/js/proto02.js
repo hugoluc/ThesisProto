@@ -675,6 +675,7 @@ function update() {
     if(finishGame){
         console.log('finishGame - storing session!');
         storeSession();
+
         session.stats.domElement.style.display = "none"
         thisRound.destroy();
         finishGame = false;
@@ -696,6 +697,7 @@ function update() {
     }
 
         // update the canvas with new parameters
+
         //---------------->> Thing that renders the whole stage
         session.render(stage)
 
