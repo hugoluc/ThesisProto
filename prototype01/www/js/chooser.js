@@ -1,9 +1,10 @@
 
-var Chooser = function(_sos) {
+var Chooser = function() {
 
     // hide experiment and show chooser
     clickStart('container-exp','container-chooser');
-    var availableGames = 4
+    var availableGames = 5;
+
     for(var i=0; i<availableGames; i++ ){
 
       size = window.innerWidth/availableGames
@@ -17,18 +18,22 @@ var Chooser = function(_sos) {
     var game1 = document.getElementById("choose-game01")
 
     game1.onclick =  function(){
+
       console.log("")
       clickStart('container-chooser','container-exp');
       currentview = new proto02();
+
     }
 
     var game2 = document.getElementById("choose-game02")
 
     game2.onclick =  function(){
+
       console.log("")
       clickStart('container-chooser','container-exp');
       currentview = new proto03();
-    }
+
+     }
 
     var game3 = document.getElementById("choose-game03")
 
@@ -46,5 +51,15 @@ var Chooser = function(_sos) {
       clickStart('container-chooser','container-exp');
       currentview = new WordGame();
     }
+
+    var game5 = document.getElementById("choose-game05")
+
+    game5.onclick =  function(){
+      console.log("test");
+      clickStart('container-chooser','container-exp');
+      currentview = new proto04();
+     }
+
+  session.stats.end()
 
 };

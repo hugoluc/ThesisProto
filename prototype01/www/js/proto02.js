@@ -468,7 +468,6 @@ function proto02(){
                 for (var i=0; i<this.ladyBugs.length; i++){
                   this.ladyBugs[i].move()
                 };
-                correct_sound.play();
 
                 if(this.correctImput >= 1){//------------------------------------------------------------------------------------------
 
@@ -607,17 +606,6 @@ function proto02(){
 -------------------------------------------------------------------------------------------------------------
 */
 
-//place fps elements
-var statsBol = true;
-if(statsBol){
-
-    stats = new Stats();
-    document.body.appendChild( stats.domElement );
-    stats.domElement.style.position = "absolute";
-    stats.domElement.style.top = "0px";
-    stats.domElement.style.zIndex = 10;
-}
-
 
 // create the root of the scene graph and main classes
 var stage = new PIXI.Container();
@@ -639,8 +627,6 @@ function onAssetsLoaded(){
 
 if(!proto2loaded){
 
-    console.log("--------------------------------------");
-
     PIXI.loader
       .add('sprites/ladyBug/ladyBug_WalkV3.json')
       .add('sprites/ladyBug/ladyBug_fly.json')
@@ -655,6 +641,17 @@ if(!proto2loaded){
     onAssetsLoaded();
 
 }
+
+//---------------------------------------LOOP
+
+var statsBol = false;
+
+if(statsBol){
+
+    session.stats.domElement.style.display = "block"
+
+};
+
 
 var finishGame = false
 var previousTime = Date.now();
@@ -678,17 +675,19 @@ function update() {
     if(finishGame){
         console.log('finishGame - storing session!');
         storeSession();
+        session.stats.domElement.style.display = "none"
         thisRound.destroy();
         finishGame = false;
         currentview = new Chooser(); // return assets??
     }
 
-    if(statsBol) stats.begin();
+    if(statsBol)session.stats.begin();
 
-    var current = Date.now();
-    var elapsed = current - previousTime;
-    previousTime = current;
-    lag = lag + elapsed;
+        //update position based on espectaed frame rate
+        var current = Date.now();
+        var elapsed = current - previousTime;
+        previousTime = current;
+        lag = lag + elapsed;
 
     while (lag >= MS_PER_UPDATE){
       thisRound.play(lag/MS_PER_UPDATE);
@@ -696,13 +695,13 @@ function update() {
       lag = lag - MS_PER_UPDATE;
     }
 
-    // update the canvas with new parameters
-    //---------------->> Thing that renders the whole stage
-    session.render(stage)
+        // update the canvas with new parameters
+        //---------------->> Thing that renders the whole stage
+        session.render(stage)
 
-    requestAnimationFrame(update);
+        requestAnimationFrame(update);
 
-    if(statsBol) stats.end()
+    if(statsBol) session.stats.end()
 }
 
 

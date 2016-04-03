@@ -7,11 +7,7 @@ function shuffle(o) {
 
 function getAngle(x,y,_x,_y){
 
-  var oposite = _x - x;
-  var adjacent = _y - y;
-  var hipotenuse = Math.sqrt((oposite*oposite)+(adjacent*adjacent))
-  var sinOfAngleX = oposite / hipotenuse
-  return Math.asin(sinOfAngleX)
+  return -Math.atan2(x - _x, y - _y)
 }
 
 function getDistance(x,y,_x,_y){
@@ -19,19 +15,19 @@ function getDistance(x,y,_x,_y){
   var adjacent = _y - y;
   var hipotenuse = Math.sqrt((oposite*oposite)+(adjacent*adjacent))
   return hipotenuse
-}
+};
 
 function getRandomInt(min, max) {
+  
   return Math.floor(Math.random() * (max-min)) + min;
-}
-
+};
 // hides one page and shows the next
 function clickStart(hide, show) {
 
         document.getElementById(hide).style.display="none";
         document.getElementById(show).style.display = "block";
         window.scrollTo(0,0);
-}
+};
 
 function getRandomColor() {
 
@@ -43,14 +39,18 @@ function getRandomColor() {
     }
 
     return color;
+};
 
-}
+/*
+-------------------------------------------------------------------------------------------------------------
+                                                Class: Clock
+-------------------------------------------------------------------------------------------------------------
+*/
 
 
 function ClockTimer(){
 
   this.timerStarted = false;
-
 };
 
 ClockTimer.prototype.start = function(_length){
@@ -58,45 +58,39 @@ ClockTimer.prototype.start = function(_length){
     this.timerStarted = true;
     this.setTime = _length;
     this.startTime = Date.now();
-
+    this.last = Date.now();
 };
-
-
-ClockTimer.prototype.timerRunnnig = function(){
-
-  return this.timerStarted
-
-
-}
 
 ClockTimer.prototype.timeOut = function() {
 
-  //console.log(Date.now()-this.startTime)
   if(Date.now()-this.startTime > this.setTime){
     return true;
   }else{
     
-    //console.log("------->>SET-TIME: " + this.setTime)
-    //console.log("------->>START-TIME: " + this.startTime)
-    //console.log("----------->>NOE: " + Date.now())
     return false;
   }
-
 };
 
+ClockTimer.prototype.timerRunnnig = function(){
+
+  return this.timerStarted
+};
 
 ClockTimer.prototype.cancel = function(){
 
   this.timerStarted = false
-
-}
-
+};
 
 ClockTimer.prototype.getElapsed = function(){
 
     return Date.now() - this.startTime;
-
 };
+
+/*
+-------------------------------------------------------------------------------------------------------------
+                                                Class: Animation
+-------------------------------------------------------------------------------------------------------------
+*/
 
 
 function animation(obj){
@@ -104,10 +98,10 @@ function animation(obj){
   this.timeSet = false;
   this.lastTime = 0;
   this.obj = obj;
+};
 
-}
+animation.prototype.init = function(dest,length,offset){
 
-animation.prototype.init = function(dest,length,style){
 
   this.finished = false;
   this.timeSet = false;
@@ -117,10 +111,13 @@ animation.prototype.init = function(dest,length,style){
     y : dest.y,
   } 
   
+  this.offset = offset || 0;
   this.anLength = length || 2000;
-  this.style = style || "linear";
+
+
 
   var start = {};
+
   start.x = this.obj.getBounds().x || this.obj.x
   start.y = this.obj.getBounds().y || this.obj.y
 
@@ -141,66 +138,54 @@ animation.prototype.init = function(dest,length,style){
   // console.log("dest",this.dest.x,this.dest.y)
   // console.log("distance:","x:" + this.distance.x ,"y:" +this.distance.y);
   // console.log("speed:", "x:" +this.speed.x ,"y:" + this.speed.y);
-
-}
+};
 
 animation.prototype.run = function(){
 
   if(this.finished){
     return true
   }
-  
-  if(!this.timeSet){
-
-    //console.log("start",this.startPos)    
-    this.StartTime = Date.now();
-    this.lastTime = Date.now();
-    this.timeSet = true;
-
-  }
-
 
   var last = this.now;
   this.now = Date.now();
-  // FIXME, first frame is wrong
   var frameTime = this.now - last;
 
-  var now = Date.now();
-  var elapsed = now - this.StartTime;
+  
+  if(!this.timeSet){
+   
+    this.StartTime = Date.now();
+    this.lastTime = Date.now();
+    this.timeSet = true;
+    frameTime =  0
 
-  if(Math.abs(this.speed.x * elapsed) < Math.abs(this.distance.x) || Math.abs(this.speed.y * elapsed) < Math.abs(this.distance.y)){
+  }
 
-    var s = false
-    if(s){
-        
-    }else{
 
-      //if linear: 
-      var p0 = {x:1.0, y:0.0};
-      var p1 = {x:1.0, y:0.0};
-      var p2 = {x:1.0, y:1.0};
-      var p3 = {x:1.0, y:1.0};
+  var elapsed = this.now - this.StartTime
 
-      var t = elapsed / this.anLength;
-      var speed = this.bezier(t, p0, p1, p2, p3);
-
-      this.obj.x = this.startPos.x + speed.y * this.distance.x; 
-      this.obj.y = this.startPos.y + speed.y * this.distance.y;
-    }
-    
-    return false;
-
-  }else{
-
+  if(elapsed >= this.anLength+this.offset){
+  
     this.obj.x =  this.startPos.x + (this.speed.x * this.anLength) 
     this.obj.y =  this.startPos.y + (this.speed.y * this.anLength) 
     this.finished = true;
+
     return true
-  
+
+  }else{
+
+    if(elapsed >= this.offset){
+      
+      this.obj.x = this.obj.x + frameTime * this.speed.x
+      this.obj.y = this.obj.y + frameTime * this.speed.y      
+    
+    }
+
+    
+    return false
+
+
   }
-
-}
-
+};
 
 animation.prototype.bezier = function(_t,_p0,_p1,_p2,_p3){
 
@@ -221,5 +206,4 @@ animation.prototype.bezier = function(_t,_p0,_p1,_p2,_p3){
   py = py + (_ttt * _p3.y); //fourth term
 
   return {x:px,y:py}
-
-}
+};

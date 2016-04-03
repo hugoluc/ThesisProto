@@ -1,0 +1,44 @@
+{"frames": {
+
+"ladyBug_Walk-01.png":
+{
+	"frame": {"x":1,"y":1,"w":86,"h":104},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":104},
+	"sourceSize": {"w":86,"h":106}
+},
+"ladyBug_Walk-02.png":
+{
+	"frame": {"x":89,"y":1,"w":86,"h":104},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":104},
+	"sourceSize": {"w":86,"h":106}
+},
+"ladyBug_Walk-03.png":
+{
+	"frame": {"x":177,"y":1,"w":86,"h":104},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":104},
+	"sourceSize": {"w":86,"h":106}
+},
+"ladyBug_Walk-04.png":
+{
+	"frame": {"x":265,"y":1,"w":86,"h":104},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":104},
+	"sourceSize": {"w":86,"h":106}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "ladyBug_Walk.png",
+	"format": "RGBA8888",
+	"size": {"w":352,"h":106},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:c9e11506ec98fe36185cd0daee547de6:1db95e3bd81dd3521cd3949a6ca35867:d13720d5932d27da673a0c1b64416700$"
+}
+}
