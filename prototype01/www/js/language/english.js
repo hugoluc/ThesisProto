@@ -8,7 +8,7 @@ var feedback = [
 ];
 
 var numbers = [
-  {id:"0", audio:"zero", text:"zero"},
+//  {id:"0", audio:"zero", text:"zero"},
   {id:"1", audio:"one", text:"one"},
   {id:"2", audio:"two", text:"two"},
   {id:"3", audio:"three", text:"three"},
@@ -41,17 +41,6 @@ var numbers = [
 var shapes = [];
 
 // when language is selected, load all the stimuli for that language
-
-//shapes.push(new Stimulus({id:"", text:"", image:"", audio:""}));
-shapes.push(new Stimulus({id:"star", text:"star", image:"star", audio:"star"}));
-shapes.push(new Stimulus({id:"semicircle", text:"semicircle", image:"semicircle", audio:"semicircle"}));
-shapes.push(new Stimulus({id:"circle", text:"circle", image:"circle", audio:"circle"}));
-shapes.push(new Stimulus({id:"triangle", text:"triangle", image:"triangle", audio:"triangle"}));
-shapes.push(new Stimulus({id:"square", text:"square", image:"square", audio:"square"}));
-shapes.push(new Stimulus({id:"rectangle", text:"rectangle", image:"rectangle", audio:"rectangle"}));
-shapes.push(new Stimulus({id:"pentagon", text:"pentagon", image:"pentagon", audio:"pentagon"}));
-shapes.push(new Stimulus({id:"hexagon", text:"hexagon", image:"hexagon", audio:"hexagon"}));
-shapes.push(new Stimulus({id:"octagon", text:"octagon", image:"octagon", audio:"octagon"}));
 
 
 // ToDo: record English alphabet! (or phonemes, or both?)
@@ -274,3 +263,15 @@ var words = [
   {id:"strong", text:"strong", audio:"strong"},
   {id:"meat", text:"meat", audio:"meat"}
   ];
+
+
+  //shapes.push(new Stimulus({id:"", text:"", image:"", audio:""}));
+  shapes.push(new Stimulus({id:"star", text:"star", image:"star", audio:"star"}));
+  shapes.push(new Stimulus({id:"semicircle", text:"semicircle", image:"semicircle", audio:"semicircle"}));
+  shapes.push(new Stimulus({id:"circle", text:"circle", image:"circle", audio:"circle"}));
+  shapes.push(new Stimulus({id:"triangle", text:"triangle", image:"triangle", audio:"triangle"}));
+  shapes.push(new Stimulus({id:"square", text:"square", image:"square", audio:"square"}));
+  shapes.push(new Stimulus({id:"rectangle", text:"rectangle", image:"rectangle", audio:"rectangle"}));
+  shapes.push(new Stimulus({id:"pentagon", text:"pentagon", image:"pentagon", audio:"pentagon"}));
+  shapes.push(new Stimulus({id:"hexagon", text:"hexagon", image:"hexagon", audio:"hexagon"}));
+  shapes.push(new Stimulus({id:"octagon", text:"octagon", image:"octagon", audio:"octagon"}));

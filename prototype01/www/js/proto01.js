@@ -8,13 +8,13 @@ function proto01(){
 		width : 71,
 		height : 84
 	}
-	
+
 	var lastPos = getRandomInt(0+(ladyBugSize.width/2),window.innerWidth-(ladyBugSize.width/2))
 
 	this.setBugsData = function(pos,attribute,value){
 
 		console.log("--",ladyBugs[pos][1][attribute])
-		ladyBugs[pos][1][attribute] = value 
+		ladyBugs[pos][1][attribute] = value
 
 	}
 
@@ -24,13 +24,9 @@ function proto01(){
 		text = parseInt(text) - 1
 
 		if(text <= 0){
-
 			console.log(this)
 		 	currentview.finishInteraction(this.childNodes[0].id,this.id)
-
-
 		}
-
 
 		this.childNodes[1].innerHTML = text
 
@@ -76,7 +72,7 @@ function proto01(){
 
 
 		var number = ladyGroup.append("text")
-		
+
 		number.attr({
 
 			x : specs.start+30,
@@ -107,14 +103,14 @@ function proto01(){
 		last = elapsed;
 		total = total + t
 		//console.log("fps=",1000/t)
-	    
+
 	    update(t);
 	    return timer_ret_val;
 	});
 
 	function update(t){
 
-		    
+
 	    for (var i=0; i<ladyBugs.length; i++){
 
 			    t_x = 0
@@ -132,7 +128,7 @@ function proto01(){
 							.attr({
 								width: 71,
 								height: 84,
-								clicked: "false" 
+								clicked: "false"
 							})
 						target.attr("x", target.attr("x")+32)
 						ladyBugs[i][0].on("click",ladyTouch)
@@ -140,16 +136,16 @@ function proto01(){
 					}
 
 					ladyBugs[i][1] = getBugSpecs()
-					ladyBugs[i][0].attr("transform",  "translate(0,0)");	
+					ladyBugs[i][0].attr("transform",  "translate(0,0)");
 					ladyBugs[i][0].select("image").attr("x", ladyBugs[i][1].start)
 					ladyBugs[i][0].select("text").attr("x", ladyBugs[i][1].start+30).text(ladyBugs[i][1].number)
 
 				}
 
-				ladyBugs[i][0].attr("transform",  "translate("+ -t_x +"," + -t_y + ")");	
+				ladyBugs[i][0].attr("transform",  "translate("+ -t_x +"," + -t_y + ")");
 
 		    }
-	    
+
 	}
 
 }
@@ -164,7 +160,7 @@ proto01.prototype.finishInteraction = function(id,gid){
 		.attr({
 			width: 116,
 			height: 130,
-			clicked: "true" 
+			clicked: "true"
 		})
 
 		console.log(group.select("text"))
@@ -176,5 +172,3 @@ proto01.prototype.finishInteraction = function(id,gid){
 		currentview.setBugsData(bug.attr("bugId"),"speed", 0.5)
 
 }
-
-

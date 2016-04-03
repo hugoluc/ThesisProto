@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:ns1="http://sozi.baierouge.fr"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    id="svg4088"
+    sodipodi:docname="clouds_02.svg"
+    viewBox="0 0 332 169"
+    sodipodi:version="0.32"
+    version="1.0"
+    inkscape:output_extension="org.inkscape.output.svg.inkscape"
+    inkscape:version="0.46"
+  >
+  <defs
+      id="defs4090"
+    >
+    <filter
+        id="filter3863"
+        height="1.209"
+        width="1.0979"
+        y="-.10451"
+        x="-.048943"
+        inkscape:collect="always"
+      >
+      <feGaussianBlur
+          id="feGaussianBlur3865"
+          stdDeviation="6.2517361"
+          inkscape:collect="always"
+      />
+    </filter
+    >
+  </defs
+  >
+  <sodipodi:namedview
+      id="base"
+      bordercolor="#666666"
+      inkscape:pageshadow="2"
+      inkscape:window-y="0"
+      pagecolor="#729fcf"
+      inkscape:window-height="944"
+      inkscape:zoom="0.35"
+      inkscape:window-x="0"
+      showgrid="false"
+      borderopacity="1.0"
+      inkscape:current-layer="layer1"
+      inkscape:cx="121.97449"
+      inkscape:cy="492.85714"
+      inkscape:window-width="1272"
+      inkscape:pageopacity="1"
+      inkscape:document-units="px"
+  />
+  <g
+      id="layer1"
+      inkscape:label="Capa 1"
+      inkscape:groupmode="layer"
+      transform="translate(-65.5 -573.06)"
+    >
+    <g
+        id="g3877"
+        transform="translate(-460.5 225.96)"
+      >
+      <path
+          id="path3824"
+          style="fill:#eeeeec"
+          d="m731.5 347.09c-40.1 0-73.29 29.18-78.72 67.07-0.75-0.04-1.52-0.07-2.28-0.07-13.73 0-26.2 5.35-35.44 14.03-6.58-6.2-15.61-10.03-25.56-10.03-13.78 0-25.79 7.34-32 18.16-3.33-3.78-8.02-6.16-13.25-6.16-10.07 0-18.25 8.74-18.25 19.5 0 10.77 8.18 19.5 18.25 19.5 4.13 0 7.91-1.49 10.97-3.97 5.12 13.4 18.54 22.97 34.28 22.97 4.89 0 9.55-0.91 13.81-2.59 7.96 18 26.09 30.59 47.19 30.59 17.82 0 33.5-8.99 42.75-22.62 11.35 6.13 24.38 9.62 38.25 9.62 17.54 0 33.75-5.6 46.91-15.06 8.33 9.85 20.52 16.06 34.09 16.06 25.12 0 45.5-21.28 45.5-47.5s-20.38-47.5-45.5-47.5c-1.06 0-2.11 0.05-3.16 0.13-7.47-35.46-39.5-62.13-77.84-62.13z"
+      />
+      <path
+          id="path3837"
+          style="filter:url(#filter3863);fill:#ffffff"
+          sodipodi:type="inkscape:offset"
+          d="m731.5 359.81c-33.93 0-61.6 24.58-66.12 56.16-0.93 6.48-6.62 11.19-13.16 10.91-0.72-0.04-1.29-0.07-1.72-0.07-10.43 0-19.75 4.04-26.72 10.6-4.91 4.6-12.55 4.58-17.44-0.03-4.26-4.02-10.15-6.57-16.84-6.57-9.27 0-17.05 4.95-20.97 11.78-2.04 3.56-5.68 5.92-9.77 6.33-4.08 0.41-8.11-1.18-10.82-4.26-1.16-1.32-2.31-1.85-3.69-1.85-2.71 0-5.53 2.47-5.53 6.78 0 4.32 2.82 6.79 5.53 6.79 1.05 0 1.95-0.34 2.97-1.16 3.17-2.56 7.37-3.44 11.31-2.38 3.93 1.07 7.11 3.95 8.56 7.75 3.2 8.36 11.83 14.79 22.41 14.79 3.3 0 6.36-0.62 9.16-1.72 6.34-2.49 13.52 0.46 16.28 6.68 5.95 13.47 19.52 23.04 35.56 23.04 13.54 0 25.26-6.82 32.22-17.07 3.67-5.4 10.85-7.15 16.59-4.03 9.55 5.16 20.46 8.1 32.19 8.1 14.83 0 28.4-4.74 39.47-12.69 5.39-3.88 12.87-2.96 17.15 2.12 6.1 7.2 14.69 11.57 24.38 11.57 17.93 0 32.78-15.16 32.78-34.79 0-19.62-14.85-34.78-32.78-34.78-0.66 0-1.41 0.04-2.25 0.1-6.34 0.44-12.03-3.85-13.34-10.07-6.23-29.53-32.97-52.03-65.41-52.03z"
+          inkscape:original="M 731.5 347.09375 C 691.3989 347.09375 658.20659 376.27196 652.78125 414.15625 C 652.02628 414.12367 651.26303 414.09375 650.5 414.09375 C 636.76628 414.09375 624.29862 419.43811 615.0625 428.125 C 608.47583 421.92382 599.45282 418.09375 589.5 418.09375 C 575.71536 418.09375 563.70985 425.4266 557.5 436.25 C 554.17218 432.47103 549.48464 430.09375 544.25 430.09375 C 534.17994 430.09375 525.99999 438.82976 526 449.59375 C 526 460.35775 534.17993 469.09375 544.25 469.09375 C 548.37593 469.09375 552.16146 467.59668 555.21875 465.125 C 560.33842 478.52451 573.75937 488.09375 589.5 488.09375 C 594.39259 488.09375 599.04738 487.17682 603.3125 485.5 C 611.26729 503.5004 629.39993 516.09375 650.5 516.09375 C 668.31761 516.09375 684.00229 507.10003 693.25 493.46875 C 704.60414 499.6022 717.63097 503.09375 731.5 503.09375 C 749.0444 503.09375 765.25236 497.48706 778.40625 488.03125 C 786.74494 497.87878 798.92945 504.09375 812.5 504.09375 C 837.616 504.09375 858.00003 482.81376 858 456.59375 C 858 430.37375 837.61603 409.09376 812.5 409.09375 C 811.43945 409.09375 810.38625 409.14409 809.34375 409.21875 C 801.86541 373.7639 769.84222 347.09375 731.5 347.09375 z "
+          inkscape:radius="-12.724609"
+      />
+      <path
+          id="path3869"
+          sodipodi:nodetypes="cccc"
+          style="fill:#e4eaed"
+          d="m603.75 484.34s-12-17-7.25-25.5c-6.75 8 3.63 29.54-2.5 28l9.75-2.5z"
+      />
+      <path
+          id="path3871"
+          inkscape:transform-center-x="-6.405905"
+          sodipodi:nodetypes="cccc"
+          style="fill:#e4eaed"
+          d="m694 491.69s13.5-20.15 2.47-34.93c15.31 10.15 2.82 41.81 10.34 38.17l-12.81-3.24z"
+      />
+      <path
+          id="path3873"
+          sodipodi:nodetypes="cccc"
+          style="fill:#e4eaed"
+          d="m777.75 487.34s-12-17-7.25-25.5c-6.75 8 3.63 29.54-2.5 28l9.75-2.5z"
+      />
+      <path
+          id="path3875"
+          sodipodi:nodetypes="cccc"
+          style="fill:#e4eaed"
+          d="m807.05 409.77s-20.81-0.03-25.02 8.75c2.66-10.12 26.24-14.02 21.46-18.16l3.56 9.41z"
+      />
+    </g
+    >
+  </g
+  >
+  <metadata
+    >
+    <rdf:RDF
+      >
+      <cc:Work
+        >
+        <dc:format
+          >image/svg+xml</dc:format
+        >
+        <dc:type
+            rdf:resource="http://purl.org/dc/dcmitype/StillImage"
+        />
+        <cc:license
+            rdf:resource="http://creativecommons.org/licenses/publicdomain/"
+        />
+        <dc:publisher
+          >
+          <cc:Agent
+              rdf:about="http://openclipart.org/"
+            >
+            <dc:title
+              >Openclipart</dc:title
+            >
+          </cc:Agent
+          >
+        </dc:publisher
+        >
+        <dc:title
+          >Set of soft clouds 2</dc:title
+        >
+        <dc:date
+          >2006-12-26T00:00:00</dc:date
+        >
+        <dc:description
+        />
+        <dc:source
+          >https://openclipart.org/detail/20776/-by--20776</dc:source
+        >
+        <dc:creator
+          >
+          <cc:Agent
+            >
+            <dc:title
+              >rg1024</dc:title
+            >
+          </cc:Agent
+          >
+        </dc:creator
+        >
+      </cc:Work
+      >
+      <cc:License
+          rdf:about="http://creativecommons.org/licenses/publicdomain/"
+        >
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#Reproduction"
+        />
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#Distribution"
+        />
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#DerivativeWorks"
+        />
+      </cc:License
+      >
+    </rdf:RDF
+    >
+  </metadata
+  >
+</svg
+>
