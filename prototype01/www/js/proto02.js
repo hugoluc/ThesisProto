@@ -1,4 +1,5 @@
 var proto2loaded = false;
+
 var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
 // modify game dynamics if scoreDifferential reaches +3 or -3
 var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
@@ -55,6 +56,7 @@ function proto02(){
 -------------------------------------------------------------------------------------------------------------
 */
     function LadyBug(value){
+
         var _this = this;
 
         this.startNumber = value; //getRandomInt(1,7);
@@ -86,6 +88,7 @@ function proto02(){
         this.sprite.fly.scale.x = 0.34;
         this.sprite.fly.scale.y = 0.34;
         this.container.addChild(this.sprite.fly);
+        console.log(this.sprite.fly.textures)
 
         this.sprite.dead = PIXI.Sprite.fromImage('sprites/ladyBug/ladtBug_dead.png');
         this.sprite.dead.alpha = 0;
@@ -155,7 +158,7 @@ function proto02(){
             var moduleId = freeIds[getRandomInt(0,freeIds.length)];
         }
 
-        console.log("modCount: "+moduleCount+" freeIds: "+freeIds);
+        //console.log("modCount: "+moduleCount+" freeIds: "+freeIds);
 
         this.start.x = moduleId * this.sprite.walk.width;
         //this.start.x =  //xpos;
@@ -171,7 +174,7 @@ function proto02(){
 
         this.container.xSpeed = (this.start.x-this.end.x)/(this.start.y - this.end.y)
         if(this.start.x > this.end.x){ this.container.xSpeed*-1}
-        console.log(this.start.x); // whyy
+        //console.log(this.start.x); // whyy
 
         this.container.rotation = getAngle(this.start.x,this.start.y,this.end.x,this.end.y)
         this.container.x = this.start.x;
@@ -327,114 +330,68 @@ function proto02(){
 
 /*
 -------------------------------------------------------------------------------------------------------------
-                                                Class: Round
--------------------------------------------------------------------------------------------------------------
-*/
-    function Round(){
-        this.score = 0;
-        this.language = "english"
-        this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-01.png');
-        // this.background.height = canvas.height;
-
-        stage.addChild(this.background);
-    }
-
-    // Round.prototype.getNextTri = function(stim){ }
-
-    Round.prototype.play = function(_updateTime){
-        this.trial.play(_updateTime)
-    }
-
-    Round.prototype.init = function(){
-      queuesToUpdate['numberstim'] = true;
-      stim = stimQueues['numberstim'].pop();
-      //var audstim = new Audio('audio/' + language + '/' + stim.audio + ".mp3")
-      //audstim.play()
-      //var specsthis = this.getNextTri(stim);
-      //while (!quit) {
-        this.trial = new Trial(stim); // then we recycle this trial...for now (could make a loop here)
-        this.trial.init();
-      //}
-    }
-
-    Round.prototype.destroy = function(){
-        this.trial.destroy()
-        stage.removeChild(this.background)
-        this.background.destroy(true,true)
-    }
-
-/*
--------------------------------------------------------------------------------------------------------------
                                                 Class: Trial
 -------------------------------------------------------------------------------------------------------------
 */
     function Trial(_stimuli){
+
       this.ladyBugs = [];
       this.stimuli = _stimuli;
       this.correct = _stimuli.id;
       this.correctImput = 0;
       this.playQueue = []
       this.correctSet = false;
-      //this.stimuli.value.play()
+
     }
 
     Trial.prototype.destroy = function(){
+
         for(var i=0; i<this.ladyBugs.length; i++){
+
           this.ladyBugs[i].destroy()
+
         }
 
         this.UI.removeChildren(0,this.UI.children.length)
         this.circle.destroy(true.true)
         this.cNumber.destroy(true,true)
+
         stage.removeChild(this.UI)
         this.UI.destroy(true,true)
 
     }
 
-    Trial.prototype.playNext= function(){
-        // console.log(assets.sounds[this.playQueue[0]].pause())
-        // console.log("SONG ENDED")
-        // console.log("--<", this.playQueue)
-        // this.playQueue.splice(0, 1);
-
-        // if(this.playQueue.length == 1){
-
-        //     var _this = this;
-        //     console.log("-- queue full! -- ")
-        //     console.log("--<", this.playQueue)
-        //     assets.sounds[this.playQueue[0]].play()
-        //     assets.sounds[this.playQueue[0]].playbackRate = 1.5
-
-        // } else {
-        //     var _this = this;
-        //     console.log("-- queue full! -- ")
-        //     console.log("--<", this.playQueue)
-        //     assets.sounds[this.playQueue[0]].play()
-        //     assets.sounds[this.playQueue[0]].playbackRate = 1.5
-        // }
-    }
-
     Trial.prototype.getFoils = function() {
+
       // get numFoils foils that are within +/-3 of the target number
       var corNum = parseInt(this.correct)
       var min = corNum < 3 ? 0 : corNum - 3;
       var foils = [];
+
       for (var i = 0; i < numFoils; i++) {
+
         foils.push( getRandomInt(min, corNum + 3) );
+
       }
+
       return(foils);
+
     }
 
     Trial.prototype.init = function(){
+
       interval = Math.floor(screen_width / (numFoils + 1.0));
       this.foils = this.getFoils();
       this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
       this.foils = shuffle(this.foils);
       console.log(this.foils);
+
       for (var i=0; i<numFoils; i++){
+
         var xpos = getRandomInt(20 + interval*i, interval*(i+1) - 20);
         this.ladyBugs.push(new LadyBug(this.foils[i]));
         this.ladyBugs[i].setUp(); // i+2 ?? xpos ?
+
       }
 
       this.UI = new PIXI.Container()
@@ -458,6 +415,7 @@ function proto02(){
 
       stage.addChild(this.UI)
       this.trialState = "play"; // GK: was "play"
+
     }
 
     Trial.prototype.play = function(_updateTime){
@@ -599,6 +557,50 @@ function proto02(){
 
     };
 
+/*
+-------------------------------------------------------------------------------------------------------------
+                                                Class: Round
+-------------------------------------------------------------------------------------------------------------
+*/
+    function Round(){
+
+        this.score = 0;
+        this.language = "english"
+        this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-01.png');
+        // this.background.height = canvas.height;
+
+        stage.addChild(this.background);
+    }
+
+    // Round.prototype.getNextTri = function(stim){ }
+
+    Round.prototype.play = function(_updateTime){
+ 
+        this.trial.play(_updateTime)
+ 
+    }
+
+    Round.prototype.init = function(){
+
+        queuesToUpdate['numberstim'] = true;
+
+        stim = stimQueues['numberstim'].pop();
+        console.log("---------------->>>>>>>>")
+        console.log(stim)
+        this.trial = new Trial(stim); // then we recycle this trial...for now (could make a loop here)
+        this.trial.init();
+
+    }
+
+    Round.prototype.destroy = function(){
+
+        this.trial.destroy()
+        stage.removeChild(this.background)
+        this.background.destroy(true,true)
+
+    }
+/*
+
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -614,15 +616,19 @@ var assets = new Assets();
 
 
 this.destroy = function(){
+
     finishGame = true;
     session.hide()
+
 }
 
 function onAssetsLoaded(){
+    
     assets.load()
     session.show()
     thisRound.init()
     update();
+
 }
 
 if(!proto2loaded){
@@ -652,27 +658,34 @@ if(statsBol){
 
 };
 
-
 var finishGame = false
 var previousTime = Date.now();
 var MS_PER_UPDATE = 16.66667;
 var lag = 0
 
+
 function adjustGameDynamics() {
+
   if(scoreDifferential>=3) {
+
     scoreDifferential = 0;
     walkSpeed += 1;
     console.log('streaky-full speed ahead!');
+
   } else if(scoreDifferential<=-3 & walkSpeed>2) {
+
     scoreDifferential = 0;
     walkSpeed -= 1;
     console.log('mistakes were made; slowing down');
+
   }
+
 }
 
 function update() {
 
     if(finishGame){
+
         console.log('finishGame - storing session!');
         storeSession();
 
@@ -680,6 +693,8 @@ function update() {
         thisRound.destroy();
         finishGame = false;
         currentview = new Chooser(); // return assets??
+
+        return
     }
 
     if(statsBol)session.stats.begin();
@@ -690,13 +705,14 @@ function update() {
         previousTime = current;
         lag = lag + elapsed;
 
-    while (lag >= MS_PER_UPDATE){
-      thisRound.play(lag/MS_PER_UPDATE);
-      adjustGameDynamics()
-      lag = lag - MS_PER_UPDATE;
-    }
+        while (lag >= MS_PER_UPDATE){
 
         // update the canvas with new parameters
+          thisRound.play(lag/MS_PER_UPDATE);
+          adjustGameDynamics()
+
+          lag = lag - MS_PER_UPDATE;
+        }
 
         //---------------->> Thing that renders the whole stage
         session.render(stage)

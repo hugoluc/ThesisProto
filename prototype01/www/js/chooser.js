@@ -3,6 +3,8 @@ var Chooser = function() {
 
     // hide experiment and show chooser
     clickStart('container-exp','container-chooser');
+    var game1 = document.getElementById("header-exp").style.display = "block"    
+
     var availableGames = 5;
 
     for(var i=0; i<availableGames; i++ ){
@@ -13,7 +15,7 @@ var Chooser = function() {
         .css("top", i*(100/availableGames)+"%")
         .css("height", size)
         .css("background", getRandomColor())
-      }
+    }
 
     var game1 = document.getElementById("choose-game01")
 

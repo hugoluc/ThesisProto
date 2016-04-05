@@ -100,6 +100,11 @@ function animation(obj){
   this.obj = obj;
 };
 
+animation.prototype.stop = function(){
+  this.finished = true;
+  this.obj = [];
+}
+
 animation.prototype.init = function(dest,length,offset){
 
 

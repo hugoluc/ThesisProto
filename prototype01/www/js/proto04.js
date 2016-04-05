@@ -1,46 +1,6 @@
+var proto4loaded = true	
+
 function proto04(){
-
-
-/*
--------------------------------------------------------------------------------------------------------------
-                                               Class: Assets
--------------------------------------------------------------------------------------------------------------
-*/
-    function Assets(){
-
-        this.textures = {};
-        this.sounds = [];
-    };
-    
-    Assets.prototype.load = function(){
-
-        this.textures.stick = {
-
-            stick: new PIXI.Texture.fromImage("sprites/stick/stick.png"),
-            leave: new PIXI.Texture.fromImage("sprites/stick/leave.png"),
-            branch: new PIXI.Texture.fromImage("sprites/stick/branch.png")
-
-        }
-
-        this.textures.lillySmall = new PIXI.Texture.fromImage("sprites/lillypad/small-01.png")
-        this.textures.ants = new PIXI.Texture.fromImage("sprites/lillypad/ant.png")
-        this.textures.bg = new PIXI.Texture.fromImage("sprites/backGrounds/BackGround-04.png")
-    };
-
-    Assets.prototype.destroy = function(){
-    
-        this.textures.stick.stick.destroy(true,true)
-        this.textures.stick.leave.destroy(true,true)
-        this.textures.stick.branch.destroy(true,true)
-        this.textures.lillySmall.destroy(true,true)
-        this.textures.ants.destroy(true,true)
-        this.textures.bg.destroy(true,true)
-        console.log(this.textures)
-        this.textures = null;
-        this.sounds = null;
-    };
-
-
 
 
 /*
@@ -68,24 +28,20 @@ function proto04(){
 
 	function onAssetsLoaded(){
  		
- 		assets.load()
 	    session.show()
 	    console.log("----") 
 	    update();
 
-
 	}
 
-	if(proto3loaded){
+	if(proto4loaded){
 
-	    PIXI.loader
-	    .load(onAssetsLoaded);
-
-	    proto3loaded = false;
+		assets.addSprite(["ripple",'sprites/lillypad/ripples/ripples.json','sprites/lillypad/ripples/ripples.png',4])
+		assets.load(onAssetsLoaded)
 
 	}else{
 
-	    onAssetsLoaded();
+	    onAssetsLoaded(onAssetsLoaded);
 
 	}
 
@@ -116,7 +72,7 @@ function proto04(){
 		        lag = lag + elapsed;
 
 
-		        while (lag >= MS_PER_UPDATE){           
+		        while (lag >= MS_PER_UPDATE){        
 		            lag = lag - MS_PER_UPDATE;
 		        }
 
@@ -129,6 +85,5 @@ function proto04(){
 	        if(statsBol)stats.end()
 	        
 	}
-
 
 }

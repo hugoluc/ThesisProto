@@ -7,46 +7,47 @@ function proto03(){
                                                Class: Assets
 -------------------------------------------------------------------------------------------------------------
 */
-    function Assets(){
 
-        this.textures = {};
-        this.sprites = {}
-        this.sounds = [];
-    };
+    // function Assets(){
+
+    //     this.textures = {};
+    //     this.sprites = {}
+    //     this.sounds = [];
+    // };
     
-    Assets.prototype.load = function(){
-
-        this.textures.stick = {
-
-            stick: new PIXI.Texture.fromImage("sprites/stick/stick.png"),
-            leave: new PIXI.Texture.fromImage("sprites/stick/leave.png"),
-            branch: new PIXI.Texture.fromImage("sprites/stick/branch.png")
-
-        }
-
-        this.textures.lillySmall = new PIXI.Texture.fromImage("sprites/lillypad/small-01.png")
-        this.textures.ants = new PIXI.Texture.fromImage("sprites/lillypad/ant.png")
-        this.textures.bg = new PIXI.Texture.fromImage("sprites/backGrounds/BackGround-05.png")
-        this.textures.lillyBig = new PIXI.Texture.fromImage("sprites/lillypad/big-01.png")
+    // Assets.prototype.load = function(){
 
 
-        this.sprites.ripples = []
-        for (var i = 0; i < 5; i++) {
+    //     this.textures.stick = new PIXI.Texture.fromImage("sprites/stick/stick.png"),
+    //     this.textures.leave = new PIXI.Texture.fromImage("sprites/stick/leave.png"),
+    //     this.textures.branch =  new PIXI.Texture.fromImage("sprites/stick/branch.png")
 
-            this.sprites.ripples.push(PIXI.Texture.fromFrame('ripple-' + i + '.png'))
 
-        };
-    };
+    //     this.textures.lillySmall = new PIXI.Texture.fromImage("sprites/lillypad/small-01.png")
+    //     this.textures.ants = new PIXI.Texture.fromImage("sprites/lillypad/ant.png")
+    //     this.textures.bg = new PIXI.Texture.fromImage("sprites/backGrounds/BackGround-05.png")
+    //     this.textures.lillyBig = new PIXI.Texture.fromImage("sprites/lillypad/big-01.png")
 
-    Assets.prototype.destroy = function(){
+    //     this.sprites.ripples = []
+
+    //     for (var i = 0; i < 5; i++) {
+
+    //         this.sprites.ripples.push(PIXI.Texture.fromFrame('ripple-' + i + '.png'))
+
+    //     };
+
+    // };
+
+    // Assets.prototype.destroy = function(){
     
-        this.textures.stick.stick.destroy(true)
-        this.textures.stick.leave.destroy(true)
-        this.textures.stick.branch.destroy(true)
-        this.textures.lillySmall.destroy(true)
-        this.textures.ants.destroy(true)
-        this.textures.bg.destroy(true)
-    };
+    //     this.textures.stick.stick.destroy(true)
+    //     this.textures.stick.leave.destroy(true)
+    //     this.textures.stick.branch.destroy(true)
+    //     this.textures.lillySmall.destroy(true)
+    //     this.textures.ants.destroy(true)
+    //     this.textures.bg.destroy(true)
+    
+    // };
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -97,7 +98,6 @@ function proto03(){
 
     lillyFinal.prototype.getAntsDivision = function(_antSize){
 
-
         this.antsDivision = []
         var n = this.specs.size
         var ant = []
@@ -106,7 +106,7 @@ function proto03(){
 
             var angle = ((2*Math.PI)/this.value)*i 
 
-            console.log(  this.lillypad.x + (Math.cos(angle) * (n*0.32)) - _antSize.width  )
+            // console.log(  this.lillypad.x + (Math.cos(angle) * (n*0.32)) - _antSize.width  )
 
             this.antsDivision.push({
 
@@ -203,13 +203,15 @@ function proto03(){
         this.ripples.alpha = 0.8
         this.ripples.rotation = this.circle.rotation
 
+
         this.ripples.rotation = this.circle.rotation
         this.getAntsDivision(_antSize)
     };
 
     lillySmall.prototype.createRipples = function(){
 
-        this.ripples = new PIXI.extras.MovieClip(assets.sprites.ripples);
+
+        this.ripples = new PIXI.extras.MovieClip(assets.sprites.ripple);
         stage.addChild(this.ripples);
     };
 
@@ -473,7 +475,6 @@ function proto03(){
 
     Trial.prototype.init = function(){
 
-        console.log("----1") 
 
         this.lillyFinal.init(this.correct.value)
  
@@ -512,30 +513,21 @@ function proto03(){
             for(var j = 0;j<lilipadValues[i];j++){
                 
                 var pos = this.lillySmall[i].antsDivision[j]
+                this.ants.sprites.push( new Ant(this.ants.size, pos, i) )
             
-                this.ants.sprites.push(
-            
-                    new Ant(this.ants.size, pos, i)
-                    
-                    )
             }
 
         }
 
-        console.log("----2")
 
         // create stick
-        this.stick = new PIXI.Sprite(assets.textures.stick.stick)
+        this.stick = new PIXI.Sprite(assets.textures.stick)
         this.stick.width = 0;
         this.stick.height = 15;
         stage.addChild(this.stick);
 
-        console.log("----3")
-
-        this.branch = new PIXI.Sprite(assets.textures.stick.branch)
+        this.branch = new PIXI.Sprite(assets.textures.branch)
         stage.addChild(this.branch);
-
-        console.log("----4")
 
 
         for(var i=0;i<this.ants.sprites.length;i++){
@@ -701,7 +693,6 @@ function proto03(){
 
                     var t2 = this.lillyFinal.antsDivision[posCount]
                     var trajectory = [t0,t1,t2]
-                    console.log(t0,t1,t2)
 
                     this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.ori))
                     this.antsToAnimate.origin.push(i)
@@ -830,7 +821,6 @@ function proto03(){
 
                 var angle = getAngle(this.stick.startX ,this.stick.startY,this.lillyFinal.lillypad.x,this.lillyFinal.lillypad.y)
                 this.stick.angle = angle
-                console.log(this.stick.angle)
 
                 this.stick.width = getDistance(
                 
@@ -993,7 +983,6 @@ function proto03(){
 
     Trial.prototype.countNumber = function(){
 
-        console.log(this.lillySmall[this.countDownTargets[0]].cNumber.text)
             
         if(this.lillySmall[this.countDownTargets[0]].cNumber.text > 0){
 
@@ -1084,7 +1073,6 @@ function proto03(){
                     this.animateAnts()
 
 
-                    console.log(this.countDone, this.AnimationDone)
                     if(this.countDone && this.AnimationDone){
                         this.clock.start(3000)
                         this.performOperation = false
@@ -1329,10 +1317,8 @@ function proto03(){
 //-------------------------------------------
 
 // create the root of the scene graph and main classes
-var assets = new Assets();
 var stage = new PIXI.Container();
 var thisRound = new Round();
-
 
 
 this.destroy = function(){
@@ -1342,22 +1328,27 @@ this.destroy = function(){
 
 function onAssetsLoaded(){
 
-    assets.load()
-    session.show()
-    thisRound.init()
+    session.show();
+    thisRound.init();
     update();
-
 
 }
 
 if(proto3loaded){
 
-    PIXI.loader
-    .add('sprites/lillypad/ripples/ripples.png')
-    .add('sprites/lillypad/ripples/ripples.json')
-    .load(onAssetsLoaded);
+    assets.addSprite(["ripple",'sprites/lillypad/ripples/ripples.json',5])
 
-    proto3loaded = false;
+    assets.addTexture(["stick","sprites/stick/stick.png"])
+    assets.addTexture(["leave","sprites/stick/leave.png"])
+    assets.addTexture(["branch","sprites/stick/branch.png"])
+
+    assets.addTexture(["lillyBig","sprites/lillypad/big-01.png"])
+    assets.addTexture(["lillySmall","sprites/lillypad/small-01.png"])
+    assets.addTexture(["ants","sprites/lillypad/ant.png"])
+    assets.addTexture(["bg","sprites/backGrounds/BackGround-05.png"])
+
+    assets.load(onAssetsLoaded)
+    //proto3loaded = false;
 
 }else{
 
@@ -1382,8 +1373,10 @@ var lag = 0
 
 function update() {
 
+
     if(finishGame){
 
+        console.log("finishing Game")
 
         session.stats.domElement.style.display = "none"
         thisRound.destroy()
@@ -1391,7 +1384,10 @@ function update() {
         finishGame = false
         currentview = new Chooser(assets)
 
+        return
     }
+
+
 
         if(statsBol)session.stats.begin()
 
@@ -1417,6 +1413,7 @@ function update() {
 
         if(statsBol)session.stats.end()
         
+        console.log("--end")
 }
 
 }

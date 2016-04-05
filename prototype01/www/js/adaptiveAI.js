@@ -2,8 +2,9 @@
 // queues for stimuli to be studied next:
 // a mixture of novel and old (recently correct and incorrect) items
 
-// general principles: 1) if wrong, show again soon with known foil (drawn from recent correct)
-//  2) stimulus is king: choose stimulus and then randomly choose trial type
+// general principles: 
+// 1) if wrong, show again soon with known foil (drawn from recent correct)
+// 2) stimulus is king: choose stimulus and then randomly choose trial type
 // 3) if 3 in a row correct, increase speed or number of foils
 // 4) if 3 in a row wrong, decrease speed or number of foils
 
@@ -29,26 +30,40 @@ var stimQueues = {'alphabetstim':null, 'numberstim':null, 'wordstim':null, 'math
 
 // used for both initial loading of stimuli and pulling from storage into PriorityQueues
 function loadStimulusQueue(stimuli, chunkSize) {
+  
   var pq = new BinaryHeap(function(x){return x.priority;})
   var priority = 0;
+  
   for (var i = 0; i < stimuli.length; i++) {
+  
     if(i%chunkSize==0) priority += 1;
+  
     if(stimuli[i].priority==null) stimuli[i].priority = priority;
+  
     pq.push(stimuli[i]);
     //console.log(stimuli[i]);
   }
+  
   return(pq)
+
 }
 
 function initStorage() {
+
   if (!store.enabled) {
+  
     console.log('Local storage is not supported: disable "Private Mode" or upgrade to a modern browser.');
+  
     return(null);
+  
   }
+  
   //store.clear(); // for testing with a clean slate
   user = store.get('user');
   user = null; // for testing defaults
+  
   if(user==null) {
+  
     user = getRandomInt(1,999999999);
     console.log('first time! assigned userID: ' + user);
     store.set('user', user);
@@ -59,6 +74,7 @@ function initStorage() {
     //stimQueues['mathstim'] = initStimulusQueue(mathProblems, chunkSize);
     // shapes don't need their own...not enough of them
   } else {
+  
     console.log('welcome back: loading queues')
     stimQueues['alphabetstim'] = loadStimulusQueue(store.get('alphabetstim'), chunkSize);
     stimQueues['numberstim'] = loadStimulusQueue(store.get('numberstim'), chunkSize);
@@ -75,18 +91,27 @@ function initStorage() {
 
 // any time they press the back button, store the current queues
 function storeSession() {
+  
   for(var key in queuesToUpdate) {
+  
     if(queuesToUpdate[key]) {
+  
       var stimuli = [];
+  
       while(stimQueues[key].size() > 0) {
+  
         stimuli.push(stimQueues[key].pop());
+  
       }
+  
       store.set(key, stimuli);
       console.log("stored "+key+" in local storage:");
       console.log(stimuli)
+  
     }
     //store.set('alphabetstim',stimQueues['alphabetstim']); // must convert PQ objects to list..
   }
+  
   store.set('lastSession', Date.now());
 }
 
