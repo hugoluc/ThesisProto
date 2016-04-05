@@ -150,10 +150,13 @@
 		
 		}
 
+		console.log(this.soundsQueue)
+		console.log(this.sounds)
 
 		for( var i=0; i < this.soundsQueue.length; i++){
-		
-			this.textures.push(new Audio('audio/' + language + '/' + this.soundsQueue[i]))
+			
+			this.sounds[this.soundsQueue[i]] = []
+			this.sounds[this.soundsQueue[i]].push(new Audio('audio/' + language + '/' + this.soundsQueue[i]))
 		
 		}
 

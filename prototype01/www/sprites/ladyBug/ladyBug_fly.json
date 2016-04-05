@@ -1,6 +1,6 @@
 {"frames": {
 
-"ladtBug_fly-01.png":
+"ladyBug_fly-0.png":
 {
 	"frame": {"x":1147,"y":1,"w":358,"h":349},
 	"rotated": false,
@@ -8,7 +8,7 @@
 	"spriteSourceSize": {"x":7,"y":42,"w":358,"h":349},
 	"sourceSize": {"w":417,"h":417}
 },
-"ladtBug_fly-02.png":
+"ladyBug_fly-1.png":
 {
 	"frame": {"x":781,"y":1,"w":364,"h":349},
 	"rotated": false,
@@ -16,7 +16,7 @@
 	"spriteSourceSize": {"x":7,"y":42,"w":364,"h":349},
 	"sourceSize": {"w":417,"h":417}
 },
-"ladtBug_fly-03.png":
+"ladyBug_fly-2.png":
 {
 	"frame": {"x":1,"y":1,"w":388,"h":349},
 	"rotated": false,
@@ -24,7 +24,7 @@
 	"spriteSourceSize": {"x":7,"y":42,"w":388,"h":349},
 	"sourceSize": {"w":417,"h":417}
 },
-"ladtBug_fly-04.png":
+"ladyBug_fly-3.png":
 {
 	"frame": {"x":391,"y":1,"w":388,"h":349},
 	"rotated": false,

@@ -2,52 +2,6 @@ var proto3loaded = true
 
 function proto03(){
 
-/*
--------------------------------------------------------------------------------------------------------------
-                                               Class: Assets
--------------------------------------------------------------------------------------------------------------
-*/
-
-    // function Assets(){
-
-    //     this.textures = {};
-    //     this.sprites = {}
-    //     this.sounds = [];
-    // };
-    
-    // Assets.prototype.load = function(){
-
-
-    //     this.textures.stick = new PIXI.Texture.fromImage("sprites/stick/stick.png"),
-    //     this.textures.leave = new PIXI.Texture.fromImage("sprites/stick/leave.png"),
-    //     this.textures.branch =  new PIXI.Texture.fromImage("sprites/stick/branch.png")
-
-
-    //     this.textures.lillySmall = new PIXI.Texture.fromImage("sprites/lillypad/small-01.png")
-    //     this.textures.ants = new PIXI.Texture.fromImage("sprites/lillypad/ant.png")
-    //     this.textures.bg = new PIXI.Texture.fromImage("sprites/backGrounds/BackGround-05.png")
-    //     this.textures.lillyBig = new PIXI.Texture.fromImage("sprites/lillypad/big-01.png")
-
-    //     this.sprites.ripples = []
-
-    //     for (var i = 0; i < 5; i++) {
-
-    //         this.sprites.ripples.push(PIXI.Texture.fromFrame('ripple-' + i + '.png'))
-
-    //     };
-
-    // };
-
-    // Assets.prototype.destroy = function(){
-    
-    //     this.textures.stick.stick.destroy(true)
-    //     this.textures.stick.leave.destroy(true)
-    //     this.textures.stick.branch.destroy(true)
-    //     this.textures.lillySmall.destroy(true)
-    //     this.textures.ants.destroy(true)
-    //     this.textures.bg.destroy(true)
-    
-    // };
 
 /*
 -------------------------------------------------------------------------------------------------------------

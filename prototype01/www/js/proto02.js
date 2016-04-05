@@ -7,49 +7,6 @@ var numFoils = 8; // +2 if 3x correct, -1 if 3x incorrect
 
 
 function proto02(){
-
-/*
--------------------------------------------------------------------------------------------------------------
-                                               Class: Assets
--------------------------------------------------------------------------------------------------------------
-*/
-    function Assets(){
-        this.sprites = {};
-        this.sounds = [];
-    }
-
-    Assets.prototype.load = function(){
-
-            // create an array of textures from an image path
-            var frames = [];
-            for (var i = 0; i < 4; i++) {
-              var val = i < 10 ? '0' + i : i;
-              // magically works since the spritesheet was loaded with the pixi loader
-              frames.push(PIXI.Texture.fromFrame('ladyBug_Walk-0' + (i+1) + '.png'));
-            }
-            this.sprites.ladybugWalk = frames
-
-            var frames = [];
-            for (var i = 0; i < 4; i++) {
-              var val = i < 10 ? '0' + i : i;
-              // magically works since the spritesheet was loaded with the pixi loader
-              frames.push(PIXI.Texture.fromFrame('ladtBug_fly-0' + (i+1) + '.png'));
-            }
-            this.sprites.ladybugFly = frames
-
-            // load all number audio files
-            for (var i = 0; i < numbers.length; i++) {
-              this.sounds.push(new Audio('audio/' + language + '/' + numbers[i].audio + '.mp3'));
-            }
-            //this.sounds.push(new Audio('audio/' + 'english' + '/' + "zero" + '.mp3'))
-
-    }
-
-    Assets.prototype.destroy = function(){
-        this.sprites = [];
-        this.sounds = [];
-    }
-
 /*
 -------------------------------------------------------------------------------------------------------------
                                               Class: LadyBug
@@ -75,22 +32,24 @@ function proto02(){
         //console.log(assets.sprites.ladybugWalk)
 
         // sprite variables
-        this.sprite.walk = new PIXI.extras.MovieClip(assets.sprites.ladybugWalk);
+        console.log(assets.sprites.ladyBug_Fly)
+        this.sprite.walk = new PIXI.extras.MovieClip(assets.sprites.ladyBug_Walk);
         this.sprite.walk.animationSpeed = 0.1;
         this.sprite.walk.play();
         this.sprite.walk.scale.x = 0.34;
         this.sprite.walk.scale.y = 0.34;
         this.container.addChild(this.sprite.walk);
 
-        this.sprite.fly = new PIXI.extras.MovieClip(assets.sprites.ladybugFly);
+        this.sprite.fly = new PIXI.extras.MovieClip(assets.sprites.ladyBug_fly);
         this.sprite.fly.animationSpeed = 0.1;
         this.sprite.fly.alpha = 0;
         this.sprite.fly.scale.x = 0.34;
         this.sprite.fly.scale.y = 0.34;
         this.container.addChild(this.sprite.fly);
-        console.log(this.sprite.fly.textures)
 
-        this.sprite.dead = PIXI.Sprite.fromImage('sprites/ladyBug/ladtBug_dead.png');
+        console.log(assets.textures.ladyBug_dead)
+
+        this.sprite.dead = new PIXI.Sprite(assets.textures.ladyBug_dead);
         this.sprite.dead.alpha = 0;
         this.sprite.dead.scale.x = 0.34;
         this.sprite.dead.scale.y = 0.34;
@@ -584,9 +543,11 @@ function proto02(){
 
         queuesToUpdate['numberstim'] = true;
 
+        console.log(stimQueues['numberstim'])
         stim = stimQueues['numberstim'].pop();
         console.log("---------------->>>>>>>>")
         console.log(stim)
+
         this.trial = new Trial(stim); // then we recycle this trial...for now (could make a loop here)
         this.trial.init();
 
@@ -612,7 +573,7 @@ function proto02(){
 // create the root of the scene graph and main classes
 var stage = new PIXI.Container();
 var thisRound = new Round();
-var assets = new Assets();
+//var assets = new Assets();
 
 
 this.destroy = function(){
@@ -624,29 +585,25 @@ this.destroy = function(){
 
 function onAssetsLoaded(){
     
-    assets.load()
     session.show()
     thisRound.init()
     update();
 
 }
 
-if(!proto2loaded){
 
-    PIXI.loader
-      .add('sprites/ladyBug/ladyBug_WalkV3.json')
-      .add('sprites/ladyBug/ladyBug_fly.json')
-      .add('sprites/ladyBug/ladtBug_flyStatic.png')
-      .add('sprites/ladyBug/ladtBug_dead.png')
-      .load(onAssetsLoaded);
+//-------------------loading assets
 
-    proto2loaded = true;
+assets.addSprite(["ladyBug_Walk",'sprites/ladyBug/ladyBug_Walk.json',4])
+assets.addSprite(["ladyBug_fly",'sprites/ladyBug/ladyBug_fly.json',4])
+assets.addTexture(["ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png'])
 
-} else{
-
-    onAssetsLoaded();
-
+for (var i = 0; i < numbers.length; i++) {
+  assets.addSound(numbers[i].audio + '.mp3');
 }
+
+assets.load(onAssetsLoaded)
+
 
 //---------------------------------------LOOP
 
