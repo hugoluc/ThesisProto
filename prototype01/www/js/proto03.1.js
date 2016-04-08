@@ -39,7 +39,9 @@ function proto03(){
     };
 
     lillyFinal.prototype.display = function(_currentValue){
+    
     	// animate lillypad
+    
     };
 
     lillyFinal.prototype.destroy = function(){
@@ -1209,8 +1211,6 @@ function proto03(){
 
                 }
             },
-
-
         ]
 
 
@@ -1262,8 +1262,7 @@ function proto03(){
     Round.prototype.destroy = function(){
 
         this.trial.destroy()
-        stage.removeChild(this.background)
-        this.background.destroy(true,true)
+
     };
 
 //-------------------------------------------
@@ -1282,10 +1281,14 @@ this.destroy = function(){
 
 function onAssetsLoaded(){
 
-    session.show();
+    console.log("assetsloaded!")
     thisRound.init();
-    update();
 
+    setTimeout(function(){
+        console.log("starting the game!")
+        session.show()
+        update();
+    });
 }
 
 if(proto3loaded){
@@ -1300,6 +1303,8 @@ if(proto3loaded){
     assets.addTexture(["lillySmall","sprites/lillypad/small-01.png"])
     assets.addTexture(["ants","sprites/lillypad/ant.png"])
     assets.addTexture(["bg","sprites/backGrounds/BackGround-05.png"])
+
+
 
     assets.load(onAssetsLoaded)
     //proto3loaded = false;
@@ -1352,7 +1357,7 @@ function update() {
 	        lag = lag + elapsed;
 
 
-	        while (lag >= MS_PER_UPDATE){            
+	        while (lag >= MS_PER_UPDATE){        
 
 	            thisRound.play(lag/MS_PER_UPDATE);
 	            lag = lag - MS_PER_UPDATE;
@@ -1361,7 +1366,6 @@ function update() {
 
 	        //---------------->> Thing that renders the whole stage
 	        session.render(stage)
-
 
 	        requestAnimationFrame(update);
 

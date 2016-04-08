@@ -58,34 +58,35 @@
 	function Assets(){
 
 		this.sounds = {}
-		this.sprites = {}
-		this.textures = {}
+		this.sounds.numbers = []
+
+		this.sprites = {};
+		this.textures = {};
 
 
-		this.loader = PIXI.loader
-		this.pixiLoaderQueue = []
-		this.textureQueue = []
-		this.soundsQueue = []
+		this.loader = PIXI.loader;
+		this.pixiLoaderQueue = [];
+		this.textureQueue = [];
+		this.soundsQueue = [];
+		this.soundsNQueue = [];
 
-		this.state = "loading"
+		this.state = "loading";
 
 	}
 
-	Assets.prototype.addSprite = function(data){
+	Assets.prototype.addSprite = function(name,url,count){
 
-		console.log(data)
-		console.log(this.pixiLoaderQueue)
 
-		if(data.length > 3) {
+
+		if(name == "undefined" || url == "undefined" || count == "undefined") {
 
 			throw ("3 parameters required. [name,jsonurl,pngUrl,imageCOunt]")
 
 		}
 
-		for (var i=0; i<this.pixiLoaderQueue.length; i++){
-		
+		for (var i=0; i<this.pixiLoaderQueue.length; i++){		
 
-			if(data[1] == String(this.pixiLoaderQueue[i][1])){
+			if(url == String(this.pixiLoaderQueue[i][1])){
 
 				return
 		
@@ -93,17 +94,23 @@
 		
 		}
 		
-		this.pixiLoaderQueue.push(data)
+		this.pixiLoaderQueue.push([name,url,count])
 
 	}
 
-	Assets.prototype.addTexture = function(data){
-		this.textureQueue.push(data)
+	Assets.prototype.addTexture = function(name,url){
+		this.textureQueue.push([name,url])
 	}
 
 
-	Assets.prototype.addSound = function(data){
-		this.soundsQueue.push(data)
+	Assets.prototype.addSound = function(name,url){
+
+		if(typeof(name) == "number"){
+			this.soundsNQueue.push([name,url])
+		}else{
+			this.soundsQueue.push([name,url])
+		}
+
 	}
 
 
@@ -120,7 +127,7 @@
 			for(var i=0; i<this.pixiLoaderQueue.length; i++){
 
 				this.loader.add(this.pixiLoaderQueue[i][1])
-					
+
 			}
 
 			this.loader.load( function(){
@@ -136,11 +143,11 @@
 
 	}
 
-
 	Assets.prototype.start = function(){
 
 		console.log("creating pixi objects...")
 		this.sounds = {}
+		this.sounds.numbers = {}
 		this.sprites = {}
 		this.textures = {}
 
@@ -150,15 +157,23 @@
 		
 		}
 
-		console.log(this.soundsQueue)
-		console.log(this.sounds)
 
 		for( var i=0; i < this.soundsQueue.length; i++){
 			
-			this.sounds[this.soundsQueue[i]] = []
-			this.sounds[this.soundsQueue[i]].push(new Audio('audio/' + language + '/' + this.soundsQueue[i]))
+			this.sounds[this.soundsQueue[i]].push(new Audio('audio/' + language + '/' + this.soundsQueue[i][1]))
 		
 		}
+
+		console.log(this.soundsNQueue)
+
+		for( var i=0; i < this.soundsNQueue.length; i++){
+			
+			this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
+			console.log(this.soundsNQueue[i][0])
+
+		}
+
+		console.log(this.sounds)
 
 		for( var i=0; i < this.pixiLoaderQueue.length; i++){
 
@@ -179,10 +194,16 @@
 
 	}
 
+
 	Assets.prototype.destroy = function(){
 
-
 		this.loader.reset()
+
+		for (sounds in this.sounds.numbers){
+
+			this.sounds.numbers[sounds] = []
+
+		}
 
 		for (sounds in this.sounds){
 	
@@ -210,5 +231,47 @@
 -------------------------------------------------------------------------------------------------------------
 */
 
+function Round(){
+
+	this.trial = {}
+	this.background = assets.textures.bg;
+	this.score;
+	this.dificulty;
+	this.trial;
+
+}
+
+Round.prototype.init = function(_Trial,stage){
+
+	console.log(_Trial)
+	queuesToUpdate['numberstim'] = true;
+	stim = stimQueues['numberstim'].pop();
+ 	this.trial = new _Trial(stim);
+    this.trial.init();
+	stage.addChild(this.background);
+}
+
+
+Round.prototype.adjustGameDinamics = function(){
+
+
+}
+
+Round.prototype.getNewTrial = function(){
+
+	this.trial.destroy()
+	stim = stimQueues['numberstim'].pop();
+	this.trial = new Trial(stim)
+	this.trial.init()
+
+}
+
+Round.prototype.destroy = function(){
+
+	this.trial.destro()
+	stage.removeChild(this.background)
+    this.background.destroy(true,true)
+
+}
 
 

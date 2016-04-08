@@ -182,7 +182,7 @@ function proto02(){
 
                     if(this.container.y  < this.end.y){
 
-                        thisRound.trial.answer(true)
+                        round.trial.answer(true)
                         this.container.y = this.start.y;
                         this.setUp();
 
@@ -234,13 +234,13 @@ function proto02(){
 
         var _this = this;
         // check if its correct
-        if(this.startNumber == thisRound.trial.stimuli.id){
+        if(this.startNumber == round.trial.stimuli.id){
             scoreDifferential += 1;
 
             //console.log("click over:--",this.number.text)
 
             this.number.text--;
-            thisRound.trial.answer();
+            round.trial.answer();
 
             // flyes if it reaches 0
             if(this.number.text == 0) {
@@ -299,8 +299,7 @@ function proto02(){
       this.correctImput = 0;
       this.playQueue = []
       this.correctSet = false;
-
-    }
+    };
 
     Trial.prototype.destroy = function(){
 
@@ -316,8 +315,7 @@ function proto02(){
 
         stage.removeChild(this.UI)
         this.UI.destroy(true,true)
-
-    }
+    };
 
     Trial.prototype.getFoils = function() {
 
@@ -333,8 +331,7 @@ function proto02(){
       }
 
       return(foils);
-
-    }
+    };
 
     Trial.prototype.init = function(){
 
@@ -373,8 +370,7 @@ function proto02(){
 
       stage.addChild(this.UI)
       this.trialState = "play"; // GK: was "play"
-
-    }
+    };
 
     Trial.prototype.play = function(_updateTime){
 
@@ -522,54 +518,7 @@ function proto02(){
         if(_correct){
             this.correctImput++;
         }
-
     };
-
-/*
--------------------------------------------------------------------------------------------------------------
-                                                Class: Round
--------------------------------------------------------------------------------------------------------------
-*/
-    function Round(){
-
-        this.score = 0;
-        this.language = "english"
-        this.background = PIXI.Sprite.fromImage('sprites/backGrounds/BackGround-01.png');
-        // this.background.height = canvas.height;
-
-        stage.addChild(this.background);
-    }
-
-    // Round.prototype.getNextTri = function(stim){ }
-
-    Round.prototype.play = function(_updateTime){
- 
-        this.trial.play(_updateTime)
- 
-    }
-
-    Round.prototype.init = function(){
-
-        queuesToUpdate['numberstim'] = true;
-
-        console.log(stimQueues['numberstim'])
-        stim = stimQueues['numberstim'].pop();
-        console.log("---------------->>>>>>>>")
-        console.log(stim)
-
-        this.trial = new Trial(stim); // then we recycle this trial...for now (could make a loop here)
-        this.trial.init();
-
-    }
-
-    Round.prototype.destroy = function(){
-
-        this.trial.destroy()
-        stage.removeChild(this.background)
-        this.background.destroy(true,true)
-
-    }
-/*
 
 
 /*
@@ -581,7 +530,6 @@ function proto02(){
 
 // create the root of the scene graph and main classes
 var stage = new PIXI.Container();
-var thisRound = new Round();
 //var assets = new Assets();
 
 
@@ -595,7 +543,7 @@ this.destroy = function(){
 function onAssetsLoaded(){
     
     session.show()
-    thisRound.init()
+    round.init(Trial,stage)
     update();
 
 }
@@ -603,16 +551,16 @@ function onAssetsLoaded(){
 
 //-------------------loading assets
 
-assets.addSprite("ladyBug_Walk",'sprites/ladyBug/ladyBug_Walk.json',4)
-assets.addSprite("ladyBug_fly",'sprites/ladyBug/ladyBug_fly.json',4)
-assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png')
-assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')
+    assets.addSprite("ladyBug_Walk",'sprites/ladyBug/ladyBug_Walk.json',4)
+    assets.addSprite("ladyBug_fly",'sprites/ladyBug/ladyBug_fly.json',4)
+    assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png')
+    assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')
 
-for (var i = 0; i < numbers.length; i++) {
-  assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
-}
+    for (var i = 0; i < numbers.length; i++) {
+      assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
+    }
 
-assets.load(onAssetsLoaded)
+    assets.load(onAssetsLoaded)
 
 //---------------------------------------LOOP
 
@@ -656,7 +604,7 @@ function update() {
         storeSession();
 
         session.stats.domElement.style.display = "none"
-        thisRound.destroy();
+        round.destroy();
         assets.destroy();
         finishGame = false;
         currentview = new Chooser(); // return assets??
@@ -675,7 +623,7 @@ function update() {
         while (lag >= MS_PER_UPDATE){
 
         // update the canvas with new parameters
-          thisRound.play(lag/MS_PER_UPDATE);
+          round.play(lag/MS_PER_UPDATE);
           adjustGameDynamics()
 
           lag = lag - MS_PER_UPDATE;
