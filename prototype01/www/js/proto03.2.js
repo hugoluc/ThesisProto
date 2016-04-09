@@ -1045,12 +1045,11 @@ function proto03(){
 
 
                     if(this.countDone && this.AnimationDone){
+                        
                         this.clock.start(3000)
                         this.performOperation = false
-                    }
-
                     
-
+                    }
 
                 }else{
 

@@ -35,7 +35,6 @@
 			this.renderer.render(_stage);
 		}
 
-
 		this.show = function(){
 			this.canvas.style.display = "inline";
 			document.getElementById("header-exp").style.display = "inline"
@@ -240,8 +239,15 @@ Round.prototype.init = function(_Trial,_stage){
 
 	this.stage = _stage
 	this._trial = _Trial
-	queuesToUpdate['numberstim'] = true;
-
+   
+    /*
+    *********************************************************************
+	FIX ME!!
+	Calling initStoages seems to fix the bug on the ladybug game.
+	Need to see if this is actually the correct way to solve the problem
+    *********************************************************************
+    */
+	initStorage()
 
     this.background = new PIXI.Sprite(assets.textures.bg)
  	this.stage.addChild(this.background);
@@ -253,14 +259,14 @@ Round.prototype.init = function(_Trial,_stage){
 
 Round.prototype.getNextTrial = function(){
 
+	queuesToUpdate['numberstim'] = true;
+
 	var stim = stimQueues['numberstim'].pop();
+	
+	console.log(">>>>>>>>",stimQueues['numberstim'])
+ 	
  	this.trial = new this._trial(stim);
     this.trial.init();
-
-}
-
-Round.prototype.adjustGameDinamics = function(){
-
 
 }
 
@@ -284,5 +290,42 @@ Round.prototype.play = function(){
 	};
 
 };
+
+//-----------------------------
+//    Handling difficulty
+//-----------------------------
+
+Round.prototype.changeDifficulty = function(correct){
+
+	//if the input was a correct one
+	if(correct){
+		this.scoreDifferential++
+
+	// if the input was wrong
+	}else{
+		this.scoreDifferential--
+
+	}
+
+	if(scoreDifferential >= this.scoreTrashhold[1]){
+
+		this.difficulty++
+		this.scoreDifferential = 0
+
+	}else if(scoreDifferential <= this.scoreTrashhold[0]){
+
+		this.difficulty--
+		this.scoreDifferential = 0
+
+	}
+
+}
+
+Round.prototype.setDifficultyParams = function(_range,_trashhold){
+
+	this.scoreRange = _range;
+	this.scoreTrashhold = _trashhold;
+
+}
 
 

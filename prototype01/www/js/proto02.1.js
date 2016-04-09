@@ -89,12 +89,12 @@ function proto02(){
         this.container.destroy(true);
         this.number.destroy(true);
         this.state = "destroy";
-
     };
 
     LadyBug.prototype.setUp = function(freeIds){
 
         this.sprite.walk.alpha = 1;
+        this.sprite.walk.play()
 
         this.sprite.fly.stop()
         this.sprite.fly.alpha = 0;
@@ -230,11 +230,12 @@ function proto02(){
     };
 
     LadyBug.prototype.click = function(){
-        //console.log("-------CLICK----------");
 
         var _this = this;
+
         // check if its correct
         if(this.startNumber == round.trial.stimuli.id){
+ 
             scoreDifferential += 1;
 
             //console.log("click over:--",this.number.text)
@@ -247,11 +248,12 @@ function proto02(){
               // play feedback sound
               correct_sound.play(); // GK: why doesn't this play?
               this.number.text = ""
-              this.timer.start(300);
-              this.state = "fly"
               this.container.ySpeed = 0;
               this.container.xSpeed = 0;
               this.sprite.walk.animationSpeed = 0;
+
+              this.state = "fly"
+              this.timer.start(300);
 
             // kills if it click one more time
             } else if(this.number.text < 0) {
@@ -263,8 +265,9 @@ function proto02(){
                 this.number.text = ""
                 this.container.ySpeed = 0;
                 this.container.xSpeed = 0;
-                this.timer.start(1500);
+
                 this.state = "dead";
+                this.timer.start(1500);
 
             // try to present audio for each number in the countdown? maybe too slow..
             }else if (this.number.text > 0){
@@ -630,7 +633,12 @@ function update() {
         round.destroy();
         assets.destroy();
         finishGame = false;
-        currentview = new Chooser(); // return assets??
+        session.render(stage)
+
+        console.log(">>>>>>>>",stimQueues['numberstim'])
+
+        currentview = new Chooser();
+
 
         return
     }
@@ -646,11 +654,12 @@ function update() {
 
         while (lag >= MS_PER_UPDATE){
 
-        // update the canvas with new parameters
-          round.play(lag/MS_PER_UPDATE);
-          //adjustGameDynamics()
+            // update the canvas with new parameters
+            round.play(lag/MS_PER_UPDATE);
+            //adjustGameDynamics()
 
-          lag = lag - MS_PER_UPDATE;
+            lag = lag - MS_PER_UPDATE;
+
         }
 
         //---------------->> Thing that renders the whole stage
