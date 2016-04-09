@@ -1211,7 +1211,9 @@ function proto03(){
 
                 }
             },
-        ] 
+        ]
+
+
     }
 
     /*
@@ -1285,7 +1287,6 @@ function onAssetsLoaded(){
     setTimeout(function(){
         console.log("starting the game!")
         session.show()
-        session.render(stage)
         update();
     });
 }

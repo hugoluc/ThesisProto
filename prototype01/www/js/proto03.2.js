@@ -177,14 +177,6 @@ function proto03(){
             return
         }
 
-        /***********************************
-        
-        FIX THIS! 
-        CHECK TO SEE IF THE FIRST POINT ON CLICK IS OVER THE ACTUAL CIRCLE
-        IN ORDER TO PREVENDE CREATION OF STICKS OUTSITE THE LILLYPAD!
-
-        ************************************/
-
     	//change lillypad to selected
     	_this.data = _event.data;
         _this.dragging = true;
@@ -383,17 +375,40 @@ function proto03(){
 
     function Trial(_stimuli,_correct){
 		
+
+        var specs = 
+
+            //--------------------------------------0
+            {
+                stimuli: {
+                
+                    correctValues : [1,1],     
+                    extras : {
+                        min : 1,
+                        max: 1, 
+                        size: 0,
+                    }
+                },
+
+                correct :{
+
+                    type: "number",
+                    value: 2,
+
+                }
+            }
+
 		/*----------------------
 		Stimuli is the number necessery to get to the answear.
 		It should be used to draw smaller lillypad so the user has at least one
 		way to solve the problem	
 		------------------------*/
-    	this.stimuli = _stimuli
+    	this.stimuli = specs.stimuli
 
 		/*----------------------
 		Correct is the final number that should be placed in the final lillypad	
 		------------------------*/
-    	this.correct = _correct
+    	this.correct = specs.correct
 
 
         this.clock = new ClockTimer()
@@ -1041,7 +1056,7 @@ function proto03(){
 
                     if(this.clock.timeOut()){
 
-                        return false;
+                        return true;
                    
                     }
                 
@@ -1054,213 +1069,7 @@ function proto03(){
 
             };
 
-            return true;
-    };
-
-/*
--------------------------------------------------------------------------------------------------------------
-                                                Class: Round
--------------------------------------------------------------------------------------------------------------
-*/
-
-    function Round(){
-
-        this.score = 0;
-        this.language = "english"
-        this.trialCount = -1
-
-        this.specs = [
-
-            //--------------------------------------0
-            {
-                stimuli: {
-                
-                    correctValues : [1,1],     
-                    extras : {
-                        min : 1,
-                        max: 1, 
-                        size: 0,
-                    }
-                },
-
-                correct :{
-
-                    type: "number",
-                    value: 2,
-
-                }
-            },
-
-            //--------------------------------------1
-            {
-                stimuli: {
-                
-                    correctValues : [2,1,1],     
-                    extras : {
-                        min : 0,
-                        max: 0, 
-                        size: 0,
-                    }
-                },
-
-                correct :{
-
-                    type: "number",
-                    value: 3,
-
-                }
-            },
-
-            //--------------------------------------2
-            {
-                stimuli: {
-                
-                    correctValues : [2,2,3,1],     
-                    extras : {
-                        min : 0,
-                        max: 0, 
-                        size: 0,
-                    }
-                },
-
-                correct :{
-
-                    type: "number",
-                    value: 5,
-
-                }
-            },
-
-            //--------------------------------------3
-            {
-                stimuli: {
-                
-                    correctValues : [2,3,3,1],     
-                    extras : {
-                        min : 0,
-                        max: 0, 
-                        size: 0,
-                    }
-                },
-
-                correct :{
-
-                    type: "number",
-                    value: 6,
-
-                }
-            },
-
-             //--------------------------------------4
-            {
-                stimuli: {
-                
-                    correctValues : [1,4,3,1],     
-                    extras : {
-                        min : 1,
-                        max: 3, 
-                        size: 1,
-                    }
-                },
-
-                correct :{
-
-                    type: "number",
-                    value: 8,
-
-                }
-            },
-
-
-             //--------------------------------------5
-            {
-                stimuli: {
-                
-                    correctValues : [2,5,4],     
-                    extras : {
-                        min : 1,
-                        max: 4, 
-                        size: 2,
-                    }
-                },
-
-                correct :{
-
-                    type: "number",
-                    value: 11,
-
-                }
-            },
-
-            //--------------------------------------6
-            {
-                stimuli: {
-                
-                    correctValues : [4,5,3,1],     
-                    extras : {
-                        min : 1,
-                        max: 4, 
-                        size: 2,
-                    }
-                },
-
-                correct :{
-
-                    type: "number",
-                    value: 13,
-
-                }
-            },
-        ] 
-    }
-
-    /*
-    ------
-     Get next spects from the user queue
-     *TO-DO: Replace values to queue values
-    ------
-    */
-
-    Round.prototype.getNextTri = function(){
-
-        this.trialCount = (this.trialCount+1) % 7
-
-        return [this.specs[this.trialCount].stimuli,this.specs[this.trialCount].correct]
-        
-
-
-    };
-
-    Round.prototype.play = function(_updateTime){
-
- 
-        if(!this.trial.play(_updateTime)){
-            
-            var specsthis = this.getNextTri();
-            this.trial.destroy()
-            this.trial = new Trial(specsthis[0],specsthis[1])
-            this.trial.init()
-        
-        }
- 
-    };
-
-    Round.prototype.init = function(){
-
-        this.background = new PIXI.Sprite(assets.textures.bg)
-        this.background.height = session.canvas.height;
-        this.background.width = session.canvas.width;
-        stage.addChild(this.background);
-
-        var specsthis = this.getNextTri();
-        this.trial = new Trial(specsthis[0],specsthis[1]);
-        this.trial.init();
-    };
-
-    Round.prototype.destroy = function(){
-
-        this.trial.destroy()
-
+            return false;
     };
 
 //-------------------------------------------
@@ -1280,28 +1089,27 @@ this.destroy = function(){
 function onAssetsLoaded(){
 
     console.log("assetsloaded!")
-    thisRound.init();
+    thisRound.init(Trial,stage);
 
     setTimeout(function(){
         console.log("starting the game!")
         session.show()
-        session.render(stage)
         update();
     });
 }
 
 if(proto3loaded){
 
-    assets.addSprite(["ripple",'sprites/lillypad/ripples/ripples.json',5])
+    assets.addSprite("ripple",'sprites/lillypad/ripples/ripples.json',5)
 
-    assets.addTexture(["stick","sprites/stick/stick.png"])
-    assets.addTexture(["leave","sprites/stick/leave.png"])
-    assets.addTexture(["branch","sprites/stick/branch.png"])
+    assets.addTexture("stick","sprites/stick/stick.png")
+    assets.addTexture("leave","sprites/stick/leave.png")
+    assets.addTexture("branch","sprites/stick/branch.png")
 
-    assets.addTexture(["lillyBig","sprites/lillypad/big-01.png"])
-    assets.addTexture(["lillySmall","sprites/lillypad/small-01.png"])
-    assets.addTexture(["ants","sprites/lillypad/ant.png"])
-    assets.addTexture(["bg","sprites/backGrounds/BackGround-05.png"])
+    assets.addTexture("lillyBig","sprites/lillypad/big-01.png")
+    assets.addTexture("lillySmall","sprites/lillypad/small-01.png")
+    assets.addTexture("ants","sprites/lillypad/ant.png")
+    assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
 
 
 

@@ -353,6 +353,7 @@ function proto02(){
       }
 
       this.UI = new PIXI.Container()
+      
       this.UI.customAnimation = new animation(this.UI)
 
       this.trialTimer = new ClockTimer();
@@ -362,6 +363,7 @@ function proto02(){
       this.circle.beginFill(0x02d1aa);
       this.circle.drawCircle(0,0,100);
       this.circle.endFill();
+
       this.UI.addChild(this.circle);
       this.circle.x = 80,
       this.circle.y = session.canvas.height-60;
@@ -372,6 +374,9 @@ function proto02(){
       this.UI.addChild(this.cNumber);
 
       stage.addChild(this.UI)
+
+      console.log(this.UI.getBounds())
+
       this.trialState = "play"; // GK: was "play"
 
     }
@@ -449,8 +454,8 @@ function proto02(){
                 if(next){
 
                     var dest = {}
-                    dest.x = renderer.width/2 - this.UI.getBounds().width/2
-                    dest.y = renderer.height/2 - this.UI.getBounds().height/2
+                    dest.x = 200//session.renderer.width/2 - this.UI.getBounds().width/2
+                    dest.y = 200//session.renderer.height/2 - this.UI.getBounds().height/2
 
                     this.showNextState = "center";
                     this.UI.customAnimation.init({x:dest.x,y:dest.y},1000)
@@ -485,7 +490,7 @@ function proto02(){
 
                     var dest = {}
                     dest.x = 0
-                    dest.y = renderer.height- this.UI.getBounds().height
+                    dest.y = session.renderer.height- this.UI.getBounds().height
 
                     this.UI.customAnimation.init({x:dest.x,y:dest.y},1000)
                     this.showNextState = "corner"
@@ -596,6 +601,7 @@ function onAssetsLoaded(){
     
     session.show()
     thisRound.init()
+    session.render(stage)
     update();
 
 }
@@ -687,7 +693,8 @@ function update() {
         requestAnimationFrame(update);
 
     if(statsBol) session.stats.end()
+
 }
 
-
+   
 }

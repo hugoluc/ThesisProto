@@ -16,8 +16,8 @@
 
 
 			var header = document.getElementById("header-exp").style.height = window.innerHeight*0.08
-			renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight-header+1);
-			this.canvas = document.getElementById("container-exp").appendChild(renderer.view);
+			this.renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight-header+1);
+			this.canvas = document.getElementById("container-exp").appendChild(this.renderer.view);
 			this.canvas.style.marginTop = header
 			this.canvas.style.display = "none"
 
@@ -32,7 +32,7 @@
 		}
 
 		this.render = function(_stage){
-			renderer.render(_stage);
+			this.renderer.render(_stage);
 		}
 
 
@@ -164,16 +164,11 @@
 		
 		}
 
-		console.log(this.soundsNQueue)
-
 		for( var i=0; i < this.soundsNQueue.length; i++){
 			
 			this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
-			console.log(this.soundsNQueue[i][0])
 
 		}
-
-		console.log(this.sounds)
 
 		for( var i=0; i < this.pixiLoaderQueue.length; i++){
 
@@ -241,37 +236,53 @@ function Round(){
 
 }
 
-Round.prototype.init = function(_Trial,stage){
+Round.prototype.init = function(_Trial,_stage){
 
-	console.log(_Trial)
+	this.stage = _stage
+	this._trial = _Trial
 	queuesToUpdate['numberstim'] = true;
-	stim = stimQueues['numberstim'].pop();
- 	this.trial = new _Trial(stim);
-    this.trial.init();
-	stage.addChild(this.background);
+
+
+    this.background = new PIXI.Sprite(assets.textures.bg)
+ 	this.stage.addChild(this.background);
+
+ 	this.getNextTrial()
+
+
 }
 
+Round.prototype.getNextTrial = function(){
+
+	var stim = stimQueues['numberstim'].pop();
+ 	this.trial = new this._trial(stim);
+    this.trial.init();
+
+}
 
 Round.prototype.adjustGameDinamics = function(){
 
 
 }
 
-Round.prototype.getNewTrial = function(){
-
-	this.trial.destroy()
-	stim = stimQueues['numberstim'].pop();
-	this.trial = new Trial(stim)
-	this.trial.init()
-
-}
 
 Round.prototype.destroy = function(){
 
-	this.trial.destro()
-	stage.removeChild(this.background)
+	this.trial.destroy()
+	this.stage.removeChild(this.background)
     this.background.destroy(true,true)
 
 }
+
+Round.prototype.play = function(){
+
+	if(this.trial.play()){
+
+		this.trial.destroy()
+		console.log("last trial destroyed!")		
+		this.getNextTrial()
+		console.log("new trial created!")
+	};
+
+};
 
 

@@ -48,43 +48,49 @@ function getRandomColor() {
 */
 
 
-function ClockTimer(){
+  function ClockTimer(){
 
-  this.timerStarted = false;
-};
+    this.timerStarted = false;
 
-ClockTimer.prototype.start = function(_length){
+  };
 
-    this.timerStarted = true;
-    this.setTime = _length;
-    this.startTime = Date.now();
-    this.last = Date.now();
-};
+  ClockTimer.prototype.start = function(_length){
 
-ClockTimer.prototype.timeOut = function() {
+      this.timerStarted = true;
+      this.setTime = _length;
+      this.startTime = Date.now();
+      this.last = Date.now();
+  };
 
-  if(Date.now()-this.startTime > this.setTime){
-    return true;
-  }else{
+  ClockTimer.prototype.timeOut = function() {
+
+    if(Date.now()-this.startTime > this.setTime){
+     
+      return true;
     
-    return false;
-  }
-};
+    }else{
+      
+      return false;
+    }
+  
+  };
 
-ClockTimer.prototype.timerRunnnig = function(){
+  ClockTimer.prototype.timerRunnnig = function(){
 
-  return this.timerStarted
-};
+    return this.timerStarted
 
-ClockTimer.prototype.cancel = function(){
+  };
 
-  this.timerStarted = false
-};
+  ClockTimer.prototype.cancel = function(){
 
-ClockTimer.prototype.getElapsed = function(){
+    this.timerStarted = false
+  
+  };
 
-    return Date.now() - this.startTime;
-};
+  ClockTimer.prototype.getElapsed = function(){
+
+      return Date.now() - this.startTime;
+  };
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -114,12 +120,11 @@ animation.prototype.init = function(dest,length,offset){
   this.dest = {
     x : dest.x,
     y : dest.y,
-  } 
+  }
+
   
   this.offset = offset || 0;
   this.anLength = length || 2000;
-
-
 
   var start = {};
 
@@ -139,6 +144,7 @@ animation.prototype.init = function(dest,length,offset){
   this.speed.y = this.distance.y/this.anLength;
 
   this.now = 0;
+
   // console.log("start",this.startPos) 
   // console.log("dest",this.dest.x,this.dest.y)
   // console.log("distance:","x:" + this.distance.x ,"y:" +this.distance.y);

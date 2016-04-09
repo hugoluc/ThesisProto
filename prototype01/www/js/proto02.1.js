@@ -17,7 +17,6 @@ function proto02(){
         var _this = this;
 
         this.startNumber = value; //getRandomInt(1,7);
-        // container variables
         this.container = new PIXI.Container();
         this.container.interactive = true;
         this.container.buttonMode = true;
@@ -29,10 +28,8 @@ function proto02(){
 
         this.sprite = {};
 
-        //console.log(assets.sprites.ladybugWalk)
-
         // sprite variables
-        console.log(assets.sprites.ladyBug_Fly)
+
         this.sprite.walk = new PIXI.extras.MovieClip(assets.sprites.ladyBug_Walk);
         this.sprite.walk.animationSpeed = 0.1;
         this.sprite.walk.play();
@@ -46,8 +43,6 @@ function proto02(){
         this.sprite.fly.scale.x = 0.34;
         this.sprite.fly.scale.y = 0.34;
         this.container.addChild(this.sprite.fly);
-
-        console.log(assets.textures.ladyBug_dead)
 
         this.sprite.dead = new PIXI.Sprite(assets.textures.ladyBug_dead);
         this.sprite.dead.alpha = 0;
@@ -63,7 +58,6 @@ function proto02(){
 
         stage.addChild(this.container)
 
-
         //----------------------class variables
         this.timer = new ClockTimer();
         this.angle = 0;
@@ -74,30 +68,32 @@ function proto02(){
     };
 
     LadyBug.prototype.checkOutOfScreen = function(){
+        
         if (this.container.x < 0 || this.container.x > session.canvas.width || this.container.y+this.container.width < 0 || this.container.y > session.canvas.height){
+           
             return true;
+        
         }else {
+           
             return false;
         };
-    }
+    };
 
     LadyBug.prototype.destroy = function(){
 
         stage.removeChild(this.container);
         this.container.removeChildren(0,this.container.length);
-        this.sprite.walk.destroy(true,true);
-        this.sprite.fly.destroy(true,true);
-        this.sprite.dead.destroy(true,true);
-        this.container.destroy(true,true);
-        this.number.destroy(true,true);
+        this.sprite.walk.destroy(true);
+        this.sprite.fly.destroy(true);
+        this.sprite.dead.destroy();
+        this.container.destroy(true);
+        this.number.destroy(true);
         this.state = "destroy";
 
-    }
+    };
 
+    LadyBug.prototype.setUp = function(freeIds){
 
-    LadyBug.prototype.setUp = function(freeIds){ // xpos
-        
-        this.sprite.walk.play();
         this.sprite.walk.alpha = 1;
 
         this.sprite.fly.stop()
@@ -124,13 +120,18 @@ function proto02(){
 
         this.end.x = getRandomInt(this.start.x-this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2);
         this.end.y = -this.sprite.walk.height;
+        
         if(this.end.x > stage.width){
+          
             this.end.x = stage.width;
+        
         }else if(this.end.x < 10){
+          
             this.end.x = 10;
         };
 
         this.container.xSpeed = (this.start.x-this.end.x)/(this.start.y - this.end.y)
+        
         if(this.start.x > this.end.x){ this.container.xSpeed*-1 }
 
         this.container.rotation = getAngle(this.start.x,this.start.y,this.end.x,this.end.y)
@@ -138,7 +139,7 @@ function proto02(){
         this.container.y = this.start.y;
 
         return moduleId;
-    }
+    };
 
     LadyBug.prototype.move = function(_state){
 
@@ -226,8 +227,7 @@ function proto02(){
         this.container.ySpeed = 10;
         this.container.xSpeed = 0;
         this.sprite.walk.animationSpeed = 0;
-
-    }
+    };
 
     LadyBug.prototype.click = function(){
         //console.log("-------CLICK----------");
@@ -284,13 +284,14 @@ function proto02(){
         } else {
           scoreDifferential -= 1;
         }
-    }
+    };
 
 /*
 -------------------------------------------------------------------------------------------------------------
                                                 Class: Trial
 -------------------------------------------------------------------------------------------------------------
 */
+
     function Trial(_stimuli){
 
       this.ladyBugs = [];
@@ -299,6 +300,52 @@ function proto02(){
       this.correctImput = 0;
       this.playQueue = []
       this.correctSet = false;
+      this.introState = "displaySound"
+      this.nextTrialState = "flyAll"
+    };
+
+
+    Trial.prototype.init = function(){
+
+        interval = Math.floor(screen_width / (numFoils + 1.0));
+        this.foils = this.getFoils();
+        this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
+        this.foils = shuffle(this.foils);
+
+        for (var i=0; i<numFoils; i++){
+
+            var xpos = getRandomInt(20 + interval*i, interval*(i+1) - 20);
+            this.ladyBugs.push(new LadyBug(this.foils[i]));
+            this.ladyBugs[i].setUp(); // i+2 ?? xpos ?
+
+        }
+
+        this.instruction = new PIXI.Container()
+        this.instruction.customAnimation = new animation(this.instruction)
+
+        this.trialTimer = new ClockTimer();
+
+        this.circle = new PIXI.Graphics()
+        this.circle.lineStyle(0);
+        this.circle.beginFill(0x02d1aa);
+        this.circle.drawCircle(0,0,100);
+        this.circle.endFill();
+       
+        this.instruction.addChild(this.circle); 
+        this.circle.x = session.canvas.width/2
+        this.circle.y = session.canvas.height/2
+
+        this.cNumber =  new PIXI.Text(this.correct, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
+        this.cNumber.x = session.canvas.width/2 - this.cNumber.width/2
+        this.cNumber.y = session.canvas.height/2 - this.cNumber.height/2
+        this.instruction.addChild(this.cNumber);
+        
+        stage.addChild(this.instruction)
+
+        this.trialTimer.start(1000);
+        this.trialState = "intro";
+
+        this.movetoCorner = false;
     };
 
     Trial.prototype.destroy = function(){
@@ -309,12 +356,12 @@ function proto02(){
 
         }
 
-        this.UI.removeChildren(0,this.UI.children.length)
+        this.instruction.removeChildren(0,this.instruction.children.length)
         this.circle.destroy(true.true)
         this.cNumber.destroy(true,true)
 
-        stage.removeChild(this.UI)
-        this.UI.destroy(true,true)
+        stage.removeChild(this.instruction)
+        this.instruction.destroy(true,true)
     };
 
     Trial.prototype.getFoils = function() {
@@ -333,43 +380,107 @@ function proto02(){
       return(foils);
     };
 
-    Trial.prototype.init = function(){
 
-      interval = Math.floor(screen_width / (numFoils + 1.0));
-      this.foils = this.getFoils();
-      this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
-      this.foils = shuffle(this.foils);
-      console.log(this.foils);
 
-      for (var i=0; i<numFoils; i++){
+    Trial.prototype.intro = function(){
 
-        var xpos = getRandomInt(20 + interval*i, interval*(i+1) - 20);
-        this.ladyBugs.push(new LadyBug(this.foils[i]));
-        this.ladyBugs[i].setUp(); // i+2 ?? xpos ?
+        switch(this.introState){
 
-      }
+            case "displaySound":
 
-      this.UI = new PIXI.Container()
-      this.UI.customAnimation = new animation(this.UI)
+                assets.sounds.numbers[this.correct].play()
+                
+                if(this.trialTimer.timeOut()){
 
-      this.trialTimer = new ClockTimer();
+                    var dest = {}
+                    dest.x = -30
+                    dest.y = session.canvas.height-180
+                    this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000)
+                    this.introState = "moveToCorner"
 
-      this.circle = new PIXI.Graphics()
-      this.circle.lineStyle(0);
-      this.circle.beginFill(0x02d1aa);
-      this.circle.drawCircle(0,0,100);
-      this.circle.endFill();
-      this.UI.addChild(this.circle);
-      this.circle.x = 80,
-      this.circle.y = session.canvas.height-60;
+                }
 
-      this.cNumber =  new PIXI.Text(this.correct, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
-      this.cNumber.x = 50
-      this.cNumber.y = session.canvas.height-120
-      this.UI.addChild(this.cNumber);
 
-      stage.addChild(this.UI)
-      this.trialState = "play"; // GK: was "play"
+                break;
+
+
+            case "moveToCorner":
+
+
+                    if(this.instruction.customAnimation.run()){
+
+                        return true;                  
+
+                    }
+
+                break;
+
+        }
+
+        return false;
+    };
+
+    Trial.prototype.nextTrial = function(){
+        
+        console.log(this.nextTrialState)
+
+        switch(this.nextTrialState){
+
+            case "flyAll":
+
+                // wait until all ladybugs are off the screen.
+                var done = true;
+
+                for (var i=0; i<this.ladyBugs.length; i++){
+
+                    if(!this.ladyBugs[i].checkOutOfScreen()){
+
+                        done = false
+
+                    }
+
+                    this.ladyBugs[i].move("noReset")
+
+                };
+
+                if(done){
+
+                    var dest = {}
+                    dest.x = (session.canvas.width/2)-100// - (this.circle.width/2)
+                    dest.y = (session.canvas.height/2)-100// - (this.circle.height/2)
+                    this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000)
+                    this.nextTrialState = "moveToCenter"
+
+                };
+
+                break;
+
+            case "moveToCenter":
+
+                if(this.instruction.customAnimation.run()){
+
+                    this.trialTimer.start(500)
+                    this.nextTrialState = "callNextTrial"
+
+                }
+
+                break;
+
+
+            case "callNextTrial":
+
+                if(this.trialTimer.timeOut()){
+
+                    return true;
+                }
+
+
+                break;
+        
+        }
+        
+        return false;
+
     };
 
     Trial.prototype.play = function(_updateTime){
@@ -378,131 +489,43 @@ function proto02(){
 
             case "intro":
 
-                //move to the middle
-                // move to the corner
-                // chanto to play
+                if(this.intro()){
+
+                    this.trialState = "play";  
+                }
+
+                break;
+
 
             case "play":
 
                 for (var i=0; i<this.ladyBugs.length; i++){
+
                   this.ladyBugs[i].move()
+
                 };
 
                 if(this.correctImput >= 1){
 
                     for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
 
-                    this.trialState = "showNext"
-                    this.showNextState = "flyall"
+                    this.trialState = "nextTrial"
 
                 }
 
                 break;
 
-            case "showNext":
+            case "nextTrial":
 
-                // moke all fly, call trial loop
-                // round.getNextTrial()
-
-                if(this.showNextNumber()){
-
-                    this.correctImput = 0;
-                    for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].state = "walk"  };
-                    this.trialState = "play";
-
-                };
-
-                break;
-
-            };
-        };
-
-
-    Trial.prototype.showNextNumber = function(){
-
-      // GK: when do we lose previous trial.stimuli???
-      // push back onto queue (once..) for later GK: ideally would do this in round loop, between trials
-      //this.stimuli.priority += .5;
-      //stimQueues['numberstim'].push(this.stimuli);
-      //console.log('pushed '+this.stimuli.id+' back on queue');
-
-      // GK somewhere here do the star + score
-        switch(this.showNextState){
-
-            case "flyall":
-
-                var next = true;
-
-                for (var i=0; i<this.ladyBugs.length; i++){
-
-                    if(!this.ladyBugs[i].checkOutOfScreen()){
-                        next = false
-                    }
-
-                    this.ladyBugs[i].move("noReset")
-                };
-
-                if(next){
-
-                    var dest = {}
-                    dest.x = renderer.width/2 - this.UI.getBounds().width/2
-                    dest.y = renderer.height/2 - this.UI.getBounds().height/2
-
-                    this.showNextState = "center";
-                    this.UI.customAnimation.init({x:dest.x,y:dest.y},1000)
-
-                }
-
-                break;
-
-            case "center":
-
-                if(this.UI.customAnimation.run()){
-                    this.showNextState = "change";
-                    this.trialTimer.start(1000);
-                }
-
-                break;
-
-
-            case "change":
-
-                if(!this.correctSet && this.trialTimer.getElapsed() > 500){
-                    
-                    this.stimuli = stimQueues['numberstim'].pop();
-                    console.log(this.stimuli);
-                    this.correct = this.stimuli.id;
-                    this.cNumber.text = this.stimuli.id;
-                    this.correctSet = true;
-                    assets.sounds.numbers[this.stimuli.id].play();
-                }
-
-                if(this.trialTimer.timeOut()){
-
-                    var dest = {}
-                    dest.x = 0
-                    dest.y = renderer.height- this.UI.getBounds().height
-
-                    this.UI.customAnimation.init({x:dest.x,y:dest.y},1000)
-                    this.showNextState = "corner"
-                }
-
-                break;
-
-            case "corner":
-
-                if(this.UI.customAnimation.run()){
-
-                    this.showNextState = "flyall"
-                    this.correctSet = false;
+                if(this.nextTrial()){
                     return true
                 }
 
                 break;
 
-        }
+            };
 
-        return false
+            return false
     };
 
     /*
@@ -513,6 +536,7 @@ function proto02(){
     like for exaple a smashed bug (correct identification but wrong counting)
     *********************************************************************
     */
+
     Trial.prototype.answer = function(_correct){
 
         if(_correct){
@@ -530,8 +554,7 @@ function proto02(){
 
 // create the root of the scene graph and main classes
 var stage = new PIXI.Container();
-//var assets = new Assets();
-
+var round = new Round();
 
 this.destroy = function(){
 
@@ -544,8 +567,8 @@ function onAssetsLoaded(){
     
     session.show()
     round.init(Trial,stage)
+    session.render(stage)
     update();
-
 }
 
 
@@ -614,6 +637,7 @@ function update() {
 
     if(statsBol)session.stats.begin();
 
+
         //update position based on espectaed frame rate
         var current = Date.now();
         var elapsed = current - previousTime;
@@ -624,7 +648,7 @@ function update() {
 
         // update the canvas with new parameters
           round.play(lag/MS_PER_UPDATE);
-          adjustGameDynamics()
+          //adjustGameDynamics()
 
           lag = lag - MS_PER_UPDATE;
         }
