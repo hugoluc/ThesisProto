@@ -228,7 +228,6 @@
 function Round(){
 
 	this.trial = {}
-	this.background = assets.textures.bg;
 	this.score;
 	this.dificulty;
 	this.trial;
@@ -249,7 +248,9 @@ Round.prototype.init = function(_Trial,_stage){
     */
 	initStorage()
 
-    this.background = new PIXI.Sprite(assets.textures.bg)
+    this.background = new PIXI.Sprite(assets.textures.bg);
+    this.background.width = session.canvas.width;
+    this.background.height = session.canvas.height;
  	this.stage.addChild(this.background);
 
  	this.getNextTrial()
