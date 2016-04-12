@@ -127,7 +127,6 @@ animation.prototype.init = function(dest,length,offset){
   this.anLength = length || 2000;
 
   var start = {};
-
   start.x = this.obj.getBounds().x || this.obj.x
   start.y = this.obj.getBounds().y || this.obj.y
 
@@ -174,10 +173,10 @@ animation.prototype.run = function(){
 
   var elapsed = this.now - this.StartTime
 
-  if(elapsed >= this.anLength+this.offset){
+  if(elapsed > this.anLength+this.offset){
   
-    this.obj.x =  this.startPos.x + (this.speed.x * this.anLength) 
-    this.obj.y =  this.startPos.y + (this.speed.y * this.anLength) 
+    this.obj.x =  this.startPos.x + this.distance.x
+    this.obj.y =  this.startPos.y + this.distance.y 
     this.finished = true;
 
     return true
