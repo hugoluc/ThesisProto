@@ -46,10 +46,10 @@ var Chooser = function() {
     var game4 = document.getElementById("choose-game04")
 
     game4.onclick =  function(){
-      console.log("starting wordGuess");
+      console.log("starting Hangman");
       init_screen();
       clickStart('container-chooser','container-exp');
-      currentview = new WordGame();
+      currentview = new Hangman();
     }
 
     var game5 = document.getElementById("choose-game05")

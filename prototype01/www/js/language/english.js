@@ -45,6 +45,35 @@ var shapes = [];
 
 // ToDo: record English alphabet! (or phonemes, or both?)
 var letters = [
+  {id:1, text:"A", audio:"A", seq:[]},
+  {id:2, text:"B", audio:"B", seq:[]},
+  {id:3, text:"C", audio:"C", seq:[]},
+  {id:4, text:"D", audio:"D", seq:[]},
+  {id:5, text:"E", audio:"E", seq:[]},
+  {id:6, text:"F", audio:"F", seq:[]},
+  {id:7, text:"G", audio:"G", seq:[]},
+  {id:8, text:"H", audio:"H", seq:[]},
+  {id:9, text:"I", audio:"I", seq:[]},
+  {id:10, text:"J", audio:"J", seq:[]},
+  {id:11, text:"K", audio:"K", seq:[]},
+  {id:12, text:"L", audio:"L", seq:[]},
+  {id:13, text:"M", audio:"M", seq:[]},
+  {id:14, text:"N", audio:"N", seq:[]},
+  {id:15, text:"O", audio:"O", seq:[]},
+  {id:16, text:"P", audio:"P", seq:[]},
+  {id:17, text:"Q", audio:"Q", seq:[]}, // cue..
+  {id:18, text:"R", audio:"R", seq:[]},
+  {id:19, text:"S", audio:"S", seq:[]},
+  {id:20, text:"T", audio:"T", seq:[]},
+  {id:21, text:"U", audio:"U", seq:[]},
+  {id:22, text:"V", audio:"V", seq:[]},
+  {id:23, text:"W", audio:"W", seq:[]},
+  {id:24, text:"X", audio:"X", seq:[]}, // ex
+  {id:25, text:"Y", audio:"Y", seq:[]}, // ye? 'why'
+  {id:26, text:"Z", audio:"Z", seq:[]}
+  ];
+
+var letters_phonemic = [
   {id:1, text:"A", audio:"ah", seq:[]},
   {id:2, text:"B", audio:"be", seq:[]},
   {id:3, text:"Ch", audio:"che", seq:[]},
