@@ -5,6 +5,7 @@ var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
 var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
 var numFoils = 8; // +2 if 3x correct, -1 if 3x incorrect
 
+var LOGTHIS =  false;
 
 function proto02(){
 /*
@@ -26,6 +27,7 @@ function proto02(){
             y: 0,
         }
 
+        this.counter = 0
         this.sprite = {};
 
         // sprite variables
@@ -36,6 +38,7 @@ function proto02(){
         this.sprite.walk.scale.x = 0.34;
         this.sprite.walk.scale.y = 0.34;
         this.container.addChild(this.sprite.walk);
+
 
         this.sprite.fly = new PIXI.extras.MovieClip(assets.sprites.ladyBug_fly);
         this.sprite.fly.animationSpeed = 0.1;
@@ -48,6 +51,7 @@ function proto02(){
         this.sprite.dead.alpha = 0;
         this.sprite.dead.scale.x = 0.34;
         this.sprite.dead.scale.y = 0.34;
+
         this.container.addChild(this.sprite.dead);
 
         //number variables
@@ -65,19 +69,22 @@ function proto02(){
         this.end = {};
         this.state = "walk";
         this.playQueue = [];
+        this.customAnimation = new animation(this.container)
     };
 
-    LadyBug.prototype.checkOutOfScreen = function(){
-        
-        if (this.container.x < 0 || this.container.x > session.canvas.width || this.container.y+this.container.width < 0 || this.container.y > session.canvas.height){
-           
-            return true;
-        
-        }else {
-           
-            return false;
-        };
-    };
+    LadyBug.prototype.setFly = function(){
+
+        var dest = {
+            x:this.container.x,
+            y:-this.container.height,
+        }
+
+        var distance = dest.y - this.container.y
+        var length = Math.abs(distance/1)
+
+        this.customAnimation.init(dest,length)
+
+    }
 
     LadyBug.prototype.destroy = function(){
 
@@ -91,7 +98,9 @@ function proto02(){
         this.state = "destroy";
     };
 
-    LadyBug.prototype.setUp = function(freeIds){
+    LadyBug.prototype.setUp = function(_pos,_offset){
+
+        if(_offset == undefined){_offset = 0}
 
         this.sprite.walk.alpha = 1;
         this.sprite.walk.play()
@@ -103,22 +112,12 @@ function proto02(){
 
         this.state = "walk";
         this.number.text = this.startNumber;
-        this.container.ySpeed = walkSpeed / Math.log(this.number.text+5); 
         this.sprite.walk.animationSpeed = .05*walkSpeed/Math.log(this.number.text+4);
 
-        var moduleCount = window.innerWidth/this.sprite.walk.width;
-
-        if(freeIds == null){
-            var moduleId = getRandomInt(0,Math.floor(moduleCount));
-        }else{ // GK: make non-overlapping
-            var moduleId = freeIds[getRandomInt(0,freeIds.length)];
-        }
-
-
-        this.start.x = moduleId * this.sprite.walk.width;
+        this.start.x = _pos;
         this.start.y = window.innerHeight;
 
-        this.end.x = getRandomInt(this.start.x-this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2);
+        this.end.x = getRandomInt(this.start.x - this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2);
         this.end.y = -this.sprite.walk.height;
         
         if(this.end.x > stage.width){
@@ -127,18 +126,16 @@ function proto02(){
         
         }else if(this.end.x < 10){
           
-            this.end.x = 10;
+            this.end.x = 200;
         };
 
-        this.container.xSpeed = (this.start.x-this.end.x)/(this.start.y - this.end.y)
-        
-        if(this.start.x > this.end.x){ this.container.xSpeed*-1 }
 
         this.container.rotation = getAngle(this.start.x,this.start.y,this.end.x,this.end.y)
-        this.container.x = this.start.x;
-        this.container.y = this.start.y;
+       
+        this.customAnimation.setPos(this.start)
 
-        return moduleId;
+        speed = (this.startNumber * 1000) + 1400 // IMPROVE THIS!!!!
+        this.customAnimation.init(this.end,speed,_offset)
     };
 
     LadyBug.prototype.move = function(_state){
@@ -152,18 +149,15 @@ function proto02(){
             this.state = _state;
         };
 
-        //--->> move this inside animation class
-        this.container.y = this.container.y - this.container.ySpeed;
-        this.container.x = this.container.x - this.container.xSpeed;
-
         switch(this.state){
 
             case "walk":
 
-                if(this.container.y  < this.end.y){
+                if(this.customAnimation.run()){
 
-                    this.container.y = this.start.y;
-                    this.setUp();
+                    var i = getRandomInt(0,round.trial.availableSpots.length)                    
+                    var xpos = round.trial.getSpotPos(i)
+                    this.setUp(xpos);
 
                 };
 
@@ -171,21 +165,11 @@ function proto02(){
 
             case "fly":
 
-                this.sprite.walk.stop();
-                this.sprite.walk.alpha = 0;
-
-                this.sprite.fly.play()
-                this.sprite.fly.alpha = 1;
-
                 if(this.timer.timeOut()){
 
-                    this.container.ySpeed = 10;
-
-                    if(this.container.y  < this.end.y){
+                    if(this.customAnimation.run()){
 
                         round.trial.answer(true)
-                        this.container.y = this.start.y;
-                        this.setUp();
 
                     }
 
@@ -199,6 +183,7 @@ function proto02(){
                     this.sprite.dead.alpha =  this.sprite.dead.alpha - 0.05;
 
                     if(this.timer.timeOut()){
+
                         this.state = "walk";
                         this.setUp();
                     }
@@ -207,11 +192,16 @@ function proto02(){
 
                 break;
 
-            case "destroy":
+            case "noReset":
+
+                if(this.customAnimation.run()){
+                    return true;
+                }
 
                 break;
-
         };
+
+        return false;
     };
 
     LadyBug.prototype.forceFly = function(){
@@ -226,7 +216,11 @@ function proto02(){
         this.container.rotation = 0;
         this.container.ySpeed = 10;
         this.container.xSpeed = 0;
+        this.container.interactive = false;
         this.sprite.walk.animationSpeed = 0;
+
+        this.setFly()
+
     };
 
     LadyBug.prototype.click = function(){
@@ -241,19 +235,30 @@ function proto02(){
             //console.log("click over:--",this.number.text)
 
             this.number.text--;
-            round.trial.answer();
 
             // flyes if it reaches 0
             if(this.number.text == 0) {
-              // play feedback sound
-              correct_sound.play(); // GK: why doesn't this play?
-              this.number.text = ""
-              this.container.ySpeed = 0;
-              this.container.xSpeed = 0;
-              this.sprite.walk.animationSpeed = 0;
 
-              this.state = "fly"
-              this.timer.start(300);
+                // play feedback sound
+                correct_sound.play(); // GK: why doesn't this play?
+                this.number.text = ""
+                this.container.ySpeed = 0;
+                this.container.xSpeed = 0;
+                this.sprite.walk.animationSpeed = 0;
+
+
+                this.sprite.walk.stop();
+                this.sprite.walk.alpha = 0;
+
+                this.sprite.fly.play()
+                this.sprite.fly.alpha = 1;
+
+
+                this.setFly()
+                this.state = "fly"
+                this.timer.start(550);
+
+
 
             // kills if it click one more time
             } else if(this.number.text < 0) {
@@ -268,6 +273,7 @@ function proto02(){
 
                 this.state = "dead";
                 this.timer.start(1500);
+
 
             // try to present audio for each number in the countdown? maybe too slow..
             }else if (this.number.text > 0){
@@ -305,12 +311,11 @@ function proto02(){
       this.correctSet = false;
       this.introState = "displaySound"
       this.nextTrialState = "flyAll"
+      this.availableSpots = []
     };
-
 
     Trial.prototype.init = function(){
 
-        interval = Math.floor(screen_width / (numFoils + 1.0));
         this.foils = this.getFoils();
         this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
         this.foils = shuffle(this.foils);
@@ -319,7 +324,39 @@ function proto02(){
 
             var xpos = getRandomInt(20 + interval*i, interval*(i+1) - 20);
             this.ladyBugs.push(new LadyBug(this.foils[i]));
-            this.ladyBugs[i].setUp(); // i+2 ?? xpos ?
+
+        }
+
+        this.instructionWidth = 100;  // size of the ciurcle for instruction
+
+        //determine individual spots available based on the screen with and the bug width to position ladybugs
+        // this will try to fit as much bugs as possible on the width of gthe sreen without overlaying them
+        var interval = Math.floor((screen_width - this.instructionWidth) / this.ladyBugs[0].container.width);
+
+        for(var i = 0; i<interval; i++){
+
+            this.availableSpots.push(i)
+
+        }
+
+        // array with andon numebr up the the number of indivisual spots available
+        this.availableSpots = shuffle(this.availableSpots)
+
+
+        for(var i = 0; i<numFoils; i++){
+
+            // get the position for the ladybug based on the possible individual spots available
+            var posN = i%interval 
+
+            if(i > interval){
+                // if the are more foils then spots available, off set the time of the animations start
+                var offset = 200 * posN
+            }
+
+            // position of bug on screen based on available spot
+           var xpos = this.getSpotPos(posN)
+
+            this.ladyBugs[i].setUp(xpos,offset);
 
         }
 
@@ -331,16 +368,16 @@ function proto02(){
         this.circle = new PIXI.Graphics()
         this.circle.lineStyle(0);
         this.circle.beginFill(0x02d1aa);
-        this.circle.drawCircle(0,0,100);
+        this.circle.drawCircle(0,0,this.instructionWidth);
         this.circle.endFill();
-       
-        this.instruction.addChild(this.circle); 
-        this.circle.x = session.canvas.width/2
-        this.circle.y = session.canvas.height/2
+        this.circle.x = 0
+        this.circle.y = 0       
 
+        this.instruction.addChild(this.circle); 
+        
         this.cNumber =  new PIXI.Text(this.correct, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
-        this.cNumber.x = session.canvas.width/2 - this.cNumber.width/2
-        this.cNumber.y = session.canvas.height/2 - this.cNumber.height/2
+        this.cNumber.x = this.circle.x - this.cNumber.width/2
+        this.cNumber.y = this.circle.y - this.cNumber.height/2
         this.instruction.addChild(this.cNumber);
         
         stage.addChild(this.instruction)
@@ -349,6 +386,16 @@ function proto02(){
         this.trialState = "intro";
 
         this.movetoCorner = false;
+
+        this.instruction.customAnimation.setPos({x:session.canvas.width/2,y:session.canvas.height/2})
+
+        assets.sounds.numbers[this.correct].play()
+    };
+
+    Trial.prototype.getSpotPos = function(_i){
+
+
+        return (this.availableSpots[_i] * this.ladyBugs[0].container.width) + this.instructionWidth*2.5
     };
 
     Trial.prototype.destroy = function(){
@@ -371,7 +418,7 @@ function proto02(){
 
       // get numFoils foils that are within +/-3 of the target number
       var corNum = parseInt(this.correct)
-      var min = corNum < 3 ? 0 : corNum - 3;
+      var min = corNum < 3 ? 1 : corNum - 3;
       var foils = [];
 
       for (var i = 0; i < numFoils; i++) {
@@ -383,32 +430,26 @@ function proto02(){
       return(foils);
     };
 
-
-
     Trial.prototype.intro = function(){
 
         switch(this.introState){
 
             case "displaySound":
-
-                assets.sounds.numbers[this.correct].play()
                 
                 if(this.trialTimer.timeOut()){
 
                     var dest = {}
-                    dest.x = -30
-                    dest.y = session.canvas.height-180
+                    dest.x = this.instructionWidth*1.2
+                    dest.y = session.canvas.height-(this.instructionWidth * 1.2)
                     this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000)
                     this.introState = "moveToCorner"
 
                 }
 
-
                 break;
 
 
             case "moveToCorner":
-
 
                     if(this.instruction.customAnimation.run()){
 
@@ -421,69 +462,6 @@ function proto02(){
         }
 
         return false;
-    };
-
-    Trial.prototype.nextTrial = function(){
-        
-        console.log(this.nextTrialState)
-
-        switch(this.nextTrialState){
-
-            case "flyAll":
-
-                // wait until all ladybugs are off the screen.
-                var done = true;
-
-                for (var i=0; i<this.ladyBugs.length; i++){
-
-                    if(!this.ladyBugs[i].checkOutOfScreen()){
-
-                        done = false
-
-                    }
-
-                    this.ladyBugs[i].move("noReset")
-
-                };
-
-                if(done){
-
-                    var dest = {}
-                    dest.x = (session.canvas.width/2)-100// - (this.circle.width/2)
-                    dest.y = (session.canvas.height/2)-100// - (this.circle.height/2)
-                    this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000)
-                    this.nextTrialState = "moveToCenter"
-
-                };
-
-                break;
-
-            case "moveToCenter":
-
-                if(this.instruction.customAnimation.run()){
-
-                    this.trialTimer.start(500)
-                    this.nextTrialState = "callNextTrial"
-
-                }
-
-                break;
-
-
-            case "callNextTrial":
-
-                if(this.trialTimer.timeOut()){
-
-                    return true;
-                }
-
-
-                break;
-        
-        }
-        
-        return false;
-
     };
 
     Trial.prototype.play = function(_updateTime){
@@ -508,7 +486,7 @@ function proto02(){
 
                 };
 
-                if(this.correctImput >= 1){
+                if(this.correctImput > 1){
 
                     for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
 
@@ -531,6 +509,61 @@ function proto02(){
             return false
     };
 
+    Trial.prototype.nextTrial = function(){
+        
+        switch(this.nextTrialState){
+
+            case "flyAll":
+
+                // wait until all ladybugs are off the screen.
+                var done = true;
+
+                for (var i=0; i<this.ladyBugs.length; i++){
+
+                    if(!this.ladyBugs[i].move("noReset")){
+
+                        done = false
+
+                    }
+
+                };
+
+                if(done){
+
+                    var dest = {}
+                    dest.x = session.canvas.width/2
+                    dest.y = session.canvas.height/2
+                    this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000)
+                    this.nextTrialState = "moveToCenter"
+                };
+
+                break;
+
+            case "moveToCenter":
+
+                if(this.instruction.customAnimation.run()){
+
+                    this.trialTimer.start(500)
+                    this.nextTrialState = "callNextTrial"
+
+                }
+
+                break;
+
+            case "callNextTrial":
+
+                if(this.trialTimer.timeOut()){
+
+                    return true;
+                }
+
+
+                break;
+        
+        }
+        
+        return false;
+    };
     /*
     *********************************************************************
     Handles the answer given by the user
@@ -610,13 +643,11 @@ function adjustGameDynamics() { // move inside game
 
     scoreDifferential = 0;
     walkSpeed += 1;
-    console.log('streaky-full speed ahead!');
 
   } else if(scoreDifferential <=- 3 & walkSpeed>2) {
 
     scoreDifferential = 0;
     walkSpeed -= 1;
-    console.log('mistakes were made; slowing down');
 
   }
 

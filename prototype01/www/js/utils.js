@@ -109,10 +109,9 @@ function animation(obj){
 animation.prototype.stop = function(){
   this.finished = true;
   this.obj = [];
-}
+};
 
 animation.prototype.init = function(dest,length,offset){
-
 
   this.finished = false;
   this.timeSet = false;
@@ -127,16 +126,38 @@ animation.prototype.init = function(dest,length,offset){
   this.anLength = length || 2000;
 
   var start = {};
-  start.x = this.obj.getBounds().x || this.obj.x
-  start.y = this.obj.getBounds().y || this.obj.y
 
-  this.startPos = {};
-  this.startPos.x = this.obj.x;
-  this.startPos.y = this.obj.y;
+  if(this.obj.constructor.name != "Container"){
 
-  this.distance = {};
-  this.distance.x = this.dest.x - start.x;
-  this.distance.y =  this.dest.y - start.y;
+    start.x = this.obj.x
+    start.y = this.obj.y
+
+    this.startPos = {};
+    this.startPos.x = this.obj.x;
+    this.startPos.y = this.obj.y;
+
+    this.distance = {};
+    this.distance.x = this.dest.x - (start.x);
+    this.distance.y =  this.dest.y - (start.y);
+
+
+
+  }else{
+
+
+    start.x = this.obj.getBounds().x
+    start.y = this.obj.getBounds().y
+
+    this.startPos = {};
+    this.startPos.x = this.obj.x;
+    this.startPos.y = this.obj.y;
+
+    this.distance = {};
+    this.distance.x = this.dest.x - (this.startPos.x);
+    this.distance.y =  this.dest.y - (this.startPos.y);
+
+  }
+
 
   this.speed = {};
   this.speed.x = this.distance.x/this.anLength;
@@ -144,10 +165,79 @@ animation.prototype.init = function(dest,length,offset){
 
   this.now = 0;
 
-  // console.log("start",this.startPos) 
+  if(this.obj.children.length != 4){
+    return;
+  }
+
+  // console.log("--------------ANIMATION SETUP---------------------------")
+  // console.log("id", this.obj)
+  // console.log("startPOS",this.startPos) 
+  // console.log("start",start) 
   // console.log("dest",this.dest.x,this.dest.y)
-  // console.log("distance:","x:" + this.distance.x ,"y:" +this.distance.y);
-  // console.log("speed:", "x:" +this.speed.x ,"y:" + this.speed.y);
+    if(LOGTHIS){
+
+      //console.log("distance:","x:" + this.distance.x + " / y:" +this.distance.y);
+      console.log("speed:", "x:" + this.speed.x + " / y:" + this.speed.y);      
+    
+    }  
+
+
+};
+
+animation.prototype.setPos = function(dest){
+
+  this.dest = {
+    x : dest.x,
+    y : dest.y,
+  }
+
+  var start = {};
+
+  if(this.obj.constructor.name != "Container"){
+
+    start.x = this.obj.x
+    start.y = this.obj.y
+
+    this.startPos = {};
+    this.startPos.x = this.obj.x;
+    this.startPos.y = this.obj.y;
+
+    this.distance = {};
+    this.distance.x = this.dest.x - (start.x);
+    this.distance.y =  this.dest.y - (start.y);
+
+
+
+  }else{
+
+    start.x = this.obj.getBounds().x
+    start.y = this.obj.getBounds().y
+
+    this.startPos = {};
+    this.startPos.x = this.obj.x;
+    this.startPos.y = this.obj.y;
+
+    this.distance = {};
+    this.distance.x = this.dest.x - (this.startPos.x);
+    this.distance.y =  this.dest.y - (this.startPos.y);
+
+  }
+
+  // console.log("------------------------")
+
+  // console.log("BEFORE setting position: ")
+  // console.log(this.obj.getBounds())
+  // console.log([this.obj.x, this.obj.y])
+
+  this.obj.x = this.obj.x + this.distance.x;
+  this.obj.y = this.obj.y + this.distance.y;
+
+
+//   console.log("AFTER setting position: ")
+//   console.log(this.obj.getBounds())
+//   console.log([this.obj.x, this.obj.y])
+
+//   console.log("------------------------")
 };
 
 animation.prototype.run = function(){
@@ -170,26 +260,33 @@ animation.prototype.run = function(){
 
   }
 
-
   var elapsed = this.now - this.StartTime
 
   if(elapsed > this.anLength+this.offset){
-  
+
     this.obj.x =  this.startPos.x + this.distance.x
     this.obj.y =  this.startPos.y + this.distance.y 
     this.finished = true;
+
+    if(this.obj.children.length != 4){
+      return true 
+    }
+
+    // console.log("-----ANIMATION DONE!")
+    // console.log(this.obj.getBounds())
+    // console.log([this.obj.x,this.obj.y])
+    // console.log("---------------------- ")
 
     return true
 
   }else{
 
     if(elapsed >= this.offset){
-      
+  
       this.obj.x = this.obj.x + frameTime * this.speed.x
       this.obj.y = this.obj.y + frameTime * this.speed.y      
     
     }
-
     
     return false
 

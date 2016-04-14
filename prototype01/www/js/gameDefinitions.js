@@ -254,7 +254,7 @@ Round.prototype.init = function(_Trial,_stage){
  	this.stage.addChild(this.background);
 
  	this.getNextTrial()
-
+ 	session.render(_stage)
 
 }
 
