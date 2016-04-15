@@ -18,11 +18,13 @@ if(p==='iPad' || p==='iPhone' || p==='iPod') {
 
 var HangmanTrial = function(pars) {
   var self = this;
-  self.guesses_made = 0 // max = 10
+  //self.guesses_made = 0
+  self.wrong_guesses = 0 // max = 10
   self.answer = pars['text']; // a word, e.g.: {id:"radio", text:"radio", audio:"radio", image:"radio"},
   self.audiofile = pars['audio'];
   self.audio = new Audio('audio/'+language+'/'+self.audiofile+'.mp3');
   self.image = pars['image']; // if there's no image, need a default one (circle?)
+  //self.remaining_letters = // unique letters to guess--decrement when each is clicked
 
   //self.doTrial();
   self.doTrial = function(callback) {
@@ -30,12 +32,23 @@ var HangmanTrial = function(pars) {
     self.drawStimulus();
     self.drawBlanks();
     // play sound for the correct one
-    self.audio.play();
-    return callback(this); // self.clicked_correct, self.correct, self.clicked_incorrect
+    //self.audio.play();
+    return callback(this);
+  }
+
+  // end trial (read word)
+  self.finish = function() {
+    self.audio.play()
+    self.blanks.transition()
+      .style("opacity", 0.0);
+    self.veil.transition()
+      .style("opacity", 0.0)
+      .delay(800);
   }
 
   self.handleGuess = function(guess) {
-    if(!guess.clicked) {
+    console.log(guess)
+    if(guess.clicked==1) {
       self.guesses_made += 1;
       console.log("guessed "+guess.text);
       // select any occurrences of d.text in the blanks
@@ -44,23 +57,38 @@ var HangmanTrial = function(pars) {
       var hits = d3.selectAll(".blank")
         .filter(function(d) { return d.letter === guess.text.toLowerCase(); })
         .style("opacity", 0.0);
-      console.log(hits);
+
+      if(hits[0].length<1) {
+        self.wrong_guesses += 1
+        self.veil.transition()
+          .attr("transform", "translate(0,-"+24*self.wrong_guesses+")")
+          .delay(1000);
+        setTimeout(function(){incorrect_sound.play()}, 900);
+      } else {
+        // GK: only play correct_sound if first click on that letter
+        setTimeout(function(){correct_sound.play()}, 900);
+        self.veil.transition()
+          .attr("fill", getRandomColor())
+          .duration(1000);
+      }
     }
   }
 
   self.drawAlphabet = function(letters) {
+    for (var i = 0; i < letters.length; i++) {
+      letters[i].clicked = 0;
+    }
     var nrows = Math.floor(Math.sqrt(letters.length)) - 1;
     var ncols = Math.ceil(letters.length/nrows);
     console.log("nrows: "+nrows+" ncols: "+ncols);
     var keys = screen.append("svg")
       .append("g")
-      .attr("transform", "translate(135,80)");
+      .attr("transform", "translate(135,90)");
 
     self.alphabet = keys.append("g") // .attr("class", "alphabet")
       .selectAll("circle")
       .data(letters).enter()
       .append("g") // Add one g for each data node
-      .attr("clicked", false)
       .attr("transform", function(d, i) {
        // i = x + ncols*y
        d.x = (i%ncols)*(button_width+20) + 20,
@@ -91,7 +119,8 @@ var HangmanTrial = function(pars) {
           .attr("fill", "#222")
           .duration(400);
           //.remove();
-        audio = new Audio('audio/'+language+'/'+d.audio+'.mp3');
+        audio = new Audio('audio/'+language+'/alphabet/'+d.audio+'.mp3');
+        d.clicked += 1;
         audio.play();
         self.handleGuess(d);
       });
@@ -136,31 +165,37 @@ var HangmanTrial = function(pars) {
       .attr("fill", "green")
       .style("opacity", 1.0);
 
-
       // .attr("style", "font-size: 38; font-family: Helvetica, sans-serif")
       // .attr("fill", "red"); // draw vowels in a different color..
 
-    d3.selectAll(".blank")
-      .on(click_type, function(d) {
-        console.log("clicked "+d.letter);
-        d3.select(this) // selects the circle, not the text..
-          .transition()
-          .style("opacity",.1)
-          .duration(1000);
-      });
+    // d3.selectAll(".blank")
+    //   .on(click_type, function(d) {
+    //     console.log("clicked "+d.letter);
+    //     d3.select(this) // selects the circle, not the text..
+    //       .transition()
+    //       .style("opacity",.1)
+    //       .duration(1000);
+    //   });
   }
 
   self.drawStimulus = function() {
 
-      if(self.image) {
-        var myImg = screen.append("image")
-              .attr("xlink:href", function(d) { return "svgs/"+ self.image +".svg"; })
-              .attr("x", screen_width-imageSize-80) // screen_width/2 - 70
-              .attr("y", screen_height*.45) // screen_height*.45)
-              .attr("width",imageSize)
-              .attr("height",imageSize)
-              .style("opacity",1);
-      }
+    if(self.image) {
+      var myImg = screen.append("image")
+        .attr("xlink:href", function(d) { return "svgs/"+ self.image +".svg"; })
+        .attr("x", screen_width-imageSize-80) // screen_width/2 - 70
+        .attr("y", screen_height*.45) // screen_height*.45)
+        .attr("width",imageSize)
+        .attr("height",imageSize)
+        .style("opacity",1);
+
+      self.veil = screen.append("rect")
+        .attr("x", screen_width-imageSize-80) // screen_width/2 - 70
+        .attr("y", screen_height*.45)
+        .attr("width", imageSize)
+        .attr("height", imageSize)
+        .attr("fill", getRandomColor());
+    }
 
     var myLabel = screen.append("g").append("text")
       .attr("x", screen_width+50)
