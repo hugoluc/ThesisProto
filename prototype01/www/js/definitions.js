@@ -114,6 +114,14 @@ function Stimulus() {
     }
 }
 
+function count_unique_elements_in_array(arr) {
+  var counts = {};
+  for (var i = 0; i < arr.length; i++) {
+      counts[arr[i]] = 1 + (counts[arr[i]] || 0);
+  }
+  return(Object.keys(counts).length)
+}
+
 // // localStorage tutorial: http://www.ibm.com/developerworks/library/x-html5mobile2/
 // // save trial data to local storage
 // function saveTrial(keyword, tweet){

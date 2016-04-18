@@ -3,6 +3,8 @@ var nextTrial = false; // ready to go on
 
 // stage 1. pop up a word, play the word, and then show the object
 // stage 2. pop up a word and show a few objects; let them click. (if wrong, play the word)
+var max_guesses = 10;
+
 var imageSize = 240;
 var stim_diam = 80
 var button_width = 60;
@@ -24,33 +26,36 @@ var HangmanTrial = function(pars) {
   self.audiofile = pars['audio'];
   self.audio = new Audio('audio/'+language+'/'+self.audiofile+'.mp3');
   self.image = pars['image']; // if there's no image, need a default one (circle?)
-  //self.remaining_letters = // unique letters to guess--decrement when each is clicked
+  self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split("")); // unique letters to guess--decrement when each is clicked
 
   //self.doTrial();
   self.doTrial = function(callback) {
     var xpos = screen_width*.75;
     self.drawStimulus();
     self.drawBlanks();
-    // play sound for the correct one
-    //self.audio.play();
     return callback(this);
   }
 
   // end trial (read word)
-  self.finish = function() {
+  self.finish = function(won) {
+    if(won) {
+      console.log("hooray! play feedback['good_job']..animation");
+    } else {
+      console.log("lost: try again?")
+    }
     self.audio.play()
     self.blanks.transition()
       .style("opacity", 0.0);
     self.veil.transition()
       .style("opacity", 0.0)
       .delay(800);
+    setTimeout(function(){return(won)}, 1000);
   }
 
   self.handleGuess = function(guess) {
-    console.log(guess)
+    console.log("unique remaining letters: " + self.unique_letters_remaining);
     if(guess.clicked==1) {
       self.guesses_made += 1;
-      console.log("guessed "+guess.text);
       // select any occurrences of d.text in the blanks
       // if there is one or more, reveal those blanks
       // if there isn't one, reveal a bit more of the stimulus
@@ -59,17 +64,26 @@ var HangmanTrial = function(pars) {
         .style("opacity", 0.0);
 
       if(hits[0].length<1) {
-        self.wrong_guesses += 1
+        self.wrong_guesses += 1;
+        var img_vert_shift = self.wrong_guesses * imageSize / max_guesses;
         self.veil.transition()
-          .attr("transform", "translate(0,-"+24*self.wrong_guesses+")")
+          .attr("transform", "translate(0,-"+img_vert_shift+")")
           .delay(1000);
         setTimeout(function(){incorrect_sound.play()}, 900);
-      } else {
-        // GK: only play correct_sound if first click on that letter
+      } else { // they got a letter!
+        self.unique_letters_remaining -= 1;
         setTimeout(function(){correct_sound.play()}, 900);
         self.veil.transition()
           .attr("fill", getRandomColor())
           .duration(1000);
+        // did they finish the round?
+        if(self.unique_letters_remaining===0) {
+          console.log("got all the letters!")
+          setTimeout(function(){self.finish(true)}, 1000); // won!
+        }
+      }
+      if(self.wrong_guesses===max_guesses) { // lost..
+        setTimeout(function(){self.finish(false)}, 1000);
       }
     }
   }
@@ -134,7 +148,7 @@ var HangmanTrial = function(pars) {
     for (var i = 0; i < chars.length; i++) {
       chdict.push({"letter": chars[i]});
     }
-    console.log(chdict)
+    //console.log(chdict)
     self.blanks = screen.append("g")
       .attr("class", "blanks")
       .selectAll("circle")
@@ -170,7 +184,6 @@ var HangmanTrial = function(pars) {
 
     // d3.selectAll(".blank")
     //   .on(click_type, function(d) {
-    //     console.log("clicked "+d.letter);
     //     d3.select(this) // selects the circle, not the text..
     //       .transition()
     //       .style("opacity",.1)
@@ -231,7 +244,9 @@ var Hangman = function() {
           .remove();
        });
     screen.select("#background").remove(); // #background
-    // .exit().remove() does not work
+    finishGame = true;
+	  session.hide();
+    currentview = new Chooser(assets);
   }
 
   var next = function() {
