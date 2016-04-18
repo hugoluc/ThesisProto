@@ -28,32 +28,38 @@ var HangmanTrial = function(pars) {
   self.image = pars['image']; // if there's no image, need a default one (circle?)
   self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split("")); // unique letters to guess--decrement when each is clicked
 
-  //self.doTrial();
-  self.doTrial = function(callback) {
-    var xpos = screen_width*.75;
-    self.drawStimulus();
-    self.drawBlanks();
-    return callback(this);
-  }
-
   // end trial (read word)
-  self.finish = function(won) {
+  self.finish = function(won, callback) {
     if(won) {
       console.log("hooray! play feedback['good_job']..animation");
     } else {
       console.log("lost: try again?")
     }
+    var final_view_time = 3500; // how long they see the word and picture at the end
     self.audio.play()
     self.blanks.transition()
-      .style("opacity", 0.0);
+      .style("opacity", 0.0)
+      .delay(final_view_time)
+      .remove();
     self.veil.transition()
       .style("opacity", 0.0)
-      .delay(800);
-    setTimeout(function(){return(won)}, 1000);
+      .duration(300)
+      .remove();
+    nextTrial = true;
+    self.alphabet.transition()
+      .style("opacity", 0.0)
+      .duration(final_view_time/3)
+      .remove();
+    screen.selectAll("image")
+      .transition()
+      .delay(final_view_time)
+      .remove();
+    var tr_dat = {"word":self.answer, "won":won, "wrong_guesses":self.wrong_guesses};
+    setTimeout(function(){ callback(tr_dat) }, final_view_time); // pass data
   }
 
-  self.handleGuess = function(guess) {
-    console.log("unique remaining letters: " + self.unique_letters_remaining);
+  self.handleGuess = function(guess, callback) {
+    //console.log("unique remaining letters: " + self.unique_letters_remaining);
     if(guess.clicked==1) {
       self.guesses_made += 1;
       // select any occurrences of d.text in the blanks
@@ -79,16 +85,16 @@ var HangmanTrial = function(pars) {
         // did they finish the round?
         if(self.unique_letters_remaining===0) {
           console.log("got all the letters!")
-          setTimeout(function(){self.finish(true)}, 1000); // won!
+          setTimeout(function(){self.finish(true, callback)}, 1000); // won!
         }
       }
       if(self.wrong_guesses===max_guesses) { // lost..
-        setTimeout(function(){self.finish(false)}, 1000);
+        setTimeout(function(){self.finish(false, callback)}, 1000);
       }
     }
   }
 
-  self.drawAlphabet = function(letters) {
+  self.drawAlphabet = function(letters, callback) {
     for (var i = 0; i < letters.length; i++) {
       letters[i].clicked = 0;
     }
@@ -97,7 +103,7 @@ var HangmanTrial = function(pars) {
     console.log("nrows: "+nrows+" ncols: "+ncols);
     var keys = screen.append("svg")
       .append("g")
-      .attr("transform", "translate(135,90)");
+      .attr("transform", "translate("+ screen_width*.08 +","+ screen_height*.2 +")"); // 135,90
 
     self.alphabet = keys.append("g") // .attr("class", "alphabet")
       .selectAll("circle")
@@ -105,8 +111,8 @@ var HangmanTrial = function(pars) {
       .append("g") // Add one g for each data node
       .attr("transform", function(d, i) {
        // i = x + ncols*y
-       d.x = (i%ncols)*(button_width+20) + 20,
-       d.y = Math.floor(i/ncols)*(button_height+20) + 20;
+       d.x = (i%ncols)*(button_width+20) + 18,
+       d.y = Math.floor(i/ncols)*(button_height+20) + 18;
        return "translate(" + d.x + "," + d.y + ")";
       });
 
@@ -136,11 +142,9 @@ var HangmanTrial = function(pars) {
         audio = new Audio('audio/'+language+'/alphabet/'+d.audio+'.mp3');
         d.clicked += 1;
         audio.play();
-        self.handleGuess(d);
+        self.handleGuess(d, callback);
       });
   }
-
-  self.drawAlphabet(letters);
 
   self.drawBlanks = function() {
     var chars = self.answer.split("");
@@ -160,7 +164,7 @@ var HangmanTrial = function(pars) {
        // Set d.x and d.y here so that other elements can use it. d is
        // expected to be an object here.
        d.x = i*100 + stim_diam,
-       d.y = screen_height - 100;
+       d.y = .88*screen_height;
        return "translate(" + d.x + "," + d.y + ")";
       });
 
@@ -181,30 +185,24 @@ var HangmanTrial = function(pars) {
 
       // .attr("style", "font-size: 38; font-family: Helvetica, sans-serif")
       // .attr("fill", "red"); // draw vowels in a different color..
-
-    // d3.selectAll(".blank")
-    //   .on(click_type, function(d) {
-    //     d3.select(this) // selects the circle, not the text..
-    //       .transition()
-    //       .style("opacity",.1)
-    //       .duration(1000);
-    //   });
   }
 
   self.drawStimulus = function() {
-
+    var ypos = screen_height*.25;
+    var xpos = .95*screen_width-imageSize;
+    // GK: replace veil with N leaves that disappear as wrong guesses are made
     if(self.image) {
       var myImg = screen.append("image")
         .attr("xlink:href", function(d) { return "svgs/"+ self.image +".svg"; })
-        .attr("x", screen_width-imageSize-80) // screen_width/2 - 70
-        .attr("y", screen_height*.45) // screen_height*.45)
+        .attr("x", xpos)
+        .attr("y", ypos)
         .attr("width",imageSize)
         .attr("height",imageSize)
         .style("opacity",1);
 
       self.veil = screen.append("rect")
-        .attr("x", screen_width-imageSize-80) // screen_width/2 - 70
-        .attr("y", screen_height*.45)
+        .attr("x", xpos)
+        .attr("y", ypos)
         .attr("width", imageSize)
         .attr("height", imageSize)
         .attr("fill", getRandomColor());
@@ -216,6 +214,14 @@ var HangmanTrial = function(pars) {
       .attr("style", "font-size: 40; font-family: Helvetica, sans-serif")
       .text(self.text)
       .attr("fill", getRandomColor());
+  };
+
+  self.doTrial = function(callback) {
+    var xpos = screen_width*.75;
+    self.drawStimulus();
+    self.drawBlanks();
+    self.drawAlphabet(letters, callback);
+    //return callback(tr_data);
   };
 };
 
@@ -249,6 +255,14 @@ var Hangman = function() {
     currentview = new Chooser(assets);
   }
 
+  var storeData = function(tr_dat) {
+    console.log("store data");
+    if(nextTrial) {
+      nextTrial = false;
+      setTimeout(function(){ next() }, 2000);
+    }
+  };
+
   var next = function() {
     if(trials.length===0) {
       if(trial_index<20) {
@@ -269,10 +283,7 @@ var Hangman = function() {
     } else {
       var tr = new HangmanTrial(trials.shift());
       trial_index += 1;
-      tr.doTrial(function() {
-        if(nextTrial) next();
-      });
-      //console.log(tr);
+      tr.doTrial(storeData);
     }
   };
 
