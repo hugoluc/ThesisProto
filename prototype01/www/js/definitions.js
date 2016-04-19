@@ -1,6 +1,6 @@
-// // Android tablet dimensions
-var screen_width = window.innerWidth,
-    screen_height = window.innerHeight; // 768
+// window size (vs. expected Android tablet dimensions
+var screen_width = window.innerWidth, // (1200)
+    screen_height = window.innerHeight; // (768)
 
 // // try: <audio preload="auto"> <source="" /></audio>
 var correct_sound = new Audio('audio/correct.wav');
@@ -41,7 +41,7 @@ var init_screen = function() {
     .attr("id", "screen");
 };
 
-var setup_screen = function() {
+var setup_screen = function(drawBGimage) {
   var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
 
   screen.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
@@ -52,15 +52,17 @@ var setup_screen = function() {
     })
     .attr("id", "background");
   console.log(screen_width)
-  background.append("svg:image")
-    .attr("xlink:href", "img/"+bg_image_fname)
-    .attr({
-      x: 0,
-      y: 0,
-      width: screen_width,
-      height: screen_height
-    })
-    .attr("id", "background");
+  if(drawBGimage) {
+    background.append("svg:image")
+      .attr("xlink:href", "img/"+bg_image_fname)
+      .attr({
+        x: 0,
+        y: 0,
+        width: screen_width,
+        height: screen_height
+      })
+      .attr("id", "background");
+    }
 
     return background;
 };
@@ -110,6 +112,14 @@ function Stimulus() {
     for (var index in default_args) {
         if (typeof options[index] == "undefined") options[index] = default_args[index];
     }
+}
+
+function count_unique_elements_in_array(arr) {
+  var counts = {};
+  for (var i = 0; i < arr.length; i++) {
+      counts[arr[i]] = 1 + (counts[arr[i]] || 0);
+  }
+  return(Object.keys(counts).length)
 }
 
 // // localStorage tutorial: http://www.ibm.com/developerworks/library/x-html5mobile2/

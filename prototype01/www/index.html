@@ -11,9 +11,10 @@
         <!-- third-party libraries -->
         <script src="lib/store.min.js"></script>
         <script src="lib/pixi.js" type="text/javascript"></script>
-        <script src="lib/d3-timer.js" type="text/javascript"></script>
-        <script src="lib/jquery.js" type="text/javascript"></script>
         <script src="lib/d3.v3.min.js" type="text/javascript"></script>
+        <script src="lib/d3-timer.js" type="text/javascript"></script>
+        <script src="lib/d3-grid.js" type="text/javascript"></script>
+        <script src="lib/jquery.js" type="text/javascript"></script>
         <script src="lib/stats.min.js"></script>
 
         <script src="js/definitions.js" type="text/javascript"></script>
@@ -30,7 +31,11 @@
         <script src="js/proto03.2.js" type="text/javascript"></script>
         <script src="js/spellingGame.js" type="text/javascript"></script>
         <script src="js/wordGuess.js" type="text/javascript"></script>
+<<<<<<< HEAD
         <script src="js/bezier.js" type="text/javascript"></script>
+=======
+        <script src="js/hangman.js" type="text/javascript"></script>
+>>>>>>> 0107a4cb1a9bb65c3f1de89a962768dc602a0015
 
         <!-- ToDo: remove when language picker is fixed -->
         <script src="js/language/english.js" type="text/javascript"> </script>
@@ -38,20 +43,20 @@
 
        <!-- starting point -->
         <script type="text/javascript">
-            
+
 
             //var language; // = "swahili";
             var language = "english";
             var user = initStorage();
             var thisMathSessionLoaded = false
 
-            $(document).ready(function() { 
+            $(document).ready(function() {
 
                 $('.btn').hide();
 
             });
 
-            var currentview;    
+            var currentview;
 
 
             $(window).load( function(){
@@ -62,7 +67,7 @@
                     assets = new Assets();
                     session.init();
                     thisMathSessionLoaded = true;
-                
+
                 }
 
                 currentview = new Chooser();
@@ -81,7 +86,7 @@
             <div id="choose-game01" class="choser">Lady Bugs</div>
             <div id="choose-game02" class="choser">Ants on Lilypads</div>
             <div id="choose-game03" class="choser">Cloud Speller</div>
-            <div id="choose-game04" class="choser">Word Guess</div>
+            <div id="choose-game04" class="choser">Hangman</div>
             <div id="choose-game05" class="choser">Test</div>
         </div>
         <!--  Game COntainer to be filled based on the chooser options  -->

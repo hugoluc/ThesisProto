@@ -67,7 +67,7 @@ var letters = [
   {id:11, text:"K", audio:"ka", seq:[]},
   {id:12, text:"L", audio:"le", seq:[]},
   {id:13, text:"M", audio:"em", seq:[]}, // ToDo: is it 'me'? ('may')
-  {id:14, text:"N", audio:"ge", seq:[]},
+  {id:14, text:"N", audio:"en", seq:[]},
   {id:15, text:"O", audio:"o", seq:[]},
   {id:16, text:"P", audio:"pe", seq:[]},
   {id:18, text:"R", audio:"re", seq:[]},
