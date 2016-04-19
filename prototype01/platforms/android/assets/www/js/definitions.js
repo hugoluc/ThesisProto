@@ -2,58 +2,68 @@
 var screen_width = window.innerWidth,
     screen_height = window.innerHeight; // 768
 
+// // try: <audio preload="auto"> <source="" /></audio>
+var correct_sound = new Audio('audio/correct.wav');
+var incorrect_sound = new Audio('audio/birdcry.mp3');
+
 // var screen; // fullscreen svg for each task
 
 // var nextTrial = null; // for setTimeout so we can clearTimeout
 
-// var score = 0; // get from summarydata for each game type (or one for all?)
+var score = 0; // get from summarydata for each game type (or one for all?)
 
-// var background_image_files = ["plains1.png","plains2.png","sky0_1024x600.jpg",
-//   "sky1_1024x600.jpg","sky2_1024x600.jpg","sky3_1024x600.jpg","sky4_1024x600.jpg"]
+// stimuli for the ant game
+var addition = [
+  {sum:"1", options:["1","0","0"]},
+  {sum:"2", options:["1","1","0"]},
+  {sum:"3", options:["2","1","0"]},
+  {sum:"4", options:["2","2","1","0"]},
+  {sum:"4", options:["1","1","3","0"]},
+  {sum:"5", options:["1","1","2","3"]},
+  {sum:"5", options:["2","2","1","4"]},
+  {sum:"6", options:["1","1","2","3"]},
+  {sum:"6", options:["3","3","1","2"]},
+  {sum:"7", options:["1","2","3","1","2"]},
+  {sum:"7", options:["2","2","2","4","1"]},
+  {sum:"8", options:["4","2","2","1","0"]},
+  {sum:"8", options:["5","3","2","1","2"]},
+];
+
+ var background_image_files = ["plains1.png","plains2.png"]; //,"sky0_1024x600.jpg",
+  // "sky1_1024x600.jpg","sky2_1024x600.jpg","sky3_1024x600.jpg","sky4_1024x600.jpg"]
 
 var init_screen = function() {
-  // // .select("body")
-  // screen = d3.select("#container-exp").append("svg")
-  //   .attr({
-  //     width: screen_width,
-  //     height: screen_height
-  //   })
-  //   .attr("id", "screen");
+  screen = d3.select("#container-exp").append("svg")
+    .attr({
+      width: screen_width,
+      height: screen_height
+    })
+    .attr("id", "screen");
 };
 
-// var setup_screen = function() {
-//   var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
-//   // maybe randomly choose from a few different backgrounds? or consistent by task
-//   //d3.select("body").style("background-image", "../static/images/backgrounds/plains1.png");
-//   //d3.select("body").each(function(d, i) { $(this).css("background-image", "../static/images/backgrounds/plains1.png"); });
-//   //$(this).parent().css("background-image", "url(../static/images/backgrounds/plains1.png) no-repeat;");
-//   // background-image: url(../static/images/backgrounds/plains1.png);
-//   //$('#container-exp').css("background-image", "url(../static/images/backgrounds/plains1.png)");
+var setup_screen = function() {
+  var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
 
-//   screen.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
-//   var background = screen.append("g")
-//     .attr({
-//       width: screen_width,
-//       height: screen_height
-//     })
-//     .attr("id", "background");
+  screen.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
+  var background = screen.append("g")
+    .attr({
+      width: screen_width,
+      height: screen_height
+    })
+    .attr("id", "background");
+  console.log(screen_width)
+  background.append("svg:image")
+    .attr("xlink:href", "img/"+bg_image_fname)
+    .attr({
+      x: 0,
+      y: 0,
+      width: screen_width,
+      height: screen_height
+    })
+    .attr("id", "background");
 
-//   background.append("svg:image")
-//     .attr("xlink:href", "../static/images/backgrounds/"+bg_image_fname)
-//     .attr({
-//       x: 0,
-//       y: 0,
-//       width: screen_width,
-//       height: screen_height
-//     })
-//     .attr("id", "background");
-
-//     return background;
-// };
-
-// // try: <audio preload="auto"> <source="" /></audio>
-var correct_sound = new Audio('../static/audio/correct.wav');
-var incorrect_sound = new Audio('../static/audio/birdcry.mp3');
+    return background;
+};
 
 // // database stuff
 // // should create a unique session ID each time and store under that
@@ -85,8 +95,8 @@ var incorrect_sound = new Audio('../static/audio/birdcry.mp3');
 // // basic stimulus definition with image, text, audio, and sequence of correct/incorrect
 // // (maybe also lag since previous presentation, in absolute time and trials?)
 function Stimulus() {
-    var evt = window.event || arguments[1] || arguments.callee.caller.arguments[0];
-    var target = evt.target || evt.srcElement;
+    //var evt = window.event || arguments[1] || arguments.callee.caller.arguments[0];
+    //var target = evt.target || evt.srcElement;
     var options = {};
     if (arguments[0]) options = arguments[0];
     var default_args = {
@@ -94,7 +104,8 @@ function Stimulus() {
         'image'  :  '',
         'text'   :  '',
         'audio'  :  '',
-        'seq'    :  []
+        'seq'    :  [],
+        'priority' : 2
     }
     for (var index in default_args) {
         if (typeof options[index] == "undefined") options[index] = default_args[index];
@@ -124,25 +135,7 @@ function Stimulus() {
 //     }
 // }
 
-// var finish = function() {
-//   // svg.transition()
-//   //   .duration(200)
-//   //   .style("opacity", 0).remove();
-//   clearTimeout(nextTrial);
-//   //d3.selectAll("image").remove();
-//   screen.selectAll("*")
-//     .transition() // d3.select("#background")
-//     .each("end",function() {
-//       d3.select(this)
-//         .transition()
-//         .style("opacity",0)
-//         .delay(0)
-//         .duration(0)
-//         .remove();
-//      });
-//   screen.select("#background").remove(); // #background
-//   // .exit().remove() does not work
-// };
+
 
 // // go back to chooser
 // var back_button = function() {
@@ -160,101 +153,4 @@ function Stimulus() {
 // function decrScore() {
 //      score -= 10;
 //      document.getElementById("score").innerHTML="Score: "+score;
-// }
-
-// var draw_scene = function() {
-//   var background = screen.append("g")
-//     .attr({
-//       width: screen_width,
-//       height: screen_height
-//     })
-//     .attr("id", "background")
-//     .style("background-color", '#5FD1FC');;
-
-//   var hill_ypos = screen_height - 250;
-
-//   var cloud_index = [{"id": 1}, {"id": 2}, {"id": 3}, {"id": 4}, {"id": 5}];
-
-//   var sun = background.append("image")
-//         .attr("xlink:href", function(d) { return "../static/images/scene/sun.svg"; })
-//         .attr("x", 50)
-//         .attr("y", 50)
-//         .attr("width",100)
-//         .attr("height",100)
-//         .style("opacity",1);
-
-//   var clouds = background.selectAll("image").data(cloud_index).enter()
-//         .append("image")
-//         .attr("xlink:href", function(d) { return "../static/images/scene/cloud-"+d.id+".svg"; })
-//         .attr("x", function(d) { return getRandomInt(0,screen_width-100); })
-//         .attr("y", function(d) { return getRandomInt(0,hill_ypos); })
-//         .attr("width", function(d) { return getRandomInt(50,220); })
-//         .attr("height", function(d) { return getRandomInt(50,220); })
-//         .style("opacity",.9);
-
-//   var backhills = background.append("image")
-//         .attr("xlink:href", function(d) { return "../static/images/scene/grass-hill-back.svg"; })
-//         .attr("x", -90)
-//         .attr("y", hill_ypos)
-//         .attr("width",screen_width)
-//         .attr("height",300)
-//         .style("opacity",1);
-
-//   var midhills = background.append("image")
-//         .attr("xlink:href", function(d) { return "../static/images/scene/grass-hill-middle.svg"; })
-//         .attr("x", 0)
-//         .attr("y", hill_ypos)
-//         .attr("width",screen_width+40)
-//         .attr("height",300)
-//         .style("opacity",1);
-
-//   var fronthills = background.append("image")
-//         .attr("xlink:href", function(d) { return "../static/images/scene/grass-hill-front.svg"; })
-//         .attr("x", -20)
-//         .attr("y", hill_ypos+50)
-//         .attr("width",screen_width+50)
-//         .attr("height",300)
-//         .style("opacity",1);
-
-//   var tree = background.append("image")
-//         .attr("xlink:href", function(d) { return "../static/images/scene/tree.svg"; })
-//         .attr("x", screen_width-310)
-//         .attr("y", hill_ypos+40)
-//         .attr("width",100)
-//         .attr("height",150)
-//         .style("opacity",1);
-
-//   return background;
-// };
-
-// // display locally stored trials
-// function displayStats(){
-//     if (!window.localStorage){ return; }
-//     var i = 0;
-//     var key = "";
-//     var index = [];
-//     var cachedSearches = [];
-//     for (i=0;i<localStorage.length;i++){
-//         key = localStorage.key(i);
-//         if (key.indexOf("index::") == 0){
-//             index = JSON.parse(localStorage.getItem(key));
-//             cachedSearches.push ({keyword: key.slice(7), numResults: index.length});
-//         }
-//     }
-//     cachedSearches.sort(function(a,b){
-//         if (a.numResults == b.numResults){
-//             if (a.keyword.toLowerCase() < b.keyword.toLowerCase()){
-//                 return -1;
-//             } else if (a.keyword.toLowerCase() > b.keyword.toLowerCase()){
-//                 return 1;
-//             }
-//             return 0;
-//         }
-//         return b.numResults - a.numResults;
-//     }).slice(0,10).forEach(function(search){
-//         var li = document.createElement("li");
-//         var txt = document.createTextNode(search.keyword + " : " + search.numResults);
-//         li.appendChild(txt);
-//         $("stats").appendChild(li);
-//     });
 // }

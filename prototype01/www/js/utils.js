@@ -104,6 +104,7 @@ function animation(obj){
   this.timeSet = false;
   this.lastTime = 0;
   this.obj = obj;
+  this.bezier = false;
 };
 
 animation.prototype.stop = function(){
@@ -111,10 +112,16 @@ animation.prototype.stop = function(){
   this.obj = [];
 };
 
-animation.prototype.init = function(dest,length,offset){
+animation.prototype.init = function(dest,length,offset,bezier){
+
 
   this.finished = false;
   this.timeSet = false;
+
+  if(bezier != undefined ){
+    this.bezier = true;
+    this.bezName = bezier[0].toFixed(2) + "-" + bezier[1].toFixed(2)
+  }
 
   this.dest = {
     x : dest.x,
@@ -163,24 +170,7 @@ animation.prototype.init = function(dest,length,offset){
   this.speed.x = this.distance.x/this.anLength;
   this.speed.y = this.distance.y/this.anLength;
 
-  this.now = 0;
-
-  if(this.obj.children.length != 4){
-    return;
-  }
-
-  // console.log("--------------ANIMATION SETUP---------------------------")
-  // console.log("id", this.obj)
-  // console.log("startPOS",this.startPos) 
-  // console.log("start",start) 
-  // console.log("dest",this.dest.x,this.dest.y)
-    if(LOGTHIS){
-
-      //console.log("distance:","x:" + this.distance.x + " / y:" +this.distance.y);
-      console.log("speed:", "x:" + this.speed.x + " / y:" + this.speed.y);      
-    
-    }  
-
+  this.now = 0;  
 
 };
 
@@ -223,21 +213,8 @@ animation.prototype.setPos = function(dest){
 
   }
 
-  // console.log("------------------------")
-
-  // console.log("BEFORE setting position: ")
-  // console.log(this.obj.getBounds())
-  // console.log([this.obj.x, this.obj.y])
-
   this.obj.x = this.obj.x + this.distance.x;
   this.obj.y = this.obj.y + this.distance.y;
-
-
-//   console.log("AFTER setting position: ")
-//   console.log(this.obj.getBounds())
-//   console.log([this.obj.x, this.obj.y])
-
-//   console.log("------------------------")
 };
 
 animation.prototype.run = function(){
@@ -282,9 +259,23 @@ animation.prototype.run = function(){
   }else{
 
     if(elapsed >= this.offset){
-  
-      this.obj.x = this.obj.x + frameTime * this.speed.x
-      this.obj.y = this.obj.y + frameTime * this.speed.y      
+
+      if(this.bezier){
+
+
+        var location = Math.floor((elapsed*999)/this.anLength)
+        bez = bezierCurveSpecs[this.bezName][location]
+
+        this.obj.y = this.startPos.y + (this.distance.y * bez)
+        this.obj.x = this.startPos.x + (this.distance.x * bez)
+
+
+      }else{
+
+        this.obj.x = this.obj.x + frameTime * this.speed.x
+        this.obj.y = this.obj.y + frameTime * this.speed.y
+
+      }      
     
     }
     
@@ -292,25 +283,4 @@ animation.prototype.run = function(){
 
 
   }
-};
-
-animation.prototype.bezier = function(_t,_p0,_p1,_p2,_p3){
-
-  var _u = 1 - _t;
-  var _tt = _t * _t;
-  var _uu = _u * _u;
-  var _uuu = _uu * _u;
-  var _ttt = _tt * _t;
-
-  var px = _uuu * _p0.x; //first term
-  px = px + (3 * _uu * _t * _p1.x); //second term
-  px = px + (3 * _u * _tt * _p2.x); //third term
-  px = px + (_ttt * _p3.x); //fourth term
-
-  var py = (_uuu * _p0.y) ; //first term
-  py = py + (3 * _uu * _t * _p1.y); //second term
-  py = py + (3 * _u * _tt * _p2.y); //third term
-  py = py + (_ttt * _p3.y); //fourth term
-
-  return {x:px,y:py}
 };

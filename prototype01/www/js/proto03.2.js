@@ -66,8 +66,8 @@ function proto03(){
             this.lillypad = new PIXI.Sprite(assets.textures.lillyBig)
             this.lillypad.anchor.x = 0.5
             this.lillypad.anchor.y = 0.5
-            this.lillypad.x = this.specs.x
-            this.lillypad.y = this.specs.y
+            this.lillypad.x = 0
+            this.lillypad.y = 0
             this.lillypad.width = this.specs.size*2.5
             this.lillypad.height = this.specs.size*2.5
             this.container.addChild(this.lillypad)
@@ -76,8 +76,8 @@ function proto03(){
             this.lillySink = new PIXI.extras.MovieClip(assets.sprites.lillyFinal_Sink);
             this.lillySink.anchor.x = 0.5
             this.lillySink.anchor.y = 0.5
-            this.lillySink.x = this.specs.x
-            this.lillySink.y = this.specs.y
+            this.lillySink.x = 0
+            this.lillySink.y = 0
             this.lillySink.width = this.specs.size*2.5
             this.lillySink.height = this.specs.size*2.5
             this.lillySink.animationSpeed = 0.1
@@ -96,6 +96,7 @@ function proto03(){
             this.container.addChild(this.cNumber)
 
             this.customAnimation = new animation(this.container)
+            this.customAnimation.setPos({x:this.specs.x,y:this.specs.y})
 
             stage.addChild(this.container)
     };
@@ -112,9 +113,6 @@ function proto03(){
     };
 
     lillyFinal.prototype.display = function(_currentValue){
-
-                    console.log(this.lillySink.currentFrame)
-                    console.log(this.state)
 
         switch(this.state){
 
@@ -733,7 +731,9 @@ function proto03(){
         this.stick.destroy();
         stage.removeChild(this.branch)
         this.branch.destroy();
+
     };
+
 
     //creates links between lillypads if allowed
 	Trial.prototype.CheckLink = function(_dropPoint,_id){
@@ -1211,19 +1211,12 @@ function proto03(){
 
                 if(this.clock.timeOut()){
 
-                    console.log(this.lillyFinal.container.x,this.lillyFinal.container.y)
-                    console.log(
-
-                        this.lillyFinal.container.getBounds().x,
-                        this.lillyFinal.container.getBounds().y)
-                   
-                    console.log(session.canvas.width,session.canvas.height)
 
                     var dest = {};
-                    dest.x = session.canvas.width - this.lillyFinal.container.getBounds().width;
-                    dest.y = (session.canvas.height/2) - this.lillyFinal.container.getBounds().height/2;
+                    dest.x = session.canvas.width - this.lillyFinal.container.getBounds().width/2 - 30;
+                    dest.y = (session.canvas.height/2)// + (this.lillyFinal.container.getBounds().height/2);
 
-                    this.lillyFinal.customAnimation.init(dest,100)
+                    this.lillyFinal.customAnimation.init(dest,500,0,[0.75,1])
 
                     this.introState = "moveFinalLillypad"
 
@@ -1240,7 +1233,8 @@ function proto03(){
                     console.log(
                         
                         this.lillyFinal.container.getBounds().x,
-                        this.lillyFinal.container.getBounds().y)
+                        this.lillyFinal.container.getBounds().y
+                    )
                    
                     console.log(session.canvas.width,session.canvas.height)
 
