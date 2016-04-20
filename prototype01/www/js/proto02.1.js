@@ -155,6 +155,7 @@ function proto02(){
 
                         var i = getRandomInt(0,round.trial.availableSpots.length)                    
                         var xpos = round.trial.getSpotPos(i)
+                        this.offscreen = true;
                         this.setUp(xpos);
 
                     };
@@ -241,8 +242,6 @@ function proto02(){
                 scoreDifferential += 1;
                 this.number.text--;
 
-                round.trial.getFeedback(true,false)
-
                 // flyes if it reaches 0
                 if(this.number.text == 0) {
 
@@ -270,7 +269,6 @@ function proto02(){
 
                     round.trial.getFeedback(false,true)
 
-
                 // try to present audio for each number in the countdown? maybe too slow..
                 }else if (this.number.text > 0){
 
@@ -287,9 +285,22 @@ function proto02(){
                     // }
                 }
             } else {
+
               scoreDifferential -= 1;
             }
+
+            round.trial.getFeedback(true,false)  
         };
+
+        LadyBug.prototype.resetFeedback = function(){
+
+            if(this.offscreen){
+
+                this.offscreen = false;
+                return true
+            }
+        
+        }
 
     /*
     -------------------------------------------------------------------------------------------------------------
@@ -310,13 +321,12 @@ function proto02(){
           this.availableSpots = [];
           this.instructionWidth = 100;  // size of the ciurcle for instruction
           this.corrClicks = 0
-
         };
 
         Trial.prototype.init = function(){
 
             this.foils = this.getFoils();
-            this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
+           // this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
            
 
             this.foils = shuffle(this.foils);
@@ -328,9 +338,11 @@ function proto02(){
 
             }
 
+            this.ladyBugs.push(new LadyBug(this.correct))
+
             //determine individual spots available based on the screen with and the bug width to position ladybugs
             // this will try to fit as much bugs as possible on the width of gthe sreen without overlaying them
-            var interval = Math.floor((screen_width - this.instructionWidth) / this.ladyBugs[0].container.width);
+            var interval = Math.floor((screen_width - this.instructionWidth*4.5) / this.ladyBugs[0].container.width);
 
             for(var i = 0; i<interval; i++){
 
@@ -340,7 +352,6 @@ function proto02(){
 
             // array with randon numbers up the the number of indivisual spots available
             this.availableSpots = shuffle(this.availableSpots)
-
 
             for(var i = 0; i<this.ladyBugs.length; i++){
 
@@ -367,13 +378,6 @@ function proto02(){
             this.instructionWidth = 100;  // size of the ciurcle for instruction
             this.createInstructions();
 
-            this.cNumber =  new PIXI.Text(this.correct, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
-            this.cNumber.x = 0
-            this.cNumber.y =  0
-            this.instruction.addChild(this.cNumber);
-
-            stage.addChild(this.instruction)
-
             this.trialTimer.start(1000);
             this.trialState = "intro";
 
@@ -384,10 +388,9 @@ function proto02(){
             assets.sounds.numbers[this.correct].play()
         };
 
-
         Trial.prototype.getSpotPos = function(_i){
 
-            return (this.availableSpots[_i] * this.ladyBugs[0].container.width) + this.instructionWidth*2.5
+            return (this.availableSpots[_i] * this.ladyBugs[0].container.width) + this.instructionWidth*4
         };
 
         Trial.prototype.createInstructions = function(){
@@ -425,19 +428,6 @@ function proto02(){
             //get Instruction available size
 
             this.instructionWidth = 100;  // size of the ciurcle for instruction
-
-            var overlay = 0.05
-            var margin = 0.05
-
-            var availableHeight = (this.instructionWidth * 3) - (2 * this.instructionWidth * overlay)
-
-            availableHeight = availableHeight - (2 * margin * availableHeight)
-
-            var availableWidth = this.instructionWidth - ( 2 * this.instructionWidth * margin)
-
-
-            session.canvas.width
-            session.canvas.width
 
             console.log(assets.textures.instructions_blue)
 
@@ -531,6 +521,14 @@ function proto02(){
                 };
 
             };
+
+
+            this.cNumber =  new PIXI.Text(this.correct, {font:"80px Arial", weight:"Bold", fill:"#2c6875", stroke:"#098478", strokeThickness: 1, });
+            this.cNumber.x = -this.instructionWidth/2 + 20
+            this.cNumber.y = -this.instructionWidth/2
+            this.instruction.addChild(this.cNumber);
+
+            stage.addChild(this.instruction)
         };
 
         Trial.prototype.destroy = function(){
@@ -542,7 +540,23 @@ function proto02(){
             };
 
             this.instruction.removeChildren(0,this.instruction.children.length)
+
+            for (key in this.counter){
+                
+                for(var i = 0; i < this.correct; i++){
+
+                    this.counter[key][i].destroy()
+
+                }
+            }
+
+            this.countBgBlue.destroy()
+            this.countBgRed.destroy()
+            this.nunBgBlue.destroy()
+            this.nunBgRed.destroy()
+
             this.cNumber.destroy(true,true)
+
 
             stage.removeChild(this.instruction)
             this.instruction.destroy(true,true)
@@ -552,16 +566,30 @@ function proto02(){
 
           // get numFoils foils that are within +/-3 of the target number
           var corNum = parseInt(this.correct)
-          var min = corNum < 3 ? 1 : corNum - 3;
+          var min = corNum - 3;
           var foils = [];
 
           for (var i = 0; i < numFoils; i++) {
 
-            foils.push( getRandomInt(min, corNum + 3) );
+
+             var thisFoil = getRandomInt(min, corNum + 3)
+
+             while (thisFoil == this.correct || thisFoil < 1){
+
+                thisFoil = getRandomInt(min, corNum + 3)
+
+             }
+
+            foils.push(thisFoil);
 
           }
 
+          console.log(foils)
+
+        //  foils = [1,2,3]
+
           return(foils);
+
         };
 
         Trial.prototype.getFeedback = function(_feedback,_reset){
@@ -571,13 +599,12 @@ function proto02(){
                 for(var i=0; i < this.counter.gold.length; i++){
 
                     this.counter.gold[i].renderable = false
+                    this.counter.blue[i].renderable = true
 
                 }
-                
+
                 this.corrClicks = 0
             
-                return
-
             }
 
             if(_feedback){
@@ -591,7 +618,6 @@ function proto02(){
 
                 //set animations for fisplay feedback
             }
-        
         };
 
         Trial.prototype.displayFeedbacks = function(){
@@ -664,6 +690,10 @@ function proto02(){
 
 
                 case "play":
+
+                    if(this.ladyBugs[this.ladyBugs.length-1].resetFeedback()){
+                        this.getFeedback(false,true)
+                    }
 
                     this.displayFeedbacks()
 
