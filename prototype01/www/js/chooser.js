@@ -3,7 +3,7 @@ var Chooser = function() {
 
     // hide experiment and show chooser
     clickStart('container-exp','container-chooser');
-    var game1 = document.getElementById("header-exp").style.display = "block"    
+    var game1 = document.getElementById("header-exp").style.display = "block"
 
 
     for(var i=0; i<availableGames; i++ ){
@@ -48,16 +48,16 @@ var Chooser = function() {
       console.log("starting wordGuess");
       init_screen();
       clickStart('container-chooser','container-exp');
-      currentview = new WordGame();
+      currentview = new Hangman();
     }
 
-    var game5 = document.getElementById("choose-game05")
+    // var game5 = document.getElementById("choose-game05")
 
-    game5.onclick =  function(){
-      console.log("test");
-      clickStart('container-chooser','container-exp');
-      currentview = new proto04();
-     }
+    // game5.onclick =  function(){
+    //   console.log("test");
+    //   clickStart('container-chooser','container-exp');
+    //   currentview = new proto04();
+    //  }
 
 
   session.stats.end()
