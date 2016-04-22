@@ -238,9 +238,31 @@ function proto02(){
 
             // check if its correct
             if(this.startNumber == round.trial.stimuli.id){
-     
-                scoreDifferential += 1;
-                this.number.text--;
+
+
+                console.log(">>CLICK<<")
+                console.log(this.number.text - 100)
+
+
+                if(this.number.text != 0){
+
+                    if(this.number.text - round.trial.bugType < 0){
+
+                       this.number.text = 0
+
+                    }else{
+
+                       this.number.text = (this.number.text - round.trial.bugType)
+
+                    }
+
+
+                }else if(this.number.text == 0){
+
+                    this.number.text = -1
+                }
+
+                console.log(this.number.text)
 
                 // flyes if it reaches 0
                 if(this.number.text == 0) {
@@ -256,8 +278,14 @@ function proto02(){
                     this.state = "fly"
                     this.timer.start(550);
 
+                    round.trial.getFeedback(true,false)  
+
+                    return
+
                 // kills if it click one more time
                 } else if(this.number.text < 0) {
+
+                    round.trial.getFeedback(false,true)
 
                     this.sprite.fly.stop();
                     this.sprite.fly.renderable = false;
@@ -267,29 +295,19 @@ function proto02(){
                     this.state = "dead";
                     this.timer.start(1500);
 
-                    round.trial.getFeedback(false,true)
+                    return
 
-                // try to present audio for each number in the countdown? maybe too slow..
+                // regular click
                 }else if (this.number.text > 0){
 
-                    // if(this.playQueue.length <= 0){
-                    //     console.log("--------------------------------")
-                    //     this.playQueue.push(this.number.text)
-                    //     assets.sounds[this.number.text].play()
-                    //     assets.sounds[this.number.text].playbackRate = 1.5
-                    //     assets.sounds[this.number.text].addEventListener("ended", function(){_this.playNext()})
+                    round.trial.getFeedback(true,false) 
 
-                    // }else{
+                };
 
-                    //     this.playQueue.push(this.number.text)
-                    // }
-                }
-            } else {
+            }else {
 
-              scoreDifferential -= 1;
+               round.trial.getFeedback(false,false) 
             }
-
-            round.trial.getFeedback(true,false)  
         };
 
         LadyBug.prototype.resetFeedback = function(){
@@ -299,8 +317,7 @@ function proto02(){
                 this.offscreen = false;
                 return true
             }
-        
-        }
+        };
 
     /*
     -------------------------------------------------------------------------------------------------------------
@@ -310,20 +327,21 @@ function proto02(){
 
         function Trial(_stimuli){
 
-          this.ladyBugs = [];
-          this.stimuli = _stimuli;
-          this.correct = _stimuli.id;
-          this.correctImput = 0;
-          this.playQueue = [];
-          this.correctSet = false;
-          this.introState = "displaySound";
-          this.nextTrialState = "flyAll";
-          this.availableSpots = [];
-          this.instructionWidth = 100;  // size of the ciurcle for instruction
-          this.corrClicks = 0
+            this.ladyBugs = [];
+            this.stimuli = _stimuli;
+            this.correct = _stimuli.id;
+            this.correctImput = 0;
+            this.playQueue = [];
+            this.correctSet = false;
+            this.introState = "displaySound";
+            this.nextTrialState = "flyAll";
+            this.availableSpots = [];
+            this.instructionWidth = 100;  // size of the ciurcle for instruction
+            this.goldCount = 0
         };
 
         Trial.prototype.init = function(){
+
 
             this.foils = this.getFoils();
            // this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
@@ -364,7 +382,7 @@ function proto02(){
                 }
 
                 // position of bug on screen based on available spot
-               var xpos = this.getSpotPos(posN)
+                var xpos = this.getSpotPos(posN)
 
                 this.ladyBugs[i].setUp(xpos,offset);
 
@@ -385,7 +403,7 @@ function proto02(){
 
             this.instruction.customAnimation.setPos({x:session.canvas.width/2,y:session.canvas.height/2})
 
-            assets.sounds.numbers[this.correct].play()
+           // assets.sounds.numbers[this.correct].play()
         };
 
         Trial.prototype.getSpotPos = function(_i){
@@ -396,11 +414,11 @@ function proto02(){
         Trial.prototype.createInstructions = function(){
 
 
-            if(this.correct < 7){
+            if(this.correct < 6){
 
                 this.bugType = 1
 
-            }else if(this.correct < 12){
+            }else if(this.correct < 11){
 
                 if(this.correct == 9){
 
@@ -413,40 +431,39 @@ function proto02(){
                 }
 
 
-            }else{
+            }else if(this.correct < 16) {
 
                 this.bugType = 3
 
 
+            }else{
+
+                this.bugType = 4
+
             }
 
-            // Single bug: from 1 to 6
-            // Double bug: form 7_,8,10,11_,12,
-            // Triple bugs: 9,13_,14,15,16,17,18,19,20,21
+            // Single bug: from 1 to 5
+            // Double bug: form 6,7_,8,10,
+            // Triple bugs: 9,11_,12,13_,14,15
+            // 4bug: 16,_17,18,_19,20
 
 
             //get Instruction available size
-
             this.instructionWidth = 100;  // size of the ciurcle for instruction
 
-            console.log(assets.textures.instructions_blue)
 
+
+            //-------------------------------------------------------------bg BLUE
+            this.bgBlue = new PIXI.Container()
+
+            console.log(this.bgBlue)
             //blue bg for numbers
             this.nunBgBlue = new PIXI.Sprite(assets.textures.instructions_blue)
             this.nunBgBlue.anchor.x = 0.5
             this.nunBgBlue.anchor.y = 0.5
             this.nunBgBlue.width = this.instructionWidth*2
             this.nunBgBlue.height = this.instructionWidth*2
-            this.instruction.addChild(this.nunBgBlue)
-
-            //red bg for numbers
-            this.nunBgRed = new PIXI.Sprite(assets.textures.instructions_red)
-            this.nunBgRed.anchor.x = 0.5
-            this.nunBgRed.anchor.y = 0.5
-            this.nunBgRed.width = this.instructionWidth*2
-            this.nunBgRed.height = this.instructionWidth*2
-            this.nunBgRed.renderable = false
-            this.instruction.addChild(this.nunBgRed)
+            this.bgBlue.addChild(this.nunBgBlue)
 
             this.countBgBlue = new PIXI.Sprite(assets.textures.instructions_blue)
             this.countBgBlue.anchor.x = 0.5
@@ -454,7 +471,21 @@ function proto02(){
             this.countBgBlue.width = this.instructionWidth*3
             this.countBgBlue.height = this.instructionWidth*3
             this.countBgBlue.x = this.instructionWidth
-            this.instruction.addChild(this.countBgBlue)
+            this.bgBlue.addChild(this.countBgBlue)
+
+            this.bgBlue.customAnimation = new animation(this.bgBlue)
+            this.instruction.addChild(this.bgBlue)
+
+            //-------------------------------------------------------------bg RED
+            this.bgRed = new PIXI.Container()
+
+            //red bg for numbers
+            this.nunBgRed = new PIXI.Sprite(assets.textures.instructions_red)
+            this.nunBgRed.anchor.x = 0.5
+            this.nunBgRed.anchor.y = 0.5
+            this.nunBgRed.width = this.instructionWidth*2
+            this.nunBgRed.height = this.instructionWidth*2
+            this.bgRed.addChild(this.nunBgRed)
 
             this.countBgRed = new PIXI.Sprite(assets.textures.instructions_red)
             this.countBgRed.anchor.x = 0.5
@@ -462,8 +493,13 @@ function proto02(){
             this.countBgRed.width = this.instructionWidth*3
             this.countBgRed.height = this.instructionWidth*3
             this.countBgRed.x = this.instructionWidth
-            this.countBgRed.renderable = false; 
-            this.instruction.addChild(this.countBgRed)
+            this.bgRed.addChild(this.countBgRed)
+
+            this.bgRed.customAnimation = new animation(this.bgRed)
+            this.bgRed.renderable = false;
+            this.bgRed.alpha = 0
+            this.instruction.addChild(this.bgRed)
+
         
             this.counter = {
 
@@ -487,9 +523,7 @@ function proto02(){
 
                 for(var i = 0; i < this.correct; i++){
 
-                    console.log("---------------", column)
                     column = column%this.bugType
-                    console.log(column)
 
                     if(column == 0){row++}
 
@@ -584,12 +618,10 @@ function proto02(){
 
           }
 
-          console.log(foils)
 
-        //  foils = [1,2,3]
+            //  foils = [1,2,3]
 
           return(foils);
-
         };
 
         Trial.prototype.getFeedback = function(_feedback,_reset){
@@ -599,43 +631,140 @@ function proto02(){
                 for(var i=0; i < this.counter.gold.length; i++){
 
                     this.counter.gold[i].renderable = false
+                    this.counter.gold[i].alpha = 0
                     this.counter.blue[i].renderable = true
 
                 }
 
-                this.corrClicks = 0
+                this.goldCount = 0
             
+            } else if(_feedback){
+
+                var lightUp = 0
+
+                if(this.goldCount + this.bugType > this.correct){
+            
+
+                    lightUp = this.correct - this.goldCount + this.goldCount
+                
+                }else{
+
+                    lightUp = this.bugType + this.goldCount
+                
+                }
+
+                for(var i = this.goldCount; i < lightUp; i++){
+
+                    this.counter.gold[i].renderable = true
+                    this.counter.gold[i].alpha = 1
+                    this.counter.blue[i].renderable = false
+                    this.goldCount++
+                    
+                }
+
+            }else{
+
+                if(!this.redDone){
+
+                    this.feedbackState = "red"
+
+                    this.setBlink(false)
+                    this.bgRed.renderable = true;
+                    this.blinks = 0
+                    
+                    this.feedback = false;
+                    this.redDone = false;                 
+
+                }
+
             }
 
-            if(_feedback){
+        };
 
-                this.counter.gold[this.corrClicks].renderable = true
-                this.counter.blue[this.corrClicks].renderable = false
-                this.corrClicks++
 
-                //change  counter on instructions
-                //playsounds
+        Trial.prototype.setBlink = function(_back){
 
-                //set animations for fisplay feedback
+            if(_back){
+
+                this.bgBlue.customAnimation.initFeature("alpha",1,200,0,[0,1])
+                this.bgRed.customAnimation.initFeature("alpha",0,200,0,[0,1])
+
+            }else{
+
+                this.bgBlue.customAnimation.initFeature("alpha",0,200,0,[0,1])
+                this.bgRed.customAnimation.initFeature("alpha",1,200,0,[0,1])
+
             }
+
         };
 
         Trial.prototype.displayFeedbacks = function(){
             //this is called every frame in the loop
 
-            if(true){
+            switch(this.feedbackState){
 
-                // if clicked on the wrong bug >>
-                    //fade standart instructions
-                    //fade number
-                    //display red isntructions
-                    //dipslay red number
-                    //totate instructions
-                    //increase instructions size
+                case "red":
 
-                //change visuals of instruction
+                    var redDone = false
+                    var blueDone = false
 
-            }
+                    if(this.bgRed.customAnimation.runFeature()){ redDone = true}
+
+                    if(this.bgBlue.customAnimation.runFeature()){ blueDone = true}
+
+                    if(redDone && blueDone){
+
+                        console.log("red")
+
+                        this.setBlink(true)
+                        this.feedbackState = "blue"
+
+                    }
+
+                    break;
+
+
+                case "blue":
+                        
+                    var redDone = false
+                    var blueDone = false
+
+                    if(this.bgRed.customAnimation.runFeature()){ redDone = true}
+
+                    if(this.bgBlue.customAnimation.runFeature()){ blueDone = true}
+
+                    if(redDone && blueDone){
+
+                        this.blinks++
+
+                        if(this.blinks < 1){
+
+
+                            this.setBlink(false)
+                            this.feedbackState = "red"                            
+                        
+                        }else{
+
+                            this.feedbackState = ""                            
+
+                        }
+
+                    }
+
+                        break;
+
+
+                case "positieve":
+                        
+
+
+
+                        break;
+
+
+
+            };
+
         };
         
         Trial.prototype.intro = function(){
