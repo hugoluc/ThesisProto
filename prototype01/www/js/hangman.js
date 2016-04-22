@@ -21,6 +21,7 @@ if(p==='iPad' || p==='iPhone' || p==='iPod') {
 var HangmanTrial = function(pars) {
   var self = this;
   //self.guesses_made = 0
+  console.log(pars);
   self.wrong_guesses = 0 // max = 10
   self.answer = pars['text']; // a word, e.g.: {id:"radio", text:"radio", audio:"radio", image:"radio"},
   self.audiofile = pars['audio'];
@@ -229,9 +230,9 @@ var HangmanTrial = function(pars) {
 
 var Hangman = function() {
   setup_screen(false); // draw background (but without img)
+  queuesToUpdate['objectstim'] = true;
 
-  // or grab from database
-  var trials = animals;
+  var trials = stimQueues['objectstim'];  //animals;
 
   var known = [];
   var not_known = [];
@@ -281,7 +282,7 @@ var Hangman = function() {
       console.log("feedback? (kazi_nzuri.mp3) fun animation?");
       next();
     } else {
-      var tr = new HangmanTrial(trials.shift());
+      var tr = new HangmanTrial(trials.pop());
       trial_index += 1;
       tr.doTrial(storeData);
     }

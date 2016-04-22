@@ -118,19 +118,19 @@ function proto02(){
 
             this.end.x = getRandomInt(this.start.x - this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2);
             this.end.y = -this.sprite.walk.height;
-            
+
             if(this.end.x > stage.width){
-              
+
                 this.end.x = stage.width;
-            
+
             }else if(this.end.x < 10){
-              
+
                 this.end.x = 200;
             };
 
 
             this.container.rotation = getAngle(this.start.x,this.start.y,this.end.x,this.end.y)
-           
+
             this.customAnimation.setPos(this.start)
 
             speed = (this.startNumber * 1000) + 1400 // IMPROVE THIS!!!!
@@ -153,7 +153,7 @@ function proto02(){
 
                     if(this.customAnimation.run()){
 
-                        var i = getRandomInt(0,round.trial.availableSpots.length)                    
+                        var i = getRandomInt(0,round.trial.availableSpots.length)
                         var xpos = round.trial.getSpotPos(i)
                         this.offscreen = true;
                         this.setUp(xpos);
@@ -191,7 +191,7 @@ function proto02(){
                         if(this.timer.timeOut()){
 
                             this.state = "walk";
-                            var i = getRandomInt(0,round.trial.availableSpots.length)                    
+                            var i = getRandomInt(0,round.trial.availableSpots.length)
                             var xpos = round.trial.getSpotPos(i)
                             this.setUp(xpos);
                             this.sprite.dead.alpha = 1
@@ -238,11 +238,6 @@ function proto02(){
 
             // check if its correct
             if(this.startNumber == round.trial.stimuli.id){
-
-
-                console.log(">>CLICK<<")
-                console.log(this.number.text - 100)
-
 
                 if(this.number.text != 0){
 
@@ -308,6 +303,8 @@ function proto02(){
 
                round.trial.getFeedback(false,false) 
             }
+
+            round.trial.getFeedback(true,false)
         };
 
         LadyBug.prototype.resetFeedback = function(){
@@ -329,7 +326,7 @@ function proto02(){
 
             this.ladyBugs = [];
             this.stimuli = _stimuli;
-            this.correct = _stimuli.id;
+            this.correct = 7//_stimuli.id;
             this.correctImput = 0;
             this.playQueue = [];
             this.correctSet = false;
@@ -345,7 +342,7 @@ function proto02(){
 
             this.foils = this.getFoils();
            // this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
-           
+
 
             this.foils = shuffle(this.foils);
 
@@ -374,7 +371,7 @@ function proto02(){
             for(var i = 0; i<this.ladyBugs.length; i++){
 
                 // get the position for the ladybug based on the possible individual spots available
-                var posN = i%interval 
+                var posN = i%interval
 
                 if(i > interval){
                     // if the are more foils then spots available, off set the time of the animations start
@@ -493,6 +490,7 @@ function proto02(){
             this.countBgRed.width = this.instructionWidth*3
             this.countBgRed.height = this.instructionWidth*3
             this.countBgRed.x = this.instructionWidth
+
             this.bgRed.addChild(this.countBgRed)
 
             this.bgRed.customAnimation = new animation(this.bgRed)
@@ -500,7 +498,9 @@ function proto02(){
             this.bgRed.alpha = 0
             this.instruction.addChild(this.bgRed)
 
-        
+            this.countBgRed.renderable = false;
+            this.instruction.addChild(this.countBgRed)
+
             this.counter = {
 
                 blue : [],
@@ -517,7 +517,7 @@ function proto02(){
             var startX = this.instructionWidth
 
             for (key in this.counter){
-                
+
                 var column = 0
                 var row = -1
 
@@ -531,9 +531,9 @@ function proto02(){
                     this.counter[key].push(new PIXI.Sprite(assets.textures[name]))
                     this.counter[key][i].anchor.x = 0.5
                     this.counter[key][i].anchor.y = 0.5
-                
+
                     this.counter[key][i].y = startY + (row * (counterWidth+counterMargin) )
-                    this.counter[key][i].x = startX + (column*(counterWidth + counterMargin))                 
+                    this.counter[key][i].x = startX + (column*(counterWidth + counterMargin))
 
                     this.counter[key][i].width = counterWidth
                     this.counter[key][i].height = counterWidth
@@ -550,7 +550,7 @@ function proto02(){
 
                     this.instruction.addChild(this.counter[key][i])
 
-                    column++ 
+                    column++
 
                 };
 
@@ -576,7 +576,7 @@ function proto02(){
             this.instruction.removeChildren(0,this.instruction.children.length)
 
             for (key in this.counter){
-                
+
                 for(var i = 0; i < this.correct; i++){
 
                     this.counter[key][i].destroy()
@@ -627,7 +627,7 @@ function proto02(){
         Trial.prototype.getFeedback = function(_feedback,_reset){
 
             if(_reset){
-                
+
                 for(var i=0; i < this.counter.gold.length; i++){
 
                     this.counter.gold[i].renderable = false
@@ -643,7 +643,6 @@ function proto02(){
                 var lightUp = 0
 
                 if(this.goldCount + this.bugType > this.correct){
-            
 
                     lightUp = this.correct - this.goldCount + this.goldCount
                 
@@ -676,6 +675,9 @@ function proto02(){
                     this.redDone = false;                 
 
                 }
+
+                this.corrClicks = 0
+
 
             }
 
@@ -766,13 +768,13 @@ function proto02(){
             };
 
         };
-        
+
         Trial.prototype.intro = function(){
 
             switch(this.introState){
 
                 case "displaySound":
-                    
+
                     if(this.trialTimer.timeOut()){
 
                         var dest = {}
@@ -792,7 +794,7 @@ function proto02(){
 
                         if(this.instruction.customAnimation.run()){
 
-                            return true;                  
+                            return true;
 
                         }
 
@@ -812,7 +814,7 @@ function proto02(){
 
                     if(this.intro()){
 
-                        this.trialState = "play";  
+                        this.trialState = "play";
                     }
 
                     break;
@@ -857,7 +859,7 @@ function proto02(){
         };
 
         Trial.prototype.nextTrial = function(){
-            
+
             switch(this.nextTrialState){
 
                 case "flyAll":
@@ -906,9 +908,9 @@ function proto02(){
 
 
                     break;
-            
+
             }
-            
+
             return false;
         };
 
@@ -946,7 +948,7 @@ function proto02(){
         }
 
         function onAssetsLoaded(){
-            
+
             session.show()
             round.init(Trial,stage)
             session.render(stage)
@@ -972,7 +974,7 @@ function proto02(){
             for (var i = 0; i < numbers.length; i++) {
 
               assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
-            
+
             }
 
             assets.load(onAssetsLoaded)

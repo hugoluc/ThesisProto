@@ -110,9 +110,8 @@ var fruit = [
   {id:"apple", text:"apple", audio:"apple", image:"apple"}, // needs audio
   {id:"mango", text:"mango", audio:"mango"},
   {id:"coconut", text:"coconut", audio:"coconut", image:"coconut"},
-  {id:"grape", text:"grape", audio:"grape", image:"grape"},
-  {id:"", text:"", audio:"", image:""},
-  ];
+  {id:"grape", text:"grape", audio:"grape", image:"grape"}
+]; // {id:"", text:"", audio:"", image:""},
 
 var animals = [
   {id:"buffalo", text:"buffalo", audio:"buffalo", image:"buffalo"},
@@ -142,12 +141,13 @@ var animals = [
   {id:"goat", text:"goat", audio:"goat", image:"goat"},
   {id:"deer", text:"deer", audio:"deer", image:"deer"},
   {id:"cow", text:"cow", audio:"cow", image:"cow"},
-  {id:"horse", text:"horse", audio:"horse", image:"horse"}
+  {id:"horse", text:"horse", audio:"horse", image:"horse"},
+  {id:"seagull", text:"seagull", audio:"seagull"}
   ];
 
 
 
-var objects = animals + fruit + [
+var objects = animals.concat(fruit).concat([
   {id:"bicycle", text:"bicycle", audio:"bicycle", image:"bicycle"},
   {id:"motorcycle", text:"motorcycle", audio:"motorcycle", image:"motorcycle"},
   {id:"silver", text:"silver", audio:"silver", image:"silver"}, // also means money
@@ -171,8 +171,18 @@ var objects = animals + fruit + [
   {id:"heart", text:"heart", audio:"heart"},
   {id:"lung", text:"lung", audio:"lung"},
   {id:"stomach", text:"stomach", audio:"stomach"},
-  {id:"potato", text:"potato", audio:"potato"}
-];
+  {id:"potato", text:"potato", audio:"potato"},
+  {id:"car", text:"car", audio:"car", image:"car"},
+  {id:"danger", text:"danger", audio:"danger", image:"danger"},
+  {id:"drink", text:"drink", audio:"drink", image:"drink"},
+  {id:"school", text:"school", audio:"school"},
+  {id:"earth", text:"earth", audio:"earth", image:"earth"},
+  {id:"sword", text:"sword", audio:"sword"},
+  {id:"fruit", text:"fruit", audio:"fruit"},
+  {id:"flour", text:"flour", audio:"flour"},
+  {id:"oil", text:"oil", audio:"oil"},
+  {id:"mountain", text:"mountain", audio:"mountain"}
+]);
 
 // {id:"", text:"", audio:""},
 var words = [
@@ -186,10 +196,7 @@ var words = [
   {id:"and", text:"and", audio:"and"},
   {id:"bad", text:"bad", audio:"bad"},
   {id:"bitter", text:"bitter", audio:"bitter"},
-  {id:"car", text:"car", audio:"car", image:"car"},
   {id:"cold", text:"cold", audio:"cold"},
-  {id:"danger", text:"danger", audio:"danger", image:"danger"},
-  {id:"drink", text:"drink", audio:"drink", image:"drink"},
   {id:"good", text:"good", audio:"good"},
   {id:"friend", text:"friend", audio:"friend"},
   {id:"goodbye", text:"goodbye", audio:"goodbye"},
@@ -259,17 +266,15 @@ var words = [
   {id:"cheek", text:"cheek", audio:"cheek"},
   {id:"hunger", text:"hunger", audio:"hunger"},
   {id:"dream", text:"dream", audio:"dream"},
-  {id:"school", text:"school", audio:"school"},
   {id:"true", text:"true", audio:"true"},
   {id:"coastal", text:"coastal", audio:"coastal"},
   {id:"of", text:"of", audio:"of"},
   {id:"sky", text:"sky", audio:"sky"},
-  {id:"earth", text:"earth", audio:"earth", image:"earth"},
   {id:"darkness", text:"darkness", audio:"darkness"},
   {id:"shadows", text:"shadows", audio:"shadows"},
   {id:"dew", text:"dew", audio:"dew"},
   {id:"wind", text:"wind", audio:"wind"},
-  {id:"cloud", text:"cloud", audio:"cloud"}, // re-record
+  {id:"cloud", text:"cloud", audio:"cloud"},
   {id:"fog", text:"fog", audio:"fog"},
   {id:"rain", text:"rain", audio:"rain"},
   {id:"fire", text:"fire", audio:"fire"},
@@ -279,13 +284,8 @@ var words = [
   {id:"storm", text:"storm", audio:"storm"},
   {id:"wing", text:"wing", audio:"wing"},
   {id:"healthy", text:"healthy", audio:"healthy"},
-  {id:"fruit", text:"fruit", audio:"fruit"},
-  {id:"flour", text:"flour", audio:"flour"},
-  {id:"oil", text:"oil", audio:"oil"},
-  {id:"mountain", text:"mountain", audio:"mountain"},
   {id:"country", text:"country", audio:"country"},
   {id:"word", text:"word", audio:"word"},
-  {id:"sword", text:"sword", audio:"sword"},
   {id:"name", text:"name", audio:"name"},
   {id:"money", text:"money", audio:"money"}, // also pesa
   {id:"river", text:"river", audio:"river"},
@@ -294,7 +294,6 @@ var words = [
   {id:"quick", text:"quick", audio:"quick"},
   {id:"music", text:"music", audio:"music"},
   {id:"sea", text:"sea", audio:"sea"},
-  {id:"seagull", text:"seagull", audio:"seagull"},
   {id:"forest", text:"forest", audio:"forest"},
   {id:"animal", text:"animal", audio:"animal"},
   {id:"picture", text:"picture", audio:"picture"},
