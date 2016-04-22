@@ -9,19 +9,19 @@
 // 4) if 3 in a row wrong, decrease speed or number of foils
 
 // dependencies: - dropGame can show alphabet and numbers
-//  - ladyBug game can show numbers <7 for multiclick trials
+// - ladyBug game can show numbers <7 for multiclick trials
+// - hangman uses objectstim for now, but could use words once we have non-image version
 
 // define initial sets for each game (to be loaded if no database exists)
 var sessionStart;
 var user;
 var chunkSize = 7; // number of stimuli to be put in at each priority (i.e., put in one 'round')
-// which queues have been modified (and thus need to be re-stored)
-// (set whenever a game uses the stack)
+// which queues have been modified and need to be re-stored: set true when a game uses the stack
 var queuesToUpdate = {
-  'alphabetstim':true,
-  'numberstim':true,
-  'wordstim':true,
-  'objectstim':true,
+  'alphabetstim':false,
+  'numberstim':false,
+  'wordstim':false,
+  'objectstim':false,
   'mathstim':false
 } // true for testing
 
@@ -84,7 +84,7 @@ function initStorage() {
     stimQueues['alphabetstim'] = loadStimulusQueue(letters, chunkSize); // we could just initialize PQs with all stimuli...
     stimQueues['numberstim'] = loadStimulusQueue(numbers, chunkSize);
     stimQueues['wordstim'] = loadStimulusQueue(words, chunkSize);
-    stimQueues['objectstim'] = loadStimulusQueue(animals + fruit, chunkSize); // things we have images for..
+    stimQueues['objectstim'] = loadStimulusQueue(objects, chunkSize); // things we have images for..
     //stimQueues['mathstim'] = initStimulusQueue(mathProblems, chunkSize);
     // shapes don't need their own...not enough of them
   } else {
@@ -141,3 +141,27 @@ function storeSession() {
 // store.forEach(function(key, val) {
 //     console.log(key, '==', val)
 // })
+
+
+////// for internet connectivity: firebase //////
+// also load the previous session and choose stimuli from the last stage achieved
+// var AUTH_TOKEN = 'CbfMSHpeCpLxCE2HBu3eUycicHONcqBQqopB8Xk1';
+
+// // if no internet an error is thrown: net::ERR_INTERNET_DISCONNECTED
+// // (then we should store all the data in a cookie until reconnected)
+
+// // https://www.firebase.com/docs/android/guide/offline-capabilities.html
+// // for offline storage on Android:
+// Firebase.getDefaultConfig().setPersistenceEnabled(true); // does this persist across app restarts?
+// var dbref = new Firebase("https://egoteach.firebaseio.com/");
+// dbref.authWithCustomToken(AUTH_TOKEN, function(error, authData) {
+//   if (error) {
+//     console.log("Login Failed!", error);
+//   } else {
+//     console.log("Login Succeeded!", authData);
+//   }
+// });
+
+// var summarydata = dbref.child("summary"); // session times and duration, level achieved in each game?
+// var wordsdata = dbref.child("words"); //
+// var countdata = dbref.child("count"); // counting game
