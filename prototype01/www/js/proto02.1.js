@@ -234,6 +234,10 @@ function proto02(){
 
         LadyBug.prototype.click = function(){
 
+            if(round.trial.state == "nextTrial"){
+                return
+            }
+
             var _this = this;
 
             // check if its correct
@@ -241,8 +245,6 @@ function proto02(){
 
 
                 console.log(">>CLICK<<")
-                console.log(this.number.text - 100)
-
 
                 if(this.number.text != 0){
 
@@ -261,8 +263,6 @@ function proto02(){
 
                     this.number.text = -1
                 }
-
-                console.log(this.number.text)
 
                 // flyes if it reaches 0
                 if(this.number.text == 0) {
@@ -327,6 +327,8 @@ function proto02(){
 
         function Trial(_stimuli){
 
+//            _stimuli.id = 14
+
             this.ladyBugs = [];
             this.stimuli = _stimuli;
             this.correct = _stimuli.id;
@@ -336,8 +338,14 @@ function proto02(){
             this.introState = "displaySound";
             this.nextTrialState = "flyAll";
             this.availableSpots = [];
-            this.instructionWidth = 100;  // size of the ciurcle for instruction
+            this.instructionWidth = session.canvas.height/8;  // size of the ciurcle for instruction
             this.goldCount = 0
+            this.coundCount = 0
+            this.audioQueue = []
+            this.audioQueuePlay = false
+            this.playing = []
+            this.audioTimer = new ClockTimer()
+
         };
 
         Trial.prototype.init = function(){
@@ -393,7 +401,6 @@ function proto02(){
 
             this.trialTimer = new ClockTimer();
 
-            this.instructionWidth = 100;  // size of the ciurcle for instruction
             this.createInstructions();
 
             this.trialTimer.start(1000);
@@ -402,8 +409,6 @@ function proto02(){
             this.movetoCorner = false;
 
             this.instruction.customAnimation.setPos({x:session.canvas.width/2,y:session.canvas.height/2})
-
-           // assets.sounds.numbers[this.correct].play()
         };
 
         Trial.prototype.getSpotPos = function(_i){
@@ -430,7 +435,6 @@ function proto02(){
 
                 }
 
-
             }else if(this.correct < 16) {
 
                 this.bugType = 3
@@ -447,16 +451,11 @@ function proto02(){
             // Triple bugs: 9,11_,12,13_,14,15
             // 4bug: 16,_17,18,_19,20
 
-
             //get Instruction available size
-            this.instructionWidth = 100;  // size of the ciurcle for instruction
-
-
 
             //-------------------------------------------------------------bg BLUE
             this.bgBlue = new PIXI.Container()
 
-            console.log(this.bgBlue)
             //blue bg for numbers
             this.nunBgBlue = new PIXI.Sprite(assets.textures.instructions_blue)
             this.nunBgBlue.anchor.x = 0.5
@@ -500,7 +499,6 @@ function proto02(){
             this.bgRed.alpha = 0
             this.instruction.addChild(this.bgRed)
 
-        
             this.counter = {
 
                 blue : [],
@@ -509,12 +507,32 @@ function proto02(){
 
             }
 
-            var counterWidth = 30; // make it as big as possible!!
-            var counterMargin = 10
+            var MaxSize = this.instructionWidth*3.5
 
+            var width =  this.bugType + ((this.bugType-1)/3)
+            var height = Math.ceil(this.correct/this.bugType) + ((Math.ceil(this.correct/this.bugType) - 1)/3 ) 
 
-            var startY = (counterWidth/2)-(Math.ceil(this.correct/this.bugType)*(counterWidth + counterMargin))/2
-            var startX = this.instructionWidth
+            var counterWidth = (MaxSize / width) / 2
+            counterWidth = (((4*this.bugType*MaxSize) - MaxSize)/3)/2
+            var counterHeight = (MaxSize / height) / 2
+            var counterSize = []
+
+            if(this.correct == 1){
+
+                var counterSize = counterWidth/2
+
+            }else{
+            
+                var counterSize = counterWidth < counterHeight ? counterWidth : counterHeight;                
+
+            }
+
+            var counterMargin = counterSize/3
+
+            width = (this.bugType * counterSize) + (this.bugType-1 * counterMargin)
+
+            var startY = (counterMargin/3) + (counterSize/2)-(Math.ceil(this.correct/this.bugType)*(counterSize + counterMargin))/2
+            var startX = this.instructionWidth - (width/2) + (counterSize/2) - counterMargin/3
 
             for (key in this.counter){
                 
@@ -532,23 +550,23 @@ function proto02(){
                     this.counter[key][i].anchor.x = 0.5
                     this.counter[key][i].anchor.y = 0.5
                 
-                    this.counter[key][i].y = startY + (row * (counterWidth+counterMargin) )
-                    this.counter[key][i].x = startX + (column*(counterWidth + counterMargin))                 
+                    this.counter[key][i].y = startY + (row * (counterSize+counterMargin) )
+                    this.counter[key][i].x = startX + (column*(counterSize + counterMargin))                 
 
-                    this.counter[key][i].width = counterWidth
-                    this.counter[key][i].height = counterWidth
+                    this.counter[key][i].width = counterSize
+                    this.counter[key][i].height = counterSize   
 
                     if(key == "blue"){
 
-                        this.counter[key][i].renderable = true
+                        this.bgBlue.addChild(this.counter[key][i])
 
+                    }else if(key == "red"){
+
+                        this.bgRed.addChild(this.counter[key][i])
                     }else{
-
                         this.counter[key][i].renderable = false
-
+                        this.instruction.addChild(this.counter[key][i])
                     }
-
-                    this.instruction.addChild(this.counter[key][i])
 
                     column++ 
 
@@ -556,11 +574,17 @@ function proto02(){
 
             };
 
+            var fontSize = this.instructionWidth*0.8
 
-            this.cNumber =  new PIXI.Text(this.correct, {font:"80px Arial", weight:"Bold", fill:"#2c6875", stroke:"#098478", strokeThickness: 1, });
-            this.cNumber.x = -this.instructionWidth/2 + 20
-            this.cNumber.y = -this.instructionWidth/2
-            this.instruction.addChild(this.cNumber);
+            this.rNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#592c33", stroke:"#098478", strokeThickness: 0, });
+            this.rNumber.x = -this.instructionWidth/2// - (this.rNumber.textWidth/2)
+            this.rNumber.y = -this.instructionWidth/2
+            this.bgRed.addChild(this.rNumber);
+
+            this.bNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#2c6875", stroke:"#098478", strokeThickness: 0, });
+            this.bNumber.x = -this.instructionWidth/2// - (this.bNumber.textWidth/2)
+            this.bNumber.y = -this.instructionWidth/2
+            this.bgBlue.addChild(this.bNumber);
 
             stage.addChild(this.instruction)
         };
@@ -589,8 +613,8 @@ function proto02(){
             this.nunBgBlue.destroy()
             this.nunBgRed.destroy()
 
-            this.cNumber.destroy(true,true)
-
+            this.bNumber.destroy(true,true)
+            this.rNumber.destroy(true,true)
 
             stage.removeChild(this.instruction)
             this.instruction.destroy(true,true)
@@ -633,17 +657,59 @@ function proto02(){
                     this.counter.gold[i].renderable = false
                     this.counter.gold[i].alpha = 0
                     this.counter.blue[i].renderable = true
+                }
+
+                if(!_feedback){
+
+
+                    assets.sounds.wrong[0].play()
+                    this.playAudioQueue("stop")
+
+                    if(!this.redDone){
+
+                        this.feedbackState = "red"
+
+                        this.setBlink(false)
+                        this.bgRed.renderable = true;
+                        this.blinks = 0
+                        
+                        this.feedback = false;
+                        this.redDone = false;                 
+
+                    }
 
                 }
 
                 this.goldCount = 0
+                this.coundCount = 0
             
             } else if(_feedback){
+
+                // set up audio queue for feedback
+                if(this.bugType == 1){
+
+                    this.playAudioQueue("add", [assets.sounds.correct2[this.coundCount]])
+                    this.coundCount++
+
+                }else{
+
+                    this.playAudioQueue("add", [assets.sounds.correct2[this.coundCount]])
+                    this.coundCount++
+
+                    // var sounds = []
+                    // for(var i = 0; i<this.bugType; i++){
+
+                    //     sounds.push(assets.sounds.correct1[i])
+
+                    // };
+
+                    // this.playAudioQueue("add", sounds)
+
+                };
 
                 var lightUp = 0
 
                 if(this.goldCount + this.bugType > this.correct){
-            
 
                     lightUp = this.correct - this.goldCount + this.goldCount
                 
@@ -664,6 +730,9 @@ function proto02(){
 
             }else{
 
+
+                assets.sounds.wrong[0].play()
+
                 if(!this.redDone){
 
                     this.feedbackState = "red"
@@ -678,24 +747,25 @@ function proto02(){
                 }
 
             }
-
         };
-
 
         Trial.prototype.setBlink = function(_back){
 
             if(_back){
 
-                this.bgBlue.customAnimation.initFeature("alpha",1,200,0,[0,1])
-                this.bgRed.customAnimation.initFeature("alpha",0,200,0,[0,1])
+                this.bgBlue.customAnimation.initFeature("alpha",1,100,0,[0,1])
+                this.bgRed.customAnimation.initFeature("alpha",0,100,0,[0,1])
+
+                this.bgBlue.customAnimation.initFeature("alpha",1,100,0,[0,1])
+                this.bgRed.customAnimation.initFeature("alpha",0,100,0,[0,1])
+
 
             }else{
 
-                this.bgBlue.customAnimation.initFeature("alpha",0,200,0,[0,1])
-                this.bgRed.customAnimation.initFeature("alpha",1,200,0,[0,1])
+                this.bgBlue.customAnimation.initFeature("alpha",0,100,0,[0,1])
+                this.bgRed.customAnimation.initFeature("alpha",1,100,0,[0,1])
 
             }
-
         };
 
         Trial.prototype.displayFeedbacks = function(){
@@ -713,8 +783,6 @@ function proto02(){
                     if(this.bgBlue.customAnimation.runFeature()){ blueDone = true}
 
                     if(redDone && blueDone){
-
-                        console.log("red")
 
                         this.setBlink(true)
                         this.feedbackState = "blue"
@@ -764,7 +832,6 @@ function proto02(){
 
 
             };
-
         };
         
         Trial.prototype.intro = function(){
@@ -772,7 +839,10 @@ function proto02(){
             switch(this.introState){
 
                 case "displaySound":
-                    
+                            
+                    //assets.sounds.numbers[this.correct].play()
+
+
                     if(this.trialTimer.timeOut()){
 
                         var dest = {}
@@ -805,7 +875,6 @@ function proto02(){
 
         Trial.prototype.play = function(_updateTime){
 
-
             switch(this.trialState){
 
                 case "intro":
@@ -813,22 +882,23 @@ function proto02(){
                     if(this.intro()){
 
                         this.trialState = "play";  
-                    }
+                    };
 
                     break;
 
 
                 case "play":
 
-                    if(this.ladyBugs[this.ladyBugs.length-1].resetFeedback()){
-                        this.getFeedback(false,true)
-                    }
 
-                    this.displayFeedbacks()
+                    if(this.ladyBugs[this.ladyBugs.length-1].resetFeedback()){
+                      
+                        this.getFeedback(true,true);
+                    
+                    };
 
                     for (var i=0; i<this.ladyBugs.length; i++){
 
-                      this.ladyBugs[i].move()
+                      this.ladyBugs[i].move();
 
                     };
 
@@ -837,17 +907,22 @@ function proto02(){
 
                         for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
 
-                        this.trialState = "nextTrial"
+                        this.trialState = "nextTrial";
 
-                    }
+                    };
+
+                    this.displayFeedbacks();
+                    this.playAudioQueue();
 
                     break;
 
                 case "nextTrial":
 
                     if(this.nextTrial()){
-                        return true
-                    }
+
+                        return true;
+                    
+                    };
 
                     break;
 
@@ -912,6 +987,116 @@ function proto02(){
             return false;
         };
 
+        Trial.prototype.playAudioQueue = function(_perform,_audio){
+
+            if(_perform == "add"){
+
+                this.audioQueue.push(_audio)
+
+            }else if(_perform == "stop"){
+
+                for(var i =0; i<this.playing.length; i++){
+
+                    this.playing.currentTime = 0
+                    console.log(this.playing[0].paused)
+                    this.playing[i].pause()
+
+                }
+
+                this.audioQueuePlay = false;
+                this.audioQueue = []
+
+                // for(key in assets.sounds){
+
+                //     for(var i =0; i<assets.sounds[key].length; i++){
+                    
+                //         for(var i =0; i<assets.sounds[key][i].length; i++){
+                        
+                //             assets.sounds[key][i].stop()
+                //             assets.sounds[key][i].currentTime = 0
+
+                //         }
+
+                //     }
+                // }
+
+
+            }else if (this.audioQueue.length > 0){
+
+                if(!this.audioQueuePlay){
+
+                    for(var i =0; i<this.audioQueue[0].length; i++){
+                        console.log("---------", this.audioQueue[0][i])
+                        this.playing.push(this.audioQueue[0][i])
+                        this.audioQueue[0][i].play()
+                    }
+
+                    var time  = 180
+
+                    this.audioTimer.start(time)
+                    this.audioQueuePlay = true;
+
+                }
+
+                if(this.audioTimer.timeOut()){
+
+                    //remove item from array
+                    console.log("removing:", this.audioQueue) 
+                    this.audioQueue.splice(0,1)
+
+                    //check if queue is empty
+                    if(this.audioQueue.length > 0){
+
+                        console.log("playing:", this.audioQueue[0]) 
+
+
+                    for(var i = 0; i<this.audioQueue[0].length; i++){
+
+                        this.audioQueue[0][i].currentTime = 0                       
+                        this.audioQueue[0][i].play()
+                    
+                    }
+
+                        var time  = 180
+                        
+                        this.audioTimer.start(time)
+
+
+
+                    }else{
+
+                        console.log("empty!!")
+                        this.audioQueuePlay = false;
+
+                    }
+
+
+                    return
+
+                    console.log("---<",this.audioQueue)
+
+                    if(this.audioQueue.length > 0 && this.audioQueue[0].paused){
+                    
+
+                    this.audioQueue.splice(0,1)
+    
+                        console.log("playing:", this.audioQueue[0]) 
+
+                        this.audioQueue[0].currentTime = 0
+                        this.audioQueue[0].play() 
+                        this.audioTimer.start(180)
+
+                    }else{
+
+                    console.log("empty!",this.audioQueue)
+                        this.audioQueuePlay = false;
+
+                    }
+
+                }
+            }
+        };
+
         /*
         *********************************************************************
         Handles the answer given by the user
@@ -965,7 +1150,6 @@ function proto02(){
             assets.addTexture("instructions_blue",'sprites/ladyBug/Instructions/instructions_blue.png')
             assets.addTexture("instructions_red",'sprites/ladyBug/Instructions/instructions_red.png')
 
-
             assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png')
             assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')
 
@@ -973,8 +1157,26 @@ function proto02(){
 
               assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
             
-            }
+            };
 
+            for (var i = 0; i < correctSounds.length; i++) {
+
+                for (var j = 0; j < correctSounds[i].length; j++) {
+
+                    if(i == 0){
+                    
+                        assets.addSound("correct1",correctSounds[i][j].audio + '.mp3');
+                    
+                    }else{
+                    
+                        assets.addSound("correct2",correctSounds[i][j].audio + '.mp3');                        
+                    
+                    }
+
+                };
+            };
+
+            assets.addSound("wrong",'wrong.wav');  
             assets.load(onAssetsLoaded)
 
         //---------------------------------------LOOP
@@ -1007,6 +1209,7 @@ function proto02(){
 
           }
         };
+
 
         function update() {
 

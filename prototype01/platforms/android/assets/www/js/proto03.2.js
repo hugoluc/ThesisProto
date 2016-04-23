@@ -19,6 +19,7 @@ function proto03(){
         this.conections = []
         this.sinking = false;
         this.ang = 0
+
     };
 
     Object.defineProperties(lillyFinal.prototype, {
@@ -66,8 +67,8 @@ function proto03(){
             this.lillypad = new PIXI.Sprite(assets.textures.lillyBig)
             this.lillypad.anchor.x = 0.5
             this.lillypad.anchor.y = 0.5
-            this.lillypad.x = this.specs.x
-            this.lillypad.y = this.specs.y
+            this.lillypad.x = 0
+            this.lillypad.y = 0
             this.lillypad.width = this.specs.size*2.5
             this.lillypad.height = this.specs.size*2.5
             this.container.addChild(this.lillypad)
@@ -76,8 +77,8 @@ function proto03(){
             this.lillySink = new PIXI.extras.MovieClip(assets.sprites.lillyFinal_Sink);
             this.lillySink.anchor.x = 0.5
             this.lillySink.anchor.y = 0.5
-            this.lillySink.x = this.specs.x
-            this.lillySink.y = this.specs.y
+            this.lillySink.x = 0
+            this.lillySink.y = 0
             this.lillySink.width = this.specs.size*2.5
             this.lillySink.height = this.specs.size*2.5
             this.lillySink.animationSpeed = 0.1
@@ -96,6 +97,7 @@ function proto03(){
             this.container.addChild(this.cNumber)
 
             this.customAnimation = new animation(this.container)
+            this.customAnimation.setPos({x:this.specs.x,y:this.specs.y})
 
             stage.addChild(this.container)
     };
@@ -112,9 +114,6 @@ function proto03(){
     };
 
     lillyFinal.prototype.display = function(_currentValue){
-
-                    console.log(this.lillySink.currentFrame)
-                    console.log(this.state)
 
         switch(this.state){
 
@@ -348,8 +347,8 @@ function proto03(){
 
             this.antsDivision.push({
 
-                x : this.circle.x + (Math.cos(angle) * (n*0.32)) - _antSize.width,
-                y : this.circle.y + (Math.sin(angle) * (n*0.32)) - _antSize.height,
+                x : this.circle.x + (Math.cos(angle) * (n*0.32)),
+                y : this.circle.y + (Math.sin(angle) * (n*0.32))
             
             }) 
 
@@ -476,9 +475,14 @@ function proto03(){
 
     Ant.prototype.init = function(){
 
-        stage.addChild(this.sprite)
-        this.sprite.x = this.pos.x
-        this.sprite.y = this.pos.y
+     stage.addChild(this.sprite)
+       var dest = {
+        x : this.pos.x,
+        y : this.pos.y
+       }
+       this.animation.setPos(dest)
+        // this.sprite.x = this.pos.x
+        // this.sprite.y = this.pos.y
     };
 
     Ant.prototype.rotate = function(_n){
@@ -870,22 +874,7 @@ function proto03(){
             ori : 0,
         }
 
-
-        var posCount = 0
-        
-        if(this.stick.angle < 0){
-
-            t0.y = t0.y - this.stick.height
-            t1.y = t1.y - this.stick.height
-        }
-
-        if(this.stick.angle < -Math.PI/2 || this.stick.angle > Math.PI/2){
-
-            t0.x = t0.x - this.ants.size.width
-            t1.x = t1.x - this.ants.size.width
-            
-        }
-
+        var posCount = 0        
 
         if(_target == "final"){ // > if you droped the stick over the final circle
 
@@ -1027,6 +1016,7 @@ function proto03(){
 
     Trial.prototype.moveStick = function(_data,_lillyId){
 
+
         var lillyOffset = (this.specs.lillyWidth*0.7)
         this.branch.alpha = 1;
 
@@ -1088,34 +1078,38 @@ function proto03(){
             
             }
     
-            return
-        }      
-
-
-    	var angle = getAngle(this.stick.startX, this.stick.startY, _data.x, _data.y)
-
-    	this.stick.rotation = angle + Math.PI*1.5
-
-        var sine = Math.sin(angle)
-        var cosine = Math.cos(angle)
-
-        var opos = sine * (this.lillywith/2)*0.9
-        var adj = cosine * (this.lillywith/2)*0.9
-
-        this.stick.x = this.stick.startX + opos// + (this.specs.lillyWidth*0.7);
-        this.stick.y = this.stick.startY - adj// + (this.specs.lillyWidth*0.65);
-        this.stick.width = getDistance(this.stick.x,this.stick.y,_data.x,_data.y)
-
-        if( this.stick.width > this.branch.width){
-
-            this.branch.renderable  = true;
-            this.branch.rotation = angle + Math.PI
-            this.branch.x = this.stick.x + sine * (this.stick.width * 0.5 - this.branch.width/2) + (cosine*13);
-            this.branch.y = this.stick.y - cosine * (this.stick.width * 0.5 - this.branch.width/2) + (sine*13);            
-        
         }else{
-            this.branch.renderable  = false;
-        }
+
+            var angle = getAngle(this.stick.startX, this.stick.startY, _data.x, _data.y)
+
+            this.stick.rotation = angle + Math.PI*1.5
+
+            console.log(angle + "--" +  this.stick.rotation)
+
+
+            var sine = Math.sin(angle)
+            var cosine = Math.cos(angle)
+
+            var opos = sine * (this.lillywith/2)*0.9
+            var adj = cosine * (this.lillywith/2)*0.9
+
+            this.stick.x = this.stick.startX + opos// + (this.specs.lillyWidth*0.7);
+            this.stick.y = this.stick.startY - adj// + (this.specs.lillyWidth*0.65);
+            this.stick.width = getDistance(this.stick.x,this.stick.y,_data.x,_data.y)
+
+            if( this.stick.width > this.branch.width){
+
+                this.branch.renderable  = true;
+                this.branch.rotation = angle + Math.PI
+                this.branch.x = this.stick.x + sine * (this.stick.width * 0.5 - this.branch.width/2) + (cosine*13);
+                this.branch.y = this.stick.y - cosine * (this.stick.width * 0.5 - this.branch.width/2) + (sine*13);            
+            
+            }else{
+                this.branch.renderable  = false;
+            }
+        
+
+        }    
     };
 
     Trial.prototype.removeStick = function(){
@@ -1211,19 +1205,12 @@ function proto03(){
 
                 if(this.clock.timeOut()){
 
-                    console.log(this.lillyFinal.container.x,this.lillyFinal.container.y)
-                    console.log(
-
-                        this.lillyFinal.container.getBounds().x,
-                        this.lillyFinal.container.getBounds().y)
-                   
-                    console.log(session.canvas.width,session.canvas.height)
 
                     var dest = {};
-                    dest.x = session.canvas.width - this.lillyFinal.container.getBounds().width;
-                    dest.y = (session.canvas.height/2) - this.lillyFinal.container.getBounds().height/2;
+                    dest.x = session.canvas.width - this.lillyFinal.container.getBounds().width/2 - 30;
+                    dest.y = (session.canvas.height/2)// + (this.lillyFinal.container.getBounds().height/2);
 
-                    this.lillyFinal.customAnimation.init(dest,100)
+                    this.lillyFinal.customAnimation.init(dest,500,0,[0.75,1])
 
                     this.introState = "moveFinalLillypad"
 
@@ -1240,7 +1227,8 @@ function proto03(){
                     console.log(
                         
                         this.lillyFinal.container.getBounds().x,
-                        this.lillyFinal.container.getBounds().y)
+                        this.lillyFinal.container.getBounds().y
+                    )
                    
                     console.log(session.canvas.width,session.canvas.height)
 

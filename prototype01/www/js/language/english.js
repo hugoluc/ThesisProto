@@ -1,4 +1,5 @@
 
+
 // try again! let's go! i'm bored?
 var feedback = [
   {id:"good_job", text:"good job", audio:"good_job"},
@@ -8,28 +9,29 @@ var feedback = [
 ];
 
 var numbers = [
+
 //  {id:"0", audio:"zero", text:"zero"},
-  {id:"1", audio:"one", text:"one"},
-  {id:"2", audio:"two", text:"two"},
-  {id:"3", audio:"three", text:"three"},
-  {id:"4", audio:"four", text:"four"},
-  {id:"5", audio:"five", text:"five"},
-  {id:"6", audio:"six", text:"six"},
-  {id:"7", audio:"seven", text:"seven"},
-  {id:"8", audio:"eight", text:"eight"},
-  {id:"9", audio:"nine", text:"nine"},
-  {id:"10", audio:"ten", text:"ten"},
-  {id:"11", audio:"eleven", text:"eleven"},
-  {id:"20", audio:"twenty", text:"twenty"},
-  {id:"30", audio:"thirty", text:"thirty"},
-  {id:"40", audio:"forty", text:"forty"},
-  {id:"50", audio:"fifty", text:"fifty"},
-  {id:"60", audio:"sixty", text:"sixty"},
-  {id:"70", audio:"seventy", text:"seventy"},
-  {id:"80", audio:"eighty", text:"eighty"},
-  {id:"90", audio:"ninety", text:"ninety"},
-  {id:"100", audio:"hundred", text:"hundred"},
-  {id:"1000", audio:"thousand", text:"thousand"}
+  {id:"1", audio:"1", text:"one"},
+  {id:"2", audio:"2", text:"two"},
+  {id:"3", audio:"3", text:"three"},
+  {id:"4", audio:"4", text:"four"},
+  {id:"5", audio:"5", text:"five"},
+  {id:"6", audio:"6", text:"six"},
+  {id:"7", audio:"7", text:"seven"},
+  {id:"8", audio:"8", text:"eight"},
+  {id:"9", audio:"9", text:"nine"},
+  {id:"10", audio:"10", text:"ten"},
+  {id:"11", audio:"11", text:"eleven"},
+  {id:"20", audio:"12", text:"twenty"},
+  {id:"30", audio:"13", text:"thirty"},
+  {id:"40", audio:"14", text:"forty"},
+  {id:"50", audio:"15", text:"fifty"},
+  {id:"60", audio:"16", text:"sixty"},
+  {id:"70", audio:"17", text:"seventy"},
+  {id:"80", audio:"18", text:"eighty"},
+  {id:"90", audio:"19", text:"ninety"},
+  {id:"100", audio:"20", text:"hundred"},
+  {id:"1000", audio:"21", text:"thousand"}
   ];
 
 // words for each letter and syllable: https://www.youtube.com/watch?v=IUjpXWPaWE0

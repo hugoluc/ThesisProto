@@ -874,9 +874,7 @@ function proto03(){
             ori : 0,
         }
 
-
-        var posCount = 0
-        
+        var posCount = 0        
 
         if(_target == "final"){ // > if you droped the stick over the final circle
 
@@ -1112,8 +1110,6 @@ function proto03(){
         
 
         }    
-
-
     };
 
     Trial.prototype.removeStick = function(){

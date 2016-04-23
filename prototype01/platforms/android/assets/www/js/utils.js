@@ -105,17 +105,97 @@ function animation(obj){
   this.lastTime = 0;
   this.obj = obj;
   this.bezier = false;
+
 };
 
 animation.prototype.stop = function(){
+
   this.finished = true;
   this.obj = [];
+
 };
 
+animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezier){
+
+  this.feaFinished = false;
+  this.feaTimeSet = false;
+
+
+  this.feature = _feature
+  this.featureStart = this.obj[this.feature]
+  this.feaLength = _length
+  this.feaOff = _offset || 0
+
+  this.featureDistance = _dest - this.featureStart
+  this.featureSpeed = this.featureDistance / this.feaLength
+
+
+  if(_bezier != undefined ){
+  
+    this.feaBezier = true;
+    this.feaBezName = _bezier[0].toFixed(2) + "-" + _bezier[1].toFixed(2)
+  
+  }
+
+}
+
+animation.prototype.runFeature = function(){
+
+  if(this.feaFinished){
+    return true;
+  };
+
+  var last = this.feaNow;
+  this.feaNow = Date.now();
+  var frameTime = this.feaNow - last;
+
+  if(!this.feaTimeSet){
+  
+    this.feaStartTime = Date.now();
+    this.feaLastTime = Date.now();
+    this.feaTimeSet = true;
+    frameTime =  0
+
+  }
+
+  var elapsed = this.feaNow - this.feaStartTime
+
+
+  if(elapsed > this.feaLength+this.feaOff){
+
+    this.obj[this.feature] = this.featureStart + this.featureDistance
+    this.feaFinished = true
+
+    console.log("finished!!!")
+    return true
+
+  }else{
+   
+    if(elapsed >= this.feaOff){
+      
+      if(this.feaBezier){
+
+        var location = Math.floor(((elapsed-this.feaOff)*999)/this.feaLength)
+        bez = bezierCurveSpecs[this.feaBezName][location]
+
+        this.obj[this.feature] = this.featureStart + (this.featureDistance * bez)
+   
+      }else{
+
+        this.obj[this.feature] = this.obj[this.feature] + (frameTime * this.featureSpeed) 
+
+      }
+
+
+    }
+
+    return false;
+  
+  }
+
+}
+
 animation.prototype.init = function(dest,length,offset,bezier){
-
-  console.log("INIT",LOGTHIS)
-
 
   this.finished = false;
   this.timeSet = false;
@@ -172,21 +252,7 @@ animation.prototype.init = function(dest,length,offset,bezier){
   this.speed.x = this.distance.x/this.anLength;
   this.speed.y = this.distance.y/this.anLength;
 
-  this.now = 0;
-
-  // console.log("--------------ANIMATION SETUP---------------------------")
-  // console.log("id", this.obj)
-  // console.log("startPOS",this.startPos) 
-  // console.log("start",start) 
-  // console.log("dest",this.dest.x,this.dest.y)
-    if(LOGTHIS){
-
-      console.log("distance:","x:" + this.distance.x + " / y:" +this.distance.y);
-      console.log("speed:", "x:" + this.speed.x + " / y:" + this.speed.y);      
-    
-    }  
-
-
+  this.now = 0;  
 };
 
 animation.prototype.setPos = function(dest){
@@ -210,8 +276,6 @@ animation.prototype.setPos = function(dest){
     this.distance = {};
     this.distance.x = this.dest.x - (start.x);
     this.distance.y =  this.dest.y - (start.y);
-
-
 
   }else{
 
@@ -260,15 +324,6 @@ animation.prototype.run = function(){
     this.obj.y =  this.startPos.y + this.distance.y 
     this.finished = true;
 
-    if(this.obj.children.length != 4){
-      return true 
-    }
-
-    // console.log("-----ANIMATION DONE!")
-    // console.log(this.obj.getBounds())
-    // console.log([this.obj.x,this.obj.y])
-    // console.log("---------------------- ")
-
     return true
 
   }else{
@@ -278,11 +333,8 @@ animation.prototype.run = function(){
       if(this.bezier){
 
 
-        var location = Math.floor((elapsed*999)/this.anLength)
+        var location = Math.floor(((elapsed-this.offset)*999)/this.anLength)
         bez = bezierCurveSpecs[this.bezName][location]
-
-        console.log(this.bezName,location,bez)
-        console.log((this.distance.y * bez))
 
         this.obj.y = this.startPos.y + (this.distance.y * bez)
         this.obj.x = this.startPos.x + (this.distance.x * bez)

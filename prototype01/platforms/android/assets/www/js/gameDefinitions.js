@@ -96,20 +96,24 @@
 	}
 
 	Assets.prototype.addTexture = function(name,url){
-		this.textureQueue.push([name,url])
-	}
 
+		this.textureQueue.push([name,url])
+	};
 
 	Assets.prototype.addSound = function(name,url){
 
+
 		if(typeof(name) == "number"){
+
 			this.soundsNQueue.push([name,url])
+		
 		}else{
+			
 			this.soundsQueue.push([name,url])
+		
 		}
 
-	}
-
+	};
 
 	Assets.prototype.load = function(_callback){
 
@@ -137,8 +141,7 @@
 			this.start()
 		
 		}
-
-	}
+	};
 
 	Assets.prototype.start = function(){
 
@@ -154,12 +157,18 @@
 		
 		}
 
+		for( var i=0; i < this.soundsQueue.length; i++){
+			
+			this.sounds[this.soundsQueue[i][0]] = []
+		
+		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
 			
-			this.sounds[this.soundsQueue[i]].push(new Audio('audio/' + language + '/' + this.soundsQueue[i][1]))
+			this.sounds[this.soundsQueue[i][0]].push(new Audio('audio/' + this.soundsQueue[i][0] + '/' + this.soundsQueue[i][1]))
 		
 		}
+
 
 		for( var i=0; i < this.soundsNQueue.length; i++){
 			
@@ -183,9 +192,7 @@
 		}
 
 		this.callback()
-
-	}
-
+	};
 
 	Assets.prototype.destroy = function(){
 
@@ -213,9 +220,7 @@
 			
 			this.textures[textures].destroy(true)
 		}
-
-
-	}
+	};
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -253,8 +258,6 @@ Round.prototype.init = function(_Trial,_stage){
  	this.getNextTrial()
  	session.render(_stage)
 
-   	console.log(assets.textures.bg.frame)
-
    	//console.log(x, x.width)
 
    	// var ratio = this.background.height/this.background.width
@@ -270,9 +273,7 @@ Round.prototype.getNextTrial = function(){
 	queuesToUpdate['numberstim'] = true;
 
 	var stim = stimQueues['numberstim'].pop();
-	
-	console.log(">>>>>>>>",stimQueues['numberstim'])
- 	
+	 	
  	this.trial = new this._trial(stim);
     this.trial.init();
 

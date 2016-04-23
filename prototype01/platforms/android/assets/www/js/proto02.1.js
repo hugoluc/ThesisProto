@@ -7,7 +7,8 @@
 
     var LOGTHIS =  false;
 
-    function proto02(){
+function proto02(){
+
     /*
     -------------------------------------------------------------------------------------------------------------
                                                   Class: LadyBug
@@ -150,15 +151,11 @@
 
                 case "walk":
 
-
-                    if(this.lastS){
-                        console.log(this.container.x)
-                    }
-
                     if(this.customAnimation.run()){
 
                         var i = getRandomInt(0,round.trial.availableSpots.length)                    
                         var xpos = round.trial.getSpotPos(i)
+                        this.offscreen = true;
                         this.setUp(xpos);
 
                     };
@@ -193,7 +190,6 @@
 
                         if(this.timer.timeOut()){
 
-                            console.log("walk again!!!!")
                             this.state = "walk";
                             var i = getRandomInt(0,round.trial.availableSpots.length)                    
                             var xpos = round.trial.getSpotPos(i)
@@ -238,16 +234,35 @@
 
         LadyBug.prototype.click = function(){
 
+            if(round.trial.state == "nextTrial"){
+                return
+            }
+
             var _this = this;
 
             // check if its correct
             if(this.startNumber == round.trial.stimuli.id){
-     
-                scoreDifferential += 1;
 
-                //console.log("click over:--",this.number.text)
 
-                this.number.text--;
+                console.log(">>CLICK<<")
+
+                if(this.number.text != 0){
+
+                    if(this.number.text - round.trial.bugType < 0){
+
+                       this.number.text = 0
+
+                    }else{
+
+                       this.number.text = (this.number.text - round.trial.bugType)
+
+                    }
+
+
+                }else if(this.number.text == 0){
+
+                    this.number.text = -1
+                }
 
                 // flyes if it reaches 0
                 if(this.number.text == 0) {
@@ -263,8 +278,14 @@
                     this.state = "fly"
                     this.timer.start(550);
 
+                    round.trial.getFeedback(true,false)  
+
+                    return
+
                 // kills if it click one more time
                 } else if(this.number.text < 0) {
+
+                    round.trial.getFeedback(false,true)
 
                     this.sprite.fly.stop();
                     this.sprite.fly.renderable = false;
@@ -274,24 +295,27 @@
                     this.state = "dead";
                     this.timer.start(1500);
 
+                    return
 
-                // try to present audio for each number in the countdown? maybe too slow..
+                // regular click
                 }else if (this.number.text > 0){
 
-                    // if(this.playQueue.length <= 0){
-                    //     console.log("--------------------------------")
-                    //     this.playQueue.push(this.number.text)
-                    //     assets.sounds[this.number.text].play()
-                    //     assets.sounds[this.number.text].playbackRate = 1.5
-                    //     assets.sounds[this.number.text].addEventListener("ended", function(){_this.playNext()})
+                    round.trial.getFeedback(true,false) 
 
-                    // }else{
+                };
 
-                    //     this.playQueue.push(this.number.text)
-                    // }
-                }
-            } else {
-              scoreDifferential -= 1;
+            }else {
+
+               round.trial.getFeedback(false,false) 
+            }
+        };
+
+        LadyBug.prototype.resetFeedback = function(){
+
+            if(this.offscreen){
+
+                this.offscreen = false;
+                return true
             }
         };
 
@@ -303,23 +327,31 @@
 
         function Trial(_stimuli){
 
-          this.ladyBugs = [];
-          this.stimuli = _stimuli;
-          this.correct = _stimuli.id;
-          this.correctImput = 0;
-          this.playQueue = []
-          this.correctSet = false;
-          this.introState = "displaySound"
-          this.nextTrialState = "flyAll"
-          this.availableSpots = []
+            _stimuli.id = 5
+
+            this.ladyBugs = [];
+            this.stimuli = _stimuli;
+            this.correct = _stimuli.id;
+            this.correctImput = 0;
+            this.playQueue = [];
+            this.correctSet = false;
+            this.introState = "displaySound";
+            this.nextTrialState = "flyAll";
+            this.availableSpots = [];
+            this.instructionWidth = session.canvas.height/8;  // size of the ciurcle for instruction
+            this.goldCount = 0
+            this.coundCount = 0
+            this.audioQueue = []
+            this.audioQueuePlay = false
+            this.audioTimer = new ClockTimer()
         };
 
         Trial.prototype.init = function(){
 
+
             this.foils = this.getFoils();
-            this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
+           // this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
            
-            console.log(this.foils)
 
             this.foils = shuffle(this.foils);
 
@@ -330,11 +362,11 @@
 
             }
 
-            this.instructionWidth = 100;  // size of the ciurcle for instruction
+            this.ladyBugs.push(new LadyBug(this.correct))
 
             //determine individual spots available based on the screen with and the bug width to position ladybugs
             // this will try to fit as much bugs as possible on the width of gthe sreen without overlaying them
-            var interval = Math.floor((screen_width - this.instructionWidth) / this.ladyBugs[0].container.width);
+            var interval = Math.floor((screen_width - this.instructionWidth*4.5) / this.ladyBugs[0].container.width);
 
             for(var i = 0; i<interval; i++){
 
@@ -344,7 +376,6 @@
 
             // array with randon numbers up the the number of indivisual spots available
             this.availableSpots = shuffle(this.availableSpots)
-
 
             for(var i = 0; i<this.ladyBugs.length; i++){
 
@@ -357,7 +388,7 @@
                 }
 
                 // position of bug on screen based on available spot
-               var xpos = this.getSpotPos(posN)
+                var xpos = this.getSpotPos(posN)
 
                 this.ladyBugs[i].setUp(xpos,offset);
 
@@ -368,22 +399,7 @@
 
             this.trialTimer = new ClockTimer();
 
-            this.circle = new PIXI.Graphics()
-            this.circle.lineStyle(0);
-            this.circle.beginFill(0x02d1aa);
-            this.circle.drawCircle(0,0,this.instructionWidth);
-            this.circle.endFill();
-            this.circle.x = 0
-            this.circle.y = 0       
-
-            this.instruction.addChild(this.circle); 
-            
-            this.cNumber =  new PIXI.Text(this.correct, {font:"100px Arial", weight:"bold", fill:"#098478", stroke:"#098478", strokeThickness: 1, });
-            this.cNumber.x = this.circle.x - this.cNumber.width/2
-            this.cNumber.y = this.circle.y - this.cNumber.height/2
-            this.instruction.addChild(this.cNumber);
-            
-            stage.addChild(this.instruction)
+            this.createInstructions();
 
             this.trialTimer.start(1000);
             this.trialState = "intro";
@@ -391,14 +407,184 @@
             this.movetoCorner = false;
 
             this.instruction.customAnimation.setPos({x:session.canvas.width/2,y:session.canvas.height/2})
-
-            assets.sounds.numbers[this.correct].play()
         };
 
         Trial.prototype.getSpotPos = function(_i){
 
+            return (this.availableSpots[_i] * this.ladyBugs[0].container.width) + this.instructionWidth*4
+        };
 
-            return (this.availableSpots[_i] * this.ladyBugs[0].container.width) + this.instructionWidth*2.5
+        Trial.prototype.createInstructions = function(){
+
+
+            if(this.correct < 6){
+
+                this.bugType = 1
+
+            }else if(this.correct < 11){
+
+                if(this.correct == 9){
+
+                    this.bugType = 3
+
+                }else{
+
+                this.bugType = 2
+
+                }
+
+            }else if(this.correct < 16) {
+
+                this.bugType = 3
+
+
+            }else{
+
+                this.bugType = 4
+
+            }
+
+            // Single bug: from 1 to 5
+            // Double bug: form 6,7_,8,10,
+            // Triple bugs: 9,11_,12,13_,14,15
+            // 4bug: 16,_17,18,_19,20
+
+            //get Instruction available size
+
+            //-------------------------------------------------------------bg BLUE
+            this.bgBlue = new PIXI.Container()
+
+            //blue bg for numbers
+            this.nunBgBlue = new PIXI.Sprite(assets.textures.instructions_blue)
+            this.nunBgBlue.anchor.x = 0.5
+            this.nunBgBlue.anchor.y = 0.5
+            this.nunBgBlue.width = this.instructionWidth*2
+            this.nunBgBlue.height = this.instructionWidth*2
+            this.bgBlue.addChild(this.nunBgBlue)
+
+            this.countBgBlue = new PIXI.Sprite(assets.textures.instructions_blue)
+            this.countBgBlue.anchor.x = 0.5
+            this.countBgBlue.anchor.y = 0.5
+            this.countBgBlue.width = this.instructionWidth*3
+            this.countBgBlue.height = this.instructionWidth*3
+            this.countBgBlue.x = this.instructionWidth
+            this.bgBlue.addChild(this.countBgBlue)
+
+            this.bgBlue.customAnimation = new animation(this.bgBlue)
+            this.instruction.addChild(this.bgBlue)
+
+            //-------------------------------------------------------------bg RED
+            this.bgRed = new PIXI.Container()
+
+            //red bg for numbers
+            this.nunBgRed = new PIXI.Sprite(assets.textures.instructions_red)
+            this.nunBgRed.anchor.x = 0.5
+            this.nunBgRed.anchor.y = 0.5
+            this.nunBgRed.width = this.instructionWidth*2
+            this.nunBgRed.height = this.instructionWidth*2
+            this.bgRed.addChild(this.nunBgRed)
+
+            this.countBgRed = new PIXI.Sprite(assets.textures.instructions_red)
+            this.countBgRed.anchor.x = 0.5
+            this.countBgRed.anchor.y = 0.5
+            this.countBgRed.width = this.instructionWidth*3
+            this.countBgRed.height = this.instructionWidth*3
+            this.countBgRed.x = this.instructionWidth
+            this.bgRed.addChild(this.countBgRed)
+
+            this.bgRed.customAnimation = new animation(this.bgRed)
+            this.bgRed.renderable = false;
+            this.bgRed.alpha = 0
+            this.instruction.addChild(this.bgRed)
+
+            this.counter = {
+
+                blue : [],
+                red: [],
+                gold: []
+
+            }
+
+            var MaxSize = this.instructionWidth*3.5
+
+            var width =  this.bugType + ((this.bugType-1)/3)
+            var height = Math.ceil(this.correct/this.bugType) + ((Math.ceil(this.correct/this.bugType) - 1)/3 ) 
+
+            var counterWidth = (MaxSize / width) / 2
+            counterWidth = (((4*this.bugType*MaxSize) - MaxSize)/3)/2
+            var counterHeight = (MaxSize / height) / 2
+            var counterSize = []
+
+            if(this.correct == 1){
+
+                var counterSize = counterWidth/2
+
+            }else{
+            
+                var counterSize = counterWidth < counterHeight ? counterWidth : counterHeight;                
+
+            }
+
+            var counterMargin = counterSize/3
+
+            width = (this.bugType * counterSize) + (this.bugType-1 * counterMargin)
+
+            var startY = (counterMargin/3) + (counterSize/2)-(Math.ceil(this.correct/this.bugType)*(counterSize + counterMargin))/2
+            var startX = this.instructionWidth - (width/2) + (counterSize/2) - counterMargin/3
+
+            for (key in this.counter){
+                
+                var column = 0
+                var row = -1
+
+                for(var i = 0; i < this.correct; i++){
+
+                    column = column%this.bugType
+
+                    if(column == 0){row++}
+
+                    var name = "counter_" + key
+                    this.counter[key].push(new PIXI.Sprite(assets.textures[name]))
+                    this.counter[key][i].anchor.x = 0.5
+                    this.counter[key][i].anchor.y = 0.5
+                
+                    this.counter[key][i].y = startY + (row * (counterSize+counterMargin) )
+                    this.counter[key][i].x = startX + (column*(counterSize + counterMargin))                 
+
+                    this.counter[key][i].width = counterSize
+                    this.counter[key][i].height = counterSize   
+
+                    if(key == "blue"){
+
+                        this.bgBlue.addChild(this.counter[key][i])
+
+                    }else if(key == "red"){
+
+                        this.bgRed.addChild(this.counter[key][i])
+                    }else{
+                        this.counter[key][i].renderable = false
+                        this.instruction.addChild(this.counter[key][i])
+                    }
+
+                    column++ 
+
+                };
+
+            };
+
+            var fontSize = this.instructionWidth*0.8
+
+            this.rNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#592c33", stroke:"#098478", strokeThickness: 0, });
+            this.rNumber.x = -this.instructionWidth/2// - (this.rNumber.textWidth/2)
+            this.rNumber.y = -this.instructionWidth/2
+            this.bgRed.addChild(this.rNumber);
+
+            this.bNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#2c6875", stroke:"#098478", strokeThickness: 0, });
+            this.bNumber.x = -this.instructionWidth/2// - (this.bNumber.textWidth/2)
+            this.bNumber.y = -this.instructionWidth/2
+            this.bgBlue.addChild(this.bNumber);
+
+            stage.addChild(this.instruction)
         };
 
         Trial.prototype.destroy = function(){
@@ -407,11 +593,26 @@
 
               this.ladyBugs[i].destroy()
 
-            }
+            };
 
             this.instruction.removeChildren(0,this.instruction.children.length)
-            this.circle.destroy(true.true)
-            this.cNumber.destroy(true,true)
+
+            for (key in this.counter){
+                
+                for(var i = 0; i < this.correct; i++){
+
+                    this.counter[key][i].destroy()
+
+                }
+            }
+
+            this.countBgBlue.destroy()
+            this.countBgRed.destroy()
+            this.nunBgBlue.destroy()
+            this.nunBgRed.destroy()
+
+            this.bNumber.destroy(true,true)
+            this.rNumber.destroy(true,true)
 
             stage.removeChild(this.instruction)
             this.instruction.destroy(true,true)
@@ -421,67 +622,204 @@
 
           // get numFoils foils that are within +/-3 of the target number
           var corNum = parseInt(this.correct)
-          var min = corNum < 3 ? 1 : corNum - 3;
+          var min = corNum - 3;
           var foils = [];
 
           for (var i = 0; i < numFoils; i++) {
 
-            foils.push( getRandomInt(min, corNum + 3) );
+
+             var thisFoil = getRandomInt(min, corNum + 3)
+
+             while (thisFoil == this.correct || thisFoil < 1){
+
+                thisFoil = getRandomInt(min, corNum + 3)
+
+             }
+
+            foils.push(thisFoil);
 
           }
+
+
+            //  foils = [1,2,3]
 
           return(foils);
         };
 
-        Trial.prototype.pushFeedack = function(_feedback){
+        Trial.prototype.getFeedback = function(_feedback,_reset){
 
-            if(_feedback){
+            if(_reset){
+                
+                for(var i=0; i < this.counter.gold.length; i++){
 
-                //change  counter on instructions
-                //playsounds
+                    this.counter.gold[i].renderable = false
+                    this.counter.gold[i].alpha = 0
+                    this.counter.blue[i].renderable = true
+                }
 
-                //set animations for fisplay feedback
+                this.goldCount = 0
+                this.coundCount = 0
+            
+            } else if(_feedback){
+
+                // set up audio queue for feedback
+                if(this.bugType == 1){
+
+                    this.playAudioQueue("add", assets.sounds.correct2[this.coundCount])
+                    this.coundCount++
+
+                }else{
+
+                    for(var i = 0; i<this.bugType; i++){
+
+                        this.playAudioQueue("add", assets.sounds.correct1[i])
+
+                    };
+                };
+
+
+
+
+                var lightUp = 0
+
+                if(this.goldCount + this.bugType > this.correct){
+
+                    lightUp = this.correct - this.goldCount + this.goldCount
+                
+                }else{
+
+                    lightUp = this.bugType + this.goldCount
+                
+                }
+
+                for(var i = this.goldCount; i < lightUp; i++){
+
+                    this.counter.gold[i].renderable = true
+                    this.counter.gold[i].alpha = 1
+                    this.counter.blue[i].renderable = false
+                    this.goldCount++
+                    
+                }
+
+            }else{
+
+                if(!this.redDone){
+
+                    this.feedbackState = "red"
+
+                    this.setBlink(false)
+                    this.bgRed.renderable = true;
+                    this.blinks = 0
+                    
+                    this.feedback = false;
+                    this.redDone = false;                 
+
+                }
+
+            }
+        };
+
+        Trial.prototype.setBlink = function(_back){
+
+            if(_back){
+
+                this.bgBlue.customAnimation.initFeature("alpha",1,100,0,[0,1])
+                this.bgRed.customAnimation.initFeature("alpha",0,100,0,[0,1])
+
+                this.bgBlue.customAnimation.initFeature("alpha",1,100,0,[0,1])
+                this.bgRed.customAnimation.initFeature("alpha",0,100,0,[0,1])
+
+
+            }else{
+
+                this.bgBlue.customAnimation.initFeature("alpha",0,100,0,[0,1])
+                this.bgRed.customAnimation.initFeature("alpha",1,100,0,[0,1])
+
             }
         };
 
         Trial.prototype.displayFeedbacks = function(){
             //this is called every frame in the loop
 
-            if(true){
+            switch(this.feedbackState){
 
-                // if clicked on the wrong bug >>
-                    //fade standart instructions
-                    //fade number
-                    //display red isntructions
-                    //dipslay red number
-                    //totate instructions
-                    //increase instructions size
+                case "red":
 
-                //change visuals of instruction
+                    var redDone = false
+                    var blueDone = false
 
-            }
+                    if(this.bgRed.customAnimation.runFeature()){ redDone = true}
+
+                    if(this.bgBlue.customAnimation.runFeature()){ blueDone = true}
+
+                    if(redDone && blueDone){
+
+                        this.setBlink(true)
+                        this.feedbackState = "blue"
+
+                    }
+
+                    break;
+
+
+                case "blue":
+                        
+                    var redDone = false
+                    var blueDone = false
+
+                    if(this.bgRed.customAnimation.runFeature()){ redDone = true}
+
+                    if(this.bgBlue.customAnimation.runFeature()){ blueDone = true}
+
+                    if(redDone && blueDone){
+
+                        this.blinks++
+
+                        if(this.blinks < 1){
+
+
+                            this.setBlink(false)
+                            this.feedbackState = "red"                            
+                        
+                        }else{
+
+                            this.feedbackState = ""                            
+
+                        }
+
+                    }
+
+                        break;
+
+
+                case "positieve":
+                        
+
+
+
+                        break;
+
+
+
+            };
         };
-
         
         Trial.prototype.intro = function(){
 
             switch(this.introState){
 
                 case "displaySound":
-                    
+                            
+                    //assets.sounds.numbers[this.correct].play()
+
+
                     if(this.trialTimer.timeOut()){
 
                         var dest = {}
                         dest.x = this.instructionWidth*1.2
-                        dest.y = session.canvas.height-(this.instructionWidth * 1.2)
+                        dest.y = session.canvas.height-(this.instructionWidth * 1.5)
 
-                        console.log("----------")
-
-                        LOGTHIS = true
                         this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[0.75,1])
-                        LOGTHIS = false
-
-                        console.log("----------2")
 
                         this.introState = "moveToCorner"
 
@@ -507,9 +845,6 @@
 
         Trial.prototype.play = function(_updateTime){
 
-
-            console.log(round.background.width)
-
             switch(this.trialState){
 
                 case "intro":
@@ -517,18 +852,23 @@
                     if(this.intro()){
 
                         this.trialState = "play";  
-                    }
+                    };
 
                     break;
 
 
                 case "play":
 
-                    this.displayFeedbacks()
+
+                    if(this.ladyBugs[this.ladyBugs.length-1].resetFeedback()){
+                      
+                        this.getFeedback(false,true);
+                    
+                    };
 
                     for (var i=0; i<this.ladyBugs.length; i++){
 
-                      this.ladyBugs[i].move()
+                      this.ladyBugs[i].move();
 
                     };
 
@@ -537,17 +877,22 @@
 
                         for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
 
-                        this.trialState = "nextTrial"
+                        this.trialState = "nextTrial";
 
-                    }
+                    };
+
+                    this.displayFeedbacks();
+                    this.playAudioQueue();
 
                     break;
 
                 case "nextTrial":
 
                     if(this.nextTrial()){
-                        return true
-                    }
+
+                        return true;
+                    
+                    };
 
                     break;
 
@@ -611,6 +956,74 @@
             
             return false;
         };
+
+        Trial.prototype.playAudioQueue = function(_perform,_audio){
+
+            if(_perform == "add"){
+
+                this.audioQueue.push(_audio)
+
+            }else if (this.audioQueue.length > 0){
+
+
+                if(!this.audioQueuePlay){
+
+                    console.log("playing:", this.audioQueue[0]) 
+                    this.audioQueue[0].play()
+                    this.audioTimer.start(180)
+                    this.audioQueuePlay = true;
+
+                }
+
+                if(this.audioTimer.timeOut()){
+
+                    //remove item from array
+                    console.log("removing:", this.audioQueue) 
+                    this.audioQueue.splice(0,1)
+
+                    //check if queue is empty
+                    if(this.audioQueue.length > 0){
+
+                        console.log("playing:", this.audioQueue[0]) 
+                        this.audioQueue[0].currentTime = 0
+                        this.audioQueue[0].play() 
+                        this.audioTimer.start(180)
+
+
+                    }else{
+
+                        console.log("empty!!")
+                        this.audioQueuePlay = false;
+
+                    }
+
+
+                    return
+
+                    console.log("---<",this.audioQueue)
+
+                    if(this.audioQueue.length > 0 && this.audioQueue[0].paused){
+                    
+
+                    this.audioQueue.splice(0,1)
+    
+                        console.log("playing:", this.audioQueue[0]) 
+
+                        this.audioQueue[0].currentTime = 0
+                        this.audioQueue[0].play() 
+                        this.audioTimer.start(180)
+
+                    }else{
+
+                    console.log("empty!",this.audioQueue)
+                        this.audioQueuePlay = false;
+
+                    }
+
+                }
+            }
+        };
+
         /*
         *********************************************************************
         Handles the answer given by the user
@@ -627,125 +1040,150 @@
             }
         };
 
-
     /*
     -------------------------------------------------------------------------------------------------------------
                                             Global variables and functions
     -------------------------------------------------------------------------------------------------------------
     */
 
+        // create the root of the scene graph and main classes
+        var stage = new PIXI.Container();
+        var round = new Round();
 
-    // create the root of the scene graph and main classes
-    var stage = new PIXI.Container();
-    var round = new Round();
+        this.destroy = function(){
 
-    this.destroy = function(){
+            finishGame = true;
+            session.hide()
 
-        finishGame = true;
-        session.hide()
-
-    }
-
-    function onAssetsLoaded(){
-        
-        session.show()
-        round.init(Trial,stage)
-        session.render(stage)
-        update();
-    }
-
-
-    //-------------------loading assets
-
-        assets.addSprite("ladyBug_Walk",'sprites/ladyBug/ladyBug_Walk.json',4)
-        assets.addSprite("ladyBug_fly",'sprites/ladyBug/ladyBug_fly.json',4)
-        assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png')
-        assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')
-
-        for (var i = 0; i < numbers.length; i++) {
-          assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
         }
 
-        assets.load(onAssetsLoaded)
-
-    //---------------------------------------LOOP
-
-    var statsBol = false;
-
-    if(statsBol){
-
-        session.stats.domElement.style.display = "block"
-
-    };
-
-    var finishGame = false
-    var previousTime = Date.now();
-    var MS_PER_UPDATE = 16.66667;
-    var lag = 0
-
-
-    function adjustGameDynamics() { // move inside game
-
-      if(scoreDifferential >= 3) {
-
-        scoreDifferential = 0;
-        walkSpeed += 1;
-
-      } else if(scoreDifferential <=- 3 & walkSpeed>2) {
-
-        scoreDifferential = 0;
-        walkSpeed -= 1;
-
-      }
-    };
-
-    function update() {
-
-        if(finishGame){
-
-            console.log('finishGame - storing session!');
-            storeSession();
-
-            session.stats.domElement.style.display = "none"
-            round.destroy();
-            assets.destroy();
-            finishGame = false;
+        function onAssetsLoaded(){
+            
+            session.show()
+            round.init(Trial,stage)
             session.render(stage)
-
-            console.log(">>>>>>>>",stimQueues['numberstim'])
-
-            currentview = new Chooser();
-
-
-            return
+            update();
         }
 
-        if(statsBol)session.stats.begin();
+
+        //-------------------loading assets
+
+            assets.addSprite("ladyBug_Walk",'sprites/ladyBug/ladyBug_Walk.json',4)
+            assets.addSprite("ladyBug_fly",'sprites/ladyBug/ladyBug_fly.json',4)
+
+            assets.addTexture("counter_blue",'sprites/ladyBug/Instructions/counter_blue.png')
+            assets.addTexture("counter_red",'sprites/ladyBug/Instructions/counter_red.png')
+            assets.addTexture("counter_gold",'sprites/ladyBug/Instructions/counter_gold.png')
+            assets.addTexture("instructions_blue",'sprites/ladyBug/Instructions/instructions_blue.png')
+            assets.addTexture("instructions_red",'sprites/ladyBug/Instructions/instructions_red.png')
+
+            assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png')
+            assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')
+
+            for (var i = 0; i < numbers.length; i++) {
+
+              assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
+            
+            };
+
+            for (var i = 0; i < correctSounds.length; i++) {
+
+                for (var j = 0; j < correctSounds[i].length; j++) {
+
+                    if(i == 0){
+                    
+                        assets.addSound("correct1",correctSounds[i][j].audio + '.mp3');
+                    
+                    }else{
+                    
+                        assets.addSound("correct2",correctSounds[i][j].audio + '.mp3');                        
+                    
+                    }
 
 
-            //update position based on espectaed frame rate
-            var current = Date.now();
-            var elapsed = current - previousTime;
-            previousTime = current;
-            lag = lag + elapsed;
+                };
+            };
 
-            while (lag >= MS_PER_UPDATE){
+            assets.load(onAssetsLoaded)
 
-                // update the canvas with new parameters
-                round.play(lag/MS_PER_UPDATE);
-                //adjustGameDynamics()
+        //---------------------------------------LOOP
 
-                lag = lag - MS_PER_UPDATE;
 
+        var statsBol = false;
+
+        if(statsBol){
+
+            session.stats.domElement.style.display = "block"
+        };
+
+        var finishGame = false
+        var previousTime = Date.now();
+        var MS_PER_UPDATE = 16.66667;
+        var lag = 0
+
+
+        function adjustGameDynamics() { // move inside game
+
+          if(scoreDifferential >= 3) {
+
+            scoreDifferential = 0;
+            walkSpeed += 1;
+
+          } else if(scoreDifferential <=- 3 & walkSpeed>2) {
+
+            scoreDifferential = 0;
+            walkSpeed -= 1;
+
+          }
+        };
+
+
+        function update() {
+
+            if(finishGame){
+
+                console.log('finishGame - storing session!');
+                storeSession();
+
+                session.stats.domElement.style.display = "none"
+                round.destroy();
+                assets.destroy();
+                finishGame = false;
+                session.render(stage)
+
+                console.log(">>>>>>>>",stimQueues['numberstim'])
+
+                currentview = new Chooser();
+
+
+                return
             }
 
-            //---------------->> Thing that renders the whole stage
-            session.render(stage)
-
-            requestAnimationFrame(update);
-
-        if(statsBol) session.stats.end()
-    }
+            if(statsBol)session.stats.begin();
 
 
-    }
+                //update position based on espectaed frame rate
+                var current = Date.now();
+                var elapsed = current - previousTime;
+                previousTime = current;
+                lag = lag + elapsed;
+
+                while (lag >= MS_PER_UPDATE){
+
+                    // update the canvas with new parameters
+                    round.play(lag/MS_PER_UPDATE);
+                    //adjustGameDynamics()
+
+                    lag = lag - MS_PER_UPDATE;
+
+                }
+
+                //---------------->> Thing that renders the whole stage
+                session.render(stage)
+
+                requestAnimationFrame(update);
+
+            if(statsBol) session.stats.end()
+        }
+
+};
