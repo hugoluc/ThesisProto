@@ -70,6 +70,36 @@ function proto02(){
             this.state = "walk";
             this.playQueue = [];
             this.customAnimation = new animation(this.container)
+
+
+            //determine this bugType
+
+            if(this.startNumber < 6){
+
+                this.bugType = 1
+
+            }else if(this.startNumber < 11){
+
+                if(this.startNumber == 9){
+
+                    this.bugType = 3
+
+                }else{
+
+                this.bugType = 2
+
+                }
+
+            }else if(this.startNumber < 16) {
+
+                this.bugType = 3
+
+
+            }else{
+
+                this.bugType = 4
+
+            }
         };
 
         LadyBug.prototype.setFly = function(){
@@ -114,8 +144,7 @@ function proto02(){
             this.sprite.walk.animationSpeed = .05*walkSpeed/Math.log(this.number.text+4);
 
             this.start.x = _pos;
-            this.start.y = window.innerHeight;
-
+            this.start.y = window.innerHeight
             this.end.x = getRandomInt(this.start.x - this.sprite.walk.width*2,this.start.x+this.sprite.walk.width*2);
             this.end.y = -this.sprite.walk.height;
             
@@ -128,13 +157,27 @@ function proto02(){
                 this.end.x = 200;
             };
 
-
             this.container.rotation = getAngle(this.start.x,this.start.y,this.end.x,this.end.y)
            
             this.customAnimation.setPos(this.start)
 
-            speed = (this.startNumber * 1000) + 1400 // IMPROVE THIS!!!!
-            this.customAnimation.init(this.end,speed,_offset)
+            var distance = getDistance(this.start.x,this.start.y,this.end.x,this.end.y)
+
+            var clickCount = Math.ceil(this.startNumber/this.bugType)
+            var diff = round.difficulty
+            var score = (5 + diff - clickCount)
+
+            var speedOut = (score*0.3/14) + 0.13
+
+            var length = distance / speedOut
+
+            console.log(clickCount,length,speedOut)
+           // speed = (this.bugType * 1000) + 2000 - (700 * round.difficulty)  // IMPROVE THIS!!!!
+            //speed = speed < 2000 ? 2000 : speed
+
+            _offset = _offset + getRandomInt(0,2000)
+
+            this.customAnimation.init(this.end,length,_offset)
         };
 
         LadyBug.prototype.move = function(_state){
@@ -174,6 +217,7 @@ function proto02(){
 
                         if(this.customAnimation.run()){
 
+                            round.trial.correctImput = true
                             round.trial.answer(true)
 
                         }
@@ -285,6 +329,8 @@ function proto02(){
                 // kills if it click one more time
                 } else if(this.number.text < 0) {
 
+                    round.trial.answer(false)
+                    round.changeDifficulty(false)
                     round.trial.getFeedback(false,true)
 
                     this.sprite.fly.stop();
@@ -306,7 +352,9 @@ function proto02(){
 
             }else {
 
-               round.trial.getFeedback(false,false) 
+                round.trial.answer(false)
+                round.changeDifficulty(false)
+                round.trial.getFeedback(false,false) 
             }
         };
 
@@ -327,13 +375,12 @@ function proto02(){
 
         function Trial(_stimuli){
 
-//            _stimuli.id = 14
-
+            //_stimuli.id = 5
             this.ladyBugs = [];
             this.stimuli = _stimuli;
             this.correct = _stimuli.id;
-            this.correctImput = 0;
-            this.playQueue = [];
+            this.correctImput = false;
+            this.answerGiven = false;
             this.correctSet = false;
             this.introState = "displaySound";
             this.nextTrialState = "flyAll";
@@ -345,11 +392,9 @@ function proto02(){
             this.audioQueuePlay = false
             this.playing = []
             this.audioTimer = new ClockTimer()
-
         };
 
         Trial.prototype.init = function(){
-
 
             this.foils = this.getFoils();
            // this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
@@ -409,6 +454,11 @@ function proto02(){
             this.movetoCorner = false;
 
             this.instruction.customAnimation.setPos({x:session.canvas.width/2,y:session.canvas.height/2})
+        };
+
+        Trial.prototype.failTask = function(){
+
+            this.fail = true
         };
 
         Trial.prototype.getSpotPos = function(_i){
@@ -507,14 +557,14 @@ function proto02(){
 
             }
 
-            var MaxSize = this.instructionWidth*3.5
+            var MaxWidth = this.instructionWidth*2.9
+            var MaxHeight = this.instructionWidth*3.5
 
             var width =  this.bugType + ((this.bugType-1)/3)
             var height = Math.ceil(this.correct/this.bugType) + ((Math.ceil(this.correct/this.bugType) - 1)/3 ) 
 
-            var counterWidth = (MaxSize / width) / 2
-            counterWidth = (((4*this.bugType*MaxSize) - MaxSize)/3)/2
-            var counterHeight = (MaxSize / height) / 2
+            var counterWidth = (MaxWidth / width) / 2
+            var counterHeight = (MaxHeight / height) / 2
             var counterSize = []
 
             if(this.correct == 1){
@@ -620,7 +670,7 @@ function proto02(){
             this.instruction.destroy(true,true)
         };
 
-        Trial.prototype.getFoils = function() {
+        Trial.prototype.getFoils = function(){
 
           // get numFoils foils that are within +/-3 of the target number
           var corNum = parseInt(this.correct)
@@ -840,7 +890,7 @@ function proto02(){
 
                 case "displaySound":
                             
-                    //assets.sounds.numbers[this.correct].play()
+                    assets.sounds.numbers[this.correct].play()
 
 
                     if(this.trialTimer.timeOut()){
@@ -903,10 +953,11 @@ function proto02(){
                     };
 
 
-                    if(this.correctImput > 1){
+                    if(this.correctImput){
 
                         for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
 
+                        if(this.correctAnswer){round.changeDifficulty(true)}
                         this.trialState = "nextTrial";
 
                     };
@@ -997,28 +1048,15 @@ function proto02(){
 
                 for(var i =0; i<this.playing.length; i++){
 
-                    this.playing.currentTime = 0
+                    this.playing[i].currentTime = 0
                     console.log(this.playing[0].paused)
                     this.playing[i].pause()
 
                 }
 
                 this.audioQueuePlay = false;
+                this.playing = []
                 this.audioQueue = []
-
-                // for(key in assets.sounds){
-
-                //     for(var i =0; i<assets.sounds[key].length; i++){
-                    
-                //         for(var i =0; i<assets.sounds[key][i].length; i++){
-                        
-                //             assets.sounds[key][i].stop()
-                //             assets.sounds[key][i].currentTime = 0
-
-                //         }
-
-                //     }
-                // }
 
 
             }else if (this.audioQueue.length > 0){
@@ -1050,12 +1088,13 @@ function proto02(){
                         console.log("playing:", this.audioQueue[0]) 
 
 
-                    for(var i = 0; i<this.audioQueue[0].length; i++){
+                        for(var i = 0; i<this.audioQueue[0].length; i++){
 
-                        this.audioQueue[0][i].currentTime = 0                       
-                        this.audioQueue[0][i].play()
-                    
-                    }
+                            this.audioQueue[0][i].currentTime = 0
+                            this.playing.push(this.audioQueue[0][i])                    
+                            this.audioQueue[0][i].play()
+                        
+                        }
 
                         var time  = 180
                         
@@ -1108,8 +1147,9 @@ function proto02(){
 
         Trial.prototype.answer = function(_correct){
 
-            if(_correct){
-                this.correctImput++;
+            if(!this.answerGiven){
+                this.correctAnswer = _correct;
+                this.answerGiven = true;                
             }
         };
 
@@ -1127,13 +1167,17 @@ function proto02(){
 
             finishGame = true;
             session.hide()
-
         }
 
         function onAssetsLoaded(){
             
             session.show()
             round.init(Trial,stage)
+
+            var scoreRange = [-3,1] // -3 = decrese difficulty, 3 = increase difficulty
+            var difficultyRange = [0,10] // 0=superSlow, 10=superfast
+            round.setDifficultyParams(scoreRange,difficultyRange);
+
             session.render(stage)
             update();
         }
@@ -1151,7 +1195,13 @@ function proto02(){
             assets.addTexture("instructions_red",'sprites/ladyBug/Instructions/instructions_red.png')
 
             assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png')
-            assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')
+            
+            if(window.innerWidth < 1200){
+                assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')                
+            }else{
+                assets.addTexture("bg",'sprites/backGrounds/BackGround-01_2x.png')  
+            }
+
 
             for (var i = 0; i < numbers.length; i++) {
 
@@ -1176,11 +1226,10 @@ function proto02(){
                 };
             };
 
-            assets.addSound("wrong",'wrong.wav');  
+            assets.addSound("wrong",'wrong.mp3');  
             assets.load(onAssetsLoaded)
 
         //---------------------------------------LOOP
-
 
         var statsBol = false;
 
@@ -1194,8 +1243,7 @@ function proto02(){
         var MS_PER_UPDATE = 16.66667;
         var lag = 0
 
-
-        function adjustGameDynamics() { // move inside game
+        function adjustGameDynamics() { //move inside game
 
           if(scoreDifferential >= 3) {
 
@@ -1209,7 +1257,6 @@ function proto02(){
 
           }
         };
-
 
         function update() {
 

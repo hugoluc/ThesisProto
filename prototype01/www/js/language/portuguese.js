@@ -48,16 +48,16 @@ var numbers = [
   {id:"17", audio:"17", text:"dezesete"},
   {id:"18", audio:"18", text:"dezoito"},
   {id:"19", audio:"19", text:"dezenove"},
-  {id:"20", audio:"20", text:"vinte"},
-  {id:"30", audio:"30", text:"trinta"},
-  {id:"40", audio:"40", text:"quarenta"},
-  {id:"50", audio:"50", text:"cinquenta"},
-  {id:"60", audio:"60", text:"cinquenta"},
-  {id:"70", audio:"70", text:"cinquenta"},
-  {id:"80", audio:"80", text:"cinquenta"},
-  {id:"90", audio:"90", text:"cinquenta"},
-  {id:"100", audio:"100", text:"cinquenta"},
-  {id:"1000", audio:"1000", text:"cinquenta"}
+  {id:"20", audio:"20", text:"vinte"}
+  // {id:"30", audio:"30", text:"trinta"},
+  // {id:"40", audio:"40", text:"quarenta"},
+  // {id:"50", audio:"50", text:"cinquenta"},
+  // {id:"60", audio:"60", text:"cinquenta"},
+  // {id:"70", audio:"70", text:"cinquenta"},
+  // {id:"80", audio:"80", text:"cinquenta"},
+  // {id:"90", audio:"90", text:"cinquenta"},
+  // {id:"100", audio:"100", text:"cinquenta"},
+  // {id:"1000", audio:"1000", text:"cinquenta"}
   
   ];
 

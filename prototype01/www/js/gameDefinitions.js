@@ -232,7 +232,8 @@ function Round(){
 
 	this.trial = {}
 	this.score;
-	this.dificulty;
+	this.difficulty = 0;
+	this.scoreDifferential = 0;
 	this.trial;
 
 }
@@ -304,37 +305,62 @@ Round.prototype.play = function(){
 //    Handling difficulty
 //-----------------------------
 
-Round.prototype.changeDifficulty = function(correct){
+Round.prototype.changeDifficulty = function(_correct,_value){
+
+	console.log(this.difficulty,this.scoreDifferential,this.scoreTrashhold[0])
 
 	//if the input was a correct one
-	if(correct){
-		this.scoreDifferential++
+	if(_correct){
+
+		this.scoreDifferential = this.scoreDifferential + 1
 
 	// if the input was wrong
 	}else{
-		this.scoreDifferential--
 
+		this.scoreDifferential =  this.scoreDifferential - 1
 	}
 
-	if(scoreDifferential >= this.scoreTrashhold[1]){
+	if(this.scoreDifferential >= this.scoreTrashhold[1]){
 
+		console.log("increasing difficulty")
 		this.difficulty++
 		this.scoreDifferential = 0
+	}
 
-	}else if(scoreDifferential <= this.scoreTrashhold[0]){
+	if(this.scoreDifferential <= this.scoreTrashhold[0]){
 
+		console.log("decreasing difficulty")
 		this.difficulty--
 		this.scoreDifferential = 0
 
 	}
 
-}
+	if(this.diffRange != undefined){
 
-Round.prototype.setDifficultyParams = function(_range,_trashhold){
+		console.log("111")
 
-	this.scoreRange = _range;
+		if(this.difficulty < this.diffRange[0]){ 
+			console.log("2222")
+			this.difficulty = this.diffRange[0] 
+		};
+		
+		if(this.difficulty > this.diffRange[1]){ 
+			console.log("3333")
+			this.difficulty = this.diffRange[1] 
+		};
+
+	}
+
+	console.log(this.difficulty)
+
+};
+
+Round.prototype.setDifficultyParams = function(_trashhold,_range){
+
+	this.diffRange = _range;
 	this.scoreTrashhold = _trashhold;
+	this.difficulty =  this.diffRange[0]
 
-}
+};
 
 
