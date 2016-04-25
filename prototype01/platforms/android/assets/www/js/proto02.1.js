@@ -51,13 +51,24 @@ function proto02(){
             this.sprite.dead.renderable = false;
             this.sprite.dead.scale.x = 0.34;
             this.sprite.dead.scale.y = 0.34;
-
             this.container.addChild(this.sprite.dead);
 
+            this.sprite.nBg = new PIXI.Sprite(assets.textures.counter_red)
+            this.sprite.nBg.alpha = 0.6
+            this.sprite.nBg.anchor.x = 0.5
+            this.sprite.nBg.anchor.y = 0.5
+            this.sprite.nBg.scale.x = 0.9
+            this.sprite.nBg.scale.y = 0.9
+            this.sprite.nBg.x = this.sprite.walk.x + (this.sprite.walk.width*0.48)
+            this.sprite.nBg.y = this.sprite.walk.y + (this.sprite.walk.height*0.55)
+            this.container.addChild(this.sprite.nBg);
+
             //number variables
-            this.number =  new PIXI.Text("12", {font:"30px Arial", fill:"red", stroke:"red", strokeThickness: 1, });
-            this.number.x = this.sprite.walk.x + (this.sprite.walk.width/2) - (this.number.width/2) + 7
-            this.number.y = this.sprite.walk.y + (this.sprite.walk.height/2) - (this.number.height/2)
+            this.number =  new PIXI.Text("12", {font:"30px Arial", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 2});
+            this.number.anchor.x = 0.5
+            this.number.anchor.y = 0.5
+            this.number.x = this.sprite.walk.x + (this.sprite.walk.width*0.5)// - (this.number.textWidth/2)
+            this.number.y = this.sprite.walk.y + (this.sprite.walk.height*0.55) //- (this.number.textHeight/2)
             this.container.addChild(this.number)
 
             stage.addChild(this.container)
@@ -165,13 +176,12 @@ function proto02(){
 
             var clickCount = Math.ceil(this.startNumber/this.bugType)
             var diff = round.difficulty
-            var speedIn = (5 + diff - clickCount)
-            var speedOut = (speedIn*0.3/14) + 0.13
+            var score = (5 + diff - clickCount)
+
+            var speedOut = (score*0.3/19) + 0.13
 
             var length = distance / speedOut
 
-
-            console.log(clickCount,speedIn,speedOut)
            // speed = (this.bugType * 1000) + 2000 - (700 * round.difficulty)  // IMPROVE THIS!!!!
             //speed = speed < 2000 ? 2000 : speed
 
@@ -239,6 +249,7 @@ function proto02(){
                             var xpos = round.trial.getSpotPos(i)
                             this.setUp(xpos);
                             this.sprite.dead.alpha = 1
+                            this.sprite.nBg.renderable = true
                             this.lastS = true
                         }
 
@@ -265,6 +276,8 @@ function proto02(){
 
             this.sprite.fly.play()
             this.sprite.fly.renderable = true;
+
+            this.sprite.nBg.renderable = false;
 
             this.number.text = "";
             this.container.rotation = 0;
@@ -311,9 +324,10 @@ function proto02(){
                 // flyes if it reaches 0
                 if(this.number.text == 0) {
 
-                    // play feedback sound
                     this.number.text = ""
                     this.sprite.walk.renderable = false;
+
+                    this.sprite.nBg.renderable = false;
 
                     this.sprite.fly.play()
                     this.sprite.fly.renderable = true;
@@ -352,10 +366,14 @@ function proto02(){
 
             }else {
 
-                round.trial.answer(false)
-                round.changeDifficulty(false)
-                round.trial.getFeedback(false,false) 
-            }
+                if(!this.correctImput){
+
+                    round.trial.answer(false)
+                    round.changeDifficulty(false)
+                    round.trial.getFeedback(false,false) 
+
+                };
+            };
         };
 
         LadyBug.prototype.resetFeedback = function(){
@@ -375,7 +393,7 @@ function proto02(){
 
         function Trial(_stimuli){
 
-            //_stimuli.id = 5
+            //_stimuli.id = 10
             this.ladyBugs = [];
             this.stimuli = _stimuli;
             this.correct = _stimuli.id;
@@ -517,8 +535,8 @@ function proto02(){
             this.countBgBlue = new PIXI.Sprite(assets.textures.instructions_blue)
             this.countBgBlue.anchor.x = 0.5
             this.countBgBlue.anchor.y = 0.5
-            this.countBgBlue.width = this.instructionWidth*3
-            this.countBgBlue.height = this.instructionWidth*3
+            this.countBgBlue.width = this.instructionWidth*2.1
+            this.countBgBlue.height = this.instructionWidth*2.1
             this.countBgBlue.x = this.instructionWidth
             this.bgBlue.addChild(this.countBgBlue)
 
@@ -539,8 +557,8 @@ function proto02(){
             this.countBgRed = new PIXI.Sprite(assets.textures.instructions_red)
             this.countBgRed.anchor.x = 0.5
             this.countBgRed.anchor.y = 0.5
-            this.countBgRed.width = this.instructionWidth*3
-            this.countBgRed.height = this.instructionWidth*3
+            this.countBgRed.width = this.instructionWidth*2.1
+            this.countBgRed.height = this.instructionWidth*2.1
             this.countBgRed.x = this.instructionWidth
             this.bgRed.addChild(this.countBgRed)
 
@@ -557,8 +575,8 @@ function proto02(){
 
             }
 
-            var MaxWidth = this.instructionWidth*2.9
-            var MaxHeight = this.instructionWidth*3.5
+            var MaxWidth = this.instructionWidth*2
+            var MaxHeight = this.instructionWidth*2.5
 
             var width =  this.bugType + ((this.bugType-1)/3)
             var height = Math.ceil(this.correct/this.bugType) + ((Math.ceil(this.correct/this.bugType) - 1)/3 ) 
@@ -626,17 +644,33 @@ function proto02(){
 
             var fontSize = this.instructionWidth*0.8
 
-            this.rNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#592c33", stroke:"#098478", strokeThickness: 0, });
-            this.rNumber.x = -this.instructionWidth/2// - (this.rNumber.textWidth/2)
-            this.rNumber.y = -this.instructionWidth/2
+            this.rNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#592c33", stroke:"#592c33", strokeThickness: 2, });
+            this.rNumber.anchor.x = 0.5
+            this.rNumber.anchor.y = 0.5
             this.bgRed.addChild(this.rNumber);
 
-            this.bNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#2c6875", stroke:"#098478", strokeThickness: 0, });
-            this.bNumber.x = -this.instructionWidth/2// - (this.bNumber.textWidth/2)
-            this.bNumber.y = -this.instructionWidth/2
+            this.bNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#2c6875", stroke:"#2c6875", strokeThickness: 2, });
+            this.bNumber.anchor.x = 0.5
+            this.bNumber.anchor.y = 0.5
             this.bgBlue.addChild(this.bNumber);
 
             stage.addChild(this.instruction)
+
+            // 0 -- 15
+
+            var treshold = 20 + round.difficulty*4
+            var value = getRandomInt(0,100)
+
+            console.log(value,treshold)
+            if( value <= treshold && this.correct > 2 ){
+
+                this.rNumber.alpha = 0;
+                this.bNumber.alpha = 0;
+                this.nunBgBlue.alpha = 0;
+                this.nunBgRed.alpha = 0;
+
+            };
+
         };
 
         Trial.prototype.destroy = function(){
@@ -969,6 +1003,8 @@ function proto02(){
 
                 case "nextTrial":
 
+                    this.displayFeedbacks()
+
                     if(this.nextTrial()){
 
                         return true;
@@ -1049,7 +1085,6 @@ function proto02(){
                 for(var i =0; i<this.playing.length; i++){
 
                     this.playing[i].currentTime = 0
-                    console.log(this.playing[0].paused)
                     this.playing[i].pause()
 
                 }
@@ -1064,7 +1099,6 @@ function proto02(){
                 if(!this.audioQueuePlay){
 
                     for(var i =0; i<this.audioQueue[0].length; i++){
-                        console.log("---------", this.audioQueue[0][i])
                         this.playing.push(this.audioQueue[0][i])
                         this.audioQueue[0][i].play()
                     }
@@ -1079,13 +1113,10 @@ function proto02(){
                 if(this.audioTimer.timeOut()){
 
                     //remove item from array
-                    console.log("removing:", this.audioQueue) 
                     this.audioQueue.splice(0,1)
 
                     //check if queue is empty
                     if(this.audioQueue.length > 0){
-
-                        console.log("playing:", this.audioQueue[0]) 
 
 
                         for(var i = 0; i<this.audioQueue[0].length; i++){
@@ -1104,7 +1135,6 @@ function proto02(){
 
                     }else{
 
-                        console.log("empty!!")
                         this.audioQueuePlay = false;
 
                     }
@@ -1112,22 +1142,17 @@ function proto02(){
 
                     return
 
-                    console.log("---<",this.audioQueue)
-
                     if(this.audioQueue.length > 0 && this.audioQueue[0].paused){
                     
 
                     this.audioQueue.splice(0,1)
     
-                        console.log("playing:", this.audioQueue[0]) 
-
                         this.audioQueue[0].currentTime = 0
                         this.audioQueue[0].play() 
                         this.audioTimer.start(180)
 
                     }else{
 
-                    console.log("empty!",this.audioQueue)
                         this.audioQueuePlay = false;
 
                     }
@@ -1167,7 +1192,7 @@ function proto02(){
 
             finishGame = true;
             session.hide()
-        }
+        };
 
         function onAssetsLoaded(){
             
@@ -1175,15 +1200,14 @@ function proto02(){
             round.init(Trial,stage)
 
             var scoreRange = [-3,1] // -3 = decrese difficulty, 3 = increase difficulty
-            var difficultyRange = [0,10] // 0=superSlow, 10=superfast
-            round.setDifficultyParams(scoreRange,difficultyRange);
+            var difficultyRange = [0,15] // 0=superSlow, 10=superfast
+            round.setDifficultyParams(scoreRange,difficultyRange,5);
 
             session.render(stage)
             update();
-        }
+        };
 
-
-        //-------------------loading assets
+        //---------------------------------------loading assets
 
             assets.addSprite("ladyBug_Walk",'sprites/ladyBug/ladyBug_Walk.json',4)
             assets.addSprite("ladyBug_fly",'sprites/ladyBug/ladyBug_fly.json',4)
@@ -1280,7 +1304,6 @@ function proto02(){
             }
 
             if(statsBol)session.stats.begin();
-
 
                 //update position based on espectaed frame rate
                 var current = Date.now();

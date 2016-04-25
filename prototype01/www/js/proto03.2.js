@@ -1,4 +1,5 @@
 var proto3loaded = true
+var stimCount = -1
 
 function proto03(){
 
@@ -83,9 +84,9 @@ function proto03(){
             this.lillySink.animationSpeed = 0.1
             this.lillySink.renderable = false
 
-            var blur = new PIXI.filters.BlurFilter()
-            blur.blur = 2
-            this.lillySink.filters = [blur]
+            // var blur = new PIXI.filters.BlurFilter()
+            // blur.blur = 2
+            // this.lillySink.filters = [blur]
 
             this.container.addChild(this.lillySink)
 
@@ -118,8 +119,6 @@ function proto03(){
 
             }
 
-            console.log(this.leaves)
-
             stage.addChild(this.container)
     };
 
@@ -130,7 +129,6 @@ function proto03(){
         this.cNumber.renderable = false
 
         this.lillySink.gotoAndPlay(0);
-        console.log(this.lillySink.currentFrame)
         this.state = "sinking";
     };
 
@@ -216,7 +214,6 @@ function proto03(){
 
         }
 
-        console.log(this.antsDivision)
     };
 
 
@@ -374,6 +371,7 @@ function proto03(){
             }) 
 
         }
+
     };
 
     lillySmall.prototype.destroy = function(){
@@ -516,6 +514,7 @@ function proto03(){
         this.length = 100
         this.trajectory = _trajectory || []
         this.state = 0
+        this.AnimationDone = false
         
         this.animation.init(this.trajectory[0],500,_offset)
         this.angles = []
@@ -542,6 +541,10 @@ function proto03(){
 
     Ant.prototype.move = function(){
 
+        if(this.AnimationDone){
+            return true;
+        }
+
         if(this.state < this.trajectory.length){
 
             this.rotate(this.state)
@@ -558,6 +561,7 @@ function proto03(){
                     
                     }else if(this.state == 2){
 
+                        console.log(round.trial.finishedState)
                         round.trial.antMoveDone("add")
                     };
 
@@ -571,6 +575,7 @@ function proto03(){
         }else{
 
             round.trial.leavesToFade++
+            console.log(round.trial.finishedState)
             this.AnimationDone = true;
             return true
         }   
@@ -605,6 +610,7 @@ function proto03(){
 
     function Trial(_stimuli,_correct){
 		
+        stimCount++
 
         var specs = 
 
@@ -612,18 +618,18 @@ function proto03(){
             {
                 stimuli: {
                 
-                    correctValues : [1,1],     
+                    correctValues : addition[stimCount%addition.length].options,     
                     extras : {
-                        min: 22,
-                        max: 23, 
-                        size: 2,
+                        min: 1,
+                        max: 1, 
+                        size: 0,
                     }
                 },
 
                 correct :{
 
                     type: "number",
-                    value: 20,
+                    value: addition[stimCount%addition.length].sum,
 
                 }
             }
@@ -639,7 +645,6 @@ function proto03(){
 		Correct is the final number that should be placed in the final lillypad	
 		------------------------*/
     	this.correct = specs.correct
-
 
         this.clock = new ClockTimer()
 
@@ -775,13 +780,11 @@ function proto03(){
     Trial.prototype.antMoveDone = function(_operation){
 
         if(_operation == "add"){
-
-           console.log("ants >> In")            
+          
             this.antsAdd++
         
         }else if(_operation == "subtract"){
 
-            console.log("ants >> out")
             this.antsSub--
                     
         }else if(_operation == "final"){
@@ -797,20 +800,19 @@ function proto03(){
         // FINAL MOVE:
         if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
 
+            this.moveStick(true,"final")
+            this.updateOperation(_id,"final")
+            this.trialState = "finished"
+            this.leavesToFade = 0
+            this.finishedState = "counrdown"
+
             if(this.lillySmall[_id].value == this.correct.value){
 
-                this.moveStick(true,"final")
-                this.updateOperation(_id,"final")
-                this.trialState = "finished"
-                this.finishedState = "counrdown"
+                
                 this.trialEnded = true;
 
             }else{
 
-                this.moveStick(true,"final")
-                this.updateOperation(_id,"final")
-                this.trialState = "finished"
-                this.finishedState = "counrdown"
                 this.trialEnded = false;
 
             }
@@ -861,9 +863,9 @@ function proto03(){
             this.countDownTargets = [_origin,_target] 
 
             //update value for lillypads
-            this.lillySmall[_target].value = this.lillySmall[_target].value + this.lillySmall[_origin].value
+            this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
             this.lillySmall[_origin].value = 0
-            
+
             //get new location for ants
             this.setAnimateAnts(_origin,_target)
 
@@ -897,8 +899,6 @@ function proto03(){
 
             tar = this.lillyFinal
     
-            console.log(tar.cNumber.text,this.countDownTargets[0])
-
             if(tar.cNumber.text > tar.value - this.lillySmall[this.countDownTargets[0]].value){
 
                 tar.cNumber.text = parseInt(tar.cNumber.text) - this.antsAdd
@@ -1338,15 +1338,18 @@ function proto03(){
     };
 
     Trial.prototype.fadeLeaves = function(){
-        
-            console.log(this.lillyFinal.leaves)
 
-        for(var i=0; i<this.leavesToFade; i++){
+        if(this.leavesToFade <= this.correct.value){
+            
+            console.log(this.leavesToFade,this.correct.value)
 
-            this.lillyFinal.leaves[this.leavesToFade].alpha = this.lillyFinal.leaves[this.leavesToFade].alpha - 0.1
-        
+            for(var i=0; i<this.leavesToFade; i++){
+
+                this.lillyFinal.leaves[i].alpha = this.lillyFinal.leaves[i].alpha - 0.05
+            
+            }
         }
-    }
+    };
 
     Trial.prototype.finished = function(){
 
@@ -1354,7 +1357,6 @@ function proto03(){
 
             case "counrdown":
 
-            this.fadeLeaves()
 
                 var countDone = this.countNumber()
                 var animationDone = this.animateAnts()
@@ -1363,7 +1365,10 @@ function proto03(){
 
                     if(this.trialEnded){
 
+                        console.log("changinf to win...")
+                        console.log(this.leavesToFade,this.correct.value)
                         this.fadeStick = true;
+                        this.clock.start(1000)
                         this.finishedState = "win";
 
 
@@ -1406,9 +1411,11 @@ function proto03(){
                 // fade everryhting else
                 // move final to center
 
-                alert("YOU WIN!")
-                this.finishedState = "callNext";
-
+                //alert("YOU WIN!")
+                if(this.clock.timeOut()){
+                    this.finishedState = "callNext";
+                }
+                
                 break;
 
 
@@ -1471,6 +1478,8 @@ function proto03(){
 
             case "finished":
 
+                this.fadeLeaves()
+
                 if(this.fadeStick){this.removeStick()}
 
                 if(this.finished()){
@@ -1495,7 +1504,6 @@ function proto03(){
     var stage = new PIXI.Container();
     var round = new Round();
 
-
     this.destroy = function(){
         finishGame = true;
         session.hide()
@@ -1503,94 +1511,93 @@ function proto03(){
 
     //---------------------------------------loading assets
 
-    if(proto3loaded){
+        if(proto3loaded){
 
-        assets.addSprite("ripple",'sprites/lillypad/ripples/ripples.json',5)
-        assets.addSprite("lillyFinal_Sink",'sprites/lillypad/final_sink/lillyFinal_Sink.json',9)
+            assets.addSprite("ripple",'sprites/lillypad/ripples/ripples.json',5)
+            assets.addSprite("lillyFinal_Sink",'sprites/lillypad/final_sink/lillyFinal_Sink.json',9)
 
-        assets.addTexture("stick","sprites/stick/stick.png")
-        assets.addTexture("leave","sprites/stick/leave.png")
-        assets.addTexture("branch","sprites/stick/branch.png")
+            assets.addTexture("stick","sprites/stick/stick.png")
+            assets.addTexture("leave","sprites/stick/leave.png")
+            assets.addTexture("branch","sprites/stick/branch.png")
 
-        assets.addTexture("lillyBig","sprites/lillypad/big-01.png")
-        assets.addTexture("lillySmall","sprites/lillypad/small-01.png")
-        assets.addTexture("ants","sprites/lillypad/ant.png")
-        assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
+            assets.addTexture("lillyBig","sprites/lillypad/big-01.png")
+            assets.addTexture("lillySmall","sprites/lillypad/small-01.png")
+            assets.addTexture("ants","sprites/lillypad/ant.png")
+            assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
 
-        assets.load(onAssetsLoaded)
+            assets.load(onAssetsLoaded)
 
-    }else{
+        }else{
 
-        onAssetsLoaded();
+            onAssetsLoaded();
 
-    };
+        };
 
-    function onAssetsLoaded(){
+        function onAssetsLoaded(){
 
-        console.log("assetsloaded!")
-        round.init(Trial,stage);
+            console.log("assetsloaded!")
+            round.init(Trial,stage);
 
-        setTimeout(function(){
-            console.log("starting the game!")
-            session.show()
-            update();
-        });
-    };
+            setTimeout(function(){
+                console.log("starting the game!")
+                session.show()
+                update();
+            });
+        };
 
     //---------------------------------------LOOP
 
-    var statsBol = false;
+        var statsBol = false;
 
-    if(statsBol){
+        if(statsBol){
 
-        session.stats.domElement.style.display = "block"
+            session.stats.domElement.style.display = "block"
 
-    };
+        };
 
-    var finishGame = false
-    var previousTime = Date.now();
-    var MS_PER_UPDATE = 16.66667;
-    var lag = 0
+        var finishGame = false
+        var previousTime = Date.now();
+        var MS_PER_UPDATE = 16.66667;
+        var lag = 0
 
-    function update() {
+        function update() {
+
+            if(finishGame){
+
+                console.log("finishing Game")
+
+                session.stats.domElement.style.display = "none"
+                round.destroy()
+                assets.destroy()
+                finishGame = false
+                currentview = new Chooser(assets)
+
+                return
+            }
+
+                if(statsBol)session.stats.begin()
+
+                	//update position based on espectaed frame rate
+        	        var current = Date.now();
+        	        var elapsed = current - previousTime;
+        	        previousTime = current;
+        	        lag = lag + elapsed;
 
 
-        if(finishGame){
+        	        while (lag >= MS_PER_UPDATE){        
 
-            console.log("finishing Game")
+        	            round.play(lag/MS_PER_UPDATE);
+        	            lag = lag - MS_PER_UPDATE;
 
-            session.stats.domElement.style.display = "none"
-            round.destroy()
-            assets.destroy()
-            finishGame = false
-            currentview = new Chooser(assets)
+        	        }
 
-            return
+        	        //---------------->> Thing that renders the whole stage
+        	        session.render(stage)
+
+        	        requestAnimationFrame(update);
+
+                if(statsBol)session.stats.end()
+
         }
-
-            if(statsBol)session.stats.begin()
-
-            	//update position based on espectaed frame rate
-    	        var current = Date.now();
-    	        var elapsed = current - previousTime;
-    	        previousTime = current;
-    	        lag = lag + elapsed;
-
-
-    	        while (lag >= MS_PER_UPDATE){        
-
-    	            round.play(lag/MS_PER_UPDATE);
-    	            lag = lag - MS_PER_UPDATE;
-
-    	        }
-
-    	        //---------------->> Thing that renders the whole stage
-    	        session.render(stage)
-
-    	        requestAnimationFrame(update);
-
-            if(statsBol)session.stats.end()
-
-    }
 
 };
