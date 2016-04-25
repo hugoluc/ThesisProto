@@ -10,8 +10,7 @@
 function proto02(){
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
-  console.log("proto2 stim:")
-  console.log(stimuli)
+  
     /*
     -------------------------------------------------------------------------------------------------------------
                                                   Class: LadyBug
