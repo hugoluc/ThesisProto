@@ -355,11 +355,11 @@ Round.prototype.changeDifficulty = function(_correct,_value){
 
 };
 
-Round.prototype.setDifficultyParams = function(_trashhold,_range){
+Round.prototype.setDifficultyParams = function(_trashhold,_range,_start){
 
 	this.diffRange = _range;
 	this.scoreTrashhold = _trashhold;
-	this.difficulty =  this.diffRange[0]
+	this.difficulty = _start || this.diffRange[0]
 
 };
 
