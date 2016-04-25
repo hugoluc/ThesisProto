@@ -42,14 +42,14 @@ var Chooser = function() {
     //   currentview = new spellingGame();
     // }
 
-    // var game4 = document.getElementById("choose-game04")
+    var game4 = document.getElementById("choose-game04")
 
-    // game4.onclick =  function(){
-    //   console.log("starting wordGuess");
-    //   init_screen();
-    //   clickStart('container-chooser','container-exp');
-    //   currentview = new Hangman();
-    // }
+    game4.onclick =  function(){
+      console.log("starting wordGuess");
+      init_screen();
+      clickStart('container-chooser','container-exp');
+      currentview = new Hangman();
+    }
 
     // var game5 = document.getElementById("choose-game05")
 
