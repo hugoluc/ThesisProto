@@ -34,13 +34,13 @@ var Chooser = function() {
 
      }
 
-    // var game3 = document.getElementById("choose-game03")
+    var game3 = document.getElementById("choose-game03")
 
-    // game3.onclick =  function(){
-    //   console.log("starting spellingGame");
-    //   clickStart('container-chooser','container-exp');
-    //   currentview = new spellingGame();
-    // }
+    game3.onclick =  function(){
+      console.log("starting spellingGame");
+      clickStart('container-chooser','container-exp');
+      currentview = new spellingGame();
+    }
 
     var game4 = document.getElementById("choose-game04")
 

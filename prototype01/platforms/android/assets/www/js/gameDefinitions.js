@@ -40,9 +40,9 @@
 			document.getElementById("header-exp").style.display = "inline"
 		}
 
-		
+
 		this.hide = function(){
-			this.canvas.style.display = "none";	
+			this.canvas.style.display = "none";
 				document.getElementById("header-exp").style.display = "none"
 		}
 	}
@@ -82,16 +82,16 @@
 
 		}
 
-		for (var i=0; i<this.pixiLoaderQueue.length; i++){		
+		for (var i=0; i<this.pixiLoaderQueue.length; i++){
 
 			if(url == String(this.pixiLoaderQueue[i][1])){
 
 				return
-		
+
 			}
-		
+
 		}
-		
+
 		this.pixiLoaderQueue.push([name,url,count])
 	}
 
@@ -106,11 +106,11 @@
 		if(typeof(name) == "number"){
 
 			this.soundsNQueue.push([name,url])
-		
+
 		}else{
-			
+
 			this.soundsQueue.push([name,url])
-		
+
 		}
 
 	};
@@ -139,7 +139,7 @@
 		}else{
 
 			this.start()
-		
+
 		}
 	};
 
@@ -154,24 +154,24 @@
 		for( var i=0; i < this.textureQueue.length; i++){
 
 			this.textures[this.textureQueue[i][0]] = new PIXI.Texture.fromImage(this.textureQueue[i][1])
-		
+
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
-			
+
 			this.sounds[this.soundsQueue[i][0]] = []
-		
+
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
-			
+
 			this.sounds[this.soundsQueue[i][0]].push(new Audio('audio/' + this.soundsQueue[i][0] + '/' + this.soundsQueue[i][1]))
-		
+
 		}
 
 
 		for( var i=0; i < this.soundsNQueue.length; i++){
-			
+
 			this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
 
 		}
@@ -181,13 +181,13 @@
 			this.sprites[this.pixiLoaderQueue[i][0]] = []
 
 			for(var j=0; j < this.pixiLoaderQueue[i][2]; j++){
-			
+
 				this.sprites[this.pixiLoaderQueue[i][0]].push(
-					
+
 					PIXI.Texture.fromFrame( this.pixiLoaderQueue[i][0] +  '-' + j + '.png')
 
 					)
-			}		
+			}
 
 		}
 
@@ -205,19 +205,19 @@
 		}
 
 		for (sounds in this.sounds){
-	
+
 			this.sounds[sounds] = []
 
 		}
 
 		for(sprites in this.spritres){
-			
+
 			this.sprites[sprites].destroy(true)
 
 		}
 
 		for(textures in this.textures){
-			
+
 			this.textures[textures].destroy(true)
 		}
 	};
@@ -238,26 +238,18 @@ function Round(){
 
 }
 
-Round.prototype.init = function(_Trial,_stage){
+Round.prototype.init = function(_Trial,_stage, stimuli){
+	//console.log("round stimuli:");
+	//console.log(stimuli);
+	this.stage = _stage;
+	this._trial = _Trial;
+	this.stimuli = stimuli;
+  this.background = new PIXI.Sprite(assets.textures.bg);
 
-	this.stage = _stage
-	this._trial = _Trial
-   
-    /*
-    *********************************************************************
-	FIX ME!!
-	Calling initStoages seems to fix the bug on the ladybug game.
-	Need to see if this is actually the correct way to solve the problem
-    *********************************************************************
-    */
-	initStorage()
-
-    this.background = new PIXI.Sprite(assets.textures.bg);
-     	
  	this.stage.addChild(this.background);
 
- 	this.getNextTrial()
- 	session.render(_stage)
+ 	this.getNextTrial();
+ 	session.render(_stage);
 
    	//console.log(x, x.width)
 
@@ -271,15 +263,17 @@ Round.prototype.init = function(_Trial,_stage){
 
 Round.prototype.getNextTrial = function(){
 
-	queuesToUpdate['numberstim'] = true;
-
-	var stim = stimQueues['numberstim'].pop();
-	 	
- 	this.trial = new this._trial(stim);
-    this.trial.init();
+	//var stim = stimQueues['numberstim'].pop();
+ 	this.trial = new this._trial(this.stimuli.pop());
+  this.trial.init();
 
 }
 
+Round.prototype.storeSession = function(stim, queue_name) {
+	//storeSession();
+	// when do we actually want to push everything back to local storage?
+	// if we do it each time they quit a game, we have to pull it back from LS again if they reopen
+}
 
 Round.prototype.destroy = function(){
 
@@ -292,12 +286,12 @@ Round.prototype.destroy = function(){
 Round.prototype.play = function(){
 
 	if(this.trial.play()){
-
-		this.trial.destroy()
-		console.log("last trial destroyed!")		
-		this.getNextTrial()
-		console.log("new trial created!")
-	};
+		this.stimuli.push(this.trial.storeStim());
+		this.trial.destroy();
+		console.log("last trial destroyed!");
+		this.getNextTrial();
+		console.log("new trial created!");
+	}
 
 };
 
@@ -339,14 +333,14 @@ Round.prototype.changeDifficulty = function(_correct,_value){
 
 		console.log("111")
 
-		if(this.difficulty < this.diffRange[0]){ 
+		if(this.difficulty < this.diffRange[0]){
 			console.log("2222")
-			this.difficulty = this.diffRange[0] 
+			this.difficulty = this.diffRange[0]
 		};
-		
-		if(this.difficulty > this.diffRange[1]){ 
+
+		if(this.difficulty > this.diffRange[1]){
 			console.log("3333")
-			this.difficulty = this.diffRange[1] 
+			this.difficulty = this.diffRange[1]
 		};
 
 	}
@@ -355,12 +349,10 @@ Round.prototype.changeDifficulty = function(_correct,_value){
 
 };
 
-Round.prototype.setDifficultyParams = function(_trashhold,_range){
+Round.prototype.setDifficultyParams = function(_trashhold,_range,_start){
 
 	this.diffRange = _range;
 	this.scoreTrashhold = _trashhold;
-	this.difficulty =  this.diffRange[0]
+	this.difficulty = _start || this.diffRange[0]
 
 };
-
-

@@ -14,7 +14,7 @@ function spellingGame(){
   Assets.prototype.load = function(){
     var bg_texture = PIXI.Texture.fromImage("svgs/sky-grass.svg");
     this.sprites.background = new PIXI.Sprite(bg_texture);
-    var sun = new PIXI.Texture.fromImage("svgs/sun.svg")
+    var sun = new PIXI.Texture.fromImage("svgs/sun.svg");
     this.sprites.sun = new PIXI.Sprite(sun);
     var smiley = PIXI.Texture.fromImage("svgs/smiley.svg"); //'_assets/basics/bunny.png');
     this.sprites.smiley = new PIXI.Sprite(smiley);
