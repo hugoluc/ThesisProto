@@ -1,4 +1,5 @@
 var proto3loaded = true
+var stimCount = -1
 
 function proto03(){
   queuesToUpdate['mathstim'] = true;
@@ -94,7 +95,11 @@ function proto03(){
             this.cNumber =  new PIXI.Text(this.value, {font:"100px Arial", weight:"black", fill:"#ee3d51", stroke:"#ee3d51", strokeThickness: 1, });
             this.cNumber.anchor.x = 0.5
             this.cNumber.anchor.y = 0.5
+<<<<<<< HEAD
             this.cNumber.x = this.lillypad.x - 10
+=======
+            this.cNumber.x = this.lillypad.x - 10 
+>>>>>>> master
             this.cNumber.y = this.lillypad.y - 10
             this.container.addChild(this.cNumber)
 
@@ -119,8 +124,11 @@ function proto03(){
 
             }
 
+<<<<<<< HEAD
             console.log(this.leaves)
 
+=======
+>>>>>>> master
             stage.addChild(this.container)
     };
 
@@ -131,7 +139,6 @@ function proto03(){
         this.cNumber.renderable = false
 
         this.lillySink.gotoAndPlay(0);
-        console.log(this.lillySink.currentFrame)
         this.state = "sinking";
     };
 
@@ -217,7 +224,6 @@ function proto03(){
 
         }
 
-        console.log(this.antsDivision)
     };
 
 
@@ -375,6 +381,7 @@ function proto03(){
             })
 
         }
+
     };
 
     lillySmall.prototype.destroy = function(){
@@ -498,12 +505,20 @@ function proto03(){
     Ant.prototype.init = function(){
 
         stage.addChild(this.sprite)
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> master
         var dest = {
             x : this.pos.x,
             y : this.pos.y
         };
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> master
         this.animation.setPos(dest)
     };
 
@@ -517,7 +532,12 @@ function proto03(){
         this.length = 100
         this.trajectory = _trajectory || []
         this.state = 0
+<<<<<<< HEAD
 
+=======
+        this.AnimationDone = false
+        
+>>>>>>> master
         this.animation.init(this.trajectory[0],500,_offset)
         this.angles = []
 
@@ -543,6 +563,10 @@ function proto03(){
 
     Ant.prototype.move = function(){
 
+        if(this.AnimationDone){
+            return true;
+        }
+
         if(this.state < this.trajectory.length){
 
             this.rotate(this.state)
@@ -554,6 +578,7 @@ function proto03(){
                 if(this.state != this.trajectory.length){
 
                     if(this.state == 1){
+<<<<<<< HEAD
 
                         round.trial.antMoveDone("subtract")
 
@@ -563,6 +588,18 @@ function proto03(){
                     };
 
                     this.animation.init(this.trajectory[this.state],500)
+=======
+                    
+                        round.trial.antMoveDone("subtract")
+                    
+                    }else if(this.state == 2){
+
+                        console.log(round.trial.finishedState)
+                        round.trial.antMoveDone("add")
+                    };
+
+                    this.animation.init(this.trajectory[this.state],500)                       
+>>>>>>> master
                 };
 
             };
@@ -572,9 +609,16 @@ function proto03(){
         }else{
 
             round.trial.leavesToFade++
+<<<<<<< HEAD
             this.AnimationDone = true;
             return true
         }
+=======
+            console.log(round.trial.finishedState)
+            this.AnimationDone = true;
+            return true
+        }   
+>>>>>>> master
     };
 
     Ant.prototype.fade = function(){
@@ -588,7 +632,11 @@ function proto03(){
         }else{
 
             return false
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> master
         }
     };
 
@@ -605,6 +653,11 @@ function proto03(){
 */
 
     function Trial(_stimuli,_correct){
+<<<<<<< HEAD
+=======
+		
+        stimCount++
+>>>>>>> master
 
 
         var specs =
@@ -612,19 +665,32 @@ function proto03(){
             //--------------------------------------0
             {
                 stimuli: {
+<<<<<<< HEAD
 
                     correctValues : [1,1],
                     extras : {
                         min: 22,
                         max: 23,
                         size: 2,
+=======
+                
+                    correctValues : addition[stimCount%addition.length].options,     
+                    extras : {
+                        min: 1,
+                        max: 1, 
+                        size: 0,
+>>>>>>> master
                     }
                 },
 
                 correct :{
 
                     type: "number",
+<<<<<<< HEAD
                     value: 20,
+=======
+                    value: addition[stimCount%addition.length].sum,
+>>>>>>> master
 
                 }
             }
@@ -640,7 +706,6 @@ function proto03(){
 		Correct is the final number that should be placed in the final lillypad
 		------------------------*/
     	this.correct = specs.correct
-
 
         this.clock = new ClockTimer()
 
@@ -669,7 +734,11 @@ function proto03(){
             },
             sprites : [],
         };
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> master
         this.antsToAnimate = {
             origin : [],
             target : []
@@ -776,6 +845,7 @@ function proto03(){
     Trial.prototype.antMoveDone = function(_operation){
 
         if(_operation == "add"){
+<<<<<<< HEAD
 
            console.log("ants >> In")
             this.antsAdd++
@@ -785,6 +855,15 @@ function proto03(){
             console.log("ants >> out")
             this.antsSub--
 
+=======
+          
+            this.antsAdd++
+        
+        }else if(_operation == "subtract"){
+
+            this.antsSub--
+                    
+>>>>>>> master
         }else if(_operation == "final"){
 
             this.antsAdd--
@@ -798,20 +877,19 @@ function proto03(){
         // FINAL MOVE:
         if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
 
+            this.moveStick(true,"final")
+            this.updateOperation(_id,"final")
+            this.trialState = "finished"
+            this.leavesToFade = 0
+            this.finishedState = "counrdown"
+
             if(this.lillySmall[_id].value == this.correct.value){
 
-                this.moveStick(true,"final")
-                this.updateOperation(_id,"final")
-                this.trialState = "finished"
-                this.finishedState = "counrdown"
+                
                 this.trialEnded = true;
 
             }else{
 
-                this.moveStick(true,"final")
-                this.updateOperation(_id,"final")
-                this.trialState = "finished"
-                this.finishedState = "counrdown"
                 this.trialEnded = false;
 
             }
@@ -859,10 +937,14 @@ function proto03(){
             this.countDone = false;
 
             // set countdown
+<<<<<<< HEAD
             this.countDownTargets = [_origin,_target]
+=======
+            this.countDownTargets = [_origin,_target] 
+>>>>>>> master
 
             //update value for lillypads
-            this.lillySmall[_target].value = this.lillySmall[_target].value + this.lillySmall[_origin].value
+            this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
             this.lillySmall[_origin].value = 0
 
             //get new location for ants
@@ -877,7 +959,11 @@ function proto03(){
         var targDone = false
         var tar = {}
 
+<<<<<<< HEAD
         //LIllYSMALL
+=======
+        //LIllYSMALL 
+>>>>>>> master
         if(this.countDownTargets[1] != "final"){
 
             tar = this.lillySmall[this.countDownTargets[1]]
@@ -897,9 +983,13 @@ function proto03(){
         }else{
 
             tar = this.lillyFinal
+<<<<<<< HEAD
 
             console.log(tar.cNumber.text,this.countDownTargets[0])
 
+=======
+    
+>>>>>>> master
             if(tar.cNumber.text > tar.value - this.lillySmall[this.countDownTargets[0]].value){
 
                 tar.cNumber.text = parseInt(tar.cNumber.text) - this.antsAdd
@@ -925,12 +1015,21 @@ function proto03(){
 
         };
 
+<<<<<<< HEAD
 
         if(oriDone && targDone){
 
             return true;
         }else{
 
+=======
+          
+        if(oriDone && targDone){
+            
+            return true;
+        }else{
+            
+>>>>>>> master
             return false;
         }
     };
@@ -1034,7 +1133,11 @@ function proto03(){
 
                 if(!this.ants.sprites[this.antsToAnimate.target[i]].move()  || !this.ants.sprites[this.antsToAnimate.target[i]].AnimationDone){
                     done = false;
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> master
                 };
 
             };
@@ -1045,9 +1148,15 @@ function proto03(){
 
             if(!this.ants.sprites[this.antsToAnimate.origin[i]].move() || !this.ants.sprites[this.antsToAnimate.origin[i]].AnimationDone){
                 done = false;
+<<<<<<< HEAD
 
             };
 
+=======
+            
+            };
+
+>>>>>>> master
         };
 
 
@@ -1059,7 +1168,11 @@ function proto03(){
 
                 this.ants.sprites[this.antsToAnimate.origin[i]].id = newId
 
+<<<<<<< HEAD
             };
+=======
+            };      
+>>>>>>> master
 
             return true
 
@@ -1081,7 +1194,11 @@ function proto03(){
     };
 
     Trial.prototype.createStick = function(_data){
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> master
         this.fadeStick = false
 
         // console.log("-------------")
@@ -1309,11 +1426,19 @@ function proto03(){
                     // console.log("---------------------------")
                     // console.log(this.lillyFinal.container.x,this.lillyFinal.container.y)
                     // console.log(
+<<<<<<< HEAD
 
                     //     this.lillyFinal.container.getBounds().x,
                     //     this.lillyFinal.container.getBounds().y
                     // )
 
+=======
+                        
+                    //     this.lillyFinal.container.getBounds().x,
+                    //     this.lillyFinal.container.getBounds().y
+                    // )
+                   
+>>>>>>> master
                     // console.log(session.canvas.width,session.canvas.height)
 
                     this.introState = "spawnSmallLillipads";
@@ -1340,6 +1465,7 @@ function proto03(){
 
     Trial.prototype.fadeLeaves = function(){
 
+<<<<<<< HEAD
             console.log(this.lillyFinal.leaves)
 
         for(var i=0; i<this.leavesToFade; i++){
@@ -1348,6 +1474,19 @@ function proto03(){
 
         }
     }
+=======
+        if(this.leavesToFade <= this.correct.value){
+            
+            console.log(this.leavesToFade,this.correct.value)
+
+            for(var i=0; i<this.leavesToFade; i++){
+
+                this.lillyFinal.leaves[i].alpha = this.lillyFinal.leaves[i].alpha - 0.05
+            
+            }
+        }
+    };
+>>>>>>> master
 
     Trial.prototype.finished = function(){
 
@@ -1355,7 +1494,10 @@ function proto03(){
 
             case "counrdown":
 
+<<<<<<< HEAD
             this.fadeLeaves()
+=======
+>>>>>>> master
 
                 var countDone = this.countNumber()
                 var animationDone = this.animateAnts()
@@ -1364,7 +1506,10 @@ function proto03(){
 
                     if(this.trialEnded){
 
+                        console.log("changinf to win...")
+                        console.log(this.leavesToFade,this.correct.value)
                         this.fadeStick = true;
+                        this.clock.start(1000)
                         this.finishedState = "win";
 
 
@@ -1407,9 +1552,11 @@ function proto03(){
                 // fade everryhting else
                 // move final to center
 
-                alert("YOU WIN!")
-                this.finishedState = "callNext";
-
+                //alert("YOU WIN!")
+                if(this.clock.timeOut()){
+                    this.finishedState = "callNext";
+                }
+                
                 break;
 
 
@@ -1472,6 +1619,11 @@ function proto03(){
 
             case "finished":
 
+<<<<<<< HEAD
+=======
+                this.fadeLeaves()
+
+>>>>>>> master
                 if(this.fadeStick){this.removeStick()}
 
                 if(this.finished()){
@@ -1495,35 +1647,57 @@ function proto03(){
     // create the root of the scene graph and main classes
     var stage = new PIXI.Container();
     var round = new Round();
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 
     this.destroy = function(){
         finishGame = true;
         session.hide()
     };
+<<<<<<< HEAD
+
+    //---------------------------------------loading assets
+=======
 
     //---------------------------------------loading assets
 
-    if(proto3loaded){
+        if(proto3loaded){
 
-        assets.addSprite("ripple",'sprites/lillypad/ripples/ripples.json',5)
-        assets.addSprite("lillyFinal_Sink",'sprites/lillypad/final_sink/lillyFinal_Sink.json',9)
+            assets.addSprite("ripple",'sprites/lillypad/ripples/ripples.json',5)
+            assets.addSprite("lillyFinal_Sink",'sprites/lillypad/final_sink/lillyFinal_Sink.json',9)
+>>>>>>> master
 
+            assets.addTexture("stick","sprites/stick/stick.png")
+            assets.addTexture("leave","sprites/stick/leave.png")
+            assets.addTexture("branch","sprites/stick/branch.png")
+
+            assets.addTexture("lillyBig","sprites/lillypad/big-01.png")
+            assets.addTexture("lillySmall","sprites/lillypad/small-01.png")
+            assets.addTexture("ants","sprites/lillypad/ant.png")
+            assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
+
+<<<<<<< HEAD
         assets.addTexture("stick","sprites/stick/stick.png")
         assets.addTexture("leave","sprites/stick/leave.png")
         assets.addTexture("branch","sprites/stick/branch.png")
+=======
+            assets.load(onAssetsLoaded)
 
-        assets.addTexture("lillyBig","sprites/lillypad/big-01.png")
-        assets.addTexture("lillySmall","sprites/lillypad/small-01.png")
-        assets.addTexture("ants","sprites/lillypad/ant.png")
-        assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
+        }else{
+>>>>>>> master
 
-        assets.load(onAssetsLoaded)
+            onAssetsLoaded();
 
-    }else{
+        };
 
-        onAssetsLoaded();
+        function onAssetsLoaded(){
 
+            console.log("assetsloaded!")
+            round.init(Trial,stage);
+
+<<<<<<< HEAD
     };
 
     function onAssetsLoaded(){
@@ -1537,61 +1711,87 @@ function proto03(){
             update();
         });
     };
+=======
+            setTimeout(function(){
+                console.log("starting the game!")
+                session.show()
+                update();
+            });
+        };
+>>>>>>> master
 
     //---------------------------------------LOOP
 
-    var statsBol = false;
+        var statsBol = false;
 
-    if(statsBol){
+        if(statsBol){
 
-        session.stats.domElement.style.display = "block"
+            session.stats.domElement.style.display = "block"
 
-    };
+        };
 
-    var finishGame = false
-    var previousTime = Date.now();
-    var MS_PER_UPDATE = 16.66667;
-    var lag = 0
+        var finishGame = false
+        var previousTime = Date.now();
+        var MS_PER_UPDATE = 16.66667;
+        var lag = 0
 
-    function update() {
+        function update() {
 
+            if(finishGame){
 
-        if(finishGame){
+                console.log("finishing Game")
 
-            console.log("finishing Game")
-
+<<<<<<< HEAD
             session.stats.domElement.style.display = "none"
             round.destroy()
             assets.destroy()
             finishGame = false
             currentview = new Chooser(assets)
+=======
+                session.stats.domElement.style.display = "none"
+                round.destroy()
+                assets.destroy()
+                finishGame = false
+                currentview = new Chooser(assets)
+>>>>>>> master
 
-            return
-        }
+                return
+            }
 
-            if(statsBol)session.stats.begin()
+                if(statsBol)session.stats.begin()
 
-            	//update position based on espectaed frame rate
-    	        var current = Date.now();
-    	        var elapsed = current - previousTime;
-    	        previousTime = current;
-    	        lag = lag + elapsed;
+                	//update position based on espectaed frame rate
+        	        var current = Date.now();
+        	        var elapsed = current - previousTime;
+        	        previousTime = current;
+        	        lag = lag + elapsed;
 
 
+<<<<<<< HEAD
     	        while (lag >= MS_PER_UPDATE){
 
     	            round.play(lag/MS_PER_UPDATE);
     	            lag = lag - MS_PER_UPDATE;
+=======
+        	        while (lag >= MS_PER_UPDATE){        
 
-    	        }
+        	            round.play(lag/MS_PER_UPDATE);
+        	            lag = lag - MS_PER_UPDATE;
+>>>>>>> master
 
-    	        //---------------->> Thing that renders the whole stage
-    	        session.render(stage)
+        	        }
 
-    	        requestAnimationFrame(update);
+        	        //---------------->> Thing that renders the whole stage
+        	        session.render(stage)
 
-            if(statsBol)session.stats.end()
+        	        requestAnimationFrame(update);
 
-    }
+                if(statsBol)session.stats.end()
 
+        }
+
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> master

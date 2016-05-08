@@ -376,6 +376,17 @@ function proto02(){
                 };
             };
 
+<<<<<<< HEAD
+=======
+                if(!this.correctImput){
+
+                    round.trial.answer(false)
+                    round.changeDifficulty(false)
+                    round.trial.getFeedback(false,false) 
+
+                };
+            };
+>>>>>>> master
         };
 
         LadyBug.prototype.resetFeedback = function(){
@@ -668,6 +679,22 @@ function proto02(){
             this.bgBlue.addChild(this.bNumber);
 
             stage.addChild(this.instruction)
+
+            // 0 -- 15
+
+            var treshold = 20 + round.difficulty*4
+            var value = getRandomInt(0,100)
+
+            console.log(value,treshold)
+            if( value <= treshold && this.correct > 2 ){
+
+                this.rNumber.alpha = 0;
+                this.bNumber.alpha = 0;
+                this.nunBgBlue.alpha = 0;
+                this.nunBgRed.alpha = 0;
+
+            };
+
         };
 
         Trial.prototype.destroy = function(){
@@ -1115,6 +1142,10 @@ function proto02(){
                     //check if queue is empty
                     if(this.audioQueue.length > 0){
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
                         for(var i = 0; i<this.audioQueue[0].length; i++){
 
                             this.audioQueue[0][i].currentTime = 0
@@ -1138,11 +1169,22 @@ function proto02(){
                     return
 
                     if(this.audioQueue.length > 0 && this.audioQueue[0].paused){
+<<<<<<< HEAD
                         this.audioQueue.splice(0,1)
+=======
+                    
+
+                    this.audioQueue.splice(0,1)
+    
+>>>>>>> master
                         this.audioQueue[0].currentTime = 0
                         this.audioQueue[0].play()
                         this.audioTimer.start(180)
                     }else{
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
                         this.audioQueuePlay = false;
                     }
 
@@ -1179,7 +1221,11 @@ function proto02(){
 
         this.destroy = function(){
             finishGame = true;
+<<<<<<< HEAD
             session.hide();
+=======
+            session.hide()
+>>>>>>> master
         };
 
         function onAssetsLoaded(){
