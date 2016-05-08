@@ -1,6 +1,22 @@
 
+<<<<<<< HEAD
 prototype01/platforms/android/.gradle/2.2.1/taskArtifacts/cache.properties
 
 prototype01/platforms/android/.gradle/2.2.1/taskArtifacts/cache.properties
 
 prototype01/platforms/android/.gradle/2.2.1/taskArtifacts/outputFileStates.bin
+=======
+*.lock
+
+prototype01/platforms/android/.gradle/2.2.1/taskArtifacts/fileHashes.bin
+
+prototype01/platforms/android/.gradle/2.2.1/taskArtifacts/fileSnapshots.bin
+
+prototype01/platforms/android/.gradle/2.2.1/taskArtifacts/taskArtifacts.bin
+
+prototype01/platforms/android/.gradle/2.2.1/taskArtifacts/taskArtifacts.bin
+
+prototype01/platforms/android/.gradle/2.2.1/taskArtifacts/fileSnapshots.bin
+>>>>>>> origin/master
+
+*.bin
