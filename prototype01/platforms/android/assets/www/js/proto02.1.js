@@ -373,11 +373,14 @@ function proto02(){
                     round.changeDifficulty(false)
                     round.trial.getFeedback(false,false)
 
+<<<<<<< HEAD
                 };
             };
 
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> master
                 if(!this.correctImput){
 
                     round.trial.answer(false)
@@ -386,6 +389,9 @@ function proto02(){
 
                 };
             };
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
         };
 
@@ -1143,7 +1149,10 @@ function proto02(){
                     if(this.audioQueue.length > 0){
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 
 >>>>>>> master
                         for(var i = 0; i<this.audioQueue[0].length; i++){
@@ -1176,6 +1185,9 @@ function proto02(){
 
                     this.audioQueue.splice(0,1)
     
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
                         this.audioQueue[0].currentTime = 0
                         this.audioQueue[0].play()
@@ -1184,6 +1196,9 @@ function proto02(){
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
                         this.audioQueuePlay = false;
                     }
@@ -1225,6 +1240,9 @@ function proto02(){
             session.hide();
 =======
             session.hide()
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
         };
 

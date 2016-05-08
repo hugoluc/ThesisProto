@@ -515,12 +515,7 @@ function proto03(){
         this.length = 100
         this.trajectory = _trajectory || []
         this.state = 0
-<<<<<<< HEAD
-
-=======
         this.AnimationDone = false
-        
->>>>>>> master
         this.animation.init(this.trajectory[0],500,_offset)
         this.angles = []
 
@@ -614,57 +609,45 @@ function proto03(){
 */
 
     function Trial(_stimuli,_correct){
-<<<<<<< HEAD
-=======
-		
-        stimCount++
->>>>>>> master
-
-
+        stimCount++;
         var specs =
-
             //--------------------------------------0
             {
                 stimuli: {
-<<<<<<< HEAD
 
                     correctValues : [1,1],
                     extras : {
                         min: 22,
                         max: 23,
                         size: 2,
-=======
-                
-                    correctValues : addition[stimCount%addition.length].options,     
+
+                    correctValues : addition[stimCount%addition.length].options,
                     extras : {
                         min: 1,
-                        max: 1, 
+                        max: 1,
                         size: 0,
->>>>>>> master
                     }
                 },
 
                 correct :{
-
                     type: "number",
                     value: addition[stimCount%addition.length].sum,
-
                 }
             }
-
+          }
 		/*----------------------
 		Stimuli is the number necessery to get to the answear.
 		It should be used to draw smaller lillypad so the user has at least one
 		way to solve the problem
 		------------------------*/
-    	this.stimuli = specs.stimuli
-
+      this.stimuli = specs.stimuli;
+      console.log(specs)
 		/*----------------------
 		Correct is the final number that should be placed in the final lillypad
 		------------------------*/
-    	this.correct = specs.correct
+    	this.correct = specs.correct;
 
-        this.clock = new ClockTimer()
+      this.clock = new ClockTimer()
 
     	this.sticks = []
 
@@ -747,7 +730,7 @@ function proto03(){
         }
 
         this.lillyFinal = new lillyFinal();
-        this.lillyFinal.init(this.correct.value)
+        this.lillyFinal.init(this.stimuli.correct.value);
 
 
         // create stick
@@ -798,22 +781,12 @@ function proto03(){
     Trial.prototype.antMoveDone = function(_operation){
 
         if(_operation == "add"){
-<<<<<<< HEAD
-
-           console.log("ants >> In")
-=======
-          
->>>>>>> master
-            this.antsAdd++
-
+          console.log("ants >> In")
+          this.antsAdd++
         }else if(_operation == "subtract"){
-
             this.antsSub--
-
         }else if(_operation == "final"){
-
             this.antsAdd--
-
         };
     };
 
@@ -829,9 +802,9 @@ function proto03(){
             this.leavesToFade = 0
             this.finishedState = "counrdown"
 
-            if(this.lillySmall[_id].value == this.correct.value){
+            if(this.lillySmall[_id].value == this.stimuli.correct.value){
 
-                
+
                 this.trialEnded = true;
 
             }else{
@@ -921,13 +894,9 @@ function proto03(){
         }else{
 
             tar = this.lillyFinal
-<<<<<<< HEAD
 
             console.log(tar.cNumber.text,this.countDownTargets[0])
 
-=======
-    
->>>>>>> master
             if(tar.cNumber.text > tar.value - this.lillySmall[this.countDownTargets[0]].value){
 
                 tar.cNumber.text = parseInt(tar.cNumber.text) - this.antsAdd
@@ -1367,27 +1336,28 @@ function proto03(){
     };
 
     Trial.prototype.fadeLeaves = function(){
-<<<<<<< HEAD
+        //console.log(this.lillyFinal.leaves)
+        if(this.leavesToFade <= this.stimuli.correct.value){
+            console.log(this.leavesToFade,this.stimuli.correct.value)
+            // GK: need both of these lines or just one?
+            //this.lillyFinal.leaves[this.leavesToFade].alpha = this.lillyFinal.leaves[this.leavesToFade].alpha - 0.1
 
-            console.log(this.lillyFinal.leaves)
-=======
->>>>>>> master
-
-        if(this.leavesToFade <= this.correct.value){
-            
-            console.log(this.leavesToFade,this.correct.value)
-
-<<<<<<< HEAD
-            this.lillyFinal.leaves[this.leavesToFade].alpha = this.lillyFinal.leaves[this.leavesToFade].alpha - 0.1
-
-=======
             for(var i=0; i<this.leavesToFade; i++){
-
                 this.lillyFinal.leaves[i].alpha = this.lillyFinal.leaves[i].alpha - 0.05
-            
             }
->>>>>>> master
         }
+    };
+
+    // GK: ToDo finish this! (where is learner's correctness?)
+    Trial.prototype.storeStim = function(){
+      var newpriority = 1
+        // if(this.wrongClicks===0) {
+        //   var newpriority = this.stimuli.priority + .5;
+        // } else {
+        //   var newpriority = this.stimuli.priority - Math.log(this.wrongClicks);
+        // }
+        this.stimuli.priority = newpriority;
+        return(this.stimuli);
     };
 
     Trial.prototype.finished = function(){
@@ -1404,8 +1374,8 @@ function proto03(){
 
                     if(this.trialEnded){
 
-                        console.log("changinf to win...")
-                        console.log(this.leavesToFade,this.correct.value)
+                        //console.log("changinf to win...")
+                        console.log(this.leavesToFade,this.stimuli.correct.value)
                         this.fadeStick = true;
                         this.clock.start(1000)
                         this.finishedState = "win";
@@ -1454,7 +1424,7 @@ function proto03(){
                 if(this.clock.timeOut()){
                     this.finishedState = "callNext";
                 }
-                
+
                 break;
 
 
@@ -1574,13 +1544,8 @@ function proto03(){
 
         function onAssetsLoaded(){
 
-<<<<<<< HEAD
         console.log("assetsloaded!")
         round.init(Trial,stage, stimuli);
-=======
-            console.log("assetsloaded!")
-            round.init(Trial,stage);
->>>>>>> master
 
             setTimeout(function(){
                 console.log("starting the game!")
@@ -1594,9 +1559,7 @@ function proto03(){
         var statsBol = false;
 
         if(statsBol){
-
             session.stats.domElement.style.display = "block"
-
         };
 
         var finishGame = false
@@ -1619,25 +1582,19 @@ function proto03(){
                 return
             }
 
-                if(statsBol)session.stats.begin()
+            if(statsBol) session.stats.begin()
 
-                	//update position based on espectaed frame rate
-        	        var current = Date.now();
-        	        var elapsed = current - previousTime;
-        	        previousTime = current;
-        	        lag = lag + elapsed;
+          	//update position based on espectaed frame rate
+  	        var current = Date.now();
+  	        var elapsed = current - previousTime;
+  	        previousTime = current;
+  	        lag = lag + elapsed;
 
 
-<<<<<<< HEAD
-    	        while (lag >= MS_PER_UPDATE){
-=======
-        	        while (lag >= MS_PER_UPDATE){        
->>>>>>> master
-
-        	            round.play(lag/MS_PER_UPDATE);
-        	            lag = lag - MS_PER_UPDATE;
-
-        	        }
+        	  while (lag >= MS_PER_UPDATE){
+              round.play(lag/MS_PER_UPDATE);
+              lag = lag - MS_PER_UPDATE;
+  	        }
 
         	        //---------------->> Thing that renders the whole stage
         	        session.render(stage)
