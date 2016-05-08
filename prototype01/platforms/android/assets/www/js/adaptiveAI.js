@@ -85,7 +85,7 @@ function initStorage() {
     stimQueues['numberstim'] = loadStimulusQueue(numbers, chunkSize);
     stimQueues['wordstim'] = loadStimulusQueue(words, chunkSize);
     stimQueues['objectstim'] = loadStimulusQueue(objects, chunkSize); // things we have images for..
-    //stimQueues['mathstim'] = initStimulusQueue(mathProblems, chunkSize);
+    stimQueues['mathstim'] = loadStimulusQueue(addition, chunkSize);
     // shapes don't need their own...not enough of them
   } else {
 
@@ -94,7 +94,7 @@ function initStorage() {
     stimQueues['numberstim'] = loadStimulusQueue(store.get('numberstim'), chunkSize);
     stimQueues['wordstim'] = loadStimulusQueue(store.get('wordstim'), chunkSize);
     stimQueues['objectstim'] = loadStimulusQueue(store.get('objectstim'), chunkSize);
-    //stimQueues['mathstim'] = loadStimulusQueue(store.get('mathstim'), chunkSize);
+    stimQueues['mathstim'] = loadStimulusQueue(store.get('mathstim'), chunkSize);
 
     // other game-specific state variables (e.g., dropSpeed, numFoils, etc) ?
     // maybe load some overall session stats...(duration, total correct/incorrect, games played)
