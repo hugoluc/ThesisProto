@@ -139,8 +139,26 @@ var animals = [
   {id:"deer", text:"paa", audio:"paa", image:"deer"},
   {id:"cow", text:"ng'ombe", audio:"ngombe", image:"cow"},
   {id:"horse", text:"farasi", audio:"farasi", image:"horse"},
-  {id:"chicken", text:"kuku", audio:"kuku", image:"chicken"},
+  {id:"chicken", text:"kuku", audio:"kuku", image:"chicken"}, // jogoo? (rooster?)
   {id:"crab", text:"kaa", audio:"kaa", image:"crab"}
+//  {id:"alligator", text:"aligeta", audio:"aligeta", image:"alligator"},
+//  {id:"crocodile", text:"mamba", audio:"mamba", image:"crocodile"},
+//  {id:"duck", text:"bata", audio:"bata", image:"duck"},
+//  {id:"frog", text:"chura", audio:"chura", image:"frog"},
+//  {id:"bear", text:"dubu", audio:"dubu", image:"bear"},
+//  {id:"emu", text:"emu", audio:"emu", image:"emu"},
+//  {id:"warthog", text:"gwasi", audio:"gwasi", image:"gwasi"}, // pig? hog? warthog?
+//  {id:"flamingo", text:"heroe", audio:"heroe", image:"flamingo"}, // heron??
+//  {id:"fly", text:"inzi", audio:"inzi", image:"fly"},
+//  {id:"chameleon", text:"lumbwi", audio:"lumbwi", image:"chameleon"}, // lizard?
+//  {id:"pigeon", text:"ninga", audio:"ninga", image:"pigeon"}, // ..bird?
+//  {id:"orangutan", text:"orangutangu", audio:"orangutangu", image:"orangutan"},
+//  {id:"giraffe", text:"twiga", audio:"twiga", image:"giraffe"},
+//  {id:"lobster", text:"uduvi", audio:"uduvi", image:"lobster"},
+//  {id:"bee", text:"wembembe", audio:"wembembe", image:"bee"},
+//  {id:"jellyfish", text:"yavuyavu", audio:"yavuyavu", image:"jellyfish"},
+// praying mantis = vunjajungu ? (or insect?)
+// robin = robini , swallow?? = zawaridi
   ];
 
 // image-able things (ideally with an image!), e.g. for hangman

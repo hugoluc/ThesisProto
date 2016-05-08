@@ -6,12 +6,12 @@
         <param name="onload" value="true" />
     </feature>
     <allow-intent href="market:*" />
-    <name>Hello World</name>
+    <name>egoTeach</name>
     <description>
-        Hello World sample application that responds to the deviceready event.
+        egoTeach
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="egoteach@gmail.com" href="http://egoteach.com">
+        egoTeach
     </author>
     <content src="index.html" />
     <preference name="permissions" value="none" />

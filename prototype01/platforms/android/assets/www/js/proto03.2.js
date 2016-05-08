@@ -2,7 +2,8 @@ var proto3loaded = true
 var stimCount = -1
 
 function proto03(){
-
+  queuesToUpdate['mathstim'] = true;
+  var stimuli = stimQueues['mathstim'];
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -28,7 +29,7 @@ function proto03(){
 
             get: function(){
 
-                var bounds = this.container.getBounds() 
+                var bounds = this.container.getBounds()
                 return bounds.x + (bounds.width/2)
             }
         },
@@ -36,7 +37,7 @@ function proto03(){
         y:{
             get: function(){
 
-                var bounds = this.container.getBounds() 
+                var bounds = this.container.getBounds()
                 return bounds.y + (bounds.height/2)
             }
         },
@@ -90,11 +91,19 @@ function proto03(){
 
             this.container.addChild(this.lillySink)
 
-            
+
             this.cNumber =  new PIXI.Text(this.value, {font:"100px Arial", weight:"black", fill:"#ee3d51", stroke:"#ee3d51", strokeThickness: 1, });
             this.cNumber.anchor.x = 0.5
             this.cNumber.anchor.y = 0.5
+<<<<<<< HEAD
+<<<<<<< HEAD
+            this.cNumber.x = this.lillypad.x - 10
+=======
             this.cNumber.x = this.lillypad.x - 10 
+>>>>>>> master
+=======
+            this.cNumber.x = this.lillypad.x - 10 
+>>>>>>> master
             this.cNumber.y = this.lillypad.y - 10
             this.container.addChild(this.cNumber)
 
@@ -119,6 +128,14 @@ function proto03(){
 
             }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+            console.log(this.leaves)
+
+=======
+>>>>>>> master
+=======
+>>>>>>> master
             stage.addChild(this.container)
     };
 
@@ -191,26 +208,26 @@ function proto03(){
 
         for (var i=0; i<this.value; i++){
 
-            var angle = ((2*Math.PI)/this.value)*i 
+            var angle = ((2*Math.PI)/this.value)*i
 
             this.antsDivision.push({
 
                 x : this.x + (Math.cos(angle) * (n*0.76)) - _antSize.width,
-                y : this.y + (Math.sin(angle) * (n*0.76)) - _antSize.height            
-            }) 
+                y : this.y + (Math.sin(angle) * (n*0.76)) - _antSize.height
+            })
 
         }
 
         for (var i=0; i<_extras; i++){
 
-            var angle = ((2*Math.PI)/_extras)*i 
+            var angle = ((2*Math.PI)/_extras)*i
 
             this.antsDivision.push({
 
                 x : this.x + (Math.cos(angle) * (n*0.4)) - _antSize.width,
-                y : this.y + (Math.sin(angle) * (n*0.4)) - _antSize.height 
-            
-            }) 
+                y : this.y + (Math.sin(angle) * (n*0.4)) - _antSize.height
+
+            })
 
         }
 
@@ -234,7 +251,7 @@ function proto03(){
     };
 
     lillySmall.prototype.init = function(_value,_position,_size,_id,_antSize){
-    	
+
         var _this = this;
 
         this.value = _value;
@@ -242,7 +259,7 @@ function proto03(){
     	this.connections = [];
     	this.posdId = _position.id
     	this.pos = _position.pos;
-    	this.size = _size; 
+    	this.size = _size;
 
         this.container = new PIXI.Container()
         this.trialTimer = new ClockTimer();
@@ -259,12 +276,12 @@ function proto03(){
 
     		//touchstart
     		.on('mousedown', click)
-            .on('touchstart', click)    
+            .on('touchstart', click)
             //touch ende
     		.on('mouseup', function(){_this.clickEnd(this)})
-            .on('mouseupoutside', function(){_this.clickEnd(this)})   
+            .on('mouseupoutside', function(){_this.clickEnd(this)})
             .on('touchend', function(){_this.clickEnd(this)})
-            .on('touchendoutside', function(){_this.clickEnd(this)})    
+            .on('touchendoutside', function(){_this.clickEnd(this)})
             //drag
             .on('mousemove', function(){_this.drag(this)})
             .on('touchmove', function(){_this.drag(this)});
@@ -361,14 +378,14 @@ function proto03(){
 
         for (var i=0; i<this.value; i++){
 
-            var angle = ((2*Math.PI)/this.value)*i 
+            var angle = ((2*Math.PI)/this.value)*i
 
             this.antsDivision.push({
 
                 x : this.circle.x + (Math.cos(angle) * (n*0.32)),
                 y : this.circle.y + (Math.sin(angle) * (n*0.32))
-            
-            }) 
+
+            })
 
         }
 
@@ -456,12 +473,12 @@ function proto03(){
 
 
         }else{
-        
+
             this.ang = (this.ang + 0.05) % (Math.PI*2);
             this.circle.width =  this.size + Math.sin(this.ang) * 2;
             this.circle.height =  this.size + Math.sin(this.ang) * 2;
             this.circle.rotation = Math.sin(this.ang) * 0.02;
-        
+
         }
     };
 
@@ -482,7 +499,7 @@ function proto03(){
         this.sprite.anchor.x = 0.5
         this.sprite.anchor.y = 0.5
         this.sprite.renderable = false;
-        stage.addChild(this.sprite)        
+        stage.addChild(this.sprite)
 
         this.animation = new animation(this.sprite)
         this.AnimationStart = false
@@ -495,12 +512,28 @@ function proto03(){
     Ant.prototype.init = function(){
 
         stage.addChild(this.sprite)
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> master
+=======
+        
+>>>>>>> master
         var dest = {
             x : this.pos.x,
             y : this.pos.y
         };
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> master
+=======
+        
+>>>>>>> master
         this.animation.setPos(dest)
     };
 
@@ -514,26 +547,33 @@ function proto03(){
         this.length = 100
         this.trajectory = _trajectory || []
         this.state = 0
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+=======
+>>>>>>> master
         this.AnimationDone = false
         
+>>>>>>> master
         this.animation.init(this.trajectory[0],500,_offset)
         this.angles = []
 
 
-        // fix correct angles for ants in the ogirin lillypad 
+        // fix correct angles for ants in the ogirin lillypad
 
         for(var i = 0; i<this.trajectory.length; i++){
 
             if(i == 0 ){
 
-                this.angles.push(getAngle( this.sprite.x,this.sprite.y,this.trajectory[i].x,this.trajectory[i].y  )) 
-                    
+                this.angles.push(getAngle( this.sprite.x,this.sprite.y,this.trajectory[i].x,this.trajectory[i].y  ))
+
             }else{
 
-                this.angles.push(getAngle( this.trajectory[i-1].x,this.trajectory[i-1].y,this.trajectory[i].x,this.trajectory[i].y )) 
+                this.angles.push(getAngle( this.trajectory[i-1].x,this.trajectory[i-1].y,this.trajectory[i].x,this.trajectory[i].y ))
 
             }
-        
+
         }
 
         this.rotate(this.state)
@@ -550,12 +590,26 @@ function proto03(){
             this.rotate(this.state)
 
             if(this.animation.run()){
-                
+
                 this.state++
 
                 if(this.state != this.trajectory.length){
 
                     if(this.state == 1){
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+                        round.trial.antMoveDone("subtract")
+
+                    }else if(this.state == 2){
+
+                        round.trial.antMoveDone("add")
+                    };
+
+                    this.animation.init(this.trajectory[this.state],500)
+=======
+=======
+>>>>>>> master
                     
                         round.trial.antMoveDone("subtract")
                     
@@ -566,6 +620,7 @@ function proto03(){
                     };
 
                     this.animation.init(this.trajectory[this.state],500)                       
+>>>>>>> master
                 };
 
             };
@@ -575,16 +630,25 @@ function proto03(){
         }else{
 
             round.trial.leavesToFade++
+<<<<<<< HEAD
+<<<<<<< HEAD
+            this.AnimationDone = true;
+            return true
+        }
+=======
+=======
+>>>>>>> master
             console.log(round.trial.finishedState)
             this.AnimationDone = true;
             return true
         }   
+>>>>>>> master
     };
 
     Ant.prototype.fade = function(){
 
-        this.sprite.alpha = this.sprite.alpha - 0.05 
-         
+        this.sprite.alpha = this.sprite.alpha - 0.05
+
         if(this.sprite.alpha < 0){
 
             return true
@@ -592,7 +656,11 @@ function proto03(){
         }else{
 
             return false
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> master
         }
     };
 
@@ -609,27 +677,54 @@ function proto03(){
 */
 
     function Trial(_stimuli,_correct){
+<<<<<<< HEAD
+=======
 		
         stimCount++
+<<<<<<< HEAD
+>>>>>>> master
 
-        var specs = 
+=======
+>>>>>>> master
+
+        var specs =
 
             //--------------------------------------0
             {
                 stimuli: {
+<<<<<<< HEAD
+
+                    correctValues : [1,1],
+                    extras : {
+                        min: 22,
+                        max: 23,
+                        size: 2,
+=======
                 
                     correctValues : addition[stimCount%addition.length].options,     
                     extras : {
                         min: 1,
                         max: 1, 
                         size: 0,
+<<<<<<< HEAD
+>>>>>>> master
+=======
+>>>>>>> master
                     }
                 },
 
                 correct :{
 
                     type: "number",
+<<<<<<< HEAD
+<<<<<<< HEAD
+                    value: 20,
+=======
                     value: addition[stimCount%addition.length].sum,
+>>>>>>> master
+=======
+                    value: addition[stimCount%addition.length].sum,
+>>>>>>> master
 
                 }
             }
@@ -637,12 +732,12 @@ function proto03(){
 		/*----------------------
 		Stimuli is the number necessery to get to the answear.
 		It should be used to draw smaller lillypad so the user has at least one
-		way to solve the problem	
+		way to solve the problem
 		------------------------*/
     	this.stimuli = specs.stimuli
 
 		/*----------------------
-		Correct is the final number that should be placed in the final lillypad	
+		Correct is the final number that should be placed in the final lillypad
 		------------------------*/
     	this.correct = specs.correct
 
@@ -666,14 +761,21 @@ function proto03(){
         this.countDone = false;
 
         this.ants = {
-        
+
             size : {
                 width : 9,
                 height : 14,
             },
             sprites : [],
         };
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+=======
+>>>>>>> master
         
+>>>>>>> master
         this.antsToAnimate = {
             origin : [],
             target : []
@@ -688,22 +790,22 @@ function proto03(){
 
         var lilipadValues = this.stimuli.correctValues
 
-        for (var i=0; i<this.stimuli.extras.size; i++){     
+        for (var i=0; i<this.stimuli.extras.size; i++){
 
             lilipadValues.push(getRandomInt(this.stimuli.extras.min,this.stimuli.extras.max))
-        
+
         }
 
         if(lilipadValues.length > this.posMatrix.length){
-        
+
             throw "SCREEN TOO SMALL!"
-        
+
         }
 
-        // create small liilypads 
+        // create small liilypads
         for (var i=0; i<lilipadValues.length; i++){
 
-            var pos = getRandomInt(0,this.posMatrix.length) 
+            var pos = getRandomInt(0,this.posMatrix.length)
             this.lillySmall.push(new lillySmall(this))
 
         }
@@ -718,12 +820,12 @@ function proto03(){
 
             this.lillySmall[i].init(lilipadValues[i], this.getPos(i), this.specs.lillyWidth, i, this.ants.size)
 
-            //crete ants 
+            //crete ants
             for(var j = 0;j<lilipadValues[i];j++){
-                
+
                 var pos = this.lillySmall[i].antsDivision[j]
                 this.ants.sprites.push( new Ant(this.ants.size, pos, i) )
-            
+
             }
 
         }
@@ -744,7 +846,7 @@ function proto03(){
         stage.addChild(this.branch);
 
         for(var i=0;i<this.ants.sprites.length;i++){
-               
+
             this.ants.sprites[i].init()
 
         }
@@ -754,21 +856,21 @@ function proto03(){
     };
 
     Trial.prototype.destroy = function(){
-        
+
 
         this.lillyFinal.destroy()
 
         for(var i=0;i<this.ants.sprites.length;i++){
-               
+
 
             this.ants.sprites[i].destroy()
 
-        }    
+        }
 
         for(var i = 0; i<this.lillySmall.length; i++){
 
             this.lillySmall[i].destroy()
-        
+
         }
 
         stage.removeChild(this.stick)
@@ -780,6 +882,20 @@ function proto03(){
     Trial.prototype.antMoveDone = function(_operation){
 
         if(_operation == "add"){
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+           console.log("ants >> In")
+            this.antsAdd++
+
+        }else if(_operation == "subtract"){
+
+            console.log("ants >> out")
+            this.antsSub--
+
+=======
+=======
+>>>>>>> master
           
             this.antsAdd++
         
@@ -787,6 +903,10 @@ function proto03(){
 
             this.antsSub--
                     
+<<<<<<< HEAD
+>>>>>>> master
+=======
+>>>>>>> master
         }else if(_operation == "final"){
 
             this.antsAdd--
@@ -824,22 +944,22 @@ function proto03(){
         //check which lillypad the stick was droped over
         for(var i=0; i<this.lillySmall.length; i++){
 
-            if(this.lillySmall[i].circle.containsPoint(_dropPoint)){ 
+            if(this.lillySmall[i].circle.containsPoint(_dropPoint)){
 
                 if(i == _id){
                     this.stick.alpha = 0
-                    return  
-                } 
+                    return
+                }
 
                 this.moveStick(true,i)
                 this.updateOperation(_id,i)
 
-                return;    
+                return;
 
             }
 
         }
-        
+
         this.fadeStick = true;
     };
 
@@ -860,7 +980,14 @@ function proto03(){
             this.countDone = false;
 
             // set countdown
+<<<<<<< HEAD
+            this.countDownTargets = [_origin,_target]
+=======
             this.countDownTargets = [_origin,_target] 
+<<<<<<< HEAD
+>>>>>>> master
+=======
+>>>>>>> master
 
             //update value for lillypads
             this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
@@ -878,7 +1005,15 @@ function proto03(){
         var targDone = false
         var tar = {}
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+        //LIllYSMALL
+=======
         //LIllYSMALL 
+>>>>>>> master
+=======
+        //LIllYSMALL 
+>>>>>>> master
         if(this.countDownTargets[1] != "final"){
 
             tar = this.lillySmall[this.countDownTargets[1]]
@@ -898,7 +1033,17 @@ function proto03(){
         }else{
 
             tar = this.lillyFinal
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+            console.log(tar.cNumber.text,this.countDownTargets[0])
+
+=======
     
+>>>>>>> master
+=======
+    
+>>>>>>> master
             if(tar.cNumber.text > tar.value - this.lillySmall[this.countDownTargets[0]].value){
 
                 tar.cNumber.text = parseInt(tar.cNumber.text) - this.antsAdd
@@ -924,12 +1069,27 @@ function proto03(){
 
         };
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+        if(oriDone && targDone){
+
+            return true;
+        }else{
+
+=======
+=======
+>>>>>>> master
           
         if(oriDone && targDone){
             
             return true;
         }else{
             
+<<<<<<< HEAD
+>>>>>>> master
+=======
+>>>>>>> master
             return false;
         }
     };
@@ -937,12 +1097,12 @@ function proto03(){
     Trial.prototype.setAnimateAnts = function(_origin,_target){
 
         this.AnimationDone = false
-            
+
         var t0 = {
             x: this.stick.x,
             y: this.stick.y,
         }
-        
+
         var t1 = {
 
             x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
@@ -955,7 +1115,7 @@ function proto03(){
             ori : 0,
         }
 
-        var posCount = 0        
+        var posCount = 0
 
         if(_target == "final"){ // > if you droped the stick over the final circle
 
@@ -978,13 +1138,13 @@ function proto03(){
                     this.antsToAnimate.origin.push(i)
                     offset.ori++
                     posCount++
-                
 
-                }   
-            }     
+
+                }
+            }
 
         }else{ // if you dropped the stick over a small lillypad
-      
+
             this.lillySmall[_target].getAntsDivision(this.ants.size)
             this.antsToAnimate.target = []
             this.antsToAnimate.origin = []
@@ -1009,31 +1169,39 @@ function proto03(){
 
 
                     var trajectory = [ this.lillySmall[_target].antsDivision[posCount] ]
-                    
+
                     this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.tar))
-                    
+
                     this.antsToAnimate.target.push(i)
                     offset.tar++
                     posCount++
                 }
 
             }
-    
+
         }
     };
 
     Trial.prototype.animateAnts = function(_origin,_target){
 
-        var done = true 
+        var done = true
        // console.log("---------START-----------" + done)
 
        if(_target != "final"){
-            
+
             for(var i = 0; i<this.antsToAnimate.target.length; i++){
 
                 if(!this.ants.sprites[this.antsToAnimate.target[i]].move()  || !this.ants.sprites[this.antsToAnimate.target[i]].AnimationDone){
                     done = false;
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
                 
+>>>>>>> master
+=======
+                
+>>>>>>> master
                 };
 
             };
@@ -1044,9 +1212,21 @@ function proto03(){
 
             if(!this.ants.sprites[this.antsToAnimate.origin[i]].move() || !this.ants.sprites[this.antsToAnimate.origin[i]].AnimationDone){
                 done = false;
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+            };
+
+=======
             
             };
 
+>>>>>>> master
+=======
+            
+            };
+
+>>>>>>> master
         };
 
 
@@ -1056,9 +1236,17 @@ function proto03(){
 
             for(var i = 0; i<this.antsToAnimate.origin.length; i++){
 
-                this.ants.sprites[this.antsToAnimate.origin[i]].id = newId 
+                this.ants.sprites[this.antsToAnimate.origin[i]].id = newId
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+            };
+=======
             };      
+>>>>>>> master
+=======
+            };      
+>>>>>>> master
 
             return true
 
@@ -1080,9 +1268,17 @@ function proto03(){
     };
 
     Trial.prototype.createStick = function(_data){
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> master
+=======
+        
+>>>>>>> master
         this.fadeStick = false
-    	
+
         // console.log("-------------")
         for(var i = 0; i<this.lillySmall.length; i++){
 
@@ -1114,36 +1310,36 @@ function proto03(){
                     this.lillyFinal.x,
                     this.lillyFinal.y
 
-                )                
+                )
 
                 this.stick.angle = angle
                 this.stick.width = getDistance(
-                
+
                     this.stick.x,
                     this.stick.y,
                     this.lillyFinal.x,
                     this.lillyFinal.y
-                
+
                 ) - (this.lillywith)
 
             }else{
-                    
+
                 var angle = getAngle(this.stick.startX ,this.stick.startY,this.lillySmall[_lillyId].circle.x,this.lillySmall[_lillyId].circle.y)
                 this.stick.angle = angle
 
                 this.stick.width = getDistance(
-                
+
                     this.stick.x,
                     this.stick.y,
                     this.lillySmall[_lillyId].circle.x,
                     this.lillySmall[_lillyId].circle.y
-                
-                ) - (this.lillywith * 0.45) 
+
+                ) - (this.lillywith * 0.45)
 
             }
-            
-            
-            this.stick.rotation = angle + Math.PI*1.5;           
+
+
+            this.stick.rotation = angle + Math.PI*1.5;
 
             var sine = Math.sin(angle)
             var cosine = Math.cos(angle)
@@ -1153,14 +1349,14 @@ function proto03(){
                 this.branch.renderable  = true;
                 this.branch.rotation = angle + Math.PI
                 this.branch.x = this.stick.x + sine * (this.stick.width * 0.5 - this.branch.width/2) + (cosine*13);
-                this.branch.y = this.stick.y - cosine * (this.stick.width * 0.5 - this.branch.width/2) + (sine*13);            
-            
+                this.branch.y = this.stick.y - cosine * (this.stick.width * 0.5 - this.branch.width/2) + (sine*13);
+
             }else{
-                
+
                 this.branch.renderable  = false;
-            
+
             }
-    
+
         }else{
 
             var angle = getAngle(this.stick.startX, this.stick.startY, _data.x, _data.y)
@@ -1185,14 +1381,14 @@ function proto03(){
                 this.branch.renderable  = true;
                 this.branch.rotation = angle + Math.PI
                 this.branch.x = this.stick.x + sine * (this.stick.width * 0.5 - this.branch.width/2) + (cosine*13);
-                this.branch.y = this.stick.y - cosine * (this.stick.width * 0.5 - this.branch.width/2) + (sine*13);            
-            
+                this.branch.y = this.stick.y - cosine * (this.stick.width * 0.5 - this.branch.width/2) + (sine*13);
+
             }else{
                 this.branch.renderable  = false;
             }
-        
 
-        }    
+
+        }
     };
 
     Trial.prototype.removeStick = function(){
@@ -1207,7 +1403,7 @@ function proto03(){
 
             this.fadeStick = false;
             this.AnimationDone = true
-        
+
         }
     };
 
@@ -1219,12 +1415,12 @@ function proto03(){
         obj.bigLillypadWidth = 280;
         obj.lillyWidth = 130;
         obj.margin = 15
-		
+
         obj.width = session.canvas.width-(2*obj.canvasMargin)-(obj.bigLillypadWidth*1.2)-obj.lillyWidth/2;
 		obj.height = session.canvas.height-(2*obj.canvasMargin);
 
     	obj.moduleSize = obj.lillyWidth+(obj.margin*2)
-    	
+
     	obj.moduleWidthCount = Math.floor(obj.width/obj.moduleSize)
     	obj.moduleHeightCount = Math.floor(obj.height/obj.moduleSize);
 
@@ -1236,7 +1432,7 @@ function proto03(){
 
         this.lillywith = obj.lillyWidth
     	return obj
-	};   
+	};
 
     Trial.prototype.getMatrixPosition = function(){
 
@@ -1253,18 +1449,18 @@ function proto03(){
                     id: i,
                     pos:{
                         x:(this.specs.widthInter*i)+this.specs.margingW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
-                        y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin+getRandomInt(-20,20),                                 
+                        y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin+getRandomInt(-20,20),
                     }
-	    	
+
 	    		})
-			
+
 			}
 
 
     	}
 
     	for(var i=0; i<allPos.length; i++){
-    		this.matrixAvailable.push(i)	
+    		this.matrixAvailable.push(i)
     	}
 
         return allPos
@@ -1308,11 +1504,25 @@ function proto03(){
                     // console.log("---------------------------")
                     // console.log(this.lillyFinal.container.x,this.lillyFinal.container.y)
                     // console.log(
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+                    //     this.lillyFinal.container.getBounds().x,
+                    //     this.lillyFinal.container.getBounds().y
+                    // )
+
+=======
+=======
+>>>>>>> master
                         
                     //     this.lillyFinal.container.getBounds().x,
                     //     this.lillyFinal.container.getBounds().y
                     // )
                    
+<<<<<<< HEAD
+>>>>>>> master
+=======
+>>>>>>> master
                     // console.log(session.canvas.width,session.canvas.height)
 
                     this.introState = "spawnSmallLillipads";
@@ -1323,7 +1533,7 @@ function proto03(){
             case "spawnSmallLillipads":
 
                 for(var i = 0; i < this.lillySmall.length; i++){
-                    
+
                     this.lillySmall[i].display(true)
 
                 }
@@ -1339,6 +1549,19 @@ function proto03(){
 
     Trial.prototype.fadeLeaves = function(){
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+            console.log(this.lillyFinal.leaves)
+
+        for(var i=0; i<this.leavesToFade; i++){
+
+            this.lillyFinal.leaves[this.leavesToFade].alpha = this.lillyFinal.leaves[this.leavesToFade].alpha - 0.1
+
+        }
+    }
+=======
+=======
+>>>>>>> master
         if(this.leavesToFade <= this.correct.value){
             
             console.log(this.leavesToFade,this.correct.value)
@@ -1350,6 +1573,10 @@ function proto03(){
             }
         }
     };
+<<<<<<< HEAD
+>>>>>>> master
+=======
+>>>>>>> master
 
     Trial.prototype.finished = function(){
 
@@ -1357,6 +1584,13 @@ function proto03(){
 
             case "counrdown":
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+            this.fadeLeaves()
+=======
+>>>>>>> master
+=======
+>>>>>>> master
 
                 var countDone = this.countNumber()
                 var animationDone = this.animateAnts()
@@ -1391,14 +1625,14 @@ function proto03(){
                 if(this.lillyFinal.state == "fading"){
 
                    for(var i = 0; i<this.antsToAnimate.origin.length; i++){
-                        
+
                         this.ants.sprites[this.antsToAnimate.origin[i]].fade()
-                   } 
+                   }
                 }
 
                 //sink lillypap
                 if(this.lillyFinal.display()){
-                    
+
                     this.finishedState = "callNext"
                 }
 
@@ -1445,7 +1679,7 @@ function proto03(){
 
                 };
 
-                break;  
+                break;
 
             case "play":
 
@@ -1457,11 +1691,11 @@ function proto03(){
                 }
 
                 if(this.fadeStick){
-                    
+
                     this.removeStick()
 
                 }else if(this.performOperation){
-                
+
                     var countDone = this.countNumber()
                     var AnimationDone = this.animateAnts()
 
@@ -1470,7 +1704,7 @@ function proto03(){
                         this.lillySmall[this.countDownTargets[0]].fade = true
                         this.fadeStick = true;
                         this.performOperation = false
-                    
+
                     }
                 }
 
@@ -1478,8 +1712,16 @@ function proto03(){
 
             case "finished":
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
                 this.fadeLeaves()
 
+>>>>>>> master
+=======
+                this.fadeLeaves()
+
+>>>>>>> master
                 if(this.fadeStick){this.removeStick()}
 
                 if(this.finished()){
@@ -1503,11 +1745,94 @@ function proto03(){
     // create the root of the scene graph and main classes
     var stage = new PIXI.Container();
     var round = new Round();
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+>>>>>>> master
+=======
+>>>>>>> master
 
     this.destroy = function(){
         finishGame = true;
         session.hide()
     };
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+    //---------------------------------------loading assets
+=======
+
+    //---------------------------------------loading assets
+
+        if(proto3loaded){
+
+            assets.addSprite("ripple",'sprites/lillypad/ripples/ripples.json',5)
+            assets.addSprite("lillyFinal_Sink",'sprites/lillypad/final_sink/lillyFinal_Sink.json',9)
+>>>>>>> master
+
+            assets.addTexture("stick","sprites/stick/stick.png")
+            assets.addTexture("leave","sprites/stick/leave.png")
+            assets.addTexture("branch","sprites/stick/branch.png")
+
+            assets.addTexture("lillyBig","sprites/lillypad/big-01.png")
+            assets.addTexture("lillySmall","sprites/lillypad/small-01.png")
+            assets.addTexture("ants","sprites/lillypad/ant.png")
+            assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
+
+<<<<<<< HEAD
+        assets.addTexture("stick","sprites/stick/stick.png")
+        assets.addTexture("leave","sprites/stick/leave.png")
+        assets.addTexture("branch","sprites/stick/branch.png")
+=======
+            assets.load(onAssetsLoaded)
+
+        }else{
+>>>>>>> master
+
+            onAssetsLoaded();
+
+        };
+
+        function onAssetsLoaded(){
+
+            console.log("assetsloaded!")
+            round.init(Trial,stage);
+
+<<<<<<< HEAD
+    };
+
+    function onAssetsLoaded(){
+
+        console.log("assetsloaded!")
+        round.init(Trial,stage, stimuli);
+
+        setTimeout(function(){
+            console.log("starting the game!")
+            session.show()
+            update();
+        });
+    };
+=======
+            setTimeout(function(){
+                console.log("starting the game!")
+                session.show()
+                update();
+            });
+        };
+>>>>>>> master
+
+    //---------------------------------------LOOP
+
+        var statsBol = false;
+
+        if(statsBol){
+
+            session.stats.domElement.style.display = "block"
+
+        };
+
+=======
 
     //---------------------------------------loading assets
 
@@ -1555,6 +1880,7 @@ function proto03(){
 
         };
 
+>>>>>>> master
         var finishGame = false
         var previousTime = Date.now();
         var MS_PER_UPDATE = 16.66667;
@@ -1566,15 +1892,33 @@ function proto03(){
 
                 console.log("finishing Game")
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+            session.stats.domElement.style.display = "none"
+            round.destroy()
+            assets.destroy()
+            finishGame = false
+            currentview = new Chooser(assets)
+=======
+=======
+>>>>>>> master
                 session.stats.domElement.style.display = "none"
                 round.destroy()
                 assets.destroy()
                 finishGame = false
                 currentview = new Chooser(assets)
+<<<<<<< HEAD
+>>>>>>> master
 
                 return
             }
 
+=======
+
+                return
+            }
+
+>>>>>>> master
                 if(statsBol)session.stats.begin()
 
                 	//update position based on espectaed frame rate
@@ -1584,6 +1928,36 @@ function proto03(){
         	        lag = lag + elapsed;
 
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+    	        while (lag >= MS_PER_UPDATE){
+
+    	            round.play(lag/MS_PER_UPDATE);
+    	            lag = lag - MS_PER_UPDATE;
+=======
+        	        while (lag >= MS_PER_UPDATE){        
+
+        	            round.play(lag/MS_PER_UPDATE);
+        	            lag = lag - MS_PER_UPDATE;
+>>>>>>> master
+
+        	        }
+
+        	        //---------------->> Thing that renders the whole stage
+        	        session.render(stage)
+
+        	        requestAnimationFrame(update);
+
+                if(statsBol)session.stats.end()
+
+        }
+
+<<<<<<< HEAD
+};
+=======
+};
+>>>>>>> master
+=======
         	        while (lag >= MS_PER_UPDATE){        
 
         	            round.play(lag/MS_PER_UPDATE);
@@ -1601,3 +1975,4 @@ function proto03(){
         }
 
 };
+>>>>>>> master

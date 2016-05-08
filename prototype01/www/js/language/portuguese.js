@@ -8,24 +8,6 @@ var feedback = [
   {id:"goodbye", text:"goodbye", audio:"goodbye"}
 ];
 
-var correctSounds = [
-  
-   [
-    {id:1, audio:"1" },
-    {id:2, audio:"2" },
-    {id:3, audio:"3" },
-    {id:4, audio:"4" }
-   ],
-
-   [
-    {id:1, audio:"1" },
-    {id:2, audio:"2" },
-    {id:3, audio:"3" },
-    {id:4, audio:"4" },
-    {id:5, audio:"5" }
-   ]
-
-  ];
 
 var numbers = [
 //  {id:"0", audio:"zero", text:"zero"},
@@ -52,13 +34,13 @@ var numbers = [
   // {id:"30", audio:"30", text:"trinta"},
   // {id:"40", audio:"40", text:"quarenta"},
   // {id:"50", audio:"50", text:"cinquenta"},
-  // {id:"60", audio:"60", text:"cinquenta"},
-  // {id:"70", audio:"70", text:"cinquenta"},
-  // {id:"80", audio:"80", text:"cinquenta"},
-  // {id:"90", audio:"90", text:"cinquenta"},
-  // {id:"100", audio:"100", text:"cinquenta"},
-  // {id:"1000", audio:"1000", text:"cinquenta"}
-  
+  // {id:"60", audio:"60", text:""},
+  // {id:"70", audio:"70", text:""},
+  // {id:"80", audio:"80", text:""},
+  // {id:"90", audio:"90", text:""},
+  // {id:"100", audio:"100", text:""},
+  // {id:"1000", audio:"1000", text:""}
+
   ];
 
 // words for each letter and syllable: https://www.youtube.com/watch?v=IUjpXWPaWE0
