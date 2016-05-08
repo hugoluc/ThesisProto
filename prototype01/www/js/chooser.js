@@ -51,13 +51,12 @@ var Chooser = function() {
       currentview = new Hangman();
     }
 
-    // var game5 = document.getElementById("choose-game05")
+    var game5 = document.getElementById("choose-game05")
 
-    // game5.onclick =  function(){
-    //   console.log("test");
-    //   clickStart('container-chooser','container-exp');
-    //   currentview = new proto04();
-    //  }
+    game5.onclick =  function(){
+      clickStart('container-chooser','sketch-container');
+      currentview = new Sketch();
+     }
 
 
   session.stats.end()
