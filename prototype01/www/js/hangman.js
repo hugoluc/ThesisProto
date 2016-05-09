@@ -209,6 +209,14 @@ var HangmanTrial = function(pars) {
         .attr("fill", getRandomColor());
     }
 
+    screen.append("svg:image")
+       .attr('x',xpos)
+       .attr('y',ypos)
+       .attr('width', 50)
+       .attr('height', 50)
+       .attr("xlink:href","sprites/stick/leave.png");
+       //.attr("transform", "rotate("+getRandomInt(0,180)+")");
+
     var myLabel = screen.append("g").append("text")
       .attr("x", screen_width+50)
       .attr("y", getRandomInt(50,screen_height-50))
@@ -258,6 +266,7 @@ var Hangman = function() {
 
   var storeData = function(tr_dat) {
     console.log("store data");
+    // ToDo: finish this!
     if(nextTrial) {
       nextTrial = false;
       setTimeout(function(){ next() }, 2000);

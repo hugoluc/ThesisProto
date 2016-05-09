@@ -110,7 +110,7 @@ var __slice = Array.prototype.slice;
       e.preventDefault();
       return false;
     };
-    
+
     Sketch.prototype.redraw = function() {
       var sketch;
       this.el.width = this.canvas.width();
@@ -191,7 +191,7 @@ var Sketch = function() {
   var canvas = document.createElement('canvas');
   canvas.id = "sketch"
   canvas.width = screen_width;
-  canvas.height = screen_height-40; // tool height..and maybe alphabet?
+  canvas.height = screen_height-110; // tool height..and maybe alphabet?
   canvas.style.border = "1px solid #000000";
   //canvas.style.position = "absolute;  top: -50 left: 0"
   //canvas.style.background = "url(sketch_alphabet_bg_sm.png) no-repeat center center";
@@ -200,6 +200,7 @@ var Sketch = function() {
   document.getElementById("sketch-container").appendChild(canvas);
 
   this.destroy = function() {
+    //$('.tools').remove();
     clickStart('sketch-container','container-chooser');
     currentview = new Chooser(assets);
   }
@@ -214,5 +215,3 @@ var Sketch = function() {
   $('#sketch').sketch();
 
 };
-
-  
