@@ -670,7 +670,6 @@ function proto02(){
                 this.nunBgRed.alpha = 0;
 
             };
-
         };
 
         Trial.prototype.destroy = function(){
@@ -1223,7 +1222,7 @@ function proto02(){
             if(window.innerWidth < 1200){
                 assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')                
             }else{
-                assets.addTexture("bg",'sprites/backGrounds/BackGround-01_2x.png')  
+                assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')  
             }
 
 

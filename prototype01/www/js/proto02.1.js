@@ -670,7 +670,6 @@ function proto02(){
                 this.nunBgRed.alpha = 0;
 
             };
-
         };
 
         Trial.prototype.destroy = function(){

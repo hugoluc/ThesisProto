@@ -84,7 +84,7 @@ function proto03(){
             this.lillySink.animationSpeed = 0.1
             this.lillySink.renderable = false
 
-            // var blur = new PIXI.filters.BlurFilter()
+            // var blur = new PIXI.filters.BlurFilter()x
             // blur.blur = 2
             // this.lillySink.filters = [blur]
 
