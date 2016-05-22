@@ -1,2 +1,6 @@
 *.bin
 *.lock
+hooks/
+platforms/
+plugins/
+config.xml
