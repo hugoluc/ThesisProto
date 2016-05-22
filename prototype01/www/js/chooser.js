@@ -54,30 +54,29 @@ var Chooser = function() {
     container.style.marginLeft = (window.innerWidth - game1.width)/2
 
 
-    // var game3 = document.getElementById("choose-game03")
+    var game3 = document.getElementById("choose-game03")
 
-    // game3.onclick =  function(){
-    //   console.log("starting spellingGame");
-    //   clickStart('container-chooser','container-exp');
-    //   currentview = new spellingGame();
-    // }
+    game3.onclick =  function(){
+      console.log("starting spellingGame");
+      clickStart('container-chooser','container-exp');
+      currentview = new spellingGame();
+    }
 
-    // var game4 = document.getElementById("choose-game04")
+    var game4 = document.getElementById("choose-game04")
 
-    // game4.onclick =  function(){
-    //   console.log("starting wordGuess");
-    //   init_screen();
-    //   clickStart('container-chooser','container-exp');
-    //   currentview = new Hangman();
-    // }
+    game4.onclick =  function(){
+      console.log("starting wordGuess");
+      init_screen();
+      clickStart('container-chooser','container-exp');
+      currentview = new Hangman();
+    }
 
-    // var game5 = document.getElementById("choose-game05")
+    var game5 = document.getElementById("choose-game05")
 
-    // game5.onclick =  function(){
-    //   console.log("test");
-    //   clickStart('container-chooser','container-exp');
-    //   currentview = new proto04();
-    //  }
+    game5.onclick =  function(){
+      clickStart('container-chooser','sketch-container');
+      currentview = new Sketch();
+     }
 
 
   session.stats.end()

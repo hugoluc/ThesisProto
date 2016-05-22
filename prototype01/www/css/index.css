@@ -55,8 +55,12 @@ body{
 }
 
 canvas{
-
     margin-top : 10%;
+}
 
-
+#sketch {
+    position: absolute;
+    left:0;
+    top:100;
+    margin-top : 0%;
 }
