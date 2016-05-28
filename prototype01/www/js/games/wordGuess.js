@@ -174,7 +174,7 @@ var WordGame = function() {
       } else {
         // either here (or in finish) store summary data of this game
         self.destroy();
-        currentview = new Chooser();
+        currentview = new MainMenu();
       }
       //finish(); // save data?
     } else if(trial_index%5===0) {

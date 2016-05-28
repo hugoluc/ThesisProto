@@ -59,7 +59,7 @@ function proto04(){
 
 	        finishGame = false
 	        assets.destroy()
-	        currentview = new Chooser()
+	        currentview = new MainMenu()
 
 	    }
 

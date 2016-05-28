@@ -202,7 +202,7 @@ var Sketch = function() {
   this.destroy = function() {
     //$('.tools').remove();
     clickStart('sketch-container','container-chooser');
-    currentview = new Chooser(assets);
+    currentview = new MainMenu(assets);
   }
 
   $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {

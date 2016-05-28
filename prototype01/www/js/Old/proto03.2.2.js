@@ -1565,7 +1565,7 @@ function proto03(){
             round.destroy()
             assets.destroy()
             finishGame = false
-            currentview = new Chooser(assets)
+            currentview = new MainMenu(assets)
 
             return
         }

@@ -103,7 +103,7 @@ function count_unique_elements_in_array(arr) {
 // var back_button = function() {
 //   finish();
 //   setTimeout(function(){
-//     currentview = new Chooser();
+//     currentview = new MainMenu();
 //   }, 500);
 // };
 

@@ -659,7 +659,7 @@ function update() {
         thisRound.destroy();
         assets.destroy();
         finishGame = false;
-        currentview = new Chooser(); // return assets??
+        currentview = new MainMenu(); // return assets??
 
         return
     }

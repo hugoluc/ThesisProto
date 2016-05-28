@@ -285,7 +285,7 @@ function spellingGame(){
           storeSession();
           thisRound.destroy();
           finishGame = false;
-          currentview = new Chooser(); // return assets? that's why nodes increase..
+          currentview = new MainMenu(); // return assets? that's why nodes increase..
       }
 
       if(statsBol) stats.begin();
