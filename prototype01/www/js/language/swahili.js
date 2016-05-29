@@ -36,7 +36,9 @@ var numbers = [
   {id:"80", audio:"themanini", text:"themanini", seq:[]},
   {id:"90", audio:"tisini", text:"tisini", seq:[]},
   {id:"100", audio:"mia", text:"mia", seq:[]}, // 500 - mia tano
-  {id:"1000", audio:"elfu", text:"elfu", seq:[]}
+  {id:"1000", audio:"elfu", text:"elfu", seq:[]},
+  {id:"100000", audio:"laki", text:"laki", seq:[]},
+  {id:"1000000", audio:"milloni", text:"milloni", seq:[]}
   ];
 
 //generate_number_name(45)
