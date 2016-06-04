@@ -6,11 +6,11 @@ body{
 
 .MenuButton {
 
-    display: block;
+    display: inline-block;
     background: blue;
     width: 100px;
     height: 100px;
-    margin: 0px;
+    margin: 10px;
 
 
 }

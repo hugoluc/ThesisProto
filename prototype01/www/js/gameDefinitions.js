@@ -363,14 +363,14 @@ function gameScore(){
 	this.score = 0;
 	this.starts = [];
 
-
 };
 
-gameScore.prototype.addScore = function(_starsPos, _value, _delay){
+gameScore.prototype.addScore = function(_starsPos, _value, _duation){
 
 	this.score = this.score + (_starsPos.length * _value); 
-	var initDelay = _delay || 200;
+	var initDelay = 200;
 	var delay = 0
+	var duration = _duation || 1000
 
 	console.log(_starsPos)
 
@@ -383,14 +383,12 @@ gameScore.prototype.addScore = function(_starsPos, _value, _delay){
 		this.stage.addChild(star);
 		
 		var starAnimation = new animation(star);
-		starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},1000,delay,[0,1]);
+		starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
 		delay = delay + initDelay
 
 		this.starts.push([star,starAnimation]);
 
 	};
-
-
 
 
 };
