@@ -1,8 +1,17 @@
-.choser{
+body{
 
-    width : 100%;
-    background : red;
-    position: absolute;
+    background: #4d1f48
+
+}
+
+.MenuButton {
+
+    display: block;
+    background: blue;
+    width: 100px;
+    height: 100px;
+    margin: 0px;
+
 
 }
 
@@ -13,24 +22,56 @@
 
 #header-exp{
 
-    background : black;
-    height: 50;
+	position: absolute;
+	margin-top: 0;
+	height: 8%;
+    width: 100%;
+	z-index: 2;
+    background: black;
 
 }
 
-#header-exp{
 
-	position: relative;
-	margin-top: 0;
-	background: blue;
-	height: 80px;
-	z-index: 2;
+#back{
+    width : 120;
+}
+
+
+#score{
+
+    height: 200%;
+    right: 0;
+    position: absolute;
+
+}
+
+
+#bar {
+    height: 120%;
+    width: 100%;
+    position : absolute;
+    margin-left: 0;
+    z-index: -1;
+}
+
+#menu {
+
+    height:  100%;
+    width : 100%;
+    position: absolute;
+    margin-left: 0;
+    z-index: 2;
+
 
 }
 
 canvas{
+    margin-top : 10%;
+}
 
-	position: relative;
-
-
+#sketch {
+    position: absolute;
+    left:0;
+    top:100;
+    margin-top : 0%;
 }

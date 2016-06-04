@@ -60,15 +60,16 @@ function Start(){
   ]
 
   // hide experiment and show chooser
-  var containerChooser = document.getElementById("container-chooser")
+  var containerMainMenu = document.getElementById("container-chooser")
 
   for(var i =0; i<availableGames.length; i++){
 
     game = document.createElement("div");
     game.id = i
-    game.width = 300
-    game.height = 200
+    game.className = "MenuButton"
     game.innerHTML = availableGames[i].name
+
+
 
     var gameClick = function(){
 
@@ -78,7 +79,7 @@ function Start(){
     } 
 
     game.onclick = gameClick
-    containerChooser.appendChild(game)
+    containerMainMenu.appendChild(game)
 
   }
 
@@ -86,6 +87,10 @@ function Start(){
 
       session = new CanvasSession();
       assets = new Assets();
+      score = new gameScore();
+     
+      assets.addTexture('star',"sprites/star/star.png")
+     
       session.init();
       PIXIInitialized = true;
 

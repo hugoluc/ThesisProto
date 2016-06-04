@@ -4,6 +4,17 @@ body{
 
 }
 
+.MenuButton {
+
+    display: block;
+    background: blue;
+    width: 100px;
+    height: 100px;
+    margin: 0px;
+
+
+}
+
 #container-exp{
     position : absolute;
     top : 0;
@@ -55,8 +66,12 @@ body{
 }
 
 canvas{
-
     margin-top : 10%;
+}
 
-
+#sketch {
+    position: absolute;
+    left:0;
+    top:100;
+    margin-top : 0%;
 }

@@ -1,8 +1,17 @@
-.choser{
+body{
 
-    width : 100%;
-    background : red;
-    position: absolute;
+    background: #4d1f48
+
+}
+
+.MenuButton {
+
+    display: block;
+    background: blue;
+    width: 100px;
+    height: 100px;
+    margin: 0px;
+
 
 }
 
@@ -42,12 +51,27 @@
     width: 100%;
     position : absolute;
     margin-left: 0;
-    z-index: -1
+    z-index: -1;
+}
+
+#menu {
+
+    height:  100%;
+    width : 100%;
+    position: absolute;
+    margin-left: 0;
+    z-index: 2;
+
+
 }
 
 canvas{
-
     margin-top : 10%;
+}
 
-
+#sketch {
+    position: absolute;
+    left:0;
+    top:100;
+    margin-top : 0%;
 }
