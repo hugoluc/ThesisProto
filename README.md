@@ -1,2 +1,1 @@
-# ThesisProto
-Thesis prototypes
+# EgoTeach
