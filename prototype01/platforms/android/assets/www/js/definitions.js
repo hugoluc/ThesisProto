@@ -15,6 +15,25 @@ var score = 0; // get from summarydata for each game type (or one for all?)
 var background_image_files = ["plains1.png","plains2.png"]; //,"sky0_1024x600.jpg",
 // "sky1_1024x600.jpg","sky2_1024x600.jpg","sky3_1024x600.jpg","sky4_1024x600.jpg"]
 
+var correctSounds = [
+
+   [
+    {id:1, audio:"1" },
+    {id:2, audio:"2" },
+    {id:3, audio:"3" },
+    {id:4, audio:"4" }
+   ],
+
+   [
+    {id:1, audio:"1" },
+    {id:2, audio:"2" },
+    {id:3, audio:"3" },
+    {id:4, audio:"4" },
+    {id:5, audio:"5" }
+   ]
+
+  ];
+
 var init_screen = function() {
   screen = d3.select("#container-exp").append("svg")
     .attr({
@@ -84,7 +103,7 @@ function count_unique_elements_in_array(arr) {
 // var back_button = function() {
 //   finish();
 //   setTimeout(function(){
-//     currentview = new Chooser();
+//     currentview = new MainMenu();
 //   }, 500);
 // };
 

@@ -55,24 +55,24 @@
             var currentview;
 
             $(window).load( function(){
-        
+
                 Start();
 
             });
 
-
         </script>
 
         <title>egoTeach v.1</title>
+    
     </head>
 
     <body>
 
+        <div id="scoreContainer"></div>
+
         <!-- Home Page with button to choose games -->
-        <div id="container-chooser" style="display : none">
+        <div id="container-chooser"></div>
 
-
-        </div>
         <!--  Game Container to be filled based on the chooser options  -->
         <div id="container-exp">
 
@@ -88,11 +88,15 @@
         </div>
 
         <div id="sketch-container" style="display : none">
+          
           <div class="tools">
+        
             <image src="img/Header/back.png" onclick="currentview.destroy()" id="back" style="float: left; height: 85"></image>
             <a href="#sketch" data-tool="marker">Marker</a>
             <a href="#sketch" data-tool="eraser" style="float: right; margin-right: 15px;">Eraser</a>
+        
           </div>
+        
         </div>
 
     </body>

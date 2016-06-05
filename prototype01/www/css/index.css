@@ -4,6 +4,34 @@ body{
 
 }
 
+#scoreContainer{
+
+    position: absolute;
+    z-index: 10;
+
+}
+
+#container-chooser{
+
+    position: absolute;
+
+}
+
+.MenuButton {
+
+    display: inline-block;
+    background: blue;
+    width: 100px;
+    height: 100px;
+    margin: 10px
+}
+
+#starGroup {
+
+        position: absolute;    
+
+}
+
 #container-exp{
     position : absolute;
     top : 0;

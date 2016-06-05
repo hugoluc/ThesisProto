@@ -10,7 +10,7 @@
 function proto02(){
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
-  
+
     /*
     -------------------------------------------------------------------------------------------------------------
                                                   Class: LadyBug
@@ -373,26 +373,9 @@ function proto02(){
                     round.changeDifficulty(false)
                     round.trial.getFeedback(false,false)
 
-<<<<<<< HEAD
                 };
             };
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> master
-                if(!this.correctImput){
-
-                    round.trial.answer(false)
-                    round.changeDifficulty(false)
-                    round.trial.getFeedback(false,false) 
-
-                };
-            };
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> master
         };
 
         LadyBug.prototype.resetFeedback = function(){
@@ -1147,13 +1130,6 @@ function proto02(){
                     //check if queue is empty
                     if(this.audioQueue.length > 0){
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> master
-
->>>>>>> master
                         for(var i = 0; i<this.audioQueue[0].length; i++){
 
                             this.audioQueue[0][i].currentTime = 0
@@ -1177,28 +1153,11 @@ function proto02(){
                     return
 
                     if(this.audioQueue.length > 0 && this.audioQueue[0].paused){
-<<<<<<< HEAD
                         this.audioQueue.splice(0,1)
-=======
-                    
-
-                    this.audioQueue.splice(0,1)
-    
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> master
                         this.audioQueue[0].currentTime = 0
                         this.audioQueue[0].play()
                         this.audioTimer.start(180)
                     }else{
-<<<<<<< HEAD
-=======
-
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> master
                         this.audioQueuePlay = false;
                     }
 
@@ -1235,14 +1194,7 @@ function proto02(){
 
         this.destroy = function(){
             finishGame = true;
-<<<<<<< HEAD
             session.hide();
-=======
-            session.hide()
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> master
         };
 
         function onAssetsLoaded(){
@@ -1274,11 +1226,7 @@ function proto02(){
             if(window.innerWidth < 1200){
                 assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')
             }else{
-<<<<<<< HEAD
-                assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')  
-=======
                 assets.addTexture("bg",'sprites/backGrounds/BackGround-01_2x.png')
->>>>>>> 72cb5b97a021d663b966e6ee060e3ae48d5435c5
             }
 
 

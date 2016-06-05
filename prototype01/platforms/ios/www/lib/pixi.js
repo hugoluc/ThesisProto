@@ -15622,6 +15622,8 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 
     this._texture = null;
     this.shader = null;
+
+
 };
 
 // some helper functions..
@@ -20017,6 +20019,7 @@ Object.defineProperties(MovieClip.prototype, {
         },
         set: function (value)
         {
+
             if(value[0] instanceof core.Texture)
             {
                 this._textures = value;
@@ -20030,6 +20033,7 @@ Object.defineProperties(MovieClip.prototype, {
                 {
                     this._textures.push(value[i].texture);
                     this._durations.push(value[i].time);
+                
                 }
             }
         }
@@ -24152,7 +24156,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         }
 
         if(displayObject.interactive)
-        {
+        {   
+
             func(displayObject, hit); 
         }
     }

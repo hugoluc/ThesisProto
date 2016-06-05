@@ -8,7 +8,9 @@
     var LOGTHIS =  false;
 
 function proto02(){
+  
   queuesToUpdate['numberstim'] = true;
+  
   var stimuli = stimQueues['numberstim'];
 
     /*
@@ -26,11 +28,13 @@ function proto02(){
             this.container.buttonMode = true;
             this.container.mousedown = this.container.touchstart = function(){ _this.click(); }
             this.container.pivot = {
+         
                 x: 0,
                 y: 0,
-            }
+         
+            };
 
-            this.counter = 0
+            this.counter = 0;
             this.sprite = {};
 
             // sprite variables
@@ -183,9 +187,6 @@ function proto02(){
             var speedOut = (score*0.3/19) + 0.13
 
             var length = distance / speedOut
-
-           // speed = (this.bugType * 1000) + 2000 - (700 * round.difficulty)  // IMPROVE THIS!!!!
-            //speed = speed < 2000 ? 2000 : speed
 
             _offset = _offset + getRandomInt(0,2000)
 
@@ -414,6 +415,187 @@ function proto02(){
             this.audioTimer = new ClockTimer();
             this.wrongClicks = 0;
         };
+
+        Trial.prototype.intro = function(){
+
+            switch(this.introState){
+
+                case "displaySound":
+
+                    assets.sounds.numbers[this.correct].play()
+
+
+                    if(this.trialTimer.timeOut()){
+
+                        var dest = {}
+                        dest.x = this.instructionWidth*1.2
+                        dest.y = session.canvas.height-(this.instructionWidth * 1.5)
+
+                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[0.75,1])
+
+                        this.introState = "moveToCorner"
+
+                    }
+
+                    break;
+
+
+                case "moveToCorner":
+
+                        if(this.instruction.customAnimation.run()){
+
+                            return true;
+
+                        }
+
+                    break;
+
+            }
+
+            return false;
+        };
+
+        Trial.prototype.play = function(_updateTime){
+
+            switch(this.trialState){
+
+                case "intro":
+
+                    if(this.intro()){
+
+                        this.trialState = "play";
+                    };
+
+                    break;
+
+
+                case "play":
+
+
+                    if(this.ladyBugs[this.ladyBugs.length-1].resetFeedback()){
+
+                        this.getFeedback(true,true);
+
+                    };
+
+                    for (var i=0; i<this.ladyBugs.length; i++){
+
+                      this.ladyBugs[i].move();
+
+                    };
+
+
+                    if(this.correctImput){
+
+                        for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
+
+                        if(this.correctAnswer){
+                        
+                            round.changeDifficulty(true)
+                            
+                            var pos = []
+                            pos.push({ x : 300 ,y : 300})
+                            pos.push({ x : 300 ,y : 300})
+                            pos.push({ x : 300 ,y : 300})
+
+                            score.addScore(pos,1)
+                        
+                        }else{
+
+                            var pos = []
+                            pos.push({ x : 1 ,y : 1})
+                            pos.push({ x : 1 ,y : 1})
+                            pos.push({ x : 1 ,y : 1})
+                            score.addScore(pos,1)
+
+                        }
+
+
+                        this.trialState = "nextTrial";
+
+                    };
+
+                    this.displayFeedbacks();
+                    this.playAudioQueue();
+
+                    break;
+
+                case "nextTrial":
+
+                    this.displayFeedbacks()
+                    score.displayStar()
+
+                    if(this.nextTrial()){
+
+                      return true;
+
+                    };
+
+                    break;
+
+                };
+
+                return false
+        };
+
+        Trial.prototype.nextTrial = function(){
+
+            switch(this.nextTrialState){
+
+                case "flyAll":
+
+
+
+                    // wait until all ladybugs are off the screen.
+                    var done = true;
+
+                    for (var i=0; i<this.ladyBugs.length; i++){
+
+                        if(!this.ladyBugs[i].move("noReset")){
+
+                            done = false
+
+                        };
+
+                    };
+
+                    if(done){
+
+                        var dest = {}
+                        dest.x = session.canvas.width/2
+                        dest.y = session.canvas.height/2
+                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000)
+                        this.nextTrialState = "moveToCenter"
+                    };
+
+                    break;
+
+                case "moveToCenter":
+
+                    if(this.instruction.customAnimation.run()){
+
+                        this.trialTimer.start(500)
+                        this.nextTrialState = "callNextTrial"
+
+                    };
+
+                    break;
+
+                case "callNextTrial":
+
+                    if(this.trialTimer.timeOut()){
+
+                        return true;
+                    };
+
+
+                    break;
+
+            };
+
+            return false;
+        };
+
 
         Trial.prototype.init = function(){
 
@@ -915,175 +1097,9 @@ function proto02(){
 
                     }
 
-                        break;
-
-
-                case "positieve":
-
-
-
-
-                        break;
-
-
+                     break;
 
             };
-        };
-
-        Trial.prototype.intro = function(){
-
-            switch(this.introState){
-
-                case "displaySound":
-
-                    assets.sounds.numbers[this.correct].play()
-
-
-                    if(this.trialTimer.timeOut()){
-
-                        var dest = {}
-                        dest.x = this.instructionWidth*1.2
-                        dest.y = session.canvas.height-(this.instructionWidth * 1.5)
-
-                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[0.75,1])
-
-                        this.introState = "moveToCorner"
-
-                    }
-
-                    break;
-
-
-                case "moveToCorner":
-
-                        if(this.instruction.customAnimation.run()){
-
-                            return true;
-
-                        }
-
-                    break;
-
-            }
-
-            return false;
-        };
-
-        Trial.prototype.play = function(_updateTime){
-
-            switch(this.trialState){
-
-                case "intro":
-
-                    if(this.intro()){
-
-                        this.trialState = "play";
-                    };
-
-                    break;
-
-
-                case "play":
-
-
-                    if(this.ladyBugs[this.ladyBugs.length-1].resetFeedback()){
-
-                        this.getFeedback(true,true);
-
-                    };
-
-                    for (var i=0; i<this.ladyBugs.length; i++){
-
-                      this.ladyBugs[i].move();
-
-                    };
-
-
-                    if(this.correctImput){
-
-                        for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
-
-                        if(this.correctAnswer){round.changeDifficulty(true)}
-                        this.trialState = "nextTrial";
-
-                    };
-
-                    this.displayFeedbacks();
-                    this.playAudioQueue();
-
-                    break;
-
-                case "nextTrial":
-
-                    this.displayFeedbacks()
-
-                    if(this.nextTrial()){
-
-                        return true;
-
-                    };
-
-                    break;
-
-                };
-
-                return false
-        };
-
-        Trial.prototype.nextTrial = function(){
-
-            switch(this.nextTrialState){
-
-                case "flyAll":
-
-                    // wait until all ladybugs are off the screen.
-                    var done = true;
-
-                    for (var i=0; i<this.ladyBugs.length; i++){
-
-                        if(!this.ladyBugs[i].move("noReset")){
-
-                            done = false
-
-                        }
-
-                    };
-
-                    if(done){
-
-                        var dest = {}
-                        dest.x = session.canvas.width/2
-                        dest.y = session.canvas.height/2
-                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000)
-                        this.nextTrialState = "moveToCenter"
-                    };
-
-                    break;
-
-                case "moveToCenter":
-
-                    if(this.instruction.customAnimation.run()){
-
-                        this.trialTimer.start(500)
-                        this.nextTrialState = "callNextTrial"
-
-                    }
-
-                    break;
-
-                case "callNextTrial":
-
-                    if(this.trialTimer.timeOut()){
-
-                        return true;
-                    }
-
-
-                    break;
-
-            }
-
-            return false;
         };
 
         Trial.prototype.playAudioQueue = function(_perform,_audio){
@@ -1177,9 +1193,11 @@ function proto02(){
         Trial.prototype.answer = function(_correct){
 
             if(!this.answerGiven){
+
                 this.correctAnswer = _correct;
                 this.answerGiven = true;
-            }
+
+            };
         };
 
     /*
@@ -1191,6 +1209,7 @@ function proto02(){
         // create the root of the scene graph and main classes
         var stage = new PIXI.Container();
         var round = new Round();
+        score.stage = stage;
 
         this.destroy = function(){
             finishGame = true;

@@ -1,50 +1,97 @@
+var MainMenu = function() {
 
-var Chooser = function() {
-
-    // hide experiment and show chooser
-    clickStart('container-exp','container-chooser');
-
-    var availableGames = 3
-    
-    for(var i=0; i<availableGames; i++ ){
-
-      size = window.innerWidth/availableGames
-
-      $('#choose-game0'+(i+1))
-        .css("top", i*(100/availableGames)+"%")
-        .css("height", size)
-        .css("background", getRandomColor())
-      }
-
-    var game1 = document.getElementById("choose-game01")
-
-    game1.onclick =  function(){
-      
-      console.log("")
-      clickStart('container-chooser','container-exp');
-      currentview = new proto02();
-    
-    }
-
-    var game2 = document.getElementById("choose-game02")
-
-    game2.onclick =  function(){
-      
-      console.log("")
-      clickStart('container-chooser','container-exp');
-      currentview = new proto03();
-     
-     }
-
-    var game3 = document.getElementById("choose-game03")
-
-    game3.onclick =  function(){
-      
-      console.log("")
-      clickStart('container-chooser','container-exp');
-      currentview = new proto04();
-     
-     }
-
+  clickStart('container-exp','container-chooser');
 
 };
+
+function Start(){
+
+  //------------->> move this inside module that handles game displaying
+  var availableGames = [
+
+      {
+        name: "Counting",
+        available: true,
+        callFucntion: proto02
+      },
+
+
+      {
+        name: "Addition",
+        available: true,
+        callFucntion: proto03
+      },
+
+
+      {
+        name: "Multiplication",
+        available: true,
+        callFucntion: 1
+      },
+
+
+      {
+        name: "Fairy",
+        available: true,
+        callFucntion: 2
+      },
+
+
+      {
+        name: "HangMan",
+        available: true,
+        callFucntion: HangmanTrial
+      },
+
+
+      {
+        name: "WordSearch",
+        available: true,
+        callFucntion: WordTrial
+      },
+
+
+      {
+        name: "Drawing",
+        available: true,
+        callFucntion: proto02
+      },
+
+  ]
+
+  // hide experiment and show chooser
+  var containerMainMenu = document.getElementById("container-chooser")
+
+  for(var i =0; i<availableGames.length; i++){
+
+    game = document.createElement("div");
+    game.id = i
+    game.className = "MenuButton"
+    game.innerHTML = availableGames[i].name
+
+
+
+    var gameClick = function(){
+
+      clickStart('container-chooser','container-exp');
+      currentview = new availableGames[this.id].callFucntion();
+
+    } 
+
+    game.onclick = gameClick
+    containerMainMenu.appendChild(game)
+
+  }
+
+  if(!PIXIInitialized){
+
+      session = new CanvasSession();
+      assets = new Assets();
+      session.init();
+      PIXIInitialized = true;
+
+  }
+
+  currentview = new MainMenu();
+
+}

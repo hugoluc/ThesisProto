@@ -12,11 +12,8 @@
 
 		this.init = function(){
 
-			console.log("-----------SESSION--------")
-
-
 			var header = document.getElementById("header-exp").style.height = window.innerHeight*0.08
-			this.renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight-header+1);
+			this.renderer = new PIXI.WebGLRenderer ( window.innerWidth, window.innerHeight-header+1 ); //PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight-header+1);
 			this.canvas = document.getElementById("container-exp").appendChild(this.renderer.view);
 			this.canvas.style.marginTop = header
 			this.canvas.style.display = "none"
@@ -73,8 +70,6 @@
 	}
 
 	Assets.prototype.addSprite = function(name,url,count){
-
-
 
 		if(name == "undefined" || url == "undefined" || count == "undefined") {
 
