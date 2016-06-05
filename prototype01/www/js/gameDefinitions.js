@@ -362,34 +362,92 @@ function gameScore(){
 
 	this.score = 0;
 	this.starts = [];
+	this.svgIds = 0
+	this.starLength = 0
 
 };
 
-gameScore.prototype.addScore = function(_starsPos, _value, _duation){
+gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 
 	this.score = this.score + (_starsPos.length * _value); 
 	var initDelay = 200;
 	var delay = 0
 	var duration = _duation || 1000
 
-	console.log(_starsPos)
+	if(_svg){
 
-	for(var i = 0; i < _starsPos.length; i++){
+		this.svg = true;
 
-		var star = new PIXI.Sprite(assets.textures.star);
-		star.x = _starsPos[i].x;
-		star.y = _starsPos[i].y;
+		var starGroup = d3.select("#scoreContainer")
+		.append("svg")
+		.attr("id", "starGroup")
+		.attr({
+		  x: 0,
+		  y: 0,
+		  width : window.innerWidth,
+		  height : window.innerHeight,
+		})
 
-		this.stage.addChild(star);
+
+		for(var i = 0; i < _starsPos.length; i++){
+
+			var starSvg = starGroup.append("svg:image")
+			.attr("xlink:href", "svgs/starScore.svg")
+			.attr({
+			  x: _starsPos[i].x,
+			  y: _starsPos[i].y,
+			  width : 100,
+			  height : 100,
+			})
+			.attr("id", "star-" + (this.starLength + 1))
+			.transition()
+			.delay(delay)
+			.duration(_duation)
+			.attr({
+				
+				x: window.innerWidth - 50,
+				y: -50,
+
+			})
+			.each("end", function(){ 
+			// Animation callback
+
+				var id = this.id
+				var _this = d3.select("#" + id).remove()
+				console.log(_this)
+
+			});
+
+			console.log(starSvg)
+			this.starLength = this.starLength + 1;
+			delay = delay + initDelay
+		};
+
+
+	}else{
+
+
+		this.svg = false;
+
+		for(var i = 0; i < _starsPos.length; i++){
 		
-		var starAnimation = new animation(star);
-		starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
-		delay = delay + initDelay
+			var star = new PIXI.Sprite(assets.textures.star);
+			star.x = _starsPos[i].x;
+			star.y = _starsPos[i].y;
 
-		this.starts.push([star,starAnimation]);
+			this.stage.addChild(star);
+			
+			var starAnimation = new animation(star);
+			starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
+			delay = delay + initDelay
 
-	};
+			this.starts.push([star,starAnimation]);
 
+		};
+
+
+	};	
+	
 
 };
 
