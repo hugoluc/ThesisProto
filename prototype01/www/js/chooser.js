@@ -26,7 +26,7 @@ function Start(){
       {
         name: "Multiplication",
         available: true,
-        callFucntion: 1
+        callFucntion: Multiplication
       },
 
 
