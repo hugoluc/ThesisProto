@@ -1590,10 +1590,11 @@ function proto03(){
   	        previousTime = current;
   	        lag = lag + elapsed;
 
+
         	  while (lag >= MS_PER_UPDATE){
               round.play(lag/MS_PER_UPDATE);
               lag = lag - MS_PER_UPDATE;
-
+              
   	        }
 
         	        //---------------->> Thing that renders the whole stage

@@ -64,10 +64,10 @@ function Multiplication(){
 				};
 
 				this.boardMatrix[ i + "-" + _y] = {
-					
+
 	//*************************************************** <FIXME> REPLACE GRAPHIC BY SPRITE
 					"sprite" : new PIXI.Graphics(),
-					"tile" : [i,_y],
+					"tile" : {x : i, y : _y},
 					"pos" : pos,
 
 				}
@@ -79,9 +79,10 @@ function Multiplication(){
 
 		};
 
+
+		var _this = this;
+
 	    function click(_event){
-        
-        	console.log(_event)
 
         	_this.clickStart(_event);
 
@@ -99,27 +100,12 @@ function Multiplication(){
 			this.boardMatrix[object].sprite.lineStyle(1, 0x0000FF, 0.1);
 			this.boardMatrix[object].sprite.beginFill(0xFF00BB, 0.1);
 			this.boardMatrix[object].sprite.drawRect(this.boardMatrix[object].pos.x, this.boardMatrix[object].pos.y, boardSpecs.tileSize, boardSpecs.tileSize);
-			graphics.endFill();
+			this.boardMatrix[object].sprite.endFill();
+			this.boardMatrix[object].sprite.id = object
 
-		};
-
-		stage.addChild(graphics)
-	
-	//----------------------
-	
-		var _this = this;
-
-		var boardArea = new PIXI.Container() 
-		
-		console.log(boardSpecs.rows)
-		boardArea.interactive = false;
-		boardArea.width = boardSpecs.collums * boardSpecs.tileSize;
-		boardArea.height = boardSpecs.rows * boardSpecs.tileSize
-		boardArea.x = this.boardMatrix[ "0-" + (boardSpecs.rows-1)].pos.x
-		boardArea.x = this.boardMatrix[ "0-" + (boardSpecs.rows-1)].pos.y
-
-		boardArea
-
+			this.boardMatrix[object].sprite.interactive = true;
+			
+			this.boardMatrix[object].sprite
 			.on('mousedown', click)
             .on('touchstart', click)
 
@@ -130,40 +116,105 @@ function Multiplication(){
             .on('touchendoutside', function(){_this.clickEnd(this)})
             
             //drag
-            .on('mousemove', function(){_this.drag(this)})
-            .on('touchmove', function(){_this.drag(this)});
+            .on('mousemove', function(_event){_this.drag(_event,this)})
+            .on('touchmove', function(_event){_this.drag(_event,this)});
 
 
-		stage.addChild(boardArea)
+		};
+
+		stage.addChild(graphics)
+	
+	//----------------------
+
 
 	};
 
-	Trial.prototype.clickStart = function(){
-		console.log("START")
+	Trial.prototype.clickStart = function(_event){
+
+		this.firstClickTile = _event.target.id
+		_event.target.dragging = true;
+
+		console.log(_event.target.id)
 	};
 
-	Trial.prototype.drag = function(){
-		//console.log("drag")
+	Trial.prototype.drag = function(_event,_this){
+
+		if(_this.dragging){
+
+			var point = {
+				x : session.renderer.plugins.interaction.mouse.global.x,
+				y : session.renderer.plugins.interaction.mouse.global.y
+			}
+
+			for(object in  this.boardMatrix){
+
+				if(this.boardMatrix[object].sprite.containsPoint(point)){
+
+					console.log(this.boardMatrix[object].tile);
+					this.drawNest(this.boardMatrix[object].tile)
+					return;
+
+				}
+
+			}
+
+		};
+
 	};
 
-	Trial.prototype.clickEnd = function(){
-		console.log("END")
+	Trial.prototype.clickEnd = function(_this){
+
+		if(!_this.dragging){
+
+			console.log(_this.id)
+
+			// this.selectBoardTile(
+				
+			// 	this.boardMatrix[this.firstClickTile].tile,
+			// 	this.boardMatrix[_this.id].tile
+
+			// )
+
+			this.boardMatrix[this.firstClickTile].sprite.dragging = false;
+
+		};
+
 	};
 
 
-	Trial.prototype.drawNest = function(){
+	Trial.prototype.drawNest = function(_target){
+	
+		var selection = this.calculateSelection(
+			
+			this.boardMatrix[this.firstClickTile].tile,
+			_target 
+		
+		)
+
+		console.log(selection)
+
+		for(var i =0; i<selection.length; i++){
+
+			//this.boardMatrix[ selection[i].x + "-" + selection[i].y ].sprite.alpha = 0
+
+		}
+
 	};
 
-	Trial.prototype.selectBoardTile = function(_start,_end){
+
+	Trial.prototype.calculateSelection = function(_start,_end){
+	//*************************************************** <FIXME> ONE LINE SELECTION NOT WORKING
 
 		var selectedTile = []
 
 		var distance = {
-			x :  Math.abs(_end.x - _start.x),
-			y : Math.abs(_start.y - _tend.y)
+			x : Math.abs(_end.x - _start.x),
+			y : Math.abs(_start.y - _end.y)
 		}
 
-		var totalTilesSelected = distance.x * distance.y; 
+		//calculate distance from origin for start and end 
+		//{0,0}{1,0} - select sauare
+		//{0,0}{} - select just one
 
 		var xMin = (_start.x < _end.x) ? _start.x : _end.x 
 		var yMin = (_start.y < _end.y) ? _start.y : _end.y
@@ -195,9 +246,6 @@ function Multiplication(){
  // create the root of the scene graph and main classes
     var stage = new PIXI.Container();
 
-        function click(_event){
-        	_this.clickStart(this,_event)
-        }
     var round = new Round();
 
     this.destroy = function(){
