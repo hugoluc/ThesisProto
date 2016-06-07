@@ -16,6 +16,7 @@ function Multiplication(){
 		this.stimuli = _stimuli || 12;
 		this.correct = _correct || 12;
 		this.boardMatrix = {}
+		this.lastTarget = ""
 
 	}
 
@@ -65,12 +66,23 @@ function Multiplication(){
 
 				this.boardMatrix[ i + "-" + _y] = {
 
-	//*************************************************** <FIXME> REPLACE GRAPHIC BY SPRITE
+					//*************************************************** <FIXME> REPLACE GRAPHIC BY SPRITE
 					"sprite" : new PIXI.Graphics(),
 					"tile" : {x : i, y : _y},
 					"pos" : pos,
+					"adjacent" : [
+
+						{id : i + "-" + (_y + 1),  conected : false }, // top
+						{id : i + "-" + (_y - 1),  conected : false }, // bottom
+						{id : (i + 1) + "-" + _y,  conected : false }, // left
+						{id : (i - 1) + "-" + _y,  conected : false }, // right
+					
+					]
 
 				}
+
+				this.boardMatrix[ i + "-" + _y].adjacent
+
 
 				stage.addChild(this.boardMatrix[ i + "-" + _y].sprite)
 				_y++;
@@ -88,8 +100,8 @@ function Multiplication(){
 
         }
 
-	//---------------------- display board bg
-	//*************************************************** <FIXME> REPLACE GRAPHIC BY SPRITE
+		//---------------------- display board bg
+		//*************************************************** <FIXME> REPLACE GRAPHIC BY SPRITE
 	
 		console.log(this.boardMatrix)
 
@@ -124,14 +136,13 @@ function Multiplication(){
 
 		stage.addChild(graphics)
 	
-	//----------------------
-
-
+		//----------------------
 	};
 
 	Trial.prototype.clickStart = function(_event){
 
 		this.firstClickTile = _event.target.id
+		this.lastTarget = this.boardMatrix[_event.target.id].tile
 		_event.target.dragging = true;
 
 		console.log(_event.target.id)
@@ -146,11 +157,10 @@ function Multiplication(){
 				y : session.renderer.plugins.interaction.mouse.global.y
 			}
 
-			for(object in  this.boardMatrix){
+			for(object in this.boardMatrix){
 
 				if(this.boardMatrix[object].sprite.containsPoint(point)){
 
-					console.log(this.boardMatrix[object].tile);
 					this.drawNest(this.boardMatrix[object].tile)
 					return;
 
@@ -159,7 +169,6 @@ function Multiplication(){
 			}
 
 		};
-
 	};
 
 	Trial.prototype.clickEnd = function(_this){
@@ -168,42 +177,85 @@ function Multiplication(){
 
 			console.log(_this.id)
 
-			// this.selectBoardTile(
-				
-			// 	this.boardMatrix[this.firstClickTile].tile,
-			// 	this.boardMatrix[_this.id].tile
+			this.boardMatrix[this.firstClickTile].sprite.dragging = false;
 
-			// )
+		}else if(_this.id == this.firstClickTile){
 
 			this.boardMatrix[this.firstClickTile].sprite.dragging = false;
 
+		};
+	};
+
+	Trial.prototype.drawNest = function(_target){ 
+
+		if(_target != this.lastTarget){ // check if the user changed the selection
+
+			var selection = this.calculateSelection( // calculate new selection
+				
+				this.boardMatrix[this.firstClickTile].tile,
+				_target 
+			
+			)
+
+			for(var = i; i < selection.tiles.length; i++){
+			
+				if(selection.tiles[i].y == selection.origin.y){
+
+					if(selection.tiles[i].x == selection.origin.x){
+
+						//corner bottom left
+
+					}else if( selection.tiles[i].x == selection.origin.x + selection.distance.x){
+
+						//corner bottom right
+
+					}else{
+
+						//side - bottom
+
+					};
+
+				}else if(selection.tiles[i].y == selection.origin.y + selection.distance.y){
+
+
+					if(selection.tiles[i].x == selection.origin.x){
+
+						//corner top left
+
+					}else if( selection.tiles[i].x == selection.origin.x + selection.distance.x){
+
+						//corner top right
+
+					}else{
+
+						//side - top
+
+					};
+
+				}else if(selection.tiles[i].x == selection.origin.x){
+
+					// side  - left
+
+
+				}else if( selection.tiles[i].x == selection.origin.x + selection.distance.x){
+
+					// side right
+
+				}else{
+
+					//center
+
+				};
+
+			};
+	
 		};
 
 	};
 
 
-	Trial.prototype.drawNest = function(_target){
-	
-		var selection = this.calculateSelection(
-			
-			this.boardMatrix[this.firstClickTile].tile,
-			_target 
-		
-		)
-
-		console.log(selection)
-
-		for(var i =0; i<selection.length; i++){
-
-			//this.boardMatrix[ selection[i].x + "-" + selection[i].y ].sprite.alpha = 0
-
-		}
-
-	};
-
-
 	Trial.prototype.calculateSelection = function(_start,_end){
-	//*************************************************** <FIXME> ONE LINE SELECTION NOT WORKING
+		//*************************************************** <FIXME> ONE LINE SELECTION NOT WORKING
 
 		var selectedTile = []
 
@@ -213,31 +265,55 @@ function Multiplication(){
 		}
 
 		//calculate distance from origin for start and end 
-		//{0,0}{1,0} - select sauare
-		//{0,0}{} - select just one
+		//{0,0}{2,0} - select sauare
+		//{0,0}{0,2} - select just one
 
 		var xMin = (_start.x < _end.x) ? _start.x : _end.x 
 		var yMin = (_start.y < _end.y) ? _start.y : _end.y
 
-		for (var i = 0; i < distance.x+1; i++) {
+		var type = "centered"
+
+		for (var i = 0; i < distance.x+1; i++) { // number of collumns
 		
+
 			var _x = i + xMin;
 
-			for (var j = 0; j < distance.x+1; j++) {
+			for (var j = 0; j < distance.y+1; j++) { // number of rows
 		
 				var _y = j + yMin;
 
+				}
+
 				selectedTile.push({
+					
 					x : _x,
-					y : _y 
+					y : _y,
+					id : _x + "-" + _y
+
 					})
 
 			};
 		
 		};
 
-		return selectedTile
+		return { 
+			
+			"tiles" : selectedTile, 
+
+			"origin" : {
+				
+				"x" : xMin,
+				"y" : yMin
+			},
+
+			"distance" : distance
+		};
+
 	};
+
+
+
+
 
 //-------------------------------------------
 // Global functions andd variables
