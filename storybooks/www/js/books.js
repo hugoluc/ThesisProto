@@ -23,7 +23,91 @@ var imgdir = "book_images/";
 var books = {"english":[], 
 		 "swahili":[]};
 
-books.english.push({"text":"hyena_and_raven",images:""})
+books.english.push({"text":"hyena_and_raven",images:"hyena_and_raven"});
+books.english.push({"text":"adhabu",images:"adhabu"});
+
+function loadBook(book) {
+  // get listing of images in imgdir, load the text and split into pages, and show the first page (title?)
+  $.ajax({
+  url: imgdir+book.images, //"http://yoursite.com/images/",
+    success: function(data){
+      $(data).find("td > a").each(function(){
+        console.log("file: " + $(this).attr("href"));
+      });
+    }
+  });
+
+  $.get(textdir+book.text+".txt", function (raw) {
+    pages = LoadFile(raw);
+    showPage(slideIndex);
+  });
+}
+
+var pages;
+
+function preload(arrayOfImages) {
+    $(arrayOfImages).each(function () {
+        $('<img />').attr('src',this).appendTo('body').css('display','none');
+    });
+}
+
+function LoadFile(strRawContents) {
+    //var oFrame = document.getElementById("frmFile");
+    //var strRawContents = oFrame.contentWindow.document.body.childNodes[0].innerHTML;
+    var pages = [];
+    while (strRawContents.indexOf("\r") >= 0)
+        strRawContents = strRawContents.replace("\r", "");
+    var arrLines = strRawContents.split("\n");
+    //console.log("File " + oFrame.src + " has " + arrLines.length + " lines");
+    var title = arrLines[0]; // title
+    var sentences = []; 
+    for (var i = 1; i < arrLines.length; i++) {
+        var curLine = arrLines[i];
+        if( curLine.length<3 ) {
+            // blank line or number
+            if(!isNaN(parseInt(curLine))) { // new page number!
+                pages.push(sentences);
+                sentences = [];
+            }
+        } else { // line of text: add it
+            sentences.push(curLine);
+        }
+        //console.log("Line #" + (i + 1) + " is: '" + curLine + "'");
+    }
+    //console.log(pages);
+    return(pages);
+}
+
+var slideIndex = 1;
+
+function plusDivs(n) {
+  showPage(slideIndex += n);
+}
+
+function currentDiv(n) {
+  showPage(slideIndex = n);
+}
+
+function showPage(n) {
+	var i;
+	var x = document.getElementsByClassName("mySlides");
+	var dots = document.getElementsByClassName("pg-btn");
+	if (n > x.length) {slideIndex = 1}    
+	if (n < 1) {slideIndex = x.length} ;
+	for (i = 0; i < x.length; i++) {
+		x[i].style.display = "none";  
+	}
+	for (i = 0; i < dots.length; i++) {
+		dots[i].className = dots[i].className.replace(" w3-red", "");
+	}
+	x[slideIndex-1].style.display = "block";  
+	dots[slideIndex-1].className += " w3-red";
+
+	document.getElementById("book-text").innerHTML = "";
+	for(i = 0; i < pages[slideIndex-1].length; i++) {
+	document.getElementById("book-text").innerHTML+='<p>'+pages[slideIndex-1][i]+'</p>';
+	}
+}
 
 // books.append({title: "Where is my bat?", directory: "where_is_my_bat",
 // 	images: ["bat00.jpg", "bat01.jpg", "bat02.jpg", "bat03.jpg", "bat04.jpg", 

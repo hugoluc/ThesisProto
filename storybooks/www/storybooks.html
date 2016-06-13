@@ -4,67 +4,7 @@
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <script src="js/books.js"></script>
     <script src="lib/jquery.min.js"></script> 
-    <script type="text/javascript">
-    var pages;
-        function LoadFile(strRawContents) {
-            //var oFrame = document.getElementById("frmFile");
-            //var strRawContents = oFrame.contentWindow.document.body.childNodes[0].innerHTML;
-            var pages = [];
-            while (strRawContents.indexOf("\r") >= 0)
-                strRawContents = strRawContents.replace("\r", "");
-            var arrLines = strRawContents.split("\n");
-            //console.log("File " + oFrame.src + " has " + arrLines.length + " lines");
-            var title = arrLines[0]; // title
-            var sentences = []; 
-            for (var i = 1; i < arrLines.length; i++) {
-                var curLine = arrLines[i];
-                if( curLine.length<3 ) {
-                    // blank line or number
-                    if(!isNaN(parseInt(curLine))) { // new page number!
-                        pages.push(sentences);
-                        sentences = [];
-                    }
-                } else { // line of text: add it
-                    sentences.push(curLine);
-                }
-                //console.log("Line #" + (i + 1) + " is: '" + curLine + "'");
-            }
-            //console.log(pages);
-            return(pages);
-        }
-
-        var slideIndex = 1;
-
-        function plusDivs(n) {
-          showPage(slideIndex += n);
-        }
-
-        function currentDiv(n) {
-          showPage(slideIndex = n);
-        }
-
-        function showPage(n) {
-          var i;
-          var x = document.getElementsByClassName("mySlides");
-          var dots = document.getElementsByClassName("pg-btn");
-          if (n > x.length) {slideIndex = 1}    
-          if (n < 1) {slideIndex = x.length} ;
-          for (i = 0; i < x.length; i++) {
-             x[i].style.display = "none";  
-          }
-          for (i = 0; i < dots.length; i++) {
-             dots[i].className = dots[i].className.replace(" w3-red", "");
-          }
-          x[slideIndex-1].style.display = "block";  
-          dots[slideIndex-1].className += " w3-red";
-          
-          document.getElementById("book-text").innerHTML = "";
-          for(i = 0; i < pages[slideIndex-1].length; i++) {
-            document.getElementById("book-text").innerHTML+='<p>'+pages[slideIndex-1][i]+'</p>';
-          }
-        }
-
-    </script>
+    
     <link rel="stylesheet" href="css/w3.css">
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <style>
@@ -104,16 +44,12 @@
 
 
 <script>
-    // var $pages = $('#book-text');
-    // $pages.load( "book_text/hyena_and_raven.txt", function() {
-    //     pages = LoadFile();
+    loadBook(books.english[0])
+
+    // $.get("book_text/hyena_and_raven.txt", function (raw) {
+    //     pages = LoadFile(raw);
     //     showPage(slideIndex);
     // });
-
-    $.get("book_text/hyena_and_raven.txt", function (raw) {
-        pages = LoadFile(raw);
-        showPage(slideIndex);
-    });
 </script>
 
 
