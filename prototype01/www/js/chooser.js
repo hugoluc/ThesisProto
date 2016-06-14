@@ -12,51 +12,56 @@ function Start(){
       {
         name: "Counting",
         available: true,
-        callFucntion: proto02
+        callFunction: proto02
       },
 
 
       {
         name: "Addition",
         available: true,
-        callFucntion: proto03
+        callFunction: proto03
       },
 
 
       {
         name: "Multiplication",
         available: true,
-        callFucntion: 1
+        callFunction: 1
       },
 
 
       {
         name: "Fairy",
         available: true,
-        callFucntion: 2
+        callFunction: 2
       },
 
 
       {
         name: "HangMan",
         available: true,
-        callFucntion: HangmanTrial
+        callFunction: Hangman
       },
 
 
       {
         name: "WordSearch",
         available: true,
-        callFucntion: WordTrial
+        callFunction: WordTrial
       },
 
 
       {
         name: "Drawing",
         available: true,
-        callFucntion: proto02
+        callFunction: Sketch
       },
 
+      {
+        name: "Shapes",
+        available: true,
+        callFunction: Shapes
+      }
   ]
 
   // hide experiment and show chooser
@@ -74,9 +79,9 @@ function Start(){
     var gameClick = function(){
 
       clickStart('container-chooser','container-exp');
-      currentview = new availableGames[this.id].callFucntion();
+      currentview = new availableGames[this.id].callFunction();
 
-    } 
+    }
 
     game.onclick = gameClick
     containerMainMenu.appendChild(game)
@@ -88,9 +93,9 @@ function Start(){
       session = new CanvasSession();
       assets = new Assets();
       score = new gameScore();
-     
+
       assets.addTexture('star',"sprites/star/star.png")
-     
+
       session.init();
       PIXIInitialized = true;
 

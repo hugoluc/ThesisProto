@@ -1,4 +1,3 @@
-var screen;
 var nextTrial = false; // ready to go on
 
 // stage 1. pop up a word, play the word, and then show the object
@@ -51,7 +50,7 @@ var HangmanTrial = function(pars) {
       .style("opacity", 0.0)
       .duration(final_view_time/3)
       .remove();
-    screen.selectAll("image")
+    screend3.selectAll("image")
       .transition()
       .delay(final_view_time)
       .remove();
@@ -102,7 +101,7 @@ var HangmanTrial = function(pars) {
     var nrows = Math.floor(Math.sqrt(letters.length)) - 1;
     var ncols = Math.ceil(letters.length/nrows);
     console.log("nrows: "+nrows+" ncols: "+ncols);
-    var keys = screen.append("svg")
+    var keys = screend3.append("svg")
       .append("g")
       .attr("transform", "translate("+ screen_width*.08 +","+ screen_height*.2 +")"); // 135,90
 
@@ -154,7 +153,7 @@ var HangmanTrial = function(pars) {
       chdict.push({"letter": chars[i]});
     }
     //console.log(chdict)
-    self.blanks = screen.append("g")
+    self.blanks = screend3.append("g")
       .attr("class", "blanks")
       .selectAll("circle")
       .data(chdict)
@@ -193,7 +192,7 @@ var HangmanTrial = function(pars) {
     var xpos = .95*screen_width-imageSize;
     // GK: replace veil with N leaves that disappear as wrong guesses are made
     if(self.image) {
-      var myImg = screen.append("image")
+      var myImg = screend3.append("image")
         .attr("xlink:href", function(d) { return "svgs/"+ self.image +".svg"; })
         .attr("x", xpos)
         .attr("y", ypos)
@@ -201,7 +200,7 @@ var HangmanTrial = function(pars) {
         .attr("height",imageSize)
         .style("opacity",1);
 
-      self.veil = screen.append("rect")
+      self.veil = screend3.append("rect")
         .attr("x", xpos)
         .attr("y", ypos)
         .attr("width", imageSize)
@@ -209,7 +208,7 @@ var HangmanTrial = function(pars) {
         .attr("fill", getRandomColor());
     }
 
-    screen.append("svg:image")
+    screend3.append("svg:image")
        .attr('x',xpos)
        .attr('y',ypos)
        .attr('width', 50)
@@ -217,7 +216,7 @@ var HangmanTrial = function(pars) {
        .attr("xlink:href","sprites/stick/leave.png");
        //.attr("transform", "rotate("+getRandomInt(0,180)+")");
 
-    var myLabel = screen.append("g").append("text")
+    var myLabel = screend3.append("g").append("text")
       .attr("x", screen_width+50)
       .attr("y", getRandomInt(50,screen_height-50))
       .attr("style", "font-size: 40; font-family: Helvetica, sans-serif")
@@ -236,8 +235,10 @@ var HangmanTrial = function(pars) {
 
 
 
-var Hangman = function() {
+var Hangman = function() { // doesn't work a second time right now..
+  init_screen();
   setup_screen(false); // draw background (but without img)
+  document.getElementById("header-exp").style.display = 'block';
   queuesToUpdate['objectstim'] = true;
 
   var trials = stimQueues['objectstim'];  //animals;
@@ -248,7 +249,7 @@ var Hangman = function() {
 
   this.destroy = function() {
     //clearTimeout();
-    screen.selectAll("*")
+    screend3.selectAll("*")
       .transition() // d3.select("#background")
       .each("end",function() {
         d3.select(this)
@@ -258,7 +259,7 @@ var Hangman = function() {
           .duration(0)
           .remove();
        });
-    screen.select("#background").remove(); // #background
+    screend3.select("#background").remove(); // #background
     finishGame = true;
 	  session.hide();
     currentview = new MainMenu(assets);
