@@ -45,9 +45,9 @@ function Start(){
 
 
       {
-        name: "WordSearch",
+        name: "WordFind",
         available: true,
-        callFunction: WordTrial
+        callFunction: WordFind
       },
 
 
