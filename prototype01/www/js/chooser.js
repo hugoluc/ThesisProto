@@ -33,7 +33,7 @@ function Start(){
       {
         name: "Fairy",
         available: true,
-        callFunction: 2
+        callFunction: bubbleLetters
       },
 
 
