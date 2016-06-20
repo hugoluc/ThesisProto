@@ -2,15 +2,12 @@
 <meta charset="utf-8">
 <title>World Map</title>
 <style>
-  .country:hover{
-    stroke: #fff;
-    stroke-width: 1.5px;
-  }
   .text{
     font-size:10px;
     text-transform:capitalize;
   }
-  #container {
+
+  #container-exp {
     margin:10px 10%;
     border:2px solid #000;
     border-radius: 5px;
@@ -18,6 +15,13 @@
     overflow:hidden;
     background: #F0F8FF;
   }
+  
+  .country:hover{
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+  
+  
   .hidden { 
     display: none; 
   }
@@ -47,7 +51,7 @@
 <body>
 
 
-  <div id="container"></div>
+  <div id="container-exp"></div>
 
 <script src="lib/topojson.v1.min.js"></script>
 <script type="text/javascript" src="lib/d3.v3.min.js"></script>
@@ -59,7 +63,7 @@ var zoom = d3.behavior.zoom()
     .on("zoom", move);
 
 
-var width = document.getElementById('container').offsetWidth;
+var width = document.getElementById('container-exp').offsetWidth;
 var height = width / 2;
 
 var topo,projection,path,svg,g;
