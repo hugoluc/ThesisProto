@@ -26,11 +26,7 @@ function Start(){
       {
         name: "Multiplication",
         available: true,
-<<<<<<< HEAD
-        callFucntion: Multiplication
-=======
-        callFunction: 1
->>>>>>> f877aba2a8d18f00e685c7790a05e11cd0551e4d
+        callFunction: Multiplication
       },
 
 
