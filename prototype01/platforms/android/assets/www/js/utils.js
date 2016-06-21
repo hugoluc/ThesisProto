@@ -101,6 +101,8 @@ function getRandomColor() {
 
 function animation(obj){
 
+  //receives a PIXI.Object object
+
   this.timeSet = false;
   this.lastTime = 0;
   this.obj = obj;
@@ -135,9 +137,8 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
     this.feaBezier = true;
     this.feaBezName = _bezier[0].toFixed(2) + "-" + _bezier[1].toFixed(2)
   
-  }
-
-}
+  };
+};
 
 animation.prototype.runFeature = function(){
 
@@ -156,7 +157,7 @@ animation.prototype.runFeature = function(){
     this.feaTimeSet = true;
     frameTime =  0
 
-  }
+  };
 
   var elapsed = this.feaNow - this.feaStartTime
 
@@ -192,8 +193,7 @@ animation.prototype.runFeature = function(){
     return false;
   
   }
-
-}
+};
 
 animation.prototype.init = function(dest,length,offset,bezier){
 

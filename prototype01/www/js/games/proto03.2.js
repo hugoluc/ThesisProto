@@ -341,13 +341,16 @@ function proto03(){
 
     lillySmall.prototype.drag = function(_this){
 
+        console.log("dragging: ", _this)
     	//change lillypad to selected
     	if(_this.dragging){
 
     		if(!this.dragging){
-    			this.stick = this.trial.createStick(_this.data.getLocalPosition(_this.parent));
+    			
+                this.stick = this.trial.createStick(_this.data.getLocalPosition(_this.parent));
     			this.dragging = true;
-    		};
+    		
+            };
 
     		this.trial.moveStick(_this.data.getLocalPosition(_this.parent))
 

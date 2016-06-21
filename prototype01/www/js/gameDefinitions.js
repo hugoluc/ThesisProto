@@ -426,7 +426,6 @@ gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 
 	}else{
 
-
 		this.svg = false;
 
 		for(var i = 0; i < _starsPos.length; i++){

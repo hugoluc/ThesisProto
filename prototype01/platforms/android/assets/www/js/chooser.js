@@ -26,7 +26,7 @@ function Start(){
       {
         name: "Multiplication",
         available: true,
-        callFucntion: 1
+        callFucntion: Multiplication
       },
 
 
@@ -87,6 +87,10 @@ function Start(){
 
       session = new CanvasSession();
       assets = new Assets();
+      score = new gameScore();
+     
+      assets.addTexture('star',"sprites/star/star.png")
+     
       session.init();
       PIXIInitialized = true;
 
