@@ -652,7 +652,7 @@ function bubbleLetters(){
     //---------------------------------------loading assets
 
         if(gameloaded) {
-            //assets.addSprite("ripple",'sprites/lillypad/ripples/ripples.json',5)
+            assets.addSprite("dragonfly",'sprites/dragonfly/dragonfly.json',3)
             assets.addTexture("bubble","img/bubble.png")
             assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
             assets.load(onAssetsLoaded)
