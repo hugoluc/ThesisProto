@@ -1,4 +1,3 @@
-
 function Multiplication(){
   queuesToUpdate['mathstim'] = true;
   var stimuli = stimQueues['mathstim'];
@@ -12,19 +11,97 @@ function Multiplication(){
 
 	function Trial(_stimuli,_correct){
 
-		this.stimuli = _stimuli || 6;
+
+		var specs = [
+
+			{ 
+				stimuli : {
+
+					values : [4,5,6],
+					direction : "bottomUp"
+					// Maybe use this later to terermine in wich direction the game is testing the user 		
+
+				},
+
+				correct : {
+
+					values : [4,6,8],
+
+				}
+
+			}
+
+
+		]
+
+		this.stimuli = specs[0].stimuli || 6;
 		this.correct = _correct || 6;
 		this.boardMatrix = {}
 		this.lastTarget = ""
 		this.selection = {
 			tiles : [],
 		}
-		this.playState = "intro"
-	};
-
-	Trial.prototype.init = function(first_argument) {
 		
-		this.setBoard();
+		this.playState = "intro"
+		this.introState = "intruction" 
+
+		this.eggs = {
+
+			drag : [],
+			instruction : []
+
+		}
+
+
+		this.setBoardSpecs() // set board variables and sizes
+
+		console.log(this.boardSpecs)
+
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		// Create Sprites for intructions eggs
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>	
+
+		if((session.canvas.height/this.stimuli.values.length) * 0.7 < this.boardSpecs.instructionWidth*0.7){
+
+			var eggSize = (session.canvas.height/this.stimuli.values.length) * 0.7
+
+		}else{
+
+			var eggSize = this.boardSpecs.instructionWidth*0.7
+
+		}
+
+		for(var i = 0; i < this.stimuli.values.length; i++){
+
+			var sprite = new PIXI.Sprite(assets.textures.egg)
+			sprite.x = 300 + i * 100
+			sprite.y = 300
+			sprite.anchor.x = 0.5
+			sprite.anchor.y = 0.5
+			sprite.width = 0
+			sprite.height = 0
+			sprite.customAnimation = new animation(sprite)
+			sprite.customAnimation.initFeature(
+			
+				["width", "height"], // features to animate
+				eggSize, // final value of animation
+				300, // time of animation
+				(100 * i), // delay
+				[0.5,1] //bezier animation handles
+
+			)
+
+			stage.addChild(sprite)
+			
+			this.eggs.instruction.push(sprite)
+
+			//this.stimuli.values[i]
+	
+		};
+
+		this.timer = new ClockTimer();
+		this.timer.start(1000);
+
 	};
 
 	Trial.prototype.play = function(first_argument) {
@@ -34,14 +111,14 @@ function Multiplication(){
 
 		case "intro": // Display Introduction and instructions
 
-			if(true){
+			if(this.intro()){
 
 				this.playState = "drawingNest"
+				this.drawBoard();				
 
 			}
 
 			break;
-
 
 		case "drawingNest": // Allow user to draw nest and give answear
 
@@ -68,48 +145,108 @@ function Multiplication(){
 		};
 	};
 
-	Trial.prototype.setBoard = function(){
+	Trial.prototype.intro = function(){
 
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		//sizes to be used when drawing
-		//the board background and division lines
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		switch(this.introState){
 
-		var instructionWidth = session.canvas.width/5;
-		var boardMargin = session.canvas.width/20
-		var boardSpecs = { 
+			case "intruction":
 
-			"x" : instructionWidth + boardMargin,
-			"y" : boardMargin,
-			"maxWidth" : session.canvas.width - instructionWidth - (2 * boardMargin),
-			"maxHeight" : session.canvas.height - (2 * boardMargin),
+				if(this.timer.timeOut()){
+
+					var done = true
+
+					for(var i=0; i < this.eggs.instruction.length; i++ ){
+
+						if(!this.eggs.instruction[i].customAnimation.runFeature()){
+							//animate eggs
+
+							done = false;
+						}
+
+					}
+
+
+
+
+					if(done){ 
+					
+						for(var i=0; i < this.eggs.instruction.length; i++ ){
+
+							var y = (session.canvas.height/(this.eggs.instruction.length+1))*(i+1)
+							console.log(y)
+
+							this.eggs.instruction[i].customAnimation.init(
+								
+								{
+									x : this.eggs.instruction[i].width*0.5 + 50,
+									y : y
+								},
+
+								500,
+								100,
+								[0.75,1]
+							)
+
+						}
+
+						this.introState = "moveLeft" 
+
+					};
+
+				}
+				
+				break;
+
+			case "moveLeft":
+
+				var done = true
+					
+				for(var i=0; i < this.eggs.instruction.length; i++ ){
+
+
+					if(!this.eggs.instruction[i].customAnimation.run()){
+						done = false;
+					}
+
+				}				
+
+				if(done) return true
+
+				break;
+
+			case "createBoard":
+
+				break
+
 
 		}
 
-		boardSpecs.rows = Math.ceil(Math.sqrt(this.correct)) + getRandomInt(0,3)
-		boardSpecs.tileSize = boardSpecs.maxHeight / boardSpecs.rows
+		return false;
 
-		this.tileSize = boardSpecs.tileSize
+	}
 
-		boardSpecs.collums = Math.ceil(boardSpecs.maxWidth / boardSpecs.tileSize) - 1
-
-
+	Trial.prototype.drawBoard = function(){
+		
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		//Creating reference for the board background on boardMatrix
 		//This is also used to create the selection and nest
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-		for(var i=0; i<boardSpecs.collums; i++){
-		
+		console.log("Drawing borad!")
+
+		for(var i=0; i<this.boardSpecs.collums; i++){
+
 			var _y = 0
 
-			for(var j=boardSpecs.rows-1; j >= 0; j--){
+			for(var j=this.boardSpecs.rows-1; j >= 0; j--){
 
+
+				console.log(i, j)
 
 				var pos = {
 
-					x: i * boardSpecs.tileSize + boardSpecs.x,
-					y: j * boardSpecs.tileSize + boardSpecs.y,
+					x: i * this.boardSpecs.tileSize + this.boardSpecs.x,
+					y: j * this.boardSpecs.tileSize + this.boardSpecs.y,
 				
 				};
 
@@ -138,20 +275,21 @@ function Multiplication(){
 
         }
 
-
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		// Create Sprites for the board background
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 		var graphics = new PIXI.Graphics();
 
 		for(object in  this.boardMatrix){
 
+			console.log(object)
+
 			//*************************************************** <FIXME> REPLACE GRAPHIC BY SPRITE
 			this.boardMatrix[object].sprite.lineStyle(1, 0x0000FF, 0.1);
 			this.boardMatrix[object].sprite.beginFill(0xFF00BB, 0.1);
-			this.boardMatrix[object].sprite.drawRect(this.boardMatrix[object].pos.x, this.boardMatrix[object].pos.y, boardSpecs.tileSize, boardSpecs.tileSize);
+			this.boardMatrix[object].sprite.drawRect(this.boardMatrix[object].pos.x, this.boardMatrix[object].pos.y, this.boardSpecs.tileSize, this.boardSpecs.tileSize);
 			this.boardMatrix[object].sprite.endFill();
 			this.boardMatrix[object].sprite.id = object
 
@@ -177,11 +315,58 @@ function Multiplication(){
 
 		stage.addChild(graphics)
 
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		// Create Sprites for the board background
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		//>>>>>>>>>>>>>>>>>>>>>>>>>
+		// Create Sprites for eggs 
+		//>>>>>>>>>>>>>>>>>>>>>>>>>	
 
 
+		this.cliff = new PIXI.Sprite(assets.textures.cliff)
+		this.cliff.x = 0
+		this.cliff.y = 0
+		this.cliff.height = session.canvas.height
+		this.cliff.width = 250
+
+		stage.addChild(this.cliff)
+
+		console.log(stage)
+	};
+
+	Trial.prototype.setBoardSpecs = function(){
+
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		//sizes to be used when drawing
+		//the board background and division lines
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+		this.boardSpecs = {}
+
+		this.boardSpecs.instructionWidth = (session.canvas.width/5 > 200) ? session.canvas.width/5 : 200 ;
+		this.boardSpecs.boardMargin = session.canvas.width/20;
+		this.boardSpecs.x = this.boardSpecs.instructionWidth + this.boardSpecs.boardMargin;
+		this.boardSpecs.y = this.boardSpecs.boardMargin;
+		this.boardSpecs.maxWidth = session.canvas.width - this.boardSpecs.instructionWidth - (2 * this.boardSpecs.boardMargin);
+		this.boardSpecs.maxHeight = session.canvas.height - (2 * this.boardSpecs.boardMargin);
+
+		this.boardSpecs.rows = Math.ceil(Math.sqrt(this.correct)) + getRandomInt(0,3)
+
+		if(Math.ceil(this.boardSpecs.maxWidth / (this.boardSpecs.maxHeight / this.boardSpecs.rows)) - 1 < Math.ceil(Math.sqrt(this.correct))){
+		// check if boirad is going to have enouth size to fit the answear ir squares are based on the rows
+
+			//set rows and sizes to have enouth area to draw the answear
+			console.log("screen is too small")
+			this.boardSpecs.collums = Math.ceil(Math.sqrt(this.correct))
+			this.boardSpecs.tileSize = this.tileSize = this.boardSpecs.maxWidth / this.boardSpecs.collums
+			console.log(this.boardSpecs.collums)			
+
+		}else{
+
+			// if there is extra space, populate entire screen width with squares 
+			this.boardSpecs.tileSize = this.boardSpecs.maxHeight / this.boardSpecs.rows
+			this.tileSize = this.boardSpecs.tileSize
+			this.boardSpecs.collums = Math.ceil(this.boardSpecs.maxWidth / (this.boardSpecs.maxHeight / this.boardSpecs.rows)) - 1
+			console.log(this.boardSpecs.collums)
+
+		};
 	};
 
 	Trial.prototype.clickStart = function(_event){
@@ -203,7 +388,6 @@ function Multiplication(){
 					this.selection.tiles[i].sprite.destroy();
 					this.selection.tiles[i].sprite = undefined;
 
-
 				};
 
 			};
@@ -214,22 +398,20 @@ function Multiplication(){
 
 
 
-
 		};
-
 	};
 
 	Trial.prototype.drag = function(_event,_this){
 
-       
-		if(_this.dragging){
+		if(_this.dragging){ // ensure that only one tile will trigger the reponse
 
-			var point = {
-				x : _event.data.global.x, //session.renderer.plugins.interaction.mouse.global.x,
-				y : _event.data.global.y //session.renderer.plugins.interaction.mouse.global.y
+			var point = { // get mouse position
+
+				x : _event.data.global.x, 
+				y : _event.data.global.y
 			}
 
-			for(object in this.boardMatrix){
+			for(object in this.boardMatrix){ // check with tile is below cursor and draw nest based on the position
 
 				if(this.boardMatrix[object].sprite.containsPoint(point)){
 
@@ -245,7 +427,7 @@ function Multiplication(){
 
 	Trial.prototype.clickEnd = function(_this){
 
-		if(!_this.dragging){
+		if(!_this.dragging){ // ensure that only one tile will trigger the reponse
 
 			this.boardMatrix[this.firstClickTile].sprite.dragging = false;
 			console.log(this.playState)			
@@ -415,7 +597,6 @@ function Multiplication(){
 		this.lastTarget = _target;  
 	};
 
-
 	Trial.prototype.calculateSelection = function(_start,_end){
 
 		var selectedTile = []
@@ -475,6 +656,15 @@ function Multiplication(){
 		};
 	};
 
+	Trial.prototype.destroy = function(){
+
+		for(object in  this.boardMatrix){
+
+			stage.removeChild(this.boardMatrix[object].sprite);
+			this.boardMatrix[object].sprite.destroy(true,true);
+
+		};
+	};
 
 
 //------------------------------------------
@@ -526,13 +716,16 @@ function Multiplication(){
 
         console.log("assetsloaded!")
 
-        round.init(Trial,stage, stimuli);
+        round.init(Trial, stage, stimuli);
 
-            setTimeout(function(){
-                console.log("starting the game!")
-                session.show()
-                update();
-            });
+        setTimeout(function(){
+
+            console.log("starting the game!")
+            session.show()
+            update();
+        
+        });
+        
         };
 
     //--------------------------------------- Game Loop

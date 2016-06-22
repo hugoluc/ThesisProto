@@ -20,7 +20,9 @@ function getDistance(x,y,_x,_y){
 function getRandomInt(min, max) {
   
   return Math.floor(Math.random() * (max-min)) + min;
+
 };
+
 // hides one page and shows the next
 function clickStart(hide, show) {
 
@@ -124,13 +126,33 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
 
 
   this.feature = _feature
-  this.featureStart = this.obj[this.feature]
   this.feaLength = _length
   this.feaOff = _offset || 0
 
-  this.featureDistance = _dest - this.featureStart
-  this.featureSpeed = this.featureDistance / this.feaLength
+  
+  if(this.feature.constructor !== Array){
+  
+    this.featureStart = this.obj[this.feature]
+    this.featureDistance = _dest - this.featureStart
+    this.featureSpeed = this.featureDistance / this.feaLength
+  
+  }else{
 
+    this.featureStart = []
+    this.featureDistance = []
+    this.featureSpeed = []
+
+
+    for(var i = 0; i < this.feature.length; i++){
+
+      this.featureStart.push(this.obj[this.feature[i]])
+      this.featureDistance.push(_dest - this.featureStart[i])
+      this.featureSpeed.push(this.featureDistance[i] / this.feaLength)
+
+    }
+
+
+  }
 
   if(_bezier != undefined ){
   
@@ -138,6 +160,9 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
     this.feaBezName = _bezier[0].toFixed(2) + "-" + _bezier[1].toFixed(2)
   
   };
+
+  console.log(this.obj[this.feature[0]])
+
 };
 
 animation.prototype.runFeature = function(){
@@ -162,37 +187,94 @@ animation.prototype.runFeature = function(){
   var elapsed = this.feaNow - this.feaStartTime
 
 
-  if(elapsed > this.feaLength+this.feaOff){
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // Position after animation is done
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-    this.obj[this.feature] = this.featureStart + this.featureDistance
-    this.feaFinished = true
+  if(elapsed > this.feaLength + this.feaOff){ 
 
+    if(this.feature.constructor === Array){
+
+      console.log(this.feature)
+
+      for(var i = 0; i < this.feature.length; i++){
+      
+        this.obj[this.feature[i]] = this.featureStart[i] + this.featureDistance[i]
+        this.feaFinished = true
+      
+      };
+
+    }else{
+
+      for(var i = 0; i < this.feature.length; i++){
+      
+        this.obj[this.feature] = this.featureStart + this.featureDistance
+        this.feaFinished = true
+      
+      };
+
+    };
+    
     console.log("finished!!!")
     return true
 
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // Animate features
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
   }else{
-   
+
     if(elapsed >= this.feaOff){
-      
+
       if(this.feaBezier){
 
         var location = Math.floor(((elapsed-this.feaOff)*999)/this.feaLength)
         bez = bezierCurveSpecs[this.feaBezName][location]
 
-        this.obj[this.feature] = this.featureStart + (this.featureDistance * bez)
-   
+        if(this.feature.constructor === Array){
+
+          for(var i = 0; i < this.feature.length; i++){
+
+            this.obj[this.feature[i]] = this.featureStart[i] + (this.featureDistance[i] * bez)
+
+          }
+
+        }else{
+        
+          this.obj[this.feature] = this.featureStart + (this.featureDistance * bez)
+        
+        }
+      
       }else{
 
-        this.obj[this.feature] = this.obj[this.feature] + (frameTime * this.featureSpeed) 
+        if(this.feature.constructor === Array){
 
-      }
+          for(var i = 0; i < this.feature.length; i++){
 
+            console.log(">>>>>>>>>>>>>>>>>")
+            console.log(i, this.obj[this.feature[i]])
+            console.log(frameTime, this.featureSpeed[i])
 
-    }
+            this.obj[this.feature[i]] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i]) 
+
+          
+          }
+
+        }else{
+
+          this.obj[this.feature] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i])         
+        
+        };
+
+      };
+
+    };
 
     return false;
   
-  }
+  };
+
+
 };
 
 animation.prototype.init = function(dest,length,offset,bezier){
