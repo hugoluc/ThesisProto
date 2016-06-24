@@ -104,6 +104,11 @@ function getRandomColor() {
 function animation(obj){
 
   //receives a PIXI.Object object
+  if(obj == undefined){
+
+    throw "animation: PIXI object passed as the parameter in the animation contructor"
+  
+  }
 
   this.timeSet = false;
   this.lastTime = 0;
