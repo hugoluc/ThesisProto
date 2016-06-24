@@ -1,0 +1,27 @@
+{"frames": {
+
+"dragonfly-1.png":
+{
+	"frame": {"x":1,"y":1,"w":800,"h":323},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":800,"h":323},
+	"sourceSize": {"w":800,"h":323}
+},
+"dragonfly-2.png":
+{
+	"frame": {"x":1,"y":1,"w":800,"h":323},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":800,"h":323},
+	"sourceSize": {"w":800,"h":323}
+},
+"dragonfly-3.png":
+{
+	"frame": {"x":1,"y":1,"w":800,"h":323},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":800,"h":323},
+	"sourceSize": {"w":800,"h":323}
+}}
+}
