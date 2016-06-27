@@ -239,7 +239,7 @@
 		this.stage = _stage;
 		this._trial = _Trial;
 		this.stimuli = stimuli;
-	  this.background = new PIXI.Sprite(assets.textures.bg);
+	  	this.background = new PIXI.Sprite(assets.textures.bg);
 
 	 	this.stage.addChild(this.background);
 
@@ -260,7 +260,11 @@
 
 		//var stim = stimQueues['numberstim'].pop();
 	 	this.trial = new this._trial(this.stimuli.pop());
-	  this.trial.init();
+	  	if(this.trial.init != undefined){
+			
+			this.trial.init();
+		
+		}
 
 	}
 
@@ -281,11 +285,15 @@
 	Round.prototype.play = function(){
 
 		if(this.trial.play()){
+
 			this.stimuli.push(this.trial.storeStim());
+		
 			this.trial.destroy();
 			console.log("last trial destroyed!");
+		
 			this.getNextTrial();
 			console.log("new trial created!");
+		
 		}
 
 	};
@@ -425,7 +433,6 @@ gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 
 
 	}else{
-
 
 		this.svg = false;
 
