@@ -61,6 +61,12 @@ function Start(){
         name: "Shapes",
         available: true,
         callFunction: Shapes
+      },
+
+      {
+        name: "WorldMap",
+        available: true,
+        callFunction: WorldMap
       }
   ]
 
