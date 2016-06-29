@@ -214,7 +214,6 @@ function proto03(){
             })
 
         }
-
     };
 
 
@@ -341,13 +340,16 @@ function proto03(){
 
     lillySmall.prototype.drag = function(_this){
 
+        console.log("dragging: ", _this)
     	//change lillypad to selected
     	if(_this.dragging){
 
     		if(!this.dragging){
-    			this.stick = this.trial.createStick(_this.data.getLocalPosition(_this.parent));
+    			
+                this.stick = this.trial.createStick(_this.data.getLocalPosition(_this.parent));
     			this.dragging = true;
-    		};
+    		
+            };
 
     		this.trial.moveStick(_this.data.getLocalPosition(_this.parent))
 
@@ -609,7 +611,9 @@ function proto03(){
 */
 
     function Trial(_stimuli,_correct){
+       
         stimCount++;
+        
         var specs =
             //--------------------------------------0
             {
@@ -635,19 +639,21 @@ function proto03(){
                 }
             }
           }
+
 		/*----------------------
 		Stimuli is the number necessery to get to the answear.
 		It should be used to draw smaller lillypad so the user has at least one
 		way to solve the problem
 		------------------------*/
-      this.stimuli = specs.stimuli;
-      console.log(specs)
+        this.stimuli = specs.stimuli;
+        console.log(specs)
+
 		/*----------------------
 		Correct is the final number that should be placed in the final lillypad
 		------------------------*/
     	this.correct = specs.correct;
 
-      this.clock = new ClockTimer()
+        this.clock = new ClockTimer()
 
     	this.sticks = []
 
@@ -684,6 +690,7 @@ function proto03(){
         this.antsAdd = 0;
         this.leavesToFade = 0
     };
+
 
     Trial.prototype.init = function(){
 
@@ -732,7 +739,6 @@ function proto03(){
         this.lillyFinal = new lillyFinal();
         this.lillyFinal.init(this.stimuli.correct.value);
 
-
         // create stick
         this.stick = new PIXI.Sprite(assets.textures.stick)
         this.stick.width = 0;
@@ -744,18 +750,17 @@ function proto03(){
         this.branch.anchor.x = -0.2
         stage.addChild(this.branch);
 
+
         for(var i=0;i<this.ants.sprites.length;i++){
 
             this.ants.sprites[i].init()
 
-        }
-
+        };
 
         this.clock.start(1000)
     };
 
     Trial.prototype.destroy = function(){
-
 
         this.lillyFinal.destroy()
 
@@ -774,6 +779,7 @@ function proto03(){
 
         stage.removeChild(this.stick)
         this.stick.destroy();
+
         stage.removeChild(this.branch)
         this.branch.destroy();
     };
@@ -1590,10 +1596,11 @@ function proto03(){
   	        previousTime = current;
   	        lag = lag + elapsed;
 
+
         	  while (lag >= MS_PER_UPDATE){
               round.play(lag/MS_PER_UPDATE);
               lag = lag - MS_PER_UPDATE;
-
+              
   	        }
 
         	        //---------------->> Thing that renders the whole stage
