@@ -55,7 +55,8 @@
 
 		this.sounds = {}
 		this.sounds.numbers = []
-
+		this.sounds.letters = []
+		this.sounds.words = []
 		this.sprites = {};
 		this.textures = {};
 
@@ -91,23 +92,19 @@
 	}
 
 	Assets.prototype.addTexture = function(name,url){
-
 		this.textureQueue.push([name,url]);
 	};
 
 	Assets.prototype.addSound = function(name,url){
-
-
 		if(typeof(name) == "number"){
-
 			this.soundsNQueue.push([name,url])
-
-		}else{
-
+		} else if(name.length===1){
+			this.soundsLetterQueue.push([name,url])
+		} else if(typeof(name)== "word"){ // need to distinguish words from generic sounds (bc they have different folders)
+			this.soundsWordQueue.push([name,url])
+		} else {
 			this.soundsQueue.push([name,url])
-
 		}
-
 	};
 
 	Assets.prototype.load = function(_callback){
@@ -121,9 +118,7 @@
 		if(this.pixiLoaderQueue.length > 0){
 
 			for(var i=0; i<this.pixiLoaderQueue.length; i++){
-
 				this.loader.add(this.pixiLoaderQueue[i][1])
-
 			}
 
 			this.loader.load( function(){
@@ -132,9 +127,7 @@
 			})
 
 		}else{
-
 			this.start()
-
 		}
 	};
 
@@ -143,32 +136,39 @@
 		console.log("creating pixi objects...")
 		this.sounds = {}
 		this.sounds.numbers = {}
+		this.sounds.words = {}
+		this.sounds.alphabet = {}
 		this.sprites = {}
 		this.textures = {}
 
 		for( var i=0; i < this.textureQueue.length; i++){
-
 			this.textures[this.textureQueue[i][0]] = new PIXI.Texture.fromImage(this.textureQueue[i][1])
-
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
-
 			this.sounds[this.soundsQueue[i][0]] = []
-
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
-
 			this.sounds[this.soundsQueue[i][0]].push(new Audio('audio/' + this.soundsQueue[i][0] + '/' + this.soundsQueue[i][1]))
-
+		}
+		// numbers are just like other words, so we might not need a separate Queue
+		if(this.soundsNQueue) {
+			for( var i=0; i < this.soundsNQueue.length; i++){
+				this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
+			}
 		}
 
+		if(this.soundsLetterQueue) {
+			for( var i=0; i < this.soundsLetterQueue.length; i++){
+				this.sounds.letters[String(this.soundsLetterQueue[i][0])] = new Audio('audio/' + language + 'alphabet/' + this.soundsLetterQueue[i][1])
+			}
+		}
 
-		for( var i=0; i < this.soundsNQueue.length; i++){
-
-			this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
-
+		if(this.soundsWordQueue) {
+			for( var i=0; i < this.soundsWordQueue.length; i++){
+				this.sounds.words[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsWordQueue[i][1])
+			}
 		}
 
 		for( var i=0; i < this.pixiLoaderQueue.length; i++){
@@ -261,9 +261,9 @@
 		//var stim = stimQueues['numberstim'].pop();
 	 	this.trial = new this._trial(this.stimuli.pop());
 	  	if(this.trial.init != undefined){
-			
+
 			this.trial.init();
-		
+
 		}
 
 	}
@@ -287,13 +287,13 @@
 		if(this.trial.play()){
 
 			this.stimuli.push(this.trial.storeStim());
-		
+
 			this.trial.destroy();
 			console.log("last trial destroyed!");
-		
+
 			this.getNextTrial();
 			console.log("new trial created!");
-		
+
 		}
 
 	};
@@ -335,12 +335,12 @@
 		if(this.diffRange != undefined){
 
 			if(this.difficulty < this.diffRange[0]){
-				
+
 				this.difficulty = this.diffRange[0]
 			};
 
 			if(this.difficulty > this.diffRange[1]){
-				
+
 				this.difficulty = this.diffRange[1]
 			};
 
@@ -377,7 +377,7 @@ function gameScore(){
 
 gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 
-	this.score = this.score + (_starsPos.length * _value); 
+	this.score = this.score + (_starsPos.length * _value);
 	var initDelay = 200;
 	var delay = 0
 	var duration = _duation || 1000
@@ -412,12 +412,12 @@ gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 			.delay(delay)
 			.duration(_duation)
 			.attr({
-				
+
 				x: window.innerWidth - 50,
 				y: -50,
 
 			})
-			.each("end", function(){ 
+			.each("end", function(){
 			// Animation callback
 
 				var id = this.id
@@ -437,13 +437,13 @@ gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 		this.svg = false;
 
 		for(var i = 0; i < _starsPos.length; i++){
-		
+
 			var star = new PIXI.Sprite(assets.textures.star);
 			star.x = _starsPos[i].x;
 			star.y = _starsPos[i].y;
 
 			this.stage.addChild(star);
-			
+
 			var starAnimation = new animation(star);
 			starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
 			delay = delay + initDelay
@@ -453,8 +453,8 @@ gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 		};
 
 
-	};	
-	
+	};
+
 
 };
 
@@ -463,7 +463,7 @@ gameScore.prototype.displayStar = function(){
 		var animationDone = true
 
 		for(var i = 0; i < this.starts.length; i++){
-			
+
 			if(this.starts[i][1].run()){
 
 				this.stage.removeChild(this.starts[i][0])
@@ -482,7 +482,7 @@ gameScore.prototype.displayStar = function(){
 		};
 
 		if(animationDone){
-		
+
 			return true;
 
 		}
