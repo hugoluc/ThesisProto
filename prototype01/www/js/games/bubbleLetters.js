@@ -183,27 +183,25 @@ function bubbleLetters(){
         this.operation = 0
 
         this.AnimationDone = true;
-        this.fadeStick = false; // fadeBubble?
         this.performOperation = false;
         this.countDone = false;
 
-        this.leavesToFade = 0
     };
 
     Trial.prototype.init = function(){
-        var bubbleValues = this.stimuli.correctValue
+        // need to track the target's location so the dragonfly can go to it
+        var bubbleValues = [this.stimuli.correctValue];
         for (var i=0; i<this.stimuli.extras.length; i++){
             bubbleValues.push(this.stimuli.extras[i]);
         }
 
         if(bubbleValues.length > this.posMatrix.length){
-            throw "SCREEN TOO SMALL!"
+            throw "SCREEN TOO SMALL!";
         }
 
-        // create small liilypads
         for (var i=0; i<bubbleValues.length; i++){
-            var pos = getRandomInt(0,this.posMatrix.length)
-            this.bubble.push(new bubble(this))
+            //var pos = getRandomInt(0,this.posMatrix.length);
+            this.bubble.push(new bubble(this)); // each bubble gets the whole trial..?
         }
 
         // create bubble graphics
@@ -211,17 +209,24 @@ function bubbleLetters(){
             this.bubble[i].init(bubbleValues[i], this.getPos(i), this.specs.stimWidth, i)
         }
 
+        console.log(this.bubble[0]);
+        // first bubble is target
+        this.targetx = this.bubble[0].circle.position.x + 25; // this.bubble[0].pos.x;
+        this.targety = this.bubble[0].circle.position.y + 25; // this.bubble[0].pos.y;
         //this.lillyFinal.init(this.stimuli.correct.value);
 
         // create dragonfly
         this.dragonfly = new PIXI.Sprite(assets.textures.dragonfly)
         this.dragonfly.width = 200;
         this.dragonfly.height = 100;
-        this.dragonfly.position.x = 400
-        this.dragonfly.position.y = 400
+        this.dragonfly.position.x = 50; // from previous trial..
+        this.dragonfly.position.y = 100; // from prev trial
         this.dragonfly.anchor.y = 0.5;
         this.dragonfly.anchor.x = 0.5;
         stage.addChild(this.dragonfly);
+
+        this.deltax = Math.abs(this.targetx - this.dragonfly.position.x) / 100;
+        this.deltay = Math.abs(this.targety - this.dragonfly.position.y) / 100;
 
         this.clock.start(1000)
     };
@@ -236,55 +241,6 @@ function bubbleLetters(){
         this.dragonfly.destroy();
     };
 
-
-    //creates links between lillypads if allowed
-	Trial.prototype.CheckLink = function(_dropPoint,_id){
-
-        // FINAL MOVE:
-        if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
-
-            //this.moveStick(true,"final")
-            this.updateOperation(_id,"final")
-            this.trialState = "finished"
-            this.leavesToFade = 0
-            this.finishedState = "countdown"
-
-            if(this.bubble[_id].value == this.stimuli.correct.value){
-
-
-                this.trialEnded = true;
-
-            }else{
-
-                this.trialEnded = false;
-
-            }
-
-            return
-        }
-
-
-        //check which lillypad the stick was droped over
-        for(var i=0; i<this.bubble.length; i++){
-
-            if(this.bubble[i].circle.containsPoint(_dropPoint)){
-
-                if(i == _id){
-                    this.stick.alpha = 0
-                    return
-                }
-
-                //this.moveStick(true,i)
-                this.updateOperation(_id,i)
-
-                return;
-
-            }
-
-        }
-
-        this.fadeStick = true;
-    };
 
   Trial.prototype.updateOperation = function(_origin,_target){
 
@@ -308,43 +264,40 @@ function bubbleLetters(){
     };
 
 	Trial.prototype.getSpecs = function(){
-
-		var obj = {}
-
-		obj.canvasMargin = 30
+		var obj = {};
+		obj.canvasMargin = 30;
     obj.stimWidth = 130;
-    obj.margin = 15
+    obj.margin = 15;
 
     obj.width = session.canvas.width-(2*obj.canvasMargin)-obj.stimWidth/2;
 		obj.height = session.canvas.height-(2*obj.canvasMargin);
 
-  	obj.moduleSize = obj.stimWidth+(obj.margin*2)
+  	obj.moduleSize = obj.stimWidth+(obj.margin*2);
 
-  	obj.moduleWidthCount = Math.floor(obj.width/obj.moduleSize)
+  	obj.moduleWidthCount = Math.floor(obj.width/obj.moduleSize);
   	obj.moduleHeightCount = Math.floor(obj.height/obj.moduleSize);
 
-  	obj.widthInter = obj.width/obj.moduleWidthCount
-  	obj.heightInter = obj.height/obj.moduleHeightCount
+  	obj.widthInter = obj.width/obj.moduleWidthCount;
+  	obj.heightInter = obj.height/obj.moduleHeightCount;
 
-  	obj.margingW = (obj.widthInter - obj.stimWidth)/2
-  	obj.margingH = (obj.heightInter - obj.stimWidth)/2
+  	obj.marginW = (obj.widthInter - obj.stimWidth)/2;
+  	obj.marginH = (obj.heightInter - obj.stimWidth)/2;
 
-    this.lillywith = obj.stimWidth
-    return obj
+    return obj;
 	};
 
     Trial.prototype.getMatrixPosition = function(){
     	var allPos = []
     	for(var i=0;i<this.specs.moduleWidthCount;i++){
     		for(var j=0;j<this.specs.moduleHeightCount;j++){
-    			offset = j%2
+    			offset = j%2;
 	    		allPos.push({
                     id: i,
                     pos:{
-                        x:(this.specs.widthInter*i)+this.specs.margingW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
-                        y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin+getRandomInt(-20,20),
+                        x:(this.specs.widthInter*i)+this.specs.marginW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
+                        y:(this.specs.heightInter*j)+this.specs.marginH+this.specs.canvasMargin+getRandomInt(-20,20),
                     }
-	    		})
+	    		  });
 			  }
     	}
 
@@ -356,12 +309,9 @@ function bubbleLetters(){
     };
 
     Trial.prototype.getPos = function(_i){
-
     	var aPos = getRandomInt(0,this.matrixAvailable.length)
     	var i = this.matrixAvailable[aPos]
     	this.matrixAvailable.splice(aPos,1)
-
-
     	return this.posMatrix[i]
     };
 
@@ -371,25 +321,47 @@ function bubbleLetters(){
                 if(this.clock.timeOut()){
                     var dest = {};
                     dest.x = session.canvas.width / 2;
-                    dest.y = (session.canvas.height/2)
-                    this.introState = "spawnBubbles"
+                    dest.y = (session.canvas.height/2);
+                    this.introState = "spawnBubbles";
                 }
                 break;
 
             case "spawnBubbles":
                 for(var i = 0; i < this.bubble.length; i++){
-                    this.bubble[i].display(true)
+                    this.bubble[i].display(true);
                 }
-                return true
+                return true;
                 break;
 
         }
-        return false
+        return false;
     };
 
+    Trial.prototype.moveDragonfly = function() {
+      if(this.targetx > this.dragonfly.position.x) {
+        this.dragonfly.position.x += this.deltax;
+      } else {
+        this.dragonfly.position.x -= this.deltax;
+      }
+
+      if(this.targety > this.dragonfly.position.y) {
+        this.dragonfly.position.y += this.deltay;
+      } else {
+        this.dragonfly.position.x -= this.deltay;
+      }
+
+      //if distance from target is <10, person loses
+      var dist = distance(this.dragonfly.position.x, this.dragonfly.position.y, this.targetx, this.targety);
+
+      if((dist) < 5) {
+        return true;
+      } else {
+        return false;
+      }
+    }
 
     // GK: ToDo finish this! (where is learner's correctness?)
-    Trial.prototype.storeStim = function(){
+    Trial.prototype.storeStim = function() {
       var newpriority = 1
         // if(this.wrongClicks===0) {
         //   var newpriority = this.stimuli.priority + .5;
@@ -400,7 +372,7 @@ function bubbleLetters(){
         return(this.stimuli);
     };
 
-    Trial.prototype.finished = function(){
+    Trial.prototype.finished = function() {
 
         switch(this.finishedState){
             case "countdown":
@@ -408,28 +380,18 @@ function bubbleLetters(){
                 var animationDone = this.animateAnts()
 
                 if(countDone && animationDone){
-
                     if(this.trialEnded){
-
-                        //console.log("changinf to win...")
-                        console.log(this.leavesToFade,this.stimuli.correct.value)
-                        this.fadeStick = true;
+                        console.log(this.stimuli.correct.value)
                         this.clock.start(1000)
                         this.finishedState = "win";
-
                     }else{
-
                         this.lillyFinal.sinkThis();
-                        this.fadeStick = true;
                         this.finishedState = "lose";
-
                     }
-
                 }
                 break;
 
             case "lose":
-
                 if(this.lillyFinal.state == "fading"){
                    console.log("loss: fade?")
                 }
@@ -442,8 +404,6 @@ function bubbleLetters(){
             case "win":
                 // fade everryhting else
                 // move final to center
-
-                //alert("YOU WIN!")
                 if(this.clock.timeOut()){
                     this.finishedState = "callNext";
                 }
@@ -460,32 +420,25 @@ function bubbleLetters(){
     Trial.prototype.play = function(_updateTime){
         switch(this.trialState){
             case "intro":
-                console.log(assets.sounds.letters)
-                assets.sounds.letters[this.correct].play()
-                if(this.fadeStick){ this.removeStick() }
-
+                //console.log(assets.sounds.letters)
+                //assets.sounds.letters[this.correct].play()
                 if(this.intro()){
-                    this.trialState = "play"
-                };
+                    this.trialState = "play";
+                }
                 break;
 
             case "play":
                 for(var i=0;i<this.bubble.length;i++){
-                    this.bubble[i].animate()
+                    this.bubble[i].animate();
                 }
 
-                if(this.fadeStick) {
-                    this.removeStick()
-                } else if(this.performOperation){
+                var dragonflyReachedTarget = this.moveDragonfly();
 
-                    var countDone = this.countNumber()
-                    var AnimationDone = this.animateAnts()
-
-                    if(countDone && AnimationDone){
-                        this.bubble[this.countDownTargets[0]].fade = true
-                        this.fadeStick = true;
-                        this.performOperation = false
-                    }
+                if(dragonflyReachedTarget) { // computer wins!
+                  // points, get rid of bubbles, start new trial
+                  for(var i=0;i<this.bubble.length;i++){
+                      this.bubble[i].fade = true;
+                  }
                 }
                 break;
 
