@@ -193,24 +193,46 @@ var Sketch = function() {
   canvas.width = screen_width;
   canvas.height = screen_height-110; // tool height..and maybe alphabet?
   canvas.style.border = "1px solid #000000";
+  canvas.style.background = 'rgba(256, 256, 256, 1.0)';
   //canvas.style.position = "absolute;  top: -50 left: 0"
   //canvas.style.background = "url(sketch_alphabet_bg_sm.png) no-repeat center center";
+  document.getElementById("header-exp").style.display = 'inline';
+  document.getElementById("sketch-tools").style.display = 'inline';
 
-  //document.body.appendChild(canvas);
-  document.getElementById("sketch-container").appendChild(canvas);
+  document.getElementById("container-exp").appendChild(canvas);
 
   this.destroy = function() {
     //$('.tools').remove();
-    clickStart('sketch-container','container-chooser');
+    $('#sketch').remove();
+    document.getElementById("sketch-tools").style.display = 'none';
+    clickStart('container-exp','container-chooser');
     currentview = new MainMenu(assets);
   }
 
   $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {
-    $('#sketch-container .tools').append("<a href='#sketch' data-color='" + this + "' style='width: 10px; background: " + this + ";'></a> ");
+    $('#container-exp .tools').append("<a href='#sketch' data-color='" + this + "' style='margin: 2px; width: 10px; background: " + this + ";'></a> ");
   });
+  // make line thickness icons? definitely make "marker" and "eraser" icons
   $.each([3, 5, 10, 15], function() {
-    $('#sketch-container .tools').append("<a href='#sketch' data-size='" + this + "' style='background: #ccc'>" + this + "</a> ");
+    $('#container-exp .tools').append("<a href='#sketch' data-size='" + this + "' style='margin: 2px; background: #ccc'>" + this + "</a> ");
   });
+
+  var ctx = canvas.getContext("2d");
+
+  ctx.font="30px Verdana";
+  // Create gradient
+  var gradient=ctx.createLinearGradient(0,0,canvas.width,0);
+  gradient.addColorStop("0","magenta");
+  gradient.addColorStop("0.5","blue");
+  gradient.addColorStop("1.0","red");
+  // Fill with gradient
+  ctx.fillStyle=gradient;
+  
+  var spacing = (canvas.width - 50) / letters.length;
+  for (var i = 0; i < letters.length; i++) {
+    ctx.fillText(letters[i].text, 50 + i*spacing, canvas.height-60);
+    ctx.fillText(letters[i].text.toLowerCase(), 51 + i*spacing, canvas.height-28)
+  }
 
   $('#sketch').sketch();
 

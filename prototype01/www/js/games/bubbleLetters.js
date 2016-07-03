@@ -376,10 +376,10 @@ function bubbleLetters(){
 
         switch(this.finishedState){
             case "countdown":
-                var countDone = this.countNumber()
-                var animationDone = this.animateAnts()
+                // dragonfly dances?
+                var animationDone = this.animateAnts();
 
-                if(countDone && animationDone){
+                if(animationDone){
                     if(this.trialEnded){
                         console.log(this.stimuli.correct.value)
                         this.clock.start(1000)
