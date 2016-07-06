@@ -115,13 +115,14 @@ function animation(obj){
   this.obj = obj;
   this.bezier = false;
 
+  this.logCount = 0
+
 };
 
 animation.prototype.stop = function(){
 
   this.finished = true;
   this.obj = [];
-
 };
 
 animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezier){
@@ -165,9 +166,6 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
     this.feaBezName = _bezier[0].toFixed(2) + "-" + _bezier[1].toFixed(2)
   
   };
-
-  console.log(this.obj[this.feature[0]])
-
 };
 
 animation.prototype.runFeature = function(){
@@ -200,8 +198,6 @@ animation.prototype.runFeature = function(){
 
     if(this.feature.constructor === Array){
 
-      console.log(this.feature)
-
       for(var i = 0; i < this.feature.length; i++){
       
         this.obj[this.feature[i]] = this.featureStart[i] + this.featureDistance[i]
@@ -220,7 +216,6 @@ animation.prototype.runFeature = function(){
 
     };
     
-    console.log("finished!!!")
     return true
 
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -256,10 +251,6 @@ animation.prototype.runFeature = function(){
 
           for(var i = 0; i < this.feature.length; i++){
 
-            console.log(">>>>>>>>>>>>>>>>>")
-            console.log(i, this.obj[this.feature[i]])
-            console.log(frameTime, this.featureSpeed[i])
-
             this.obj[this.feature[i]] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i]) 
 
           
@@ -278,9 +269,33 @@ animation.prototype.runFeature = function(){
     return false;
   
   };
-
-
 };
+
+
+animation.prototype.log = function(){
+
+  if(this.logCount == 0){
+
+    console.log("---------------------")
+    console.log(this.obj)
+    console.log("startPos: ", this.startPos)
+    console.log("distance: ", this.distance)
+    console.log("speed: ", this.speed)
+    console.log("bounds: ", this.obj.getBounds() )
+
+    this.logCount++
+
+
+  }else if(this.logCount < 10){
+
+    this.logCount++
+
+    console.log("---------------------")
+    console.log(this.obj.x, this.obj.y)
+
+  }
+
+}
 
 animation.prototype.init = function(dest,length,offset,bezier){
 
@@ -307,6 +322,7 @@ animation.prototype.init = function(dest,length,offset,bezier){
 
     start.x = this.obj.x
     start.y = this.obj.y
+   console.log("---------------------------------",this.obj)
 
     this.startPos = {};
     this.startPos.x = this.obj.x;
@@ -323,6 +339,7 @@ animation.prototype.init = function(dest,length,offset,bezier){
 
     start.x = this.obj.getBounds().x
     start.y = this.obj.getBounds().y
+    console.log("---------------------------------",start)
 
     this.startPos = {};
     this.startPos.x = this.obj.x;

@@ -20,7 +20,9 @@ function getDistance(x,y,_x,_y){
 function getRandomInt(min, max) {
   
   return Math.floor(Math.random() * (max-min)) + min;
+
 };
+
 // hides one page and shows the next
 function clickStart(hide, show) {
 
@@ -102,11 +104,18 @@ function getRandomColor() {
 function animation(obj){
 
   //receives a PIXI.Object object
+  if(obj == undefined){
+
+    throw "animation: PIXI object passed as the parameter in the animation contructor"
+  
+  }
 
   this.timeSet = false;
   this.lastTime = 0;
   this.obj = obj;
   this.bezier = false;
+
+  this.logCount = 0
 
 };
 
@@ -114,7 +123,6 @@ animation.prototype.stop = function(){
 
   this.finished = true;
   this.obj = [];
-
 };
 
 animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezier){
@@ -124,13 +132,33 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
 
 
   this.feature = _feature
-  this.featureStart = this.obj[this.feature]
   this.feaLength = _length
   this.feaOff = _offset || 0
 
-  this.featureDistance = _dest - this.featureStart
-  this.featureSpeed = this.featureDistance / this.feaLength
+  
+  if(this.feature.constructor !== Array){
+  
+    this.featureStart = this.obj[this.feature]
+    this.featureDistance = _dest - this.featureStart
+    this.featureSpeed = this.featureDistance / this.feaLength
+  
+  }else{
 
+    this.featureStart = []
+    this.featureDistance = []
+    this.featureSpeed = []
+
+
+    for(var i = 0; i < this.feature.length; i++){
+
+      this.featureStart.push(this.obj[this.feature[i]])
+      this.featureDistance.push(_dest - this.featureStart[i])
+      this.featureSpeed.push(this.featureDistance[i] / this.feaLength)
+
+    }
+
+
+  }
 
   if(_bezier != undefined ){
   
@@ -162,38 +190,112 @@ animation.prototype.runFeature = function(){
   var elapsed = this.feaNow - this.feaStartTime
 
 
-  if(elapsed > this.feaLength+this.feaOff){
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // Position after animation is done
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-    this.obj[this.feature] = this.featureStart + this.featureDistance
-    this.feaFinished = true
+  if(elapsed > this.feaLength + this.feaOff){ 
 
-    console.log("finished!!!")
+    if(this.feature.constructor === Array){
+
+      for(var i = 0; i < this.feature.length; i++){
+      
+        this.obj[this.feature[i]] = this.featureStart[i] + this.featureDistance[i]
+        this.feaFinished = true
+      
+      };
+
+    }else{
+
+      for(var i = 0; i < this.feature.length; i++){
+      
+        this.obj[this.feature] = this.featureStart + this.featureDistance
+        this.feaFinished = true
+      
+      };
+
+    };
+    
     return true
 
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // Animate features
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
   }else{
-   
+
     if(elapsed >= this.feaOff){
-      
+
       if(this.feaBezier){
 
         var location = Math.floor(((elapsed-this.feaOff)*999)/this.feaLength)
         bez = bezierCurveSpecs[this.feaBezName][location]
 
-        this.obj[this.feature] = this.featureStart + (this.featureDistance * bez)
-   
+        if(this.feature.constructor === Array){
+
+          for(var i = 0; i < this.feature.length; i++){
+
+            this.obj[this.feature[i]] = this.featureStart[i] + (this.featureDistance[i] * bez)
+
+          }
+
+        }else{
+        
+          this.obj[this.feature] = this.featureStart + (this.featureDistance * bez)
+        
+        }
+      
       }else{
 
-        this.obj[this.feature] = this.obj[this.feature] + (frameTime * this.featureSpeed) 
+        if(this.feature.constructor === Array){
 
-      }
+          for(var i = 0; i < this.feature.length; i++){
 
+            this.obj[this.feature[i]] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i]) 
 
-    }
+          
+          }
+
+        }else{
+
+          this.obj[this.feature] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i])         
+        
+        };
+
+      };
+
+    };
 
     return false;
   
-  }
+  };
 };
+
+
+animation.prototype.log = function(){
+
+  if(this.logCount == 0){
+
+    console.log("---------------------")
+    console.log(this.obj)
+    console.log("startPos: ", this.startPos)
+    console.log("distance: ", this.distance)
+    console.log("speed: ", this.speed)
+    console.log("bounds: ", this.obj.getBounds() )
+
+    this.logCount++
+
+
+  }else if(this.logCount < 10){
+
+    this.logCount++
+
+    console.log("---------------------")
+    console.log(this.obj.x, this.obj.y)
+
+  }
+
+}
 
 animation.prototype.init = function(dest,length,offset,bezier){
 
@@ -220,6 +322,7 @@ animation.prototype.init = function(dest,length,offset,bezier){
 
     start.x = this.obj.x
     start.y = this.obj.y
+   console.log("---------------------------------",this.obj)
 
     this.startPos = {};
     this.startPos.x = this.obj.x;
@@ -236,6 +339,7 @@ animation.prototype.init = function(dest,length,offset,bezier){
 
     start.x = this.obj.getBounds().x
     start.y = this.obj.getBounds().y
+    console.log("---------------------------------",start)
 
     this.startPos = {};
     this.startPos.x = this.obj.x;

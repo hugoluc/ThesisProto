@@ -17,7 +17,7 @@ function Multiplication(){
 			{ 
 				stimuli : {
 
-					values : [6],
+					values : [8],
 					direction : "bottomUp"
 					// Maybe use this later to terermine in wich direction the game is testing the user 		
 
@@ -25,7 +25,7 @@ function Multiplication(){
 
 				correct : {
 
-					values : 6,
+					values : [8],
 
 				}
 
@@ -34,7 +34,7 @@ function Multiplication(){
 
 		]
 
-		this.stimuli = specs[0].stimuli.values;
+		this.stimuli = specs[0].stimuli;
 		this.correct = specs[0].correct.values;
 		this.boardMatrix = {}
 		this.lastTarget = ""
@@ -62,12 +62,12 @@ function Multiplication(){
 			stage.addChild(this.boardContainers[i])
 			this.boardContainers[i].customAnimation = new animation(this.boardContainers[i])
 
-
 		};
 
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		// Create Sprites for intructions eggs
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>	
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 		if((session.canvas.height/this.stimuli.values.length) * 0.7 < this.boardSpecs.instructionWidth*0.7){
 
@@ -102,8 +102,6 @@ function Multiplication(){
 			stage.addChild(sprite)
 			
 			this.eggs.instruction.push(sprite)
-
-			//this.stimuli.values[i]
 	
 		};
 
@@ -121,16 +119,13 @@ function Multiplication(){
 			if(this.intro()){
 
 				this.playState = "drawingNest"
-				this.drawBoard();				
-
+				console.log("-----------------------------------drawingNest")
+				
 			}
 
 			break;
 
 		case "drawingNest": // Allow user to draw nest and give answear
-
-
-
 
 			break;
 
@@ -177,7 +172,6 @@ function Multiplication(){
 					
 						for(var i=0; i < this.eggs.instruction.length; i++ ){
 
-							console.log(this)
 
 							var pos = {
 								y : (session.canvas.height/(this.eggs.instruction.length+1))*(i+1),
@@ -197,7 +191,9 @@ function Multiplication(){
 
 						};
 
-						this.introState = "moveLeft" 
+						this.timer.start(1000);
+						this.introState = "moveLeft"
+						this.drawBoard();
 
 					};
 
@@ -207,31 +203,45 @@ function Multiplication(){
 
 			case "moveLeft":
 
-				var done = true
+				if(this.timer.timeOut()){
+
+					var done = true
+						
+					for(var i=0; i < this.eggs.instruction.length; i++ ){
+
+						if(!this.eggs.instruction[i].customAnimation.run()){
+							done = false;
+						};
+
+					};	
+
+					for(var i=0; i < this.boardContainers.length; i++ ){
+
+						if(!this.boardContainers[i].customAnimation.run()){
+							//done = false;
+						};
+
+					};			
 					
-				for(var i=0; i < this.eggs.instruction.length; i++ ){
 
+					if(done){
 
-					if(!this.eggs.instruction[i].customAnimation.run()){
-						done = false;
+						this.timer.start(2000);
+						this.introState = "createBoard";
+
 					};
 
-				};			
-
+				}
 				
-				if(done){
-
-					this.timer.start(1000);
-					this.introState = "createBoard";
-
-				};
 
 				break;
 
 			case "createBoard":
 
 				if(this.timer.timeOut()){
+
 					return true
+
 				};
 
 				break
@@ -244,8 +254,40 @@ function Multiplication(){
 
 	Trial.prototype.drawBoard = function(){
 		
+
+
+		console.log("Drawing borad!")
+
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		// Creating divisions for board
+		//
+		//   ______________
+		//   |   2   |  3 |
+		//   |_______|____|
+		//   |     |      |
+		//   |  0  |   1  |
+		//   |_____|______|
+		//
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+		//Dividing the board int wo parts. The bottom onw being the
+		//biggest if the hight is an even number
+		var divisionHoz = Math.ceil(this.boardSpecs.rows/2); // This equals the heith of the bottom division
+
+		if(this.boardSpecs.columns%2 != 0){
+
+			var divVerTop = Math.ceil(this.boardSpecs.columns/2);			
+
+		}else{
+
+			var divVerTop = (this.boardSpecs.columns/2) + 1; 						
+
+		}
+
+		var divVerBot = this.boardSpecs.columns - divVerTop;
+
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		//Creating reference for the board background on boardMatrix
+		//Creating reference for the board background and boardMatrix
 		//This is also used to create the selection and nest
 		
 		// Array order: [[0,0],[0,1],[0,2],[1,0],[1,1][1,2],[2,0],[2,1],[2,2]
@@ -257,24 +299,7 @@ function Multiplication(){
 
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-		console.log("Drawing borad!")
-
-		var divisionHoz = Math.ceil(this.boardSpecs.rows/2);
-		
-		if(this.boardSpecs.collums%2 != 0){
-
-			var divVerTop = Math.ceil(this.boardSpecs.collums/2);			
-
-		}else{
-
-			var divVerTop = (this.boardSpecs.collums/2) + 1; 						
-
-		}
-
-
-		var divVerBot = this.boardSpecs.collums - divVerTop;
-
-		for(var i=0; i<this.boardSpecs.collums; i++){
+		for(var i=0; i<this.boardSpecs.columns; i++){
 
 			var _y = 0
 
@@ -292,9 +317,8 @@ function Multiplication(){
 
 				this.boardMatrix[indice] = {
 
-					//*************************************************** <FIXME> REPLACE GRAPHIC BY SPRITE
-					"sprite" : new PIXI.Graphics(), // sprite od the board background
-					"graphic" : new PIXI.Graphics(),// interactive área od the board
+					"sprite" : new PIXI.Sprite(assets.textures.boardLeaves), // sprite od the board background
+					"graphic" : new PIXI.Graphics(),// interactive area of the board
 					"tile" : {x : i, y : _y}, // x and y coordinates of the tiles
 					"pos" : pos, // pixel position of the tile aligned on the top left corner
 				}
@@ -303,6 +327,8 @@ function Multiplication(){
 				stage.addChild(this.boardMatrix[indice].graphic)
 				_y++;
 
+
+				//>>> Determine in wich division each tiles is
 				var containerPosition = 0
 
 				if(j >= divisionHoz){
@@ -313,7 +339,6 @@ function Multiplication(){
 
 					}else{
 
-						console.log("3")
 						containerPosition =+ 3
 
 					}
@@ -328,19 +353,57 @@ function Multiplication(){
 
 				}
 
-				this.boardContainers[containerPosition].addChild(this.boardMatrix[indice].graphic)
-
-				console.log(containerPosition)
-
-				this.boardContainers[0].alpha = 0.2
-				this.boardContainers[1].alpha = 0
-				this.boardContainers[2].alpha = 0.6
-				this.boardContainers[3].alpha = 1
+				this.boardContainers[containerPosition].addChild(this.boardMatrix[indice].sprite)
 
 			};
 
 
 		};
+
+
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		// Start board containers animations
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+		// for(var i=0; i<this.boardContainers.length; i++){
+
+		// 	this.boardContainers[i].customAnimation.init(
+			
+		// 		{x : 0, y : 0},
+		// 		200,
+		// 		i*50,
+		// 		[0.75,1]
+				
+		// 	)
+
+		// 	if(containerPosition > 1){
+
+		// 		this.boardContainers[i].customAnimation.setPos({
+		// 			x : this.boardContainers[i].x,
+		// 			y : session.canvas.height
+
+		// 		})
+
+		// 	}else{
+
+		// 		console.log(divisionHoz)
+
+		// 		this.boardContainers[i].customAnimation.setPos({
+		// 			x : this.boardContainers[i].x,
+		// 			y : - this.boardSpecs.x - (divisionHoz*this.tileSize)	
+
+		// 		})
+
+		// 	}
+
+		// }
+
+
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		// Create Sprites for the board background
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 		var _this = this;
 
@@ -350,22 +413,13 @@ function Multiplication(){
 
         }
 
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		// Create Sprites for the board background
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-		var graphics = new PIXI.Graphics();
-
 		for(object in  this.boardMatrix){
 
 			//*************************************************** <FIXME> REPLACE GRAPHIC BY SPRITE
-			this.boardMatrix[object].graphic.lineStyle(1, 0x0000FF, 0.1);
-			this.boardMatrix[object].graphic.beginFill(0xFF00BB, 0.1);
+			this.boardMatrix[object].graphic.beginFill(0xFF00BB, 0.0);
 			this.boardMatrix[object].graphic.drawRect(this.boardMatrix[object].pos.x, this.boardMatrix[object].pos.y, this.boardSpecs.tileSize, this.boardSpecs.tileSize);
 			this.boardMatrix[object].graphic.endFill();
 			this.boardMatrix[object].graphic.id = object
-
 			this.boardMatrix[object].graphic.interactive = true;
 
             //touch start			
@@ -383,10 +437,14 @@ function Multiplication(){
             .on('mousemove', function(_event){_this.drag(_event,this)})
             .on('touchmove', function(_event){_this.drag(_event,this)});
 
+			this.boardMatrix[object].sprite.x = this.boardMatrix[object].pos.x  + this.boardSpecs.tileSize/2
+			this.boardMatrix[object].sprite.y = this.boardMatrix[object].pos.y + this.boardSpecs.tileSize/2
+			this.boardMatrix[object].sprite.width = this.boardSpecs.tileSize*1.25
+			this.boardMatrix[object].sprite.height = this.boardSpecs.tileSize*1.25
+			this.boardMatrix[object].sprite.anchor.x = 0.5
+			this.boardMatrix[object].sprite.anchor.y = 0.5
 
 		};
-
-		stage.addChild(graphics)
 
 		//>>>>>>>>>>>>>>>>>>>>>>>>>
 		// Create Sprites for cliff 
@@ -419,23 +477,125 @@ function Multiplication(){
 		this.boardSpecs.maxWidth = session.canvas.width - this.boardSpecs.instructionWidth - (2 * this.boardSpecs.boardMargin);
 		this.boardSpecs.maxHeight = session.canvas.height - (2 * this.boardSpecs.boardMargin);
 
-		this.boardSpecs.rows = Math.ceil(Math.sqrt(this.correct)) + getRandomInt(0,3)
+		//>>>>>>>>>>>>>>>>>>>>> FIXME make this work with more then one aswear
 
-		if(Math.ceil(this.boardSpecs.maxWidth / (this.boardSpecs.maxHeight / this.boardSpecs.rows)) - 1 < Math.ceil(Math.sqrt(this.correct))){
-		// check if boirad is going to have enouth size to fit the answear ir squares are based on the rows
+		if(this.stimuli.values.constructor === Array && this.stimuli.values.length != 1) {
 
-			//set rows and sizes to have enouth area to draw the answear
-			this.boardSpecs.collums = Math.ceil(Math.sqrt(this.correct))
-			this.boardSpecs.tileSize = this.tileSize = this.boardSpecs.maxWidth / this.boardSpecs.collums
-			console.log(this.boardSpecs.collums)			
+			var divisors = []
+
+			//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+			//Get divisors for every stimuli value
+			//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+			for (var i = 0; i < this.stimuli.values.length; i++) {
+
+				var allDivisors = []
+				var divisorsPairs = []
+
+				for(var j = 1; j<=this.stimuli.values[i]; j++){
+
+					if(this.stimuli.values[i]%j == 0){
+
+						allDivisors.push(j)
+
+					};
+
+				};
+
+				if(allDivisors.length%2 != 0){ // if there is an even number of divisors
+					
+					divisorsPairs.push(
+						allDivisors[Math.floor(allDivisors.length/2)],
+						allDivisors[Math.floor(allDivisors.length/2)]
+						)
+
+				}else{
+
+					divisorsPairs.push(
+						allDivisors[allDivisors.length/2],
+						allDivisors[(allDivisors.length/2)-1]
+					)
+				};
+
+				divisors.push(divisorsPairs)
+
+			};
+
+
+
+			this.boardSpecs.rows = 0
+			this.boardSpecs.columns = 0 
+			var areas = Math.floor(divisors.length/2)
+
+
+			for(var i = 0; i <= areas ; i++){
+
+				var id = i*2
+
+				if(i != areas){
+
+
+					this.boardSpecs.rows += divisors[id][1] > divisors[id+1][1] ? divisors[id][1] : divisors[id+1][1];
+
+					
+					if(this.boardSpecs.columns < divisors[id][0] + divisors[id+1][0]){
+
+						this.boardSpecs.columns = divisors[id][0] + divisors[id+1][0]
+			
+					}
+
+		
+				}else{
+
+					this.boardSpecs.rows += divisors[id][1]
+
+					if(this.boardSpecs.columns < divisors[id][0]){
+
+						this.boardSpecs.columns = divisors[id][0]
+			
+					};
+
+
+
+
+				};
+
+
+
+			};
+
+			if(this.boardSpecs.maxHeight / this.boardSpecs.rows < this.boardSpecs.maxWidth / this.boardSpecs.columns) {
+
+				this.boardSpecs.tileSize = this.boardSpecs.maxHeight / this.boardSpecs.rows
+				this.tileSize = this.boardSpecs.tileSize 
+
+			}else{
+
+				this.boardSpecs.tileSize = this.boardSpecs.maxWidth / this.boardSpecs.columns
+				this.tileSize = this.boardSpecs.tileSize 
+			}
+
+
 
 		}else{
 
-			// if there is extra space, populate entire screen width with squares 
-			this.boardSpecs.tileSize = this.boardSpecs.maxHeight / this.boardSpecs.rows
-			this.tileSize = this.boardSpecs.tileSize
-			this.boardSpecs.collums = Math.ceil(this.boardSpecs.maxWidth / (this.boardSpecs.maxHeight / this.boardSpecs.rows)) - 1
-			console.log(this.boardSpecs.collums)
+			this.boardSpecs.rows = Math.ceil(Math.sqrt(this.correct)) + getRandomInt(0,3)
+
+			if(Math.ceil(this.boardSpecs.maxWidth / (this.boardSpecs.maxHeight / this.boardSpecs.rows)) - 1 < Math.ceil(Math.sqrt(this.correct))){
+			// check if boarad is going to have enouth size to fit the answear ir squares are based on the rows
+
+				//set rows and sizes to have enouth area to draw the answear
+				this.boardSpecs.columns = Math.ceil(Math.sqrt(this.correct))
+				this.boardSpecs.tileSize = this.tileSize = this.boardSpecs.maxWidth / this.boardSpecs.columns			
+
+			}else{
+
+				// if there is extra space, populate entire screen width with squares 
+				this.boardSpecs.tileSize = this.boardSpecs.maxHeight / this.boardSpecs.rows
+				this.tileSize = this.boardSpecs.tileSize
+				this.boardSpecs.columns = Math.ceil(this.boardSpecs.maxWidth / (this.boardSpecs.maxHeight / this.boardSpecs.rows)) - 1
+
+			};
 
 		};
 	};
@@ -444,7 +604,6 @@ function Multiplication(){
 
 		if(this.playState == "drawingNest"){
 
-			console.log(">>>>>>>>>>>>>", this.playState)
 
 			this.firstClickTile = _event.target.id
 			this.lastTarget = this.boardMatrix[_event.target.id].tile
@@ -547,9 +706,6 @@ function Multiplication(){
 
 			function createNestTile( _arrayPos,_asset,_this,_flip){
 
-				console.log(_arrayPos)
-				console.log(_this.selection.tiles[_arrayPos])
-
 				_this.selection.tiles[_arrayPos].sprite = new PIXI.Sprite(_asset);
 
 				_this.selection.tiles[_arrayPos].sprite.width = _this.tileSize * 1.25
@@ -560,7 +716,7 @@ function Multiplication(){
 				_this.selection.tiles[_arrayPos].sprite.anchor.y = 0.5
 				stage.addChild(_this.selection.tiles[_arrayPos].sprite)
 
-				if(_flip){
+				if(_flip){ 
 
 					_this.selection.tiles[_arrayPos].sprite.width = -_this.tileSize * 1.25
 					_this.selection.tiles[_arrayPos].sprite.rotation = -Math.PI * 1.5
@@ -579,7 +735,7 @@ function Multiplication(){
 
 
 
-			}else if(this.selection.collumns > 1 && this.selection.rows > 1){ // Draw nest in the shape of a rectangle
+			}else if(this.selection.columns > 1 && this.selection.rows > 1){ // Draw nest in the shape of a rectangle
 			
 
 				//>>>>>>>>>>>>>>>>>>
@@ -592,7 +748,7 @@ function Multiplication(){
 
 				//--------------------------------------corner top right	 
 				createNestTile(
-					(this.selection.rows  * this.selection.collumns) -1,
+					(this.selection.rows  * this.selection.columns) -1,
 					assets.textures.CTR,
 					this
 				);
@@ -609,7 +765,7 @@ function Multiplication(){
 				//--------------------------------corner bottom right
 				createNestTile(
 
-					this.selection.rows * (this.selection.collumns-1),
+					this.selection.rows * (this.selection.columns-1),
 					assets.textures.CBR,
 					this
 
@@ -620,7 +776,7 @@ function Multiplication(){
 				//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
 
 
-				for(var i = 0; i < this.selection.collumns-2; i++){
+				for(var i = 0; i < this.selection.columns-2; i++){
 
 					//side-top
 					var top = ((i + 1) * this.selection.rows ) + this.selection.rows - 1;
@@ -655,7 +811,7 @@ function Multiplication(){
 					createNestTile( left , assets.textures.SL, this ); 
 
 					//side-right
-					var right = 1  + i + ((this.selection.collumns-1) * this.selection.rows)
+					var right = 1  + i + ((this.selection.columns-1) * this.selection.rows)
 					createNestTile( right , assets.textures.SR, this ); 
 
 				};
@@ -674,7 +830,7 @@ function Multiplication(){
 						)
 
 					//Middle
-					for(var i = 0; i < this.selection.collumns-2; i++){
+					for(var i = 0; i < this.selection.columns-2; i++){
 
 
 						createNestTile(
@@ -747,7 +903,7 @@ function Multiplication(){
 
 		var type = "centered"
 
-		for (var i = 0; i < distance.x+1; i++) { // number of collumns
+		for (var i = 0; i < distance.x+1; i++) { // number of columns
 		
 			var _x = i + xMin;
 
@@ -787,7 +943,7 @@ function Multiplication(){
 			
 			"tiles" : selectedTile, 
 			"rows" : distance.y+1,
-			"collumns" : distance.x+1
+			"columns" : distance.x+1
 
 		};
 	};
@@ -841,6 +997,9 @@ function Multiplication(){
 			assets.addTexture("SR","sprites/nest/SR.png")
 			assets.addTexture("ST","sprites/nest/ST.png")
 			assets.addTexture("M","sprites/nest/M.png")
+
+			//assets for tree background
+			assets.addTexture("boardLeaves","sprites/nest/boardLeaves.png")
 
 			//Assets for line nest
 			assets.addTexture("LB","sprites/nest/LB.png")
