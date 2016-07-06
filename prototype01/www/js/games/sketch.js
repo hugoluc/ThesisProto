@@ -212,7 +212,7 @@ var Sketch = function() {
   $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {
     $('#container-exp .tools').append("<a href='#sketch' data-color='" + this + "' style='margin: 2px; width: 10px; background: " + this + ";'></a> ");
   });
-  // make line thickness icons? definitely make "marker" and "eraser" icons
+  // make line thickness icons? definitely make pencil and eraser icons
   $.each([3, 5, 10, 15], function() {
     $('#container-exp .tools').append("<a href='#sketch' data-size='" + this + "' style='margin: 2px; background: #ccc'>" + this + "</a> ");
   });
@@ -227,7 +227,7 @@ var Sketch = function() {
   gradient.addColorStop("1.0","red");
   // Fill with gradient
   ctx.fillStyle=gradient;
-  
+
   var spacing = (canvas.width - 50) / letters.length;
   for (var i = 0; i < letters.length; i++) {
     ctx.fillText(letters[i].text, 50 + i*spacing, canvas.height-60);

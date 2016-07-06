@@ -1,32 +1,25 @@
-{"frames": [
-
-{
-	"filename": "dragonfly-0.png",
+{"frames": {
+"dragonfly-0.png":{
 	"frame": {"x":0,"y":0,"w":800,"h":323},
 	"rotated": false,
-	"trimmed": false,
+	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":0,"w":800,"h":323},
-	"sourceSize": {"w":800,"h":323},
-	"pivot": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":800,"h":323}
 },
-{
-	"filename": "dragonfly-1.png",
+"dragonfly-1.png":{
 	"frame": {"x":0,"y":323,"w":790,"h":319},
 	"rotated": false,
-	"trimmed": false,
+	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":0,"w":790,"h":319},
-	"sourceSize": {"w":790,"h":319},
-	"pivot": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":790,"h":319}
 },
-{
-	"filename": "dragonfly-2.png",
+"dragonfly-2.png":{
 	"frame": {"x":0,"y":642,"w":790,"h":319},
 	"rotated": false,
-	"trimmed": false,
+	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":0,"w":790,"h":319},
-	"sourceSize": {"w":790,"h":319},
-	"pivot": {"x":0.5,"y":0.5}
-}],
+	"sourceSize": {"w":790,"h":319}
+}},
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
