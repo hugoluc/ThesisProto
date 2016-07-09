@@ -17,7 +17,7 @@ function Multiplication(){
 			{ 
 				stimuli : {
 
-					values : [8],
+					values : [10,8,6],
 					direction : "bottomUp"
 					// Maybe use this later to terermine in wich direction the game is testing the user 		
 
@@ -25,7 +25,7 @@ function Multiplication(){
 
 				correct : {
 
-					values : [8],
+					values : [10,8,6],
 
 				}
 
@@ -119,7 +119,7 @@ function Multiplication(){
 			if(this.intro()){
 
 				this.playState = "drawingNest"
-				console.log("-----------------------------------drawingNest")
+				console.log("GameState =drawingNest")
 				
 			}
 
@@ -191,6 +191,7 @@ function Multiplication(){
 
 						};
 
+						console.log("introState = moveLeft")
 						this.timer.start(1000);
 						this.introState = "moveLeft"
 						this.drawBoard();
@@ -218,7 +219,7 @@ function Multiplication(){
 					for(var i=0; i < this.boardContainers.length; i++ ){
 
 						if(!this.boardContainers[i].customAnimation.run()){
-							//done = false;
+							done = false;
 						};
 
 					};			
@@ -227,6 +228,7 @@ function Multiplication(){
 					if(done){
 
 						this.timer.start(2000);
+						console.log("introState = createBoard")
 						this.introState = "createBoard";
 
 					};
@@ -239,7 +241,8 @@ function Multiplication(){
 			case "createBoard":
 
 				if(this.timer.timeOut()){
-
+					
+					console.log("introState = done")
 					return true
 
 				};
@@ -270,7 +273,7 @@ function Multiplication(){
 		//
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-		//Dividing the board int wo parts. The bottom onw being the
+		//Dividing the board into two parts. The bottom one being the
 		//biggest if the hight is an even number
 		var divisionHoz = Math.ceil(this.boardSpecs.rows/2); // This equals the heith of the bottom division
 
@@ -362,42 +365,46 @@ function Multiplication(){
 
 
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		// Start board containers animations
+		// Initiate board containers animations
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-		// for(var i=0; i<this.boardContainers.length; i++){
+		for(var i=0; i<this.boardContainers.length; i++){
 
-		// 	this.boardContainers[i].customAnimation.init(
+			if(i > 1){
+
+				console.log(">>>>>>>>>>>>", i)
+
+				this.boardContainers[i].customAnimation.setPos({
+					x : this.boardContainers[i].x,
+					y : session.canvas.height
+
+				})
+
+			}else{
+
+				console.log(divisionHoz)
+
+				this.boardContainers[i].customAnimation.setPos({
+					x : this.boardContainers[i].x,
+					y : - this.boardSpecs.x - (divisionHoz*this.tileSize)	
+
+				})
+
+			}
+
+
+			this.boardContainers[i].customAnimation.init(
 			
-		// 		{x : 0, y : 0},
-		// 		200,
-		// 		i*50,
-		// 		[0.75,1]
+				{x : 0, y : 0},
+				600,
+				i*100,
+				[0.75,1]
 				
-		// 	)
+			)
 
-		// 	if(containerPosition > 1){
 
-		// 		this.boardContainers[i].customAnimation.setPos({
-		// 			x : this.boardContainers[i].x,
-		// 			y : session.canvas.height
-
-		// 		})
-
-		// 	}else{
-
-		// 		console.log(divisionHoz)
-
-		// 		this.boardContainers[i].customAnimation.setPos({
-		// 			x : this.boardContainers[i].x,
-		// 			y : - this.boardSpecs.x - (divisionHoz*this.tileSize)	
-
-		// 		})
-
-		// 	}
-
-		// }
+		}
 
 
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -604,7 +611,6 @@ function Multiplication(){
 
 		if(this.playState == "drawingNest"){
 
-
 			this.firstClickTile = _event.target.id
 			this.lastTarget = this.boardMatrix[_event.target.id].tile
 			_event.target.dragging = true;
@@ -632,7 +638,7 @@ function Multiplication(){
 
 	Trial.prototype.drag = function(_event,_this){
 
-		if(_this.dragging){ // ensure that only one tile will trigger the reponse
+		if(_this.dragging && this.playState == "drawingNest"){ // ensure that only one tile will trigger the reponse
 
 			var point = { // get mouse position
 
@@ -656,7 +662,7 @@ function Multiplication(){
 
 	Trial.prototype.clickEnd = function(_this){
 
-		if(!_this.dragging){ // ensure that only one tile will trigger the reponse
+		if(!_this.dragging && this.playState == "drawingNest"){ // ensure that only one tile will trigger the reponse
 
 			this.boardMatrix[this.firstClickTile].graphic.dragging = false;
 			console.log(this.playState)			
@@ -673,7 +679,7 @@ function Multiplication(){
 			}
 
 
-		}else if(_this.id == this.firstClickTile){
+		}else if(_this.id == this.firstClickTile && this.playState == "drawingNest"){
 
 			this.boardMatrix[this.firstClickTile].graphic.dragging = false;
 
