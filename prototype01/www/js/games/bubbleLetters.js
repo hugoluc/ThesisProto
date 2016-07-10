@@ -467,8 +467,8 @@ function bubbleLetters(){
     //---------------------------------------loading assets
 
         if(gameloaded) {
-            assets.addSprite("dragonfly",'sprites/dragonfly/dragonfly_fly.json',3) // used TexturePacker, doesn't work..
-            //assets.addTexture("dragonfly","sprites/dragonfly/separate/dragonfly-0.png")
+            //assets.addSprite("dragonfly",'sprites/dragonfly/dragonfly_fly.json',3) // used TexturePacker, doesn't work..
+            assets.addTexture("dragonfly","sprites/dragonfly/separate/dragonfly-0.png")
             assets.addTexture("bubble","img/bubble.png")
             assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
 
