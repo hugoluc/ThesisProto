@@ -66,7 +66,7 @@
 		this.textureQueue = [];
 		this.soundsQueue = [];
 		this.soundsNQueue = [];
-
+		this.soundsLetterQueue = [];
 		this.state = "loading";
 	};
 
@@ -137,7 +137,7 @@
 		this.sounds = {}
 		this.sounds.numbers = {}
 		this.sounds.words = {}
-		this.sounds.alphabet = {}
+		this.sounds.letters = {}
 		this.sprites = {}
 		this.textures = {}
 
@@ -161,7 +161,8 @@
 
 		if(this.soundsLetterQueue) {
 			for( var i=0; i < this.soundsLetterQueue.length; i++){
-				this.sounds.letters[String(this.soundsLetterQueue[i][0])] = new Audio('audio/' + language + 'alphabet/' + this.soundsLetterQueue[i][1])
+				var path = 'audio/' + language + '/alphabet/' + this.soundsLetterQueue[i][1];
+				this.sounds.letters[String(this.soundsLetterQueue[i][0])] = new Audio(path);
 			}
 		}
 

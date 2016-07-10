@@ -340,15 +340,15 @@ function proto03(){
 
     lillySmall.prototype.drag = function(_this){
 
-        console.log("dragging: ", _this)
+        //console.log("dragging: ", _this)
     	//change lillypad to selected
     	if(_this.dragging){
 
     		if(!this.dragging){
-    			
+
                 this.stick = this.trial.createStick(_this.data.getLocalPosition(_this.parent));
     			this.dragging = true;
-    		
+
             };
 
     		this.trial.moveStick(_this.data.getLocalPosition(_this.parent))
@@ -611,9 +611,9 @@ function proto03(){
 */
 
     function Trial(_stimuli,_correct){
-       
+
         stimCount++;
-        
+
         var specs =
             //--------------------------------------0
             {
@@ -1344,7 +1344,7 @@ function proto03(){
     Trial.prototype.fadeLeaves = function(){
         //console.log(this.lillyFinal.leaves)
         if(this.leavesToFade <= this.stimuli.correct.value){
-            console.log(this.leavesToFade,this.stimuli.correct.value)
+            //console.log(this.leavesToFade,this.stimuli.correct.value)
             // GK: need both of these lines or just one?
             //this.lillyFinal.leaves[this.leavesToFade].alpha = this.lillyFinal.leaves[this.leavesToFade].alpha - 0.1
 
@@ -1600,7 +1600,7 @@ function proto03(){
         	  while (lag >= MS_PER_UPDATE){
               round.play(lag/MS_PER_UPDATE);
               lag = lag - MS_PER_UPDATE;
-              
+
   	        }
 
         	        //---------------->> Thing that renders the whole stage

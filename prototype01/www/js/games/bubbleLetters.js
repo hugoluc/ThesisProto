@@ -50,23 +50,17 @@ function bubbleLetters(){
         this.circle.height = this.size
         this.circle.anchor.x = 0.5
         this.circle.anchor.y = 0.5
-        this.circle.interactive = true;
-        this.circle.buttonMode = true;
+        this.container.interactive = true; // or circle?
+        this.container.buttonMode = true; // or circle?
+        this.container.mousedown = this.container.touchstart = function(){ click(); }
+    	  // this.circle
+      	// 	.on('mousedown', click)
+        //  .on('touchstart', click);
+        //  .on('touchmove', function(){_this.drag(this)})
+        //  .on('mousemove', function(){_this.drag(this)})
 
-    	this.circle
-    		//touchstart
-    		.on('mousedown', click)
-        .on('touchstart', click)
-    		.on('mouseup', function(){_this.clickEnd(this)})
-        .on('mouseupoutside', function(){_this.clickEnd(this)})
-        .on('touchend', function(){_this.clickEnd(this)})
-        .on('touchendoutside', function(){_this.clickEnd(this)})
-        //drag
-        //.on('mousemove', function(){_this.drag(this)})
-        .on('touchmove', function(){_this.drag(this)});
-
-        function click(_event){
-        	_this.clickStart(this,_event)
+        function click() {
+          _this.click();
         }
 
         this.container.addChild(this.circle);
@@ -79,7 +73,6 @@ function bubbleLetters(){
         this.cNumber.x = this.pos.x + this.size*0.5;
         this.cNumber.y = this.pos.y + this.size*0.5;
 
-
         this.circle.rotation = 0.1
         this.container.addChild(this.cNumber);
         stage.addChild(this.container)
@@ -87,29 +80,24 @@ function bubbleLetters(){
     };
 
 
-    bubble.prototype.clickStart = function(_this,_event){
-        if(!round.trial.AnimationDone){
-            return
-        }
-
-    	//change lillypad to selected
-    	_this.data = _event.data;
-        _this.dragging = true;
-    };
-
-    bubble.prototype.clickEnd = function(_this){
-    	//change lillypad to selected
-    	if(!this.dragging) return
-
-        _this.dragging = false;
-        this.dragging = false;
-
-        this.trial.CheckLink(_this.data.getLocalPosition(_this.parent),this.id)
+    bubble.prototype.click = function(){ //_this,_event
+      console.log("clicked:");
+      console.log(this.value);
+      console.log(this.trial);
+      var correct_click = (this.value===this.trial.stimuli.correctValue);
+      // if correct, set trial state to finish..
+      if(correct_click) {
+        correct_sound.play();
+      }
+      if(!correct_click) { // incorrect: pop bubble, play bad sound
+        this.destroy(); // expand and fade would be nice!
+        assets.sounds.wrong[0].play();
+      }
+      return correct_click;
     };
 
 
     bubble.prototype.destroy = function(){
-
         this.container.removeChild(this.circle)
         this.circle.destroy()
         this.circle = []
@@ -225,10 +213,10 @@ function bubbleLetters(){
         this.dragonfly.anchor.x = 0.5;
         stage.addChild(this.dragonfly);
 
-        this.deltax = Math.abs(this.targetx - this.dragonfly.position.x) / 100;
-        this.deltay = Math.abs(this.targety - this.dragonfly.position.y) / 100;
+        this.deltax = Math.abs(this.targetx - this.dragonfly.position.x) / 200;
+        this.deltay = Math.abs(this.targety - this.dragonfly.position.y) / 200;
 
-        this.clock.start(1000)
+        this.clock.start(1000);
     };
 
     Trial.prototype.destroy = function(){
@@ -420,8 +408,7 @@ function bubbleLetters(){
     Trial.prototype.play = function(_updateTime){
         switch(this.trialState){
             case "intro":
-                //console.log(assets.sounds.letters)
-                //assets.sounds.letters[this.correct].play()
+                assets.sounds.letters[this.stimuli.correctValue[0]].play();
                 if(this.intro()){
                     this.trialState = "play";
                 }
@@ -474,10 +461,11 @@ function bubbleLetters(){
 
             //console.log(stimuli) // undefined?
             for (var i = 0; i < letters.length; i++) {
-              assets.addSound(letters[i].id,letters[i].audio + '.mp3');
+              assets.addSound(letters[i].text,letters[i].audio + '.mp3');
             };
-            console.log(assets.sounds) // somehow letters not getting added..
-            assets.load(onAssetsLoaded)
+            assets.addSound("wrong",'wrong.mp3');
+            assets.addSound("correct1",correctSounds[0][0].audio + '.mp3');
+            assets.load(onAssetsLoaded);
         } else {
             onAssetsLoaded();
         };
