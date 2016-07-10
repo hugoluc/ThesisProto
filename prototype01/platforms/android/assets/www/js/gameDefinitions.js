@@ -55,7 +55,8 @@
 
 		this.sounds = {}
 		this.sounds.numbers = []
-
+		this.sounds.letters = []
+		this.sounds.words = []
 		this.sprites = {};
 		this.textures = {};
 
@@ -91,23 +92,19 @@
 	}
 
 	Assets.prototype.addTexture = function(name,url){
-
 		this.textureQueue.push([name,url]);
 	};
 
 	Assets.prototype.addSound = function(name,url){
-
-
 		if(typeof(name) == "number"){
-
 			this.soundsNQueue.push([name,url])
-
-		}else{
-
+		} else if(name.length===1){
+			this.soundsLetterQueue.push([name,url])
+		} else if(typeof(name)== "word"){ // need to distinguish words from generic sounds (bc they have different folders)
+			this.soundsWordQueue.push([name,url])
+		} else {
 			this.soundsQueue.push([name,url])
-
 		}
-
 	};
 
 	Assets.prototype.load = function(_callback){
@@ -121,9 +118,7 @@
 		if(this.pixiLoaderQueue.length > 0){
 
 			for(var i=0; i<this.pixiLoaderQueue.length; i++){
-
 				this.loader.add(this.pixiLoaderQueue[i][1])
-
 			}
 
 			this.loader.load( function(){
@@ -132,9 +127,7 @@
 			})
 
 		}else{
-
 			this.start()
-
 		}
 	};
 
@@ -143,32 +136,39 @@
 		console.log("creating pixi objects...")
 		this.sounds = {}
 		this.sounds.numbers = {}
+		this.sounds.words = {}
+		this.sounds.alphabet = {}
 		this.sprites = {}
 		this.textures = {}
 
 		for( var i=0; i < this.textureQueue.length; i++){
-
 			this.textures[this.textureQueue[i][0]] = new PIXI.Texture.fromImage(this.textureQueue[i][1])
-
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
-
 			this.sounds[this.soundsQueue[i][0]] = []
-
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
-
 			this.sounds[this.soundsQueue[i][0]].push(new Audio('audio/' + this.soundsQueue[i][0] + '/' + this.soundsQueue[i][1]))
-
+		}
+		// numbers are just like other words, so we might not need a separate Queue
+		if(this.soundsNQueue) {
+			for( var i=0; i < this.soundsNQueue.length; i++){
+				this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
+			}
 		}
 
+		if(this.soundsLetterQueue) {
+			for( var i=0; i < this.soundsLetterQueue.length; i++){
+				this.sounds.letters[String(this.soundsLetterQueue[i][0])] = new Audio('audio/' + language + 'alphabet/' + this.soundsLetterQueue[i][1])
+			}
+		}
 
-		for( var i=0; i < this.soundsNQueue.length; i++){
-
-			this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
-
+		if(this.soundsWordQueue) {
+			for( var i=0; i < this.soundsWordQueue.length; i++){
+				this.sounds.words[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsWordQueue[i][1])
+			}
 		}
 
 		for( var i=0; i < this.pixiLoaderQueue.length; i++){
@@ -239,7 +239,7 @@
 		this.stage = _stage;
 		this._trial = _Trial;
 		this.stimuli = stimuli;
-	  this.background = new PIXI.Sprite(assets.textures.bg);
+	  	this.background = new PIXI.Sprite(assets.textures.bg);
 
 	 	this.stage.addChild(this.background);
 
@@ -260,7 +260,11 @@
 
 		//var stim = stimQueues['numberstim'].pop();
 	 	this.trial = new this._trial(this.stimuli.pop());
-	  this.trial.init();
+	  	if(this.trial.init != undefined){
+
+			this.trial.init();
+
+		}
 
 	}
 
@@ -281,11 +285,15 @@
 	Round.prototype.play = function(){
 
 		if(this.trial.play()){
+
 			this.stimuli.push(this.trial.storeStim());
+
 			this.trial.destroy();
 			console.log("last trial destroyed!");
+
 			this.getNextTrial();
 			console.log("new trial created!");
+
 		}
 
 	};
@@ -327,12 +335,12 @@
 		if(this.diffRange != undefined){
 
 			if(this.difficulty < this.diffRange[0]){
-				
+
 				this.difficulty = this.diffRange[0]
 			};
 
 			if(this.difficulty > this.diffRange[1]){
-				
+
 				this.difficulty = this.diffRange[1]
 			};
 
@@ -358,127 +366,233 @@
 -------------------------------------------------------------------------------------------------------------
 */
 
-function gameScore(){
+	function gameScore(){
 
-	this.score = 0;
-	this.starts = [];
-	this.svgIds = 0
-	this.starLength = 0
+		this.score = 0;
+		this.starts = [];
+		this.svgIds = 0
+		this.starLength = 0
+		this.explosion = []
 
-};
+	};
 
-gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
+	gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 
-	this.score = this.score + (_starsPos.length * _value); 
-	var initDelay = 200;
-	var delay = 0
-	var duration = _duation || 1000
+		this.score = this.score + (_starsPos.length * _value);
+		var initDelay = 200;
+		var delay = 0
+		var duration = _duation || 1000
 
-	if(_svg){
+		if(_svg){
 
-		this.svg = true;
+			this.svg = true;
 
-		var starGroup = d3.select("#scoreContainer")
-		.append("svg")
-		.attr("id", "starGroup")
-		.attr({
-		  x: 0,
-		  y: 0,
-		  width : window.innerWidth,
-		  height : window.innerHeight,
-		})
-
-
-		for(var i = 0; i < _starsPos.length; i++){
-
-			var starSvg = starGroup.append("svg:image")
-			.attr("xlink:href", "svgs/starScore.svg")
+			var starGroup = d3.select("#scoreContainer")
+			.append("svg")
+			.attr("id", "starGroup")
 			.attr({
-			  x: _starsPos[i].x,
-			  y: _starsPos[i].y,
-			  width : 100,
-			  height : 100,
+			  x: 0,
+			  y: 0,
+			  width : window.innerWidth,
+			  height : window.innerHeight,
 			})
-			.attr("id", "star-" + (this.starLength + 1))
-			.transition()
-			.delay(delay)
-			.duration(_duation)
-			.attr({
+
+			for(var i = 0; i < _starsPos.length; i++){
+
+				var starSvg = starGroup.append("svg:image")
+				.attr("xlink:href", "svgs/starScore.svg")
+				.attr({
+				  x: _starsPos[i].x,
+				  y: _starsPos[i].y,
+				  width : 100,
+				  height : 100,
+				})
+				.attr("id", "star-" + (this.starLength + 1))
+				.transition()
+				.delay(delay)
+				.duration(_duation)
+				.attr({
+
+					x: window.innerWidth - 50,
+					y: -50,
+
+				})
+				.each("end", function(){
+				// Animation callback
+
+					var id = this.id
+					var _this = d3.select("#" + id).remove()
+					console.log(_this)
+
+				});
+
+				console.log(starSvg)
+				this.starLength = this.starLength + 1;
+				delay = delay + initDelay
+			};
+
+
+		}else{
+
+			this.svg = false;
+
+			for(var i = 0; i < _starsPos.length; i++){
+
+				var star = new PIXI.Sprite(assets.textures.star);
+				star.x = _starsPos[i].x;
+				star.y = _starsPos[i].y;
+				star.anchor.x = 0.5
+				star.anchor.y = 0.5
+				star.width = 10;
+				star.height = 10;
+
+				this.stage.addChild(star);
+
+				var starAnimation = new animation(star);
+				starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
+
+				var starFeaAnimation = new animation(star);
+				starFeaAnimation.initFeature(
+
+					["width", "height"], // features to animate
+					80, // final size
+					200, // time value
+					delay, // delay
+					[0,1] // bezier courve 
+
+					);
 				
-				x: window.innerWidth - 50,
-				y: -50,
-
-			})
-			.each("end", function(){ 
-			// Animation callback
-
-				var id = this.id
-				var _this = d3.select("#" + id).remove()
-				console.log(_this)
-
-			});
-
-			console.log(starSvg)
-			this.starLength = this.starLength + 1;
-			delay = delay + initDelay
-		};
-
-
-	}else{
-
-		this.svg = false;
-
-		for(var i = 0; i < _starsPos.length; i++){
-		
-			var star = new PIXI.Sprite(assets.textures.star);
-			star.x = _starsPos[i].x;
-			star.y = _starsPos[i].y;
-
-			this.stage.addChild(star);
-			
-			var starAnimation = new animation(star);
-			starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
-			delay = delay + initDelay
-
-			this.starts.push([star,starAnimation]);
-
-		};
-
-
-	};	
-	
-
-};
-
-gameScore.prototype.displayStar = function(){
-
-		var animationDone = true
-
-		for(var i = 0; i < this.starts.length; i++){
-			
-			if(this.starts[i][1].run()){
-
-				this.stage.removeChild(this.starts[i][0])
-				this.starts[i][0].destroy()
-				this.starts[i][0] = []
-				this.starts[i][1] = []
-				this.starts.splice(i,1);
-
-
-			}else{
-
-				animationDone = false
+				delay = delay + initDelay
+				this.starts.push([star,starAnimation,starFeaAnimation]);
 
 			};
 
+
 		};
 
-		if(animationDone){
-		
-			return true;
 
-		}
+	};
 
-		return false;
+	gameScore.prototype.setExplosion = function(_pos,_radius,_duration){
 
-};
+			var starCount = getRandomInt(30,50)
+
+			for(var i = 0; i < starCount; i++ ){
+
+				var Estar = new PIXI.Sprite(assets.textures.star);
+				Estar.x = _pos.x;
+				Estar.y = _pos.y;
+				Estar.anchor.x = 0.5
+				Estar.anchor.y = 0.5
+				Estar.width = 10;
+				Estar.height = 10;
+
+				var angle = getRandomFloat(-Math.PI,Math.PI) 
+
+				var EstarAnimation = new animation(Estar);
+				EstarAnimation.init(
+
+					{
+						"x" : (_pos.x + Math.cos(angle)*_radius) * (getRandomFloat(0.95,1.05)), 
+						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.9,1.05)), 
+					},
+					_duration,
+					0,//getRandomInt(0,_duration*0.01),
+					[1,1]
+				
+				);
+
+				var EstarFeaAnimation = new animation(Estar);
+				EstarFeaAnimation.initFeature(
+
+					"alpha",
+					0,	
+					_duration, //length
+					0, // delay
+					[0,0.75]
+				
+				);
+
+				console.log(EstarFeaAnimation)
+				this.stage.addChild(Estar)
+				this.explosion.push([Estar,EstarAnimation,EstarFeaAnimation])
+			};
+
+
+
+			console.log("explosion set!-------------------------------------------------")
+	};
+
+	gameScore.prototype.displayExplosion = function(){
+
+			var animationDone = true
+			
+			for(var i = 0; i < this.explosion.length; i++ ){
+
+				if(!this.explosion[i][2].runFeature(true)){
+
+					animationDone = false
+				
+				};
+
+				if(this.explosion[i][1].run()){
+
+					this.stage.removeChild(this.explosion[i][0])
+					this.explosion[i][0].destroy()
+					this.explosion[i][0] = []
+					this.explosion[i][1] = []
+					this.explosion.splice(i,1);
+
+				}else{
+
+					animationDone = false
+
+				};
+
+
+
+
+			};
+
+	};
+
+
+	gameScore.prototype.displayStar = function(){
+
+			var animationDone = true
+
+			for(var i = 0; i < this.starts.length; i++){
+
+				if(!this.starts[i][2].runFeature()){ //call animation function for size on each star
+
+					animationDone = false
+
+				};
+
+				if(this.starts[i][1].run()){ //call animation function for position on each star
+
+					this.stage.removeChild(this.starts[i][0])
+					this.starts[i][0].destroy()
+					this.starts[i][0] = []
+					this.starts[i][1] = []
+					this.starts.splice(i,1);
+
+				}else{
+
+					animationDone = false
+
+				};
+
+
+
+			};
+
+			if(animationDone){
+
+				return true;
+
+			}
+
+			return false;
+
+	};

@@ -7,10 +7,12 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-         <link rel="stylesheet" type="text/css" href="css/reset.css">
-         <link rel="stylesheet" type="text/css" href="css/index.css">
+        <link rel="stylesheet" type="text/css" href="css/reset.css">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
         <link rel="stylesheet" type="text/css" href="css/sketch.css">
-        
+        <link rel="stylesheet" type="text/css" href="css/wordFind.css">
+        <link rel="stylesheet" type="text/css" href="css/worldmap.css">
+
         <!-- third-party libraries -->
         <script src="lib/store.min.js"></script>
         <script src="lib/pixi.js" type="text/javascript"></script>
@@ -19,10 +21,13 @@
         <script src="lib/d3-grid.js" type="text/javascript"></script>
         <script src="lib/jquery.js" type="text/javascript"></script>
         <script src="lib/stats.min.js"></script>
-
+        <script src="lib/metapong.js"></script>
         <script src="js/definitions.js" type="text/javascript"></script>
+        <script src="js/wordfind.js" type="text/javascript"></script>
+        <script src="js/wordfindgame.js" type="text/javascript"></script>
+        <script src="lib/topojson.v1.min.js"></script>
 
-        <!-- ToDo: remove when language picker is fixed -->
+        <!-- ToDo: remove when language picker is fixed; can use d3.json() to load files -->
        <script src="js/language/english.js" type="text/javascript"> </script>
 
         <!-- utils and definitions -->
@@ -37,12 +42,15 @@
         <!-- Games -->
         <script src="js/games/proto02.1.js" type="text/javascript"></script>
         <script src="js/games/proto03.2.js" type="text/javascript"></script>
-        <script src="js/games/wordGuess.js" type="text/javascript"></script>
+        <script src="js/games/wordFind.js" type="text/javascript"></script>
         <script src="js/games/sketch.js" type="text/javascript"></script>
         <script src="js/games/hangman.js" type="text/javascript"></script>
+
         <script src="js/games/Multiplication.js" type="text/javascript"></script>
         <script src="js/games/spellingGame.js" type="text/javascript"></script>
-        
+        <script src="js/games/shapes.js" type="text/javascript"></script>
+        <script src="js/games/bubbleLetters.js" type="text/javascript"></script>
+        <script src="js/games/worldmap.js" type="text/javascript"></script>
 
         <!-- ToDo: remove when language picker is fixed -->
         <script src="js/language/english.js" type="text/javascript"> </script>
@@ -63,8 +71,8 @@
 
         </script>
 
-        <title>egoTeach v.1</title>
-    
+        <title>egoTeach v.2</title>
+
     </head>
 
     <body>
@@ -83,21 +91,18 @@
                 <image src="img/Header/score.png" id="score"></image>
                 <image src="img/Header/back.png" onclick="currentview.destroy()" id="back"></image>
 
+                <div id="sketch-tools" class="tools" style="display : none">
+                  <a href="#sketch" data-tool="eraser">Erase</a>
+                  <a href="#sketch" data-tool="marker">Draw</a>
+                </div>
 
             </div>
 
         </div>
 
-        <div id="sketch-container" style="display : none">
-          
-          <div class="tools">
-        
-            <image src="img/Header/back.png" onclick="currentview.destroy()" id="back" style="float: left; height: 85"></image>
-            <a href="#sketch" data-tool="marker">Marker</a>
-            <a href="#sketch" data-tool="eraser" style="float: right; margin-right: 15px;">Eraser</a>
-        
-          </div>
-        
+        <div id="shapes-container" style="display : none">
+          <image src="img/Header/back.png" onclick="currentview.destroy()" id="back" style="float: left; height: 85"></image>
+
         </div>
 
     </body>

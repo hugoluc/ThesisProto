@@ -36,7 +36,9 @@ var numbers = [
   {id:"80", audio:"themanini", text:"themanini", seq:[]},
   {id:"90", audio:"tisini", text:"tisini", seq:[]},
   {id:"100", audio:"mia", text:"mia", seq:[]}, // 500 - mia tano
-  {id:"1000", audio:"elfu", text:"elfu", seq:[]}
+  {id:"1000", audio:"elfu", text:"elfu", seq:[]},
+  {id:"100000", audio:"laki", text:"laki", seq:[]},
+  {id:"1000000", audio:"milloni", text:"milloni", seq:[]}
   ];
 
 //generate_number_name(45)
@@ -113,11 +115,6 @@ var shapes = [
 
 // need to record: tembo (elephant)
 var animals = [
-  {id:"octopus", text:"pwesa", audio:"pwesa", image:"octopus"},
-  {id:"shark", text:"papa", audio:"papa", image:"shark"},
-  {id:"anchovy", text:"kombo", audio:"kombo"},
-  {id:"squid", text:"mzia", audio:"mzia"},
-  {id:"fish", text:"samaki", audio:"samaki", image:"fish"},
   {id:"elephant", text:"tembo", audio:"tembo", image:"elephant"},
   {id:"baboon", text:"nyani", audio:"nyani"},
   {id:"cheetah", text:"duma", audio:"duma", image:"cheetah"},
@@ -125,38 +122,43 @@ var animals = [
   {id:"bird", text:"ndege", audio:"ndege", image:"bird"},
   {id:"cat", text:"paka", audio:"paka", image:"cat"},
   {id:"dog", text:"mbwa", audio:"mbwa", image:"dog"},
-  {id:"monkey", text:"kima", audio:"kima", image:"monkey"},
-  {id:"rhinoceros", text:"kifaru", audio:"kifaru", image:"rhinoceros"},
+  {id:"lion", text:"simba", audio:"simba", image:"lion"},
+  {id:"pig", text:"nguruwe", audio:"nguruwe", image:"pig"},
   {id:"sheep", text:"kondoo", audio:"kondoo", image:"sheep"},
   {id:"zebra", text:"punda-milia", audio:"punda-milia", image:"zebra"},
   {id:"snake", text:"nyoka", audio:"nyoka", image:"snake"},
-  {id:"pig", text:"nguruwe", audio:"nguruwe", image:"pig"},
-  {id:"ostrich", text:"mbuni", audio:"mbuni", image:"ostrich"},
-  {id:"lion", text:"simba", audio:"simba", image:"lion"},
-  {id:"hippopotamus", text:"kiboko", audio:"kiboko", image:"hippo"},
+  {id:"chicken", text:"kuku", audio:"kuku", image:"chicken"}, // jogoo? (rooster?)
+  {id:"cow", text:"ng'ombe", audio:"ngombe", image:"cow"},
   {id:"leopard", text:"chui", audio:"chui", image:"leopard"},
+  {id:"octopus", text:"pwesa", audio:"pwesa", image:"octopus"},
+  {id:"shark", text:"papa", audio:"papa", image:"shark"},
+  {id:"anchovy", text:"kombo", audio:"kombo"},
+  {id:"squid", text:"mzia", audio:"mzia"},
+  {id:"fish", text:"samaki", audio:"samaki", image:"fish"},
+  {id:"monkey", text:"kima", audio:"kima", image:"monkey"},
+  {id:"rhinoceros", text:"kifaru", audio:"kifaru", image:"rhinoceros"},
+  {id:"ostrich", text:"mbuni", audio:"mbuni", image:"ostrich"},
+  {id:"hippopotamus", text:"kiboko", audio:"kiboko", image:"hippo"},
   {id:"goat", text:"mbuzi", audio:"mbuzi", image:"goat"},
   {id:"deer", text:"paa", audio:"paa", image:"deer"},
-  {id:"cow", text:"ng'ombe", audio:"ngombe", image:"cow"},
   {id:"horse", text:"farasi", audio:"farasi", image:"horse"},
-  {id:"chicken", text:"kuku", audio:"kuku", image:"chicken"}, // jogoo? (rooster?)
   {id:"crab", text:"kaa", audio:"kaa", image:"crab"}
-//  {id:"alligator", text:"aligeta", audio:"aligeta", image:"alligator"},
-//  {id:"crocodile", text:"mamba", audio:"mamba", image:"crocodile"},
-//  {id:"duck", text:"bata", audio:"bata", image:"duck"},
-//  {id:"frog", text:"chura", audio:"chura", image:"frog"},
-//  {id:"bear", text:"dubu", audio:"dubu", image:"bear"},
-//  {id:"emu", text:"emu", audio:"emu", image:"emu"},
-//  {id:"warthog", text:"gwasi", audio:"gwasi", image:"gwasi"}, // pig? hog? warthog?
-//  {id:"flamingo", text:"heroe", audio:"heroe", image:"flamingo"}, // heron??
-//  {id:"fly", text:"inzi", audio:"inzi", image:"fly"},
-//  {id:"chameleon", text:"lumbwi", audio:"lumbwi", image:"chameleon"}, // lizard?
-//  {id:"pigeon", text:"ninga", audio:"ninga", image:"pigeon"}, // ..bird?
-//  {id:"orangutan", text:"orangutangu", audio:"orangutangu", image:"orangutan"},
-//  {id:"giraffe", text:"twiga", audio:"twiga", image:"giraffe"},
-//  {id:"lobster", text:"uduvi", audio:"uduvi", image:"lobster"},
-//  {id:"bee", text:"wembembe", audio:"wembembe", image:"bee"},
-//  {id:"jellyfish", text:"yavuyavu", audio:"yavuyavu", image:"jellyfish"},
+  {id:"alligator", text:"aligeta", audio:"aligeta", image:"alligator"},
+  {id:"crocodile", text:"mamba", audio:"mamba", image:"crocodile"},
+  {id:"duck", text:"bata", audio:"bata", image:"duck"},
+  {id:"frog", text:"chura", audio:"chura", image:"frog"},
+  {id:"bear", text:"dubu", audio:"dubu", image:"bear"},
+  {id:"emu", text:"emu", audio:"emu", image:"emu"},
+  {id:"warthog", text:"gwasi", audio:"gwasi", image:"gwasi"}, // pig? hog? warthog?
+  {id:"flamingo", text:"heroe", audio:"heroe", image:"flamingo"}, // heron??
+  {id:"fly", text:"inzi", audio:"inzi", image:"fly"},
+  {id:"chameleon", text:"lumbwi", audio:"lumbwi", image:"chameleon"}, // lizard?
+ {id:"pigeon", text:"ninga", audio:"ninga", image:"pigeon"}, // ..bird?
+ {id:"orangutan", text:"orangutangu", audio:"orangutangu", image:"orangutan"},
+ {id:"giraffe", text:"twiga", audio:"twiga", image:"giraffe"},
+ {id:"lobster", text:"uduvi", audio:"uduvi", image:"lobster"},
+ {id:"bee", text:"wembembe", audio:"wembembe", image:"bee"},
+ {id:"jellyfish", text:"yavuyavu", audio:"yavuyavu", image:"jellyfish"}
 // praying mantis = vunjajungu ? (or insect?)
 // robin = robini , swallow?? = zawaridi
   ];

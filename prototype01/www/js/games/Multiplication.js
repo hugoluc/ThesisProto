@@ -183,7 +183,7 @@ function Multiplication(){
 								y : (session.canvas.height/(this.eggs.instruction.length+1))*(i+1),
 								x : (this.boardSpecs.instructionWidth < 250) ? this.boardSpecs.instructionWidth/2 : 125
 								//******************************FIXME
-								// chnge to exat size of cliff after displaying cliff on transition
+								// chnage to exact size of cliff after displaying cliff on transition
 							} 
 
 
@@ -400,7 +400,6 @@ function Multiplication(){
 
 		stage.addChild(this.cliff)
 		stage.setChildIndex(this.cliff, 1)
-
 	};
 
 	Trial.prototype.setBoardSpecs = function(){
