@@ -81,16 +81,13 @@ function bubbleLetters(){
 
 
     bubble.prototype.click = function(){ //_this,_event
-      console.log("clicked:");
-      console.log(this.value);
-      console.log(this.trial);
       var correct_click = (this.value===this.trial.stimuli.correctValue);
       // if correct, set trial state to finish..
       if(correct_click) {
         correct_sound.play();
       }
       if(!correct_click) { // incorrect: pop bubble, play bad sound
-        this.destroy(); // expand and fade would be nice!
+        this.fade = true;
         assets.sounds.wrong[0].play();
       }
       return correct_click;
@@ -135,6 +132,8 @@ function bubbleLetters(){
         if(this.fade){
             this.circle.alpha -= 0.05;
             this.cNumber.alpha -= 0.05;
+            this.circle.scale.x += .02;
+            this.circle.scale.y += .02;
             if(this.circle.alpha <= 0){
                 this.display(false)
             };
@@ -143,6 +142,8 @@ function bubbleLetters(){
             this.circle.width =  this.size + Math.sin(this.ang) * 2;
             this.circle.height =  this.size + Math.sin(this.ang) * 2;
             this.circle.rotation = Math.sin(this.ang) * 0.02;
+            //this.container.position.x += 1;
+            //this.container.position.y += Math.sin(tick + st.offset) * .3; // move bubbles a bit?
         }
     };
 
@@ -230,27 +231,6 @@ function bubbleLetters(){
     };
 
 
-  Trial.prototype.updateOperation = function(_origin,_target){
-
-        if(_target == "final"){
-            this.performOperation = true;
-            this.countDone = false;
-            this.countDownTargets = [_origin,_target]
-
-        }else{
-            this.performOperation = true;
-            this.countDone = false;
-
-            // set countdown
-            this.countDownTargets = [_origin,_target]
-
-            //update value for lillypads
-            this.bubble[_target].value = parseInt(this.bubble[_target].value) + parseInt(this.bubble[_origin].value)
-            this.bubble[_origin].value = 0
-
-        };
-    };
-
 	Trial.prototype.getSpecs = function(){
 		var obj = {};
 		obj.canvasMargin = 30;
@@ -326,22 +306,24 @@ function bubbleLetters(){
     };
 
     Trial.prototype.moveDragonfly = function() {
-      if(this.targetx > this.dragonfly.position.x) {
-        this.dragonfly.position.x += this.deltax;
-      } else {
-        this.dragonfly.position.x -= this.deltax;
-      }
-
-      if(this.targety > this.dragonfly.position.y) {
-        this.dragonfly.position.y += this.deltay;
-      } else {
-        this.dragonfly.position.x -= this.deltay;
-      }
-
       //if distance from target is <10, person loses
       var dist = distance(this.dragonfly.position.x, this.dragonfly.position.y, this.targetx, this.targety);
+      if(dist>=10) {
+        if(this.targetx > this.dragonfly.position.x) {
+          this.dragonfly.position.x += this.deltax;
+        } else {
+          this.dragonfly.position.x -= this.deltax;
+        }
 
-      if((dist) < 5) {
+        if(this.targety > this.dragonfly.position.y) {
+          this.dragonfly.position.y += this.deltay;
+        } else {
+          this.dragonfly.position.x -= this.deltay;
+        }
+      }
+
+      if((dist) < 10) {
+        assets.sounds.wrong[0].play();
         return true;
       } else {
         return false;
@@ -424,7 +406,7 @@ function bubbleLetters(){
                 if(dragonflyReachedTarget) { // computer wins!
                   // points, get rid of bubbles, start new trial
                   for(var i=0;i<this.bubble.length;i++){
-                      this.bubble[i].fade = true;
+                      this.bubble[i].fade = true; // make fade into pop -- increase size as fading
                   }
                 }
                 break;
