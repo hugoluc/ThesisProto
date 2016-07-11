@@ -379,6 +379,7 @@
 	gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 
 		this.score = this.score + (_starsPos.length * _value);
+		this.valuePerStar = _value
 		var initDelay = 200;
 		var delay = 0
 		var duration = _duation || 1000
@@ -549,13 +550,16 @@
 
 				};
 
-
-
-
 			};
-
 	};
 
+	gameScore.prototype.addScoreUI = function(){
+
+		 
+		document.getElementById('scoreNumber').innerHTML += this.valuePerStar;
+
+
+	}
 
 	gameScore.prototype.displayStar = function(){
 
@@ -576,6 +580,8 @@
 					this.starts[i][0] = []
 					this.starts[i][1] = []
 					this.starts.splice(i,1);
+
+					this.addScoreUI()
 
 				}else{
 
