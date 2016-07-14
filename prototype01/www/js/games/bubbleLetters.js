@@ -16,6 +16,7 @@ function bubbleLetters(){
   queuesToUpdate['alphabetstim'] = true;
   var stimuli = stimQueues['alphabetstim'];
   console.log(stimuli)
+  var dragonfly_start_pos = {'x':250, 'y':250};
 /*
 -------------------------------------------------------------------------------------------------------------
                                                 Class: bubble
@@ -82,7 +83,7 @@ function bubbleLetters(){
 
     bubble.prototype.click = function(){ //_this,_event
       this.clicked = true;
-      var correct_click = (this.value===this.trial.stimuli.correctValue);
+      var correct_click = (this.value===this.trial.stim.correctValue);
       // if correct, play correct sound, stop the dragonfly, and move on
       if(correct_click) {
         correct_sound.play();
@@ -159,10 +160,10 @@ function bubbleLetters(){
         stimCount++;
         // correct on 1st trial, but 2nd trial has undefined correctValue?
         console.log(_stimulus)
-        this.stimuli = {correctValue: [_stimulus.text], extras: ['B','C','D'], priority: _stimulus.priority};
-        //console.log(this.stimuli);
+        this.stim = {correctValue: [_stimulus.text], extras: ['B','C','D'], priority: _stimulus.priority};
+        //console.log(this.stim);
 		    // Correct is the target letter that the dragonfly approaches
-        this.correct = this.stimuli.correctValue;
+        this.correct = this.stim.correctValue;
         this.clock = new ClockTimer()
 
     	  this.trialState = "intro"
@@ -182,9 +183,9 @@ function bubbleLetters(){
 
     Trial.prototype.init = function(){
         // need to track the target's location so the dragonfly can go to it
-        var bubbleValues = [this.stimuli.correctValue];
-        for (var i=0; i<this.stimuli.extras.length; i++){
-            bubbleValues.push(this.stimuli.extras[i]);
+        var bubbleValues = [this.stim.correctValue];
+        for (var i=0; i<this.stim.extras.length; i++){
+            bubbleValues.push(this.stim.extras[i]);
         }
 
         if(bubbleValues.length > this.posMatrix.length){
@@ -210,8 +211,8 @@ function bubbleLetters(){
         this.dragonfly = new PIXI.Sprite(assets.textures.dragonfly)
         this.dragonfly.width = 200;
         this.dragonfly.height = 100;
-        this.dragonfly.position.x = 50; // from previous trial..
-        this.dragonfly.position.y = 100; // from prev trial
+        this.dragonfly.position.x = dragonfly_start_pos.x;
+        this.dragonfly.position.y = dragonfly_start_pos.y;
         this.dragonfly.anchor.y = 0.5;
         this.dragonfly.anchor.x = 0.5;
         stage.addChild(this.dragonfly);
@@ -331,6 +332,7 @@ function bubbleLetters(){
 
       if((dist) < 10) { // dragonfly won!
         assets.sounds.wrong[0].play();
+        dragonfly_start_pos = this.dragonfly.position;
         this.finishedState = "lose";
         return true;
       } else {
@@ -341,12 +343,12 @@ function bubbleLetters(){
     // GK: ToDo finish this! (where is learner's correctness?)
     Trial.prototype.storeStim = function() {
         if(this.wrongClicks===0) {
-          var newpriority = this.stimuli.priority + .5;
+          var newpriority = this.stim.priority + .5;
         } else {
-          var newpriority = this.stimuli.priority - Math.log(this.wrongClicks+1);
+          var newpriority = this.stim.priority - Math.log(this.wrongClicks+1);
         }
-        this.stimuli.priority = newpriority;
-        return(this.stimuli);
+        this.stim.priority = newpriority;
+        return(this.stim);
     };
 
     Trial.prototype.finished = function() {
@@ -354,7 +356,7 @@ function bubbleLetters(){
         switch(this.finishedState){
             case "endanimation":
                 if(this.trialEnded){
-                    console.log(this.stimuli.correct.value);
+                    console.log(this.stim.correct.value);
                     this.clock.start(1000);
                     this.finishedState = "win";
                 }else{
@@ -387,7 +389,7 @@ function bubbleLetters(){
     Trial.prototype.play = function(_updateTime){
         switch(this.trialState){
             case "intro":
-                assets.sounds.letters[this.stimuli.correctValue[0]].play();
+                assets.sounds.letters[this.stim.correctValue[0]].play();
                 if(this.intro()){
                     this.trialState = "play";
                 }
