@@ -379,7 +379,8 @@
 	gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 
 		this.score = this.score + (_starsPos.length * _value);
-		var initDelay = 200;
+		this.valuePerStar = _value
+		var initDelay = 300;
 		var delay = 0
 		var duration = _duation || 1000
 
@@ -449,21 +450,33 @@
 				this.stage.addChild(star);
 
 				var starAnimation = new animation(star);
-				starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
+				starAnimation.init({x:session.canvas.width - 25, y: -50},duration,delay,[0,1]);
 
 				var starFeaAnimation = new animation(star);
 				starFeaAnimation.initFeature(
 
 					["width", "height"], // features to animate
-					80, // final size
+					90, // final size
 					200, // time value
 					delay, // delay
-					[0,1] // bezier courve 
+					[0.75,1] // bezier courve 
 
-					);
+				);
+
+				var startRotation = new animation(star);
+				startRotation.initFeature(
+
+					"rotation", // features to animate
+					Math.PI * 2, // final position
+					duration, // time value
+					delay, // delay
+					[0.75,1] // bezier courve 
+
+				);
 				
+
 				delay = delay + initDelay
-				this.starts.push([star,starAnimation,starFeaAnimation]);
+				this.starts.push([star,starAnimation,starFeaAnimation,startRotation]);
 
 			};
 
@@ -502,6 +515,18 @@
 				
 				);
 
+				var startERotation = new animation(Estar);
+				startERotation.initFeature(
+
+					"rotation", // features to animate
+					Math.PI * 4, // final position
+					_duration, // time value
+					0, // delay
+					[0.75,1] // bezier courve 
+
+				);
+				
+
 				var EstarFeaAnimation = new animation(Estar);
 				EstarFeaAnimation.initFeature(
 
@@ -515,7 +540,7 @@
 
 				console.log(EstarFeaAnimation)
 				this.stage.addChild(Estar)
-				this.explosion.push([Estar,EstarAnimation,EstarFeaAnimation])
+				this.explosion.push([Estar,EstarAnimation,EstarFeaAnimation,startERotation])
 			};
 
 
@@ -535,6 +560,12 @@
 				
 				};
 
+				if(!this.explosion[i][3].runFeature()){
+
+					animationDone = false
+				
+				};
+
 				if(this.explosion[i][1].run()){
 
 					this.stage.removeChild(this.explosion[i][0])
@@ -549,13 +580,33 @@
 
 				};
 
-
-
-
 			};
-
 	};
 
+	gameScore.prototype.addScoreUI = function(){
+
+		var newValue = parseInt(document.getElementById('scoreNumber').innerHTML) + this.valuePerStar;
+		document.getElementById('scoreNumber').innerHTML = newValue
+		
+		if(newValue > 9){
+
+			if(newValue > 99){
+
+				document.getElementById('scoreNumber').style.left = 10
+				document.getElementById('scoreNumber').style.top = 10
+				document.getElementById('scoreNumber').style.fontSize = "18pt"
+
+			}else{
+
+
+				document.getElementById('scoreNumber').style.left = 10
+
+
+			}
+
+		}
+
+	};
 
 	gameScore.prototype.displayStar = function(){
 
@@ -569,6 +620,12 @@
 
 				};
 
+				if(!this.starts[i][3].runFeature()){
+
+					animationDone = false
+				
+				};
+
 				if(this.starts[i][1].run()){ //call animation function for position on each star
 
 					this.stage.removeChild(this.starts[i][0])
@@ -576,6 +633,8 @@
 					this.starts[i][0] = []
 					this.starts[i][1] = []
 					this.starts.splice(i,1);
+
+					this.addScoreUI()
 
 				}else{
 

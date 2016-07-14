@@ -507,7 +507,7 @@ function proto02(){
                             pos.push({ x :0 ,y : 0})
                             pos.push({ x : 0 ,y : 0})
 
-                            score.addScore(pos,1)
+                            score.addScore(pos,300)
                             score.setExplosion({ x : this.clickPos.x ,y : this.clickPos.y},100,1000)
                         
                         }else{
@@ -517,7 +517,7 @@ function proto02(){
                             pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
                             pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
 
-                            score.addScore(pos,1)
+                            score.addScore(pos,100)
                             score.setExplosion({ x : this.clickPos.x ,y : this.clickPos.y},100,1000)
 
                         }

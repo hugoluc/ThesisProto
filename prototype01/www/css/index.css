@@ -56,16 +56,37 @@ body{
 
 #score{
 
-    height: 200%;
-    right: 0;
+    height: 120;
+    right: -5;
+    top: -10;
     position: absolute;
+
+}
+
+
+#scoreContainer{
+
+    height: 100px;
+    width: 100px;
+    right: 0;
+    top: 0;
+    position: absolute;
+    z-index: 10;
+
 
 }
 
 #scoreNumber{
 
-    right: 0;
+    display: table-cell; 
     position: absolute;
+
+    left: 20px; 
+    top: 4px;
+    font-size: 26pt;
+    font-weight: bold;
+    color:#a07800;
+    -webkit-text-stroke: 1px white;
 
 }
 
