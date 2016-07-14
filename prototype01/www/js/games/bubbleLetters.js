@@ -1,5 +1,5 @@
-var gameloaded = true
-var stimCount = -1
+var gameloaded = true;
+var stimCount = -1;
 
 /*
   game works like this:
@@ -37,7 +37,7 @@ function bubbleLetters(){
 
         this.value = _value;
     	  this.id = _id;
-        this.connections = [];
+        this.clicked = false;
         this.posdId = _position.id
         this.pos = _position.pos;
         this.size = _size;
@@ -81,12 +81,14 @@ function bubbleLetters(){
 
 
     bubble.prototype.click = function(){ //_this,_event
+      this.clicked = true;
       var correct_click = (this.value===this.trial.stimuli.correctValue);
-      // if correct, set trial state to finish..
+      // if correct, play correct sound, stop the dragonfly, and move on
       if(correct_click) {
         correct_sound.play();
+        console.log(this);
       }
-      if(!correct_click) { // incorrect: pop bubble, play bad sound
+      if(!correct_click) { // incorrect: pop bubble, play bad sound and wait
         this.fade = true;
         assets.sounds.wrong[0].play();
       }
@@ -155,9 +157,10 @@ function bubbleLetters(){
 
     function Trial(_stimulus){
         stimCount++;
-
-        this.stimuli = {correctValue: [_stimulus.text], extras: ['B','C','D']};
-        console.log(this.stimuli);
+        // correct on 1st trial, but 2nd trial has undefined correctValue?
+        console.log(_stimulus)
+        this.stimuli = {correctValue: [_stimulus.text], extras: ['B','C','D'], priority: _stimulus.priority};
+        //console.log(this.stimuli);
 		    // Correct is the target letter that the dragonfly approaches
         this.correct = this.stimuli.correctValue;
         this.clock = new ClockTimer()
@@ -198,11 +201,10 @@ function bubbleLetters(){
             this.bubble[i].init(bubbleValues[i], this.getPos(i), this.specs.stimWidth, i)
         }
 
-        console.log(this.bubble[0]);
+        //console.log(this.bubble[0]);
         // first bubble is target
         this.targetx = this.bubble[0].circle.position.x + 25; // this.bubble[0].pos.x;
         this.targety = this.bubble[0].circle.position.y + 25; // this.bubble[0].pos.y;
-        //this.lillyFinal.init(this.stimuli.correct.value);
 
         // create dragonfly
         this.dragonfly = new PIXI.Sprite(assets.textures.dragonfly)
@@ -306,6 +308,11 @@ function bubbleLetters(){
     };
 
     Trial.prototype.moveDragonfly = function() {
+      // if they have clicked the target, they won
+      if(this.bubble[0].clicked) {
+        this.finishedState = "win";
+        return true;
+      }
       //if distance from target is <10, person loses
       var dist = distance(this.dragonfly.position.x, this.dragonfly.position.y, this.targetx, this.targety);
       if(dist>=10) {
@@ -322,8 +329,9 @@ function bubbleLetters(){
         }
       }
 
-      if((dist) < 10) {
+      if((dist) < 10) { // dragonfly won!
         assets.sounds.wrong[0].play();
+        this.finishedState = "lose";
         return true;
       } else {
         return false;
@@ -332,12 +340,11 @@ function bubbleLetters(){
 
     // GK: ToDo finish this! (where is learner's correctness?)
     Trial.prototype.storeStim = function() {
-      var newpriority = 1
-        // if(this.wrongClicks===0) {
-        //   var newpriority = this.stimuli.priority + .5;
-        // } else {
-        //   var newpriority = this.stimuli.priority - Math.log(this.wrongClicks);
-        // }
+        if(this.wrongClicks===0) {
+          var newpriority = this.stimuli.priority + .5;
+        } else {
+          var newpriority = this.stimuli.priority - Math.log(this.wrongClicks+1);
+        }
         this.stimuli.priority = newpriority;
         return(this.stimuli);
     };
@@ -345,35 +352,25 @@ function bubbleLetters(){
     Trial.prototype.finished = function() {
 
         switch(this.finishedState){
-            case "countdown":
-                // dragonfly dances?
-                var animationDone = this.animateAnts();
-
-                if(animationDone){
-                    if(this.trialEnded){
-                        console.log(this.stimuli.correct.value)
-                        this.clock.start(1000)
-                        this.finishedState = "win";
-                    }else{
-                        this.lillyFinal.sinkThis();
-                        this.finishedState = "lose";
-                    }
+            case "endanimation":
+                if(this.trialEnded){
+                    console.log(this.stimuli.correct.value);
+                    this.clock.start(1000);
+                    this.finishedState = "win";
+                }else{
+                    this.finishedState = "lose";
                 }
                 break;
 
             case "lose":
-                if(this.lillyFinal.state == "fading"){
-                   console.log("loss: fade?")
-                }
-                //sink lillypad
-                if(this.lillyFinal.display()){
-                    this.finishedState = "callNext"
-                }
+                console.log("dragonfly won!")
+                this.finishedState = "callNext";
+                // if(this.lillyFinal.display()){
+                //     this.finishedState = "callNext"
+                // }
                 break;
 
             case "win":
-                // fade everryhting else
-                // move final to center
                 if(this.clock.timeOut()){
                     this.finishedState = "callNext";
                 }
@@ -405,13 +402,16 @@ function bubbleLetters(){
 
                 if(dragonflyReachedTarget) { // computer wins!
                   // points, get rid of bubbles, start new trial
-                  for(var i=0;i<this.bubble.length;i++){
-                      this.bubble[i].fade = true; // make fade into pop -- increase size as fading
-                  }
+
+                  this.trialState = "finished"; // wait 1000ms for feedback and bubble pops
                 }
                 break;
 
             case "finished":
+                for(var i=0;i<this.bubble.length;i++){
+                    this.bubble[i].fade = true; // make fade into pop -- increase size as fading
+                }
+
                 if(this.finished()){
                     return true;
                 }

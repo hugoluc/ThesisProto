@@ -259,14 +259,12 @@
 
 	Round.prototype.getNextTrial = function(){
 
-		//var stim = stimQueues['numberstim'].pop();
-	 	this.trial = new this._trial(this.stimuli.pop());
+		var stim = this.stimuli.pop();
+		console.log(stim);
+	 	this.trial = new this._trial(stim);
 	  	if(this.trial.init != undefined){
-
-			this.trial.init();
-
-		}
-
+				this.trial.init();
+			}
 	}
 
 	Round.prototype.storeSession = function(stim, queue_name) {
@@ -320,16 +318,16 @@
 
 		if(this.scoreDifferential >= this.scoreTrashhold[1]){
 
-			console.log("increasing difficulty")
-			this.difficulty++
-			this.scoreDifferential = 0
+			console.log("increasing difficulty");
+			this.difficulty++;
+			this.scoreDifferential = 0;
 		}
 
 		if(this.scoreDifferential <= this.scoreTrashhold[0]){
 
-			console.log("decreasing difficulty")
-			this.difficulty--
-			this.scoreDifferential = 0
+			console.log("decreasing difficulty");
+			this.difficulty--;
+			this.scoreDifferential = 0;
 
 		}
 
@@ -337,17 +335,17 @@
 
 			if(this.difficulty < this.diffRange[0]){
 
-				this.difficulty = this.diffRange[0]
+				this.difficulty = this.diffRange[0];
 			};
 
 			if(this.difficulty > this.diffRange[1]){
 
-				this.difficulty = this.diffRange[1]
+				this.difficulty = this.diffRange[1];
 			};
 
 		}
 
-		console.log(this.difficulty)
+		console.log("difficulty: ", this.difficulty);
 
 	};
 
