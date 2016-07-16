@@ -1,16 +1,16 @@
     var proto2loaded = false;
 
-    var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
-    // modify game dynamics if scoreDifferential reaches +3 or -3
-    var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
-    var numFoils = 3; // +2 if 3x correct, -1 if 3x incorrect
-
     var LOGTHIS =  false;
 
 function proto02(){
-  
+  var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
+  // modify game dynamics if scoreDifferential reaches +3 or -3
+  var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
+  var numFoils = 3; // +2 if 3x correct, -1 if 3x incorrect
+  var scoreIncrease = 1; // initially 1, but goes higher as they progress
+
   queuesToUpdate['numberstim'] = true;
-  
+
   var stimuli = stimQueues['numberstim'];
 
     /*
@@ -28,10 +28,10 @@ function proto02(){
             this.container.buttonMode = true;
             this.container.mousedown = this.container.touchstart = function(_event){ _this.click(_event); }
             this.container.pivot = {
-         
+
                 x: 0,
                 y: 0,
-         
+
             };
 
             this.counter = 0;
@@ -426,16 +426,14 @@ function proto02(){
 
                     assets.sounds.numbers[this.correct].play()
 
-
                     if(this.trialTimer.timeOut()){
 
-                        var dest = {}
-                        dest.x = this.instructionWidth*1.2
-                        dest.y = session.canvas.height-(this.instructionWidth * 1.5)
+                        var dest = {};
+                        dest.x = this.instructionWidth*1.2;
+                        dest.y = session.canvas.height-(this.instructionWidth * 1.5);
 
-                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[0.75,1])
-
-                        this.introState = "moveToCorner"
+                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[0.75,1]);
+                        this.introState = "moveToCorner";
 
                     }
 
@@ -443,12 +441,9 @@ function proto02(){
 
 
                 case "moveToCorner":
-
-                        if(this.instruction.customAnimation.run()){
-
-                            return true;
-
-                        }
+                    if(this.instruction.customAnimation.run()){
+                        return true;
+                    }
 
                     break;
 
@@ -492,40 +487,23 @@ function proto02(){
                         for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
 
                         if(this.correctAnswer){
-                        
-                            round.changeDifficulty(true)
 
-                            console.log(this.clickPos)
-                            
-                            var pos = []
-                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
-                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
-                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
+                            round.changeDifficulty(true);
+                            var pos = [];
+                            for (var i=0; i<scoreIncrease; i++) {
+                              pos.push({ x: this.clickPos.x, y: this.clickPos.y});
+                            }
+                            score.addScore(pos, scoreIncrease);
+                            score.setExplosion({ x: this.clickPos.x, y: this.clickPos.y},100,1000);
 
-                            var pos = []
-                            pos.push({ x : 0 ,y : 0})
-                            pos.push({ x :0 ,y : 0})
-                            pos.push({ x : 0 ,y : 0})
-
-                            score.addScore(pos,300)
-                            score.setExplosion({ x : this.clickPos.x ,y : this.clickPos.y},100,1000)
-                        
-                        }else{
-
-                            var pos = []
-                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
-                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
-                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
-
-                            score.addScore(pos,100)
-                            score.setExplosion({ x : this.clickPos.x ,y : this.clickPos.y},100,1000)
-
+                        } else {
+                            var pos = [{ x: this.clickPos.x, y: this.clickPos.y}];
+                            score.addScore(pos, 1);
+                            score.setExplosion({ x: this.clickPos.x, y: this.clickPos.y},100,1000);
                         }
 
-
                         this.trialState = "nextTrial";
-
-                    };
+                    }
 
                     this.displayFeedbacks();
                     this.playAudioQueue();
@@ -535,8 +513,8 @@ function proto02(){
                 case "nextTrial":
 
                     this.displayFeedbacks()
-                    score.displayStar()                    
-                    score.displayExplosion()
+                    score.displayStar();
+                    score.displayExplosion();
 
                     if(this.nextTrial()){
 
@@ -556,20 +534,12 @@ function proto02(){
             switch(this.nextTrialState){
 
                 case "flyAll":
-
-
-
                     // wait until all ladybugs are off the screen.
                     var done = true;
-
                     for (var i=0; i<this.ladyBugs.length; i++){
-
                         if(!this.ladyBugs[i].move("noReset")){
-
                             done = false
-
                         };
-
                     };
 
                     if(done){
@@ -586,10 +556,8 @@ function proto02(){
                 case "moveToCenter":
 
                     if(this.instruction.customAnimation.run()){
-
                         this.trialTimer.start(500)
                         this.nextTrialState = "callNextTrial"
-
                     };
 
                     break;
@@ -597,10 +565,8 @@ function proto02(){
                 case "callNextTrial":
 
                     if(this.trialTimer.timeOut()){
-
                         return true;
                     };
-
 
                     break;
 
@@ -613,16 +579,12 @@ function proto02(){
         Trial.prototype.init = function(){
 
             this.foils = this.getFoils();
-           // this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
-
-
+            // this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
             this.foils = shuffle(this.foils);
 
             for (var i=0; i<this.foils.length; i++){
-
                 var xpos = getRandomInt(20 + interval*i, interval*(i+1) - 20);
                 this.ladyBugs.push(new LadyBug(this.foils[i]));
-
             }
 
             this.ladyBugs.push(new LadyBug(this.correct))
@@ -632,9 +594,7 @@ function proto02(){
             var interval = Math.floor((screen_width - this.instructionWidth*4.5) / this.ladyBugs[0].container.width);
 
             for(var i = 0; i<interval; i++){
-
-                this.availableSpots.push(i)
-
+                this.availableSpots.push(i);
             }
 
             // array with randon numbers up the the number of indivisual spots available
@@ -883,19 +843,14 @@ function proto02(){
         Trial.prototype.destroy = function(){
 
             for(var i=0; i<this.ladyBugs.length; i++){
-
               this.ladyBugs[i].destroy()
-
             };
 
             this.instruction.removeChildren(0,this.instruction.children.length)
 
             for (key in this.counter){
-
                 for(var i = 0; i < this.correct; i++){
-
                     this.counter[key][i].destroy()
-
                 }
             }
 

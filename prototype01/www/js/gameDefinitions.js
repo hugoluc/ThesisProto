@@ -375,13 +375,13 @@
 
 	};
 
-	gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg, _index){
+	gameScore.prototype.addScore = function(_starsPos, _value, _duration, _svg, _index){
 
 		this.score = this.score + (_starsPos.length * _value);
 		this.valuePerStar = _value;
 		var initDelay = 300;
 		var delay = 0;
-		var duration = _duation || 1000;
+		var duration = _duration || 1000;
 		this.index = _index || this.stage.children.length;
 
 		if(_svg){
@@ -411,7 +411,7 @@
 				.attr("id", "star-" + (this.starLength + 1))
 				.transition()
 				.delay(delay)
-				.duration(_duation)
+				.duration(_duration)
 				.attr({
 
 					x: window.innerWidth - 50,
@@ -459,7 +459,7 @@
 					90, // final size
 					200, // time value
 					delay, // delay
-					[0.75,1] // bezier courve 
+					[0.75,1] // bezier courve
 
 				);
 
@@ -470,10 +470,10 @@
 					Math.PI * 2, // final position
 					duration, // time value
 					delay, // delay
-					[0.75,1] // bezier courve 
+					[0.75,1] // bezier courve
 
 				);
-				
+
 
 				delay = delay + initDelay
 				this.stars.push([star,starAnimation,starFeaAnimation,startRotation]);
@@ -498,19 +498,19 @@
 				Estar.width = 10;
 				Estar.height = 10;
 
-				var angle = getRandomFloat(-Math.PI,Math.PI) 
+				var angle = getRandomFloat(-Math.PI,Math.PI)
 
 				var EstarAnimation = new animation(Estar);
 				EstarAnimation.init(
 
 					{
-						"x" : (_pos.x + Math.cos(angle)*_radius) * (getRandomFloat(0.95,1.05)), 
-						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.9,1.05)), 
+						"x" : (_pos.x + Math.cos(angle)*_radius) * (getRandomFloat(0.95,1.05)),
+						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.9,1.05)),
 					},
 					_duration,
 					0,//getRandomInt(0,_duration*0.01),
 					[1,1]
-				
+
 				);
 
 				var startERotation = new animation(Estar);
@@ -520,20 +520,20 @@
 					Math.PI * 4, // final position
 					_duration, // time value
 					0, // delay
-					[0.75,1] // bezier courve 
+					[0.75,1] // bezier courve
 
 				);
-				
+
 
 				var EstarFeaAnimation = new animation(Estar);
 				EstarFeaAnimation.initFeature(
 
 					"alpha",
-					0,	
+					0,
 					_duration, //length
 					0, // delay
 					[0,0.75]
-				
+
 				);
 
 				console.log(EstarFeaAnimation)
@@ -549,19 +549,19 @@
 	gameScore.prototype.displayExplosion = function(){
 
 			var animationDone = true
-			
+
 			for(var i = 0; i < this.explosion.length; i++ ){
 
 				if(!this.explosion[i][2].runFeature(true)){
 
 					animationDone = false
-				
+
 				};
 
 				if(!this.explosion[i][3].runFeature()){
 
 					animationDone = false
-				
+
 				};
 
 				if(this.explosion[i][1].run()){
@@ -585,7 +585,7 @@
 
 		var newValue = parseInt(document.getElementById('scoreNumber').innerHTML) + this.valuePerStar;
 		document.getElementById('scoreNumber').innerHTML = newValue
-		
+
 		if(newValue > 9){
 
 			if(newValue > 99){
@@ -620,7 +620,7 @@
 				if(!this.stars[i][3].runFeature()){
 
 					animationDone = false
-				
+
 				};
 
 				if(this.stars[i][1].run()){ //call animation function for position on each star

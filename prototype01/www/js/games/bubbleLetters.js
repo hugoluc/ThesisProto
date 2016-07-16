@@ -23,6 +23,7 @@ function bubbleLetters(){
   var dragonflyFramesUntilArrival = 200; // lower is faster
   var minDragonflyFrames = 100; // and it changes by 10
   var maxDragonflyFrames = 300;
+  var scoreIncrease = 1;
 /*
 -------------------------------------------------------------------------------------------------------------
                                                 Class: bubble
@@ -387,21 +388,27 @@ function bubbleLetters(){
                 if(this.trialWon){
                     this.clock.start(1000);
                     this.finishedState = "win";
+                    var pos = [];
+                    for (var i=0; i<scoreIncrease; i++) {
+                      pos.push({ x: 300, y: 300});
+                    }
+                    score.addScore(pos, scoreIncrease);
+                    score.setExplosion({ x: 300, y: 300},100,1000);
                     score.displayStar();
+                    score.displayExplosion();
                 }else{
+                    this.clock.start(1000);
                     this.finishedState = "lose";
                 }
                 break;
 
             case "lose":
-                console.log("dragonfly won!")
-                this.finishedState = "callNext";
+                console.log("dragonfly won!"); // make it swell?
+                if(this.clock.timeOut()) this.finishedState = "callNext";
                 break;
 
             case "win":
-                if(this.clock.timeOut()){
-                    this.finishedState = "callNext";
-                }
+                if(this.clock.timeOut()) this.finishedState = "callNext";
                 break;
 
             case "callNext":

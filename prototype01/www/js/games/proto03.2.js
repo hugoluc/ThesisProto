@@ -1,7 +1,8 @@
 var proto3loaded = false;
-var stimCount = -1
+var stimCount = -1;
 
 function proto03(){
+  var scoreIncrease = 1;
   queuesToUpdate['mathstim'] = true;
   var stimuli = stimQueues['mathstim'];
   proto3loaded = true;
@@ -641,21 +642,21 @@ function proto03(){
 		/*----------------------
 		Correct is the sum that should be placed in the final lillypad
 		------------------------*/
-    	this.correct = specs.correct;
+      	this.correct = specs.correct;
 
         this.clock = new ClockTimer()
 
-    	this.sticks = []
+      	this.sticks = [];
 
-    	this.trialState = "intro"
-        this.introState = "playSound"
+      	this.trialState = "intro";
+        this.introState = "playSound";
 
         this.lillySmall = [];
         this.ripples = [];
-        this.matrixAvailable = []
-        this.specs = this.getSpecs()
-        this.posMatrix = this.getMatrixPosition()
-        this.operation = 0
+        this.matrixAvailable = [];
+        this.specs = this.getSpecs();
+        this.posMatrix = this.getMatrixPosition();
+        this.operation = 0;
 
         this.AnimationDone = true;
         this.fadeStick = false;
@@ -663,7 +664,6 @@ function proto03(){
         this.countDone = false;
 
         this.ants = {
-
             size : {
                 width : 9,
                 height : 14,
@@ -678,7 +678,7 @@ function proto03(){
 
         this.antsSub = 0;
         this.antsAdd = 0;
-        this.leavesToFade = 0
+        this.leavesToFade = 0;
     };
 
 
@@ -687,23 +687,17 @@ function proto03(){
         var lilipadValues = this.stimuli.correctValues
 
         for (var i=0; i<this.stimuli.extras.size; i++){
-
             lilipadValues.push(getRandomInt(this.stimuli.extras.min,this.stimuli.extras.max))
-
         }
 
         if(lilipadValues.length > this.posMatrix.length){
-
             throw "SCREEN TOO SMALL!"
-
         }
 
         // create small liilypads
         for (var i=0; i<lilipadValues.length; i++){
-
             var pos = getRandomInt(0,this.posMatrix.length)
             this.lillySmall.push(new lillySmall(this))
-
         }
 
         // create riples : outside next loop to ensure ripples are aways bellow lillypads
@@ -716,12 +710,10 @@ function proto03(){
 
             this.lillySmall[i].init(lilipadValues[i], this.getPos(i), this.specs.lillyWidth, i, this.ants.size)
 
-            //crete ants
+            //create ants
             for(var j = 0;j<lilipadValues[i];j++){
-
                 var pos = this.lillySmall[i].antsDivision[j]
                 this.ants.sprites.push( new Ant(this.ants.size, pos, i) )
-
             }
 
         }
@@ -730,41 +722,33 @@ function proto03(){
         this.lillyFinal.init(this.stimuli.correct.value);
 
         // create stick
-        this.stick = new PIXI.Sprite(assets.textures.stick)
+        this.stick = new PIXI.Sprite(assets.textures.stick);
         this.stick.width = 0;
         this.stick.height = 15;
         this.stick.anchor.y = 0.5
         stage.addChild(this.stick);
 
-        this.branch = new PIXI.Sprite(assets.textures.branch)
-        this.branch.anchor.x = -0.2
+        this.branch = new PIXI.Sprite(assets.textures.branch);
+        this.branch.anchor.x = -0.2;
         stage.addChild(this.branch);
 
 
         for(var i=0;i<this.ants.sprites.length;i++){
-
-            this.ants.sprites[i].init()
-
+            this.ants.sprites[i].init();
         };
 
         this.clock.start(1000)
     };
 
     Trial.prototype.destroy = function(){
-
         this.lillyFinal.destroy()
 
         for(var i=0;i<this.ants.sprites.length;i++){
-
-
             this.ants.sprites[i].destroy()
-
         }
 
         for(var i = 0; i<this.lillySmall.length; i++){
-
             this.lillySmall[i].destroy()
-
         }
 
         stage.removeChild(this.stick)
@@ -775,16 +759,15 @@ function proto03(){
     };
 
     Trial.prototype.antMoveDone = function(_operation){
-
         if(_operation == "add"){
           console.log("ants >> In")
           this.antsAdd++
-        }else if(_operation == "subtract"){
+        } else if(_operation == "subtract"){
             this.antsSub--
-        }else if(_operation == "final"){
+        } else if(_operation == "final"){
             this.antsAdd--
-        };
-    };
+        }
+    }
 
     //creates links between lillypads if allowed
 	Trial.prototype.CheckLink = function(_dropPoint,_id){
@@ -792,21 +775,16 @@ function proto03(){
         // FINAL MOVE:
         if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
 
-            this.moveStick(true,"final")
-            this.updateOperation(_id,"final")
-            this.trialState = "finished"
-            this.leavesToFade = 0
-            this.finishedState = "counrdown"
+            this.moveStick(true,"final");
+            this.updateOperation(_id,"final");
+            this.trialState = "finished";
+            this.leavesToFade = 0;
+            this.finishedState = "countdown";
 
             if(this.lillySmall[_id].value == this.stimuli.correct.value){
-
-
                 this.trialEnded = true;
-
             }else{
-
                 this.trialEnded = false;
-
             }
 
             return
@@ -866,9 +844,9 @@ function proto03(){
 
     Trial.prototype.countNumber = function(){
 
-        var oriDone = false
-        var targDone = false
-        var tar = {}
+        var oriDone = false;
+        var targDone = false;
+        var tar = {};
 
         //LIllYSMALL
         if(this.countDownTargets[1] != "final"){
@@ -889,14 +867,14 @@ function proto03(){
         // FINAL LILLYPAD COUNT
         }else{
 
-            tar = this.lillyFinal
+            tar = this.lillyFinal;
 
-            console.log(tar.cNumber.text,this.countDownTargets[0])
+            //console.log(tar.cNumber.text,this.countDownTargets[0])
 
             if(tar.cNumber.text > tar.value - this.lillySmall[this.countDownTargets[0]].value){
 
-                tar.cNumber.text = parseInt(tar.cNumber.text) - this.antsAdd
-                this.antsAdd = 0
+                tar.cNumber.text = parseInt(tar.cNumber.text) - this.antsAdd;
+                this.antsAdd = 0;
 
             }else{
 
@@ -1360,31 +1338,40 @@ function proto03(){
 
         switch(this.finishedState){
 
-            case "counrdown":
-
-
-                var countDone = this.countNumber()
-                var animationDone = this.animateAnts()
+            case "countdown":
+                var countDone = this.countNumber();
+                var animationDone = this.animateAnts();
 
                 if(countDone && animationDone){
 
                     if(this.trialEnded){
-
-                        //console.log("changinf to win...")
                         console.log(this.leavesToFade,this.stimuli.correct.value)
                         this.fadeStick = true;
                         this.clock.start(1000)
                         this.finishedState = "win";
 
+                        //round.changeDifficulty(true);
+                        var pos = [];
+                        for (var i=0; i<scoreIncrease; i++) {
+                          pos.push({ x: this.stick.x, y: this.stick.y});
+                        }
+                        score.addScore(pos, scoreIncrease);
+                        score.setExplosion({ x: this.stick.x, y: this.stick.y},100,1000);
 
-                    }else{
-
+                    } else {
                         this.lillyFinal.sinkThis();
                         this.fadeStick = true;
                         this.finishedState = "lose";
 
+                        //var pos =[{ x: this.stick.x, y: this.stick.y}];
+                        var pos =[{ x: 300, y: 200}];
+                        console.log(pos);
+                        score.addScore(pos, scoreIncrease);
+                        score.setExplosion({ x: this.stick.x, y: this.stick.y},100,1000);
                     }
 
+                    score.displayStar();
+                    score.displayExplosion();
                 }
 
                 break;
@@ -1508,6 +1495,7 @@ function proto03(){
     // create the root of the scene graph and main classes
     var stage = new PIXI.Container();
     var round = new Round();
+    score.stage = stage;
 
     this.destroy = function(){
         finishGame = true;
