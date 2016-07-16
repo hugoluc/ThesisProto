@@ -1,3 +1,4 @@
+var screend3;
 // window size (vs. expected Android tablet dimensions
 var screen_width = window.innerWidth, // (1200)
     screen_height = window.innerHeight; // (768)
@@ -35,7 +36,7 @@ var correctSounds = [
   ];
 
 var init_screen = function() {
-  screen = d3.select("#container-exp").append("svg")
+  screend3 = d3.select("#container-exp").append("svg")
     .attr({
       width: screen_width,
       height: screen_height
@@ -46,8 +47,8 @@ var init_screen = function() {
 var setup_screen = function(drawBGimage) {
   var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
 
-  screen.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
-  var background = screen.append("g")
+  screend3.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
+  var background = screend3.append("g")
     .attr({
       width: screen_width,
       height: screen_height
@@ -98,6 +99,12 @@ function count_unique_elements_in_array(arr) {
   return(Object.keys(counts).length)
 }
 
+function distance(x1,y1, x2,y2) {
+  // returns linear distance between (x1,y1) and (x2,y2)
+  var dx2 = Math.pow(x2-x1, 2);
+  var dy2 = Math.pow(y2-y1, 2);
+  return Math.sqrt(dx2+dy2);
+}
 
 // // go back to chooser
 // var back_button = function() {

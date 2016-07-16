@@ -26,7 +26,7 @@ function proto02(){
             this.container = new PIXI.Container();
             this.container.interactive = true;
             this.container.buttonMode = true;
-            this.container.mousedown = this.container.touchstart = function(){ _this.click(); }
+            this.container.mousedown = this.container.touchstart = function(_event){ _this.click(_event); }
             this.container.pivot = {
          
                 x: 0,
@@ -292,7 +292,10 @@ function proto02(){
             this.setFly()
         };
 
-        LadyBug.prototype.click = function(){
+        LadyBug.prototype.click = function(_event){
+
+            round.trial.clickPos = _event.data.global
+            console.log(round.trial.clickPos)
 
             if(round.trial.state == "nextTrial"){
                 return
@@ -376,7 +379,6 @@ function proto02(){
 
                 };
             };
-
         };
 
         LadyBug.prototype.resetFeedback = function(){
@@ -492,21 +494,31 @@ function proto02(){
                         if(this.correctAnswer){
                         
                             round.changeDifficulty(true)
+
+                            console.log(this.clickPos)
                             
                             var pos = []
-                            pos.push({ x : 300 ,y : 300})
-                            pos.push({ x : 300 ,y : 300})
-                            pos.push({ x : 300 ,y : 300})
+                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
+                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
+                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
 
-                            score.addScore(pos,1)
+                            var pos = []
+                            pos.push({ x : 0 ,y : 0})
+                            pos.push({ x :0 ,y : 0})
+                            pos.push({ x : 0 ,y : 0})
+
+                            score.addScore(pos,300)
+                            score.setExplosion({ x : this.clickPos.x ,y : this.clickPos.y},100,1000)
                         
                         }else{
 
                             var pos = []
-                            pos.push({ x : 1 ,y : 1})
-                            pos.push({ x : 1 ,y : 1})
-                            pos.push({ x : 1 ,y : 1})
-                            score.addScore(pos,1)
+                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
+                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
+                            pos.push({ x : this.clickPos.x ,y : this.clickPos.y})
+
+                            score.addScore(pos,100)
+                            score.setExplosion({ x : this.clickPos.x ,y : this.clickPos.y},100,1000)
 
                         }
 
@@ -523,7 +535,8 @@ function proto02(){
                 case "nextTrial":
 
                     this.displayFeedbacks()
-                    score.displayStar()
+                    score.displayStar()                    
+                    score.displayExplosion()
 
                     if(this.nextTrial()){
 

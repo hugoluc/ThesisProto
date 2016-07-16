@@ -23,6 +23,12 @@ function getRandomInt(min, max) {
 
 };
 
+function getRandomFloat(min, max){
+
+  return Math.random() * (max-min) + min;
+
+}
+
 // hides one page and shows the next
 function clickStart(hide, show) {
 
@@ -127,6 +133,8 @@ animation.prototype.stop = function(){
 
 animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezier){
 
+
+  this.dest = _dest
   this.feaFinished = false;
   this.feaTimeSet = false;
 
@@ -137,7 +145,7 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
 
   
   if(this.feature.constructor !== Array){
-  
+
     this.featureStart = this.obj[this.feature]
     this.featureDistance = _dest - this.featureStart
     this.featureSpeed = this.featureDistance / this.feaLength
@@ -167,11 +175,9 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
   
   };
 
-  console.log(this.obj[this.feature[0]])
-
 };
 
-animation.prototype.runFeature = function(){
+animation.prototype.runFeature = function(_log){
 
   if(this.feaFinished){
     return true;
@@ -192,6 +198,12 @@ animation.prototype.runFeature = function(){
 
   var elapsed = this.feaNow - this.feaStartTime
 
+
+  // if(_log){
+  //     console.log("distance", this.featureDistance)
+  //     console.log("obj", this.obj)
+  //     console.log("feateure", this.feature)
+  // }
 
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // Position after animation is done
@@ -233,6 +245,7 @@ animation.prototype.runFeature = function(){
 
         var location = Math.floor(((elapsed-this.feaOff)*999)/this.feaLength)
         bez = bezierCurveSpecs[this.feaBezName][location]
+
 
         if(this.feature.constructor === Array){
 
@@ -277,9 +290,41 @@ animation.prototype.runFeature = function(){
     return false;
   
   };
-
 };
 
+animation.prototype.log = function(){
+
+  if(this.logCount == 0){
+
+    console.log("---------------------")
+    console.log(this.obj)
+    console.log("startPos: ", this.startPos)
+    console.log("distance: ", this.distance)
+    console.log("speed: ", this.speed)
+    console.log("bounds: ", this.obj.getBounds() )
+    console.log("features:-------")
+    console.log("startPos: ", this.featureStart)  
+    console.log("distance: ", this.featureDistance)
+    console.log("speed: ", this.featureSpeed)
+    console.log("dest: ", this.dest )  
+
+    this.logCount++
+
+
+  }else if(this.logCount < 10){
+
+    this.logCount++
+
+    console.log("---------------------")
+    console.log(this.obj.x, this.obj.y)
+    console.log(this.obj.x, this.obj.y)
+    console.log("---------------------")
+    console.log(this.obj[this.feature])
+
+
+  }
+
+}
 
 animation.prototype.log = function(){
 

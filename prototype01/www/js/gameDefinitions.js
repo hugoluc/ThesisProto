@@ -239,7 +239,7 @@
 		this.stage = _stage;
 		this._trial = _Trial;
 		this.stimuli = _stimuli;
-	  this.background = new PIXI.Sprite(assets.textures.bg);
+	  	this.background = new PIXI.Sprite(assets.textures.bg);
 
 	 	this.stage.addChild(this.background);
 
@@ -358,133 +358,296 @@
 	};
 
 
-
 /*
 -------------------------------------------------------------------------------------------------------------
                                                Class: Score
 -------------------------------------------------------------------------------------------------------------
 */
 
-function gameScore(){
+	function gameScore(_round){
 
-	this.score = 0;
-	this.starts = [];
-	this.svgIds = 0
-	this.starLength = 0
-
-};
-
-gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
-
-	this.score = this.score + (_starsPos.length * _value);
-	var initDelay = 200;
-	var delay = 0
-	var duration = _duation || 1000
-
-	if(_svg){
-
-		this.svg = true;
-
-		var starGroup = d3.select("#scoreContainer")
-		.append("svg")
-		.attr("id", "starGroup")
-		.attr({
-		  x: 0,
-		  y: 0,
-		  width : window.innerWidth,
-		  height : window.innerHeight,
-		})
-
-
-		for(var i = 0; i < _starsPos.length; i++){
-
-			var starSvg = starGroup.append("svg:image")
-			.attr("xlink:href", "svgs/starScore.svg")
-			.attr({
-			  x: _starsPos[i].x,
-			  y: _starsPos[i].y,
-			  width : 100,
-			  height : 100,
-			})
-			.attr("id", "star-" + (this.starLength + 1))
-			.transition()
-			.delay(delay)
-			.duration(_duation)
-			.attr({
-
-				x: window.innerWidth - 50,
-				y: -50,
-
-			})
-			.each("end", function(){
-			// Animation callback
-
-				var id = this.id
-				var _this = d3.select("#" + id).remove()
-				console.log(_this)
-
-			});
-
-			console.log(starSvg)
-			this.starLength = this.starLength + 1;
-			delay = delay + initDelay
-		};
-
-
-	}else{
-
-		this.svg = false;
-
-		for(var i = 0; i < _starsPos.length; i++){
-
-			var star = new PIXI.Sprite(assets.textures.star);
-			star.x = _starsPos[i].x;
-			star.y = _starsPos[i].y;
-
-			this.stage.addChild(star);
-
-			var starAnimation = new animation(star);
-			starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
-			delay = delay + initDelay
-
-			this.starts.push([star,starAnimation]);
-
-		};
-
+		this.score = 0;
+		this.stars = [];
+		this.svgIds = 0
+		this.starLength = 0
+		this.explosion = []
+		this.stage = {}
 
 	};
 
+	gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg, _index){
 
-};
+		this.score = this.score + (_starsPos.length * _value);
+		this.valuePerStar = _value;
+		var initDelay = 300;
+		var delay = 0;
+		var duration = _duation || 1000;
+		this.index = _index || this.stage.children.length;
 
-gameScore.prototype.displayStar = function(){
+		if(_svg){
 
-		var animationDone = true
+			this.svg = true;
 
-		for(var i = 0; i < this.starts.length; i++){
+			var starGroup = d3.select("#scoreContainer")
+			.append("svg")
+			.attr("id", "starGroup")
+			.attr({
+			  x: 0,
+			  y: 0,
+			  width : window.innerWidth,
+			  height : window.innerHeight,
+			})
 
-			if(this.starts[i][1].run()){
+			for(var i = 0; i < _starsPos.length; i++){
 
-				this.stage.removeChild(this.starts[i][0])
-				this.starts[i][0].destroy()
-				this.starts[i][0] = []
-				this.starts[i][1] = []
-				this.starts.splice(i,1);
+				var starSvg = starGroup.append("svg:image")
+				.attr("xlink:href", "svgs/starScore.svg")
+				.attr({
+				  x: _starsPos[i].x,
+				  y: _starsPos[i].y,
+				  width : 100,
+				  height : 100,
+				})
+				.attr("id", "star-" + (this.starLength + 1))
+				.transition()
+				.delay(delay)
+				.duration(_duation)
+				.attr({
 
-			}else{
+					x: window.innerWidth - 50,
+					y: -50,
 
-				animationDone = false;
+				})
+				.each("end", function(){
+				// Animation callback
+
+					var id = this.id
+					var _this = d3.select("#" + id).remove()
+					console.log(_this)
+
+				});
+
+				console.log(starSvg)
+				this.starLength = this.starLength + 1;
+				delay = delay + initDelay
+			};
+
+
+		}else{
+
+			this.svg = false;
+
+			for(var i = 0; i < _starsPos.length; i++){
+
+				var star = new PIXI.Sprite(assets.textures.star);
+				star.x = _starsPos[i].x;
+				star.y = _starsPos[i].y;
+				star.anchor.x = 0.5
+				star.anchor.y = 0.5
+				star.width = 10;
+				star.height = 10;
+
+				this.stage.addChildAt(star,this.index);
+
+				var starAnimation = new animation(star);
+				starAnimation.init({x:session.canvas.width - 25, y: -50},duration,delay,[0,1]);
+
+				var starFeaAnimation = new animation(star);
+				starFeaAnimation.initFeature(
+
+					["width", "height"], // features to animate
+					90, // final size
+					200, // time value
+					delay, // delay
+					[0.75,1] // bezier courve 
+
+				);
+
+				var startRotation = new animation(star);
+				startRotation.initFeature(
+
+					"rotation", // features to animate
+					Math.PI * 2, // final position
+					duration, // time value
+					delay, // delay
+					[0.75,1] // bezier courve 
+
+				);
+				
+
+				delay = delay + initDelay
+				this.stars.push([star,starAnimation,starFeaAnimation,startRotation]);
 
 			};
 
+
 		};
+	};
 
-		if(animationDone){
+	gameScore.prototype.setExplosion = function(_pos,_radius,_duration){
 
-			return true;
+			var starCount = getRandomInt(30,50)
+
+			for(var i = 0; i < starCount; i++ ){
+
+				var Estar = new PIXI.Sprite(assets.textures.star);
+				Estar.x = _pos.x;
+				Estar.y = _pos.y;
+				Estar.anchor.x = 0.5
+				Estar.anchor.y = 0.5
+				Estar.width = 10;
+				Estar.height = 10;
+
+				var angle = getRandomFloat(-Math.PI,Math.PI) 
+
+				var EstarAnimation = new animation(Estar);
+				EstarAnimation.init(
+
+					{
+						"x" : (_pos.x + Math.cos(angle)*_radius) * (getRandomFloat(0.95,1.05)), 
+						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.9,1.05)), 
+					},
+					_duration,
+					0,//getRandomInt(0,_duration*0.01),
+					[1,1]
+				
+				);
+
+				var startERotation = new animation(Estar);
+				startERotation.initFeature(
+
+					"rotation", // features to animate
+					Math.PI * 4, // final position
+					_duration, // time value
+					0, // delay
+					[0.75,1] // bezier courve 
+
+				);
+				
+
+				var EstarFeaAnimation = new animation(Estar);
+				EstarFeaAnimation.initFeature(
+
+					"alpha",
+					0,	
+					_duration, //length
+					0, // delay
+					[0,0.75]
+				
+				);
+
+				console.log(EstarFeaAnimation)
+				this.stage.addChild(Estar)
+				this.explosion.push([Estar,EstarAnimation,EstarFeaAnimation,startERotation])
+			};
+
+
+
+			console.log("explosion set!-------------------------------------------------")
+	};
+
+	gameScore.prototype.displayExplosion = function(){
+
+			var animationDone = true
+			
+			for(var i = 0; i < this.explosion.length; i++ ){
+
+				if(!this.explosion[i][2].runFeature(true)){
+
+					animationDone = false
+				
+				};
+
+				if(!this.explosion[i][3].runFeature()){
+
+					animationDone = false
+				
+				};
+
+				if(this.explosion[i][1].run()){
+
+					this.stage.removeChild(this.explosion[i][0])
+					this.explosion[i][0].destroy()
+					this.explosion[i][0] = []
+					this.explosion[i][1] = []
+					this.explosion.splice(i,1);
+
+				}else{
+
+					animationDone = false
+
+				};
+
+			};
+	};
+
+	gameScore.prototype.addScoreUI = function(){
+
+		var newValue = parseInt(document.getElementById('scoreNumber').innerHTML) + this.valuePerStar;
+		document.getElementById('scoreNumber').innerHTML = newValue
+		
+		if(newValue > 9){
+
+			if(newValue > 99){
+
+				document.getElementById('scoreNumber').style.left = 10
+				document.getElementById('scoreNumber').style.top = 10
+				document.getElementById('scoreNumber').style.fontSize = "18pt"
+
+			}else{
+
+
+				document.getElementById('scoreNumber').style.left = 10
+
+
+			}
 
 		}
+	};
 
-		return false;
+	gameScore.prototype.displayStar = function(){
 
-};
+			var animationDone = true
+
+			for(var i = 0; i < this.stars.length; i++){
+
+				if(!this.stars[i][2].runFeature()){ //call animation function for size on each star
+
+					animationDone = false
+
+				};
+
+				if(!this.stars[i][3].runFeature()){
+
+					animationDone = false
+				
+				};
+
+				if(this.stars[i][1].run()){ //call animation function for position on each star
+
+					this.stage.removeChild(this.stars[i][0])
+					this.stars[i][0].destroy()
+					this.stars[i][0] = []
+					this.stars[i][1] = []
+					this.stars.splice(i,1);
+
+					this.addScoreUI()
+
+				}else{
+
+					animationDone = false
+
+				};
+
+
+
+			};
+
+			if(animationDone){
+
+				return true;
+
+			}
+
+			return false;
+	};
