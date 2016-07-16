@@ -68,6 +68,7 @@ function bubbleLetters(){
         this.container.addChild(this.circle);
         this.circle.x = this.pos.x+this.size/2;
         this.circle.y = this.pos.y+this.size/2;
+        this.center = {x: this.circle.x, y: this.circle.y};
         // fill:"#427010", stroke:"#098478" getRandomColor
         this.cStim =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"red", fill: getRandomColor(), stroke:"#098478", strokeThickness: 1, });
         this.cStim.anchor.x = 0.5
@@ -221,8 +222,8 @@ function bubbleLetters(){
 
         //console.log(this.bubble[0]);
         // first bubble is target
-        this.targetx = this.bubble[0].circle.position.x + 25; // this.bubble[0].pos.x;
-        this.targety = this.bubble[0].circle.position.y + 25; // this.bubble[0].pos.y;
+        this.targetx = this.bubble[0].circle.x;
+        this.targety = this.bubble[0].circle.y + 25;
 
         // create dragonfly
         this.dragonfly = new PIXI.Sprite(assets.textures.dragonfly)
@@ -331,6 +332,12 @@ function bubbleLetters(){
         this.finishedState = "endanimation"; // "win"
         this.trialWon = true;
         dragonfly_start_pos = this.dragonfly.position;
+        var pos = [];
+        for (var i=0; i<scoreIncrease; i++) {
+          pos.push(this.bubble[0].center);
+        }
+        score.addScore(pos, scoreIncrease);
+        score.setExplosion(this.bubble[0].center, 100,1000);
         return true;
       }
       //if distance from target is <10, person loses
@@ -386,16 +393,9 @@ function bubbleLetters(){
             case "endanimation":
                 this.adjustDifficulty(this.trialWon);
                 if(this.trialWon){
-                    this.clock.start(1000);
+                    this.clock.start(1500);
                     this.finishedState = "win";
-                    var pos = [];
-                    for (var i=0; i<scoreIncrease; i++) {
-                      pos.push({ x: 300, y: 300});
-                    }
-                    score.addScore(pos, scoreIncrease);
-                    score.setExplosion({ x: 300, y: 300},100,1000);
-                    score.displayStar();
-                    score.displayExplosion();
+
                 }else{
                     this.clock.start(1000);
                     this.finishedState = "lose";
@@ -446,6 +446,8 @@ function bubbleLetters(){
                 for(var i=0;i<this.bubble.length;i++){
                     this.bubble[i].fade = true; // make fade into pop -- increase size as fading
                 }
+                score.displayStar();
+                score.displayExplosion();
 
                 if(this.finished()){
                     return true;

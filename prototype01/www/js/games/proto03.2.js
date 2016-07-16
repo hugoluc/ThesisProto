@@ -577,30 +577,24 @@ function proto03(){
 
         }else{
 
-            round.trial.leavesToFade++
+            round.trial.leavesToFade++;
             console.log(round.trial.finishedState)
             this.AnimationDone = true;
-            return true
+            return true;
         }
     };
 
     Ant.prototype.fade = function(){
-
-        this.sprite.alpha = this.sprite.alpha - 0.05
+        this.sprite.alpha -= 0.05;
 
         if(this.sprite.alpha < 0){
-
-            return true
-
+            return true;
         }else{
-
-            return false
-
+            return false;
         }
     };
 
     Ant.prototype.destroy = function() {
-
         stage.removeChild(this.sprite)
         this.sprite.destroy()
     };
@@ -830,14 +824,14 @@ function proto03(){
             this.countDone = false;
 
             // set countdown
-            this.countDownTargets = [_origin,_target]
+            this.countDownTargets = [_origin,_target];
 
             //update value for lillypads
             this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
-            this.lillySmall[_origin].value = 0
+            this.lillySmall[_origin].value = 0;
 
             //get new location for ants
-            this.setAnimateAnts(_origin,_target)
+            this.setAnimateAnts(_origin,_target);
 
         };
     };
@@ -1170,16 +1164,13 @@ function proto03(){
     Trial.prototype.removeStick = function(){
 
         if(this.stick.alpha >= 0){
-
             //animate alpha with animate function
-            this.stick.alpha = this.stick.alpha -  0.15
-            this.branch.alpha =- 0.15
+            this.stick.alpha -= 0.1;
+            this.branch.alpha -= 0.1;
 
         }else{
-
             this.fadeStick = false;
             this.AnimationDone = true
-
         }
     };
 
@@ -1357,21 +1348,12 @@ function proto03(){
                         }
                         score.addScore(pos, scoreIncrease);
                         score.setExplosion({ x: this.stick.x, y: this.stick.y},100,1000);
-
                     } else {
                         this.lillyFinal.sinkThis();
                         this.fadeStick = true;
                         this.finishedState = "lose";
-
-                        //var pos =[{ x: this.stick.x, y: this.stick.y}];
-                        var pos =[{ x: 300, y: 200}];
-                        console.log(pos);
-                        score.addScore(pos, scoreIncrease);
-                        score.setExplosion({ x: this.stick.x, y: this.stick.y},100,1000);
                     }
 
-                    score.displayStar();
-                    score.displayExplosion();
                 }
 
                 break;
@@ -1379,31 +1361,22 @@ function proto03(){
 
             case "lose":
 
-
                 if(this.lillyFinal.state == "fading"){
-
                    for(var i = 0; i<this.antsToAnimate.origin.length; i++){
-
                         this.ants.sprites[this.antsToAnimate.origin[i]].fade()
                    }
                 }
 
-                //sink lillypap
+                //sink lillypad
                 if(this.lillyFinal.display()){
-
                     this.finishedState = "callNext"
                 }
-
 
                 break;
 
 
             case "win":
-
-                // fade everryhting else
-                // move final to center
-
-                //alert("YOU WIN!")
+                // fade everything else and move final to center
                 if(this.clock.timeOut()){
                     this.finishedState = "callNext";
                 }
@@ -1414,7 +1387,6 @@ function proto03(){
             case "callNext":
 
                 return true;
-
 
                 break;
 
@@ -1458,7 +1430,6 @@ function proto03(){
                     var AnimationDone = this.animateAnts()
 
                     if(countDone && AnimationDone){
-
                         this.lillySmall[this.countDownTargets[0]].fade = true
                         this.fadeStick = true;
                         this.performOperation = false
@@ -1469,15 +1440,14 @@ function proto03(){
                 break;
 
             case "finished":
-
+                score.displayStar();
+                score.displayExplosion();
                 this.fadeLeaves()
 
                 if(this.fadeStick){this.removeStick()}
 
                 if(this.finished()){
-
                     return true;
-
                 }
 
                 break;
