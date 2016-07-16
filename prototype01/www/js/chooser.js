@@ -26,26 +26,26 @@ function Start(){
       {
         name: "Multiplication",
         available: true,
-        callFunction: 1
+        callFunction: Multiplication
       },
 
 
       {
-        name: "Fairy",
+        name: "Alphabet",
         available: true,
         callFunction: bubbleLetters
       },
 
 
       {
-        name: "HangMan",
+        name: "Word Guess",
         available: true,
         callFunction: Hangman
       },
 
 
       {
-        name: "WordFind",
+        name: "Word Find",
         available: true,
         callFunction: WordFind
       },
@@ -61,6 +61,12 @@ function Start(){
         name: "Shapes",
         available: true,
         callFunction: Shapes
+      },
+
+      {
+        name: "WorldMap",
+        available: true,
+        callFunction: WorldMap
       }
   ]
 

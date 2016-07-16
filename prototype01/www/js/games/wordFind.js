@@ -7,6 +7,7 @@ var WordFind = function() {
 
   this.destroy = function() {
     session.hide();
+    // remove #puzzle and #words ?
     currentview = new MainMenu(assets);
   }
 

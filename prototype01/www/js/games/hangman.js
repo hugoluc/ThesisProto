@@ -259,6 +259,8 @@ var Hangman = function() { // doesn't work a second time right now..
           .duration(0)
           .remove();
        });
+    // selectAll and remove "g", "svg", "circle", "rect" ...?
+    screend3.select("#header-exp").transition().style("display : none");
     screend3.select("#background").remove(); // #background
     finishGame = true;
 	  session.hide();

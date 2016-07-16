@@ -99,6 +99,12 @@ function count_unique_elements_in_array(arr) {
   return(Object.keys(counts).length)
 }
 
+function distance(x1,y1, x2,y2) {
+  // returns linear distance between (x1,y1) and (x2,y2)
+  var dx2 = Math.pow(x2-x1, 2);
+  var dy2 = Math.pow(y2-y1, 2);
+  return Math.sqrt(dx2+dy2);
+}
 
 // // go back to chooser
 // var back_button = function() {

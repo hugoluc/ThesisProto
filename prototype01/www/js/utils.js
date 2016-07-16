@@ -166,6 +166,9 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
     this.feaBezName = _bezier[0].toFixed(2) + "-" + _bezier[1].toFixed(2)
   
   };
+
+  console.log(this.obj[this.feature[0]])
+
 };
 
 animation.prototype.runFeature = function(){
@@ -253,6 +256,11 @@ animation.prototype.runFeature = function(){
 
             this.obj[this.feature[i]] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i]) 
 
+            console.log(">>>>>>>>>>>>>>>>>")
+            console.log(i, this.obj[this.feature[i]])
+            console.log(frameTime, this.featureSpeed[i])
+
+            this.obj[this.feature[i]] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i]) 
           
           }
 
@@ -269,6 +277,7 @@ animation.prototype.runFeature = function(){
     return false;
   
   };
+
 };
 
 
