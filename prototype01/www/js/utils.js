@@ -269,6 +269,11 @@ animation.prototype.runFeature = function(_log){
 
             this.obj[this.feature[i]] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i]) 
 
+            console.log(">>>>>>>>>>>>>>>>>")
+            console.log(i, this.obj[this.feature[i]])
+            console.log(frameTime, this.featureSpeed[i])
+
+            this.obj[this.feature[i]] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i]) 
           
           }
 
@@ -286,7 +291,6 @@ animation.prototype.runFeature = function(_log){
   
   };
 };
-
 
 animation.prototype.log = function(){
 
@@ -322,6 +326,31 @@ animation.prototype.log = function(){
 
 }
 
+animation.prototype.log = function(){
+
+  if(this.logCount == 0){
+
+    console.log("---------------------")
+    console.log(this.obj)
+    console.log("startPos: ", this.startPos)
+    console.log("distance: ", this.distance)
+    console.log("speed: ", this.speed)
+    console.log("bounds: ", this.obj.getBounds() )
+
+    this.logCount++
+
+
+  }else if(this.logCount < 10){
+
+    this.logCount++
+
+    console.log("---------------------")
+    console.log(this.obj.x, this.obj.y)
+
+  }
+
+}
+
 animation.prototype.init = function(dest,length,offset,bezier){
 
   this.finished = false;
@@ -347,6 +376,7 @@ animation.prototype.init = function(dest,length,offset,bezier){
 
     start.x = this.obj.x
     start.y = this.obj.y
+   console.log("---------------------------------",this.obj)
 
     this.startPos = {};
     this.startPos.x = this.obj.x;
@@ -363,6 +393,7 @@ animation.prototype.init = function(dest,length,offset,bezier){
 
     start.x = this.obj.getBounds().x
     start.y = this.obj.getBounds().y
+    console.log("---------------------------------",start)
 
     this.startPos = {};
     this.startPos.x = this.obj.x;

@@ -66,7 +66,7 @@
 		this.textureQueue = [];
 		this.soundsQueue = [];
 		this.soundsNQueue = [];
-
+		this.soundsLetterQueue = [];
 		this.state = "loading";
 	};
 
@@ -137,7 +137,7 @@
 		this.sounds = {}
 		this.sounds.numbers = {}
 		this.sounds.words = {}
-		this.sounds.alphabet = {}
+		this.sounds.letters = {}
 		this.sprites = {}
 		this.textures = {}
 
@@ -161,7 +161,8 @@
 
 		if(this.soundsLetterQueue) {
 			for( var i=0; i < this.soundsLetterQueue.length; i++){
-				this.sounds.letters[String(this.soundsLetterQueue[i][0])] = new Audio('audio/' + language + 'alphabet/' + this.soundsLetterQueue[i][1])
+				var path = 'audio/' + language + '/alphabet/' + this.soundsLetterQueue[i][1];
+				this.sounds.letters[String(this.soundsLetterQueue[i][0])] = new Audio(path);
 			}
 		}
 
@@ -233,13 +234,12 @@
 
 	}
 
-	Round.prototype.init = function(_Trial,_stage, stimuli){
-		//console.log("round stimuli:");
-		//console.log(stimuli);
+	Round.prototype.init = function(_Trial,_stage, _stimuli){
+
 		this.stage = _stage;
 		this._trial = _Trial;
-		this.stimuli = stimuli;
-	  	this.background = new PIXI.Sprite(assets.textures.bg);
+		this.stimuli = _stimuli;
+	  this.background = new PIXI.Sprite(assets.textures.bg);
 
 	 	this.stage.addChild(this.background);
 
@@ -258,27 +258,26 @@
 
 	Round.prototype.getNextTrial = function(){
 
-		//var stim = stimQueues['numberstim'].pop();
+		//var stim = this.stimuli.pop();
+		//console.log("Round.getNextTrial stim:")
+		//console.log(stim);
+		//console.log(this.stimuli.pop()); // this does get the next one
 	 	this.trial = new this._trial(this.stimuli.pop());
 	  	if(this.trial.init != undefined){
-
-			this.trial.init();
-
-		}
-
+				this.trial.init();
+			}
 	}
 
 	Round.prototype.storeSession = function(stim, queue_name) {
 		//storeSession();
-		// when do we actually want to push everything back to local storage?
-		// if we do it each time they quit a game, we have to pull it back from LS again if they reopen
+		// push queue back to localstorage each time they quit a game
 	}
 
 	Round.prototype.destroy = function(){
 
 		this.trial.destroy()
 		this.stage.removeChild(this.background)
-	    this.background.destroy(true,true)
+	  this.background.destroy(true,true)
 
 	}
 
@@ -319,16 +318,16 @@
 
 		if(this.scoreDifferential >= this.scoreTrashhold[1]){
 
-			console.log("increasing difficulty")
-			this.difficulty++
-			this.scoreDifferential = 0
+			console.log("increasing difficulty");
+			this.difficulty++;
+			this.scoreDifferential = 0;
 		}
 
 		if(this.scoreDifferential <= this.scoreTrashhold[0]){
 
-			console.log("decreasing difficulty")
-			this.difficulty--
-			this.scoreDifferential = 0
+			console.log("decreasing difficulty");
+			this.difficulty--;
+			this.scoreDifferential = 0;
 
 		}
 
@@ -336,17 +335,17 @@
 
 			if(this.difficulty < this.diffRange[0]){
 
-				this.difficulty = this.diffRange[0]
+				this.difficulty = this.diffRange[0];
 			};
 
 			if(this.difficulty > this.diffRange[1]){
 
-				this.difficulty = this.diffRange[1]
+				this.difficulty = this.diffRange[1];
 			};
 
 		}
 
-		console.log(this.difficulty)
+		console.log("difficulty: ", this.difficulty);
 
 	};
 
