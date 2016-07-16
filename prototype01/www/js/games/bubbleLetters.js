@@ -34,7 +34,7 @@ function bubbleLetters(){
   	this.trial = _trial;
   	this.selected = true;
   	this.valueObjects = [];
-    this.ang = getRandomInt(-11,11)/10;
+    this.ang = getRandomInt(-11,11)/5;
   };
 
     bubble.prototype.init = function(_value,_position,_size,_id){
@@ -56,8 +56,8 @@ function bubbleLetters(){
         this.circle.height = this.size
         this.circle.anchor.x = 0.5
         this.circle.anchor.y = 0.5
-        this.container.interactive = true; // or circle?
-        this.container.buttonMode = true; // or circle?
+        this.container.interactive = true;
+        this.container.buttonMode = true;
         this.container.mousedown = this.container.touchstart = function(){ click(); }
 
         function click() {
@@ -67,15 +67,15 @@ function bubbleLetters(){
         this.container.addChild(this.circle);
         this.circle.x = this.pos.x+this.size/2;
         this.circle.y = this.pos.y+this.size/2;
-
-        this.cNumber =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"red", fill:"#427010", stroke:"#098478", strokeThickness: 1, });
-        this.cNumber.anchor.x = 0.5
-        this.cNumber.anchor.y = 0.5
-        this.cNumber.x = this.pos.x + this.size*0.5;
-        this.cNumber.y = this.pos.y + this.size*0.5;
+        // fill:"#427010", stroke:"#098478" getRandomColor
+        this.cStim =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"red", fill: getRandomColor(), stroke:"#098478", strokeThickness: 1, });
+        this.cStim.anchor.x = 0.5
+        this.cStim.anchor.y = 0.5
+        this.cStim.x = this.pos.x + this.size*0.5;
+        this.cStim.y = this.pos.y + this.size*0.5;
 
         this.circle.rotation = 0.1
-        this.container.addChild(this.cNumber);
+        this.container.addChild(this.cStim);
         stage.addChild(this.container)
         this.display(false)
     };
@@ -102,9 +102,9 @@ function bubbleLetters(){
         this.circle.destroy();
         this.circle = [];
 
-        this.container.removeChild(this.cNumber);
-        this.cNumber.destroy();
-        this.cNumber = [];
+        this.container.removeChild(this.cStim);
+        this.cStim.destroy();
+        this.cStim = [];
 
         stage.removeChild(this.container);
         this.container.destroy(true);
@@ -127,14 +127,14 @@ function bubbleLetters(){
         }
     };
 
-    bubble.prototype.animate = function(){
+    bubble.prototype.animate = function(tick){
         if(this.destroyed){
             return;
         };
 
         if(this.fade){
             this.circle.alpha -= 0.05;
-            this.cNumber.alpha -= 0.05;
+            this.cStim.alpha -= 0.05;
             this.circle.scale.x += .02;
             this.circle.scale.y += .02;
             if(this.circle.alpha <= 0){
@@ -145,8 +145,8 @@ function bubbleLetters(){
             this.circle.width =  this.size + Math.sin(this.ang) * 2;
             this.circle.height =  this.size + Math.sin(this.ang) * 2;
             this.circle.rotation = Math.sin(this.ang) * 0.02;
-            //this.container.position.x += 1;
-            //this.container.position.y += Math.sin(tick + st.offset) * .3; // move bubbles a bit?
+            this.container.position.x += .5*Math.cos(this.ang );
+            this.container.position.y += .5*Math.sin(this.ang ); //* .3; // move bubbles a bit?
         }
     };
 
@@ -158,11 +158,13 @@ function bubbleLetters(){
 
     function Trial(_stim){
         stimCount++;
-        this.target = _stim.text; // priority: _stim.priority
+        this.target = _stim.text; // the target letter the dragonfly approaches
+        this.lowercase = false;
+        // eventually mix in some lower case letters
+        if(stimCount>10 & Math.random()<.5) this.lowercase = true;
+
         this.foils = this.generateFoils(this.target);
         this.origstim = _stim; // in original form to push back on stimulus queue
-		    // Correct is the target letter that the dragonfly approaches
-        //this.correct = this.stimulus.correctValue;
         this.clock = new ClockTimer()
 
     	  this.trialState = "intro"
@@ -206,12 +208,14 @@ function bubbleLetters(){
 
         for (var i=0; i<bubbleValues.length; i++){
             //var pos = getRandomInt(0,this.posMatrix.length);
-            this.bubble.push(new bubble(this)); // each bubble gets the whole trial..?
+            this.bubble.push(new bubble(this));
         }
 
         // create bubble graphics
         for (var i=0; i<bubbleValues.length; i++){
-            this.bubble[i].init(bubbleValues[i], this.getPos(i), this.specs.stimWidth, i)
+            var bubval = bubbleValues[i];
+            if(this.lowercase) bubval = bubval.toLowerCase();
+            this.bubble[i].init(bubval, this.getPos(i), this.specs.stimWidth, i)
         }
 
         //console.log(this.bubble[0]);
@@ -355,12 +359,11 @@ function bubbleLetters(){
       }
     }
 
-    // GK: ToDo finish this! (where is learner's correctness?)
     Trial.prototype.storeStim = function() {
         if(this.trialWon) {
           var newpriority = this.origstim.priority + .5;
         } else {
-          var newpriority = this.origstim.priority - .1; // Math.log(this.wrongClicks+1)
+          var newpriority = this.origstim.priority; // Math.log(this.wrongClicks+1) or -.1
         }
         this.origstim.priority = newpriority;
         return this.origstim;
@@ -420,7 +423,7 @@ function bubbleLetters(){
 
             case "play":
                 for(var i=0;i<this.bubble.length;i++){
-                    this.bubble[i].animate();
+                    this.bubble[i].animate(_updateTime);
                 }
 
                 var dragonflyReachedTarget = this.moveDragonfly();
