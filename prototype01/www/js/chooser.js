@@ -31,21 +31,21 @@ function Start(){
 
 
       {
-        name: "Fairy",
+        name: "Alphabet",
         available: true,
         callFunction: bubbleLetters
       },
 
 
       {
-        name: "HangMan",
+        name: "Word Guess",
         available: true,
         callFunction: Hangman
       },
 
 
       {
-        name: "WordFind",
+        name: "Word Find",
         available: true,
         callFunction: WordFind
       },

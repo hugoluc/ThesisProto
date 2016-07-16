@@ -234,13 +234,12 @@
 
 	}
 
-	Round.prototype.init = function(_Trial,_stage, stimuli){
-		//console.log("round stimuli:");
-		//console.log(stimuli);
+	Round.prototype.init = function(_Trial,_stage, _stimuli){
+
 		this.stage = _stage;
 		this._trial = _Trial;
-		this.stimuli = stimuli;
-	  	this.background = new PIXI.Sprite(assets.textures.bg);
+		this.stimuli = _stimuli;
+	  this.background = new PIXI.Sprite(assets.textures.bg);
 
 	 	this.stage.addChild(this.background);
 
@@ -259,9 +258,11 @@
 
 	Round.prototype.getNextTrial = function(){
 
-		var stim = this.stimuli.pop();
-		console.log(stim);
-	 	this.trial = new this._trial(stim);
+		//var stim = this.stimuli.pop();
+		//console.log("Round.getNextTrial stim:")
+		//console.log(stim);
+		//console.log(this.stimuli.pop()); // this does get the next one
+	 	this.trial = new this._trial(this.stimuli.pop());
 	  	if(this.trial.init != undefined){
 				this.trial.init();
 			}
@@ -269,15 +270,14 @@
 
 	Round.prototype.storeSession = function(stim, queue_name) {
 		//storeSession();
-		// when do we actually want to push everything back to local storage?
-		// if we do it each time they quit a game, we have to pull it back from LS again if they reopen
+		// push queue back to localstorage each time they quit a game
 	}
 
 	Round.prototype.destroy = function(){
 
 		this.trial.destroy()
 		this.stage.removeChild(this.background)
-	    this.background.destroy(true,true)
+	  this.background.destroy(true,true)
 
 	}
 
@@ -471,10 +471,9 @@ gameScore.prototype.displayStar = function(){
 				this.starts[i][1] = []
 				this.starts.splice(i,1);
 
-
 			}else{
 
-				animationDone = false
+				animationDone = false;
 
 			};
 

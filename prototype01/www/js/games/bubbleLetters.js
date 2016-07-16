@@ -1,10 +1,9 @@
-var gameloaded = true;
-var stimCount = -1;
+var bubblegameloaded = false;
 
 /*
   game works like this:
   x = target + distractors
-  trial starts with x bubbles (clouds?) drawn onscreen, and a target letter is
+  trial starts with x bubbles drawn onscreen, and a target letter is
   heard. then the dragonfly appears in a random location and flies
   (slowly at first) towards the target. if the target is clicked before the
   dragonfly reaches it, a point is scored (more for faster?). if the wrong
@@ -14,9 +13,16 @@ var stimCount = -1;
 
 function bubbleLetters(){
   queuesToUpdate['alphabetstim'] = true;
-  var stimuli = stimQueues['alphabetstim'];
-  console.log(stimuli)
+  var stimQ = stimQueues['alphabetstim'];
   var dragonfly_start_pos = {'x':250, 'y':250};
+  var stimCount = -1;
+  bubblegameloaded = true;
+  var Nfoils = 2;
+  var minFoils = 1;
+  var maxFoils = 9;
+  var dragonflyFramesUntilArrival = 200; // lower is faster
+  var minDragonflyFrames = 100; // and it changes by 10
+  var maxDragonflyFrames = 300;
 /*
 -------------------------------------------------------------------------------------------------------------
                                                 Class: bubble
@@ -25,11 +31,10 @@ function bubbleLetters(){
 
   function bubble(_trial){
 
-  	this.trial = _trial
-    //console.log(this.trial)
-  	this.selected = true
-  	this.valueObjects = []
-    this.ang = getRandomInt(-11,11)/10
+  	this.trial = _trial;
+  	this.selected = true;
+  	this.valueObjects = [];
+    this.ang = getRandomInt(-11,11)/10;
   };
 
     bubble.prototype.init = function(_value,_position,_size,_id){
@@ -39,11 +44,11 @@ function bubbleLetters(){
         this.value = _value;
     	  this.id = _id;
         this.clicked = false;
-        this.posdId = _position.id
+        this.posdId = _position.id;
         this.pos = _position.pos;
         this.size = _size;
 
-        this.container = new PIXI.Container()
+        this.container = new PIXI.Container();
         this.trialTimer = new ClockTimer();
 
         this.circle = new PIXI.Sprite(assets.textures.bubble)
@@ -54,11 +59,6 @@ function bubbleLetters(){
         this.container.interactive = true; // or circle?
         this.container.buttonMode = true; // or circle?
         this.container.mousedown = this.container.touchstart = function(){ click(); }
-    	  // this.circle
-      	// 	.on('mousedown', click)
-        //  .on('touchstart', click);
-        //  .on('touchmove', function(){_this.drag(this)})
-        //  .on('mousemove', function(){_this.drag(this)})
 
         function click() {
           _this.click();
@@ -83,7 +83,7 @@ function bubbleLetters(){
 
     bubble.prototype.click = function(){ //_this,_event
       this.clicked = true;
-      var correct_click = (this.value===this.trial.stim.correctValue);
+      var correct_click = (this.value===this.trial.target);
       // if correct, play correct sound, stop the dragonfly, and move on
       if(correct_click) {
         correct_sound.play();
@@ -98,17 +98,17 @@ function bubbleLetters(){
 
 
     bubble.prototype.destroy = function(){
-        this.container.removeChild(this.circle)
-        this.circle.destroy()
-        this.circle = []
+        this.container.removeChild(this.circle);
+        this.circle.destroy();
+        this.circle = [];
 
-        this.container.removeChild(this.cNumber)
-        this.cNumber.destroy()
-        this.cNumber = []
+        this.container.removeChild(this.cNumber);
+        this.cNumber.destroy();
+        this.cNumber = [];
 
-        stage.removeChild(this.container)
-        this.container.destroy(true)
-        this.container = []
+        stage.removeChild(this.container);
+        this.container.destroy(true);
+        this.container = [];
 
         this.destroyed = true;
     };
@@ -156,14 +156,13 @@ function bubbleLetters(){
 -------------------------------------------------------------------------------------------------------------
 */
 
-    function Trial(_stimulus){
+    function Trial(_stim){
         stimCount++;
-        // correct on 1st trial, but 2nd trial has undefined correctValue?
-        console.log(_stimulus)
-        this.stim = {correctValue: [_stimulus.text], extras: ['B','C','D'], priority: _stimulus.priority};
-        //console.log(this.stim);
+        this.target = _stim.text; // priority: _stim.priority
+        this.foils = this.generateFoils(this.target);
+        this.origstim = _stim; // in original form to push back on stimulus queue
 		    // Correct is the target letter that the dragonfly approaches
-        this.correct = this.stim.correctValue;
+        //this.correct = this.stimulus.correctValue;
         this.clock = new ClockTimer()
 
     	  this.trialState = "intro"
@@ -181,11 +180,24 @@ function bubbleLetters(){
 
     };
 
+    Trial.prototype.generateFoils = function(target) {
+      // sample Nfoils that are NOT the target
+      //return ['B','C','D'];
+      var foils = [];
+      var shl = shuffle(letters.slice());
+      while(foils.length<Nfoils) {
+        var tmp = shl.pop();
+        if(tmp.text!=target) foils.push(tmp.text);
+      }
+      console.log(foils);
+      return foils;
+    };
+
     Trial.prototype.init = function(){
         // need to track the target's location so the dragonfly can go to it
-        var bubbleValues = [this.stim.correctValue];
-        for (var i=0; i<this.stim.extras.length; i++){
-            bubbleValues.push(this.stim.extras[i]);
+        var bubbleValues = [this.target];
+        for (var i=0; i<this.foils.length; i++){
+            bubbleValues.push(this.foils[i]);
         }
 
         if(bubbleValues.length > this.posMatrix.length){
@@ -217,8 +229,8 @@ function bubbleLetters(){
         this.dragonfly.anchor.x = 0.5;
         stage.addChild(this.dragonfly);
 
-        this.deltax = Math.abs(this.targetx - this.dragonfly.position.x) / 200;
-        this.deltay = Math.abs(this.targety - this.dragonfly.position.y) / 200;
+        this.deltax = Math.abs(this.targetx - this.dragonfly.position.x) / dragonflyFramesUntilArrival;
+        this.deltay = Math.abs(this.targety - this.dragonfly.position.y) / dragonflyFramesUntilArrival;
 
         this.clock.start(1000);
     };
@@ -229,7 +241,7 @@ function bubbleLetters(){
             this.bubble[i].destroy()
         }
 
-        stage.removeChild(this.dragonfly)
+        stage.removeChild(this.dragonfly);
         this.dragonfly.destroy();
     };
 
@@ -311,7 +323,9 @@ function bubbleLetters(){
     Trial.prototype.moveDragonfly = function() {
       // if they have clicked the target, they won
       if(this.bubble[0].clicked) {
-        this.finishedState = "win";
+        this.finishedState = "endanimation"; // "win"
+        this.trialWon = true;
+        dragonfly_start_pos = this.dragonfly.position;
         return true;
       }
       //if distance from target is <10, person loses
@@ -326,14 +340,15 @@ function bubbleLetters(){
         if(this.targety > this.dragonfly.position.y) {
           this.dragonfly.position.y += this.deltay;
         } else {
-          this.dragonfly.position.x -= this.deltay;
+          this.dragonfly.position.y -= this.deltay;
         }
       }
 
       if((dist) < 10) { // dragonfly won!
         assets.sounds.wrong[0].play();
         dragonfly_start_pos = this.dragonfly.position;
-        this.finishedState = "lose";
+        this.finishedState = "endanimation";
+        this.trialWon = false;
         return true;
       } else {
         return false;
@@ -342,23 +357,34 @@ function bubbleLetters(){
 
     // GK: ToDo finish this! (where is learner's correctness?)
     Trial.prototype.storeStim = function() {
-        if(this.wrongClicks===0) {
-          var newpriority = this.stim.priority + .5;
+        if(this.trialWon) {
+          var newpriority = this.origstim.priority + .5;
         } else {
-          var newpriority = this.stim.priority - Math.log(this.wrongClicks+1);
+          var newpriority = this.origstim.priority - .1; // Math.log(this.wrongClicks+1)
         }
-        this.stim.priority = newpriority;
-        return(this.stim);
+        this.origstim.priority = newpriority;
+        return this.origstim;
     };
+
+    Trial.prototype.adjustDifficulty = function(won) {
+      if(won) {
+        if(Nfoils<maxFoils) Nfoils++;
+        if(dragonflyFramesUntilArrival>minDragonflyFrames) dragonflyFramesUntilArrival -= 10;
+      } else {
+        if(Nfoils>minFoils) Nfoils--;
+        if(dragonflyFramesUntilArrival<maxDragonflyFrames) dragonflyFramesUntilArrival += 10;
+      }
+    }
 
     Trial.prototype.finished = function() {
 
         switch(this.finishedState){
             case "endanimation":
-                if(this.trialEnded){
-                    console.log(this.stim.correct.value);
+                this.adjustDifficulty(this.trialWon);
+                if(this.trialWon){
                     this.clock.start(1000);
                     this.finishedState = "win";
+                    score.displayStar();
                 }else{
                     this.finishedState = "lose";
                 }
@@ -367,9 +393,6 @@ function bubbleLetters(){
             case "lose":
                 console.log("dragonfly won!")
                 this.finishedState = "callNext";
-                // if(this.lillyFinal.display()){
-                //     this.finishedState = "callNext"
-                // }
                 break;
 
             case "win":
@@ -389,7 +412,7 @@ function bubbleLetters(){
     Trial.prototype.play = function(_updateTime){
         switch(this.trialState){
             case "intro":
-                assets.sounds.letters[this.stim.correctValue[0]].play();
+                assets.sounds.letters[this.target].play();
                 if(this.intro()){
                     this.trialState = "play";
                 }
@@ -429,6 +452,7 @@ function bubbleLetters(){
     // create the root of the scene graph and main classes
     var stage = new PIXI.Container();
     var round = new Round();
+    score.stage = stage;
 
     this.destroy = function(){
         finishGame = true;
@@ -437,13 +461,12 @@ function bubbleLetters(){
 
     //---------------------------------------loading assets
 
-        if(gameloaded) {
+        if(bubblegameloaded) {
             //assets.addSprite("dragonfly",'sprites/dragonfly/dragonfly_fly.json',3) // used TexturePacker, doesn't work..
             assets.addTexture("dragonfly","sprites/dragonfly/separate/dragonfly-0.png")
             assets.addTexture("bubble","img/bubble.png")
             assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
 
-            //console.log(stimuli) // undefined?
             for (var i = 0; i < letters.length; i++) {
               assets.addSound(letters[i].text,letters[i].audio + '.mp3');
             };
@@ -455,10 +478,10 @@ function bubbleLetters(){
         };
 
         function onAssetsLoaded(){
-          round.init(Trial,stage, stimuli);
+          round.init(Trial,stage, stimQ);
           setTimeout(function(){
-              console.log("starting the game!")
-              session.show()
+              console.log("starting the game!");
+              session.show();
               update();
           });
         };
@@ -466,27 +489,27 @@ function bubbleLetters(){
     //---------------------------------------LOOP
         var statsBol = false;
         if(statsBol){
-            session.stats.domElement.style.display = "block"
+            session.stats.domElement.style.display = "block";
         };
 
-        var finishGame = false
+        var finishGame = false;
         var previousTime = Date.now();
         var MS_PER_UPDATE = 16.66667;
-        var lag = 0
+        var lag = 0;
 
         function update() {
 
             if(finishGame){
                 console.log("ending bubbleLetters")
                 session.stats.domElement.style.display = "none"
-                round.destroy()
-                assets.destroy()
-                finishGame = false
+                round.destroy();
+                assets.destroy();
+                finishGame = false;
                 currentview = new MainMenu(); // assets?
-                return
+                return;
             }
 
-            if(statsBol) session.stats.begin()
+            if(statsBol) session.stats.begin();
 
           	//update position based on expected frame rate
   	        var current = Date.now();
@@ -499,11 +522,10 @@ function bubbleLetters(){
               lag = lag - MS_PER_UPDATE;
   	        }
 
-    	      //---------------->> Thing that renders the whole stage
-    	      session.render(stage)
+    	      // render the stage
+    	      session.render(stage);
     	      requestAnimationFrame(update);
-            if(statsBol)session.stats.end()
+            if(statsBol) session.stats.end();
 
         }
-
 };

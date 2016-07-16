@@ -1,10 +1,10 @@
-var proto3loaded = true
+var proto3loaded = false;
 var stimCount = -1
 
 function proto03(){
   queuesToUpdate['mathstim'] = true;
   var stimuli = stimQueues['mathstim'];
-
+  proto3loaded = true;
 /*
 -------------------------------------------------------------------------------------------------------------
                                                 Class: lillyFinal
@@ -611,37 +611,27 @@ function proto03(){
 */
 
     function Trial(_stimuli,_correct){
-
+        console.log(_stimuli)
         stimCount++;
-
-        var specs =
-            //--------------------------------------0
-            {
-                stimuli: {
-
-                    correctValues : [1,1],
-                    extras : {
-                        min: 22,
-                        max: 23,
-                        size: 2,
-
-                    correctValues : addition[stimCount%addition.length].options,
-                    extras : {
-                        min: 1,
-                        max: 1,
-                        size: 0,
-                    }
-                },
+        // check if _stimuli.options is undefined, in which case generate random trial
+        // let's make sure we don't generate the answer as an extra (too easy!)
+        var specs = {
+              stimuli: {
+                  correctValues : _stimuli.options,
+                  extras : {
+                      min: 0,
+                      max: 5,
+                      size: 1
+                  },
 
                 correct :{
                     type: "number",
-                    value: addition[stimCount%addition.length].sum,
+                    value: _stimuli.sum
                 }
-            }
+              }
           }
-
 		/*----------------------
-		Stimuli is the number necessery to get to the answear.
+		Stimuli is the number necessary to get to the answer.
 		It should be used to draw smaller lillypad so the user has at least one
 		way to solve the problem
 		------------------------*/
@@ -649,7 +639,7 @@ function proto03(){
         console.log(specs)
 
 		/*----------------------
-		Correct is the final number that should be placed in the final lillypad
+		Correct is the sum that should be placed in the final lillypad
 		------------------------*/
     	this.correct = specs.correct;
 
