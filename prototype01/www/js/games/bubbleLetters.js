@@ -1,5 +1,7 @@
 var bubblegameloaded = false;
 
+// for color randomization in dragonfly game and maybe others
+var nonblueColors = ["#DE1B1B","#CBE32D","#D9853B","#FFE658","#DF3D82","#7D1935","#551A8B","#99FF66"];
 /*
   game works like this:
   x = target + distractors
@@ -70,7 +72,8 @@ function bubbleLetters(){
         this.circle.y = this.pos.y+this.size/2;
         this.center = {x: this.circle.x, y: this.circle.y};
         // fill:"#427010", stroke:"#098478" getRandomColor
-        this.cStim =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"red", fill: getRandomColor(), stroke:"#098478", strokeThickness: 1, });
+        var randColor = nonblueColors[getRandomInt(0,nonblueColors.length-1)];
+        this.cStim =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"red", fill: randColor, stroke:"#098478", strokeThickness: 1, });
         this.cStim.anchor.x = 0.5
         this.cStim.anchor.y = 0.5
         this.cStim.x = this.pos.x + this.size*0.5;
@@ -167,16 +170,16 @@ function bubbleLetters(){
 
         this.foils = this.generateFoils(this.target);
         this.origstim = _stim; // in original form to push back on stimulus queue
-        this.clock = new ClockTimer()
+        this.clock = new ClockTimer();
 
-    	  this.trialState = "intro"
-        this.introState = "playSound"
+    	  this.trialState = "intro";
+        this.introState = "playSound";
 
         this.bubble = [];
-        this.matrixAvailable = []
-        this.specs = this.getSpecs()
-        this.posMatrix = this.getMatrixPosition()
-        this.operation = 0
+        this.matrixAvailable = [];
+        this.specs = this.getSpecs();
+        this.posMatrix = this.getMatrixPosition();
+        this.operation = 0;
 
         this.AnimationDone = true;
         this.performOperation = false;

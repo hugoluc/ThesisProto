@@ -368,10 +368,10 @@
 
 		this.score = 0;
 		this.stars = [];
-		this.svgIds = 0
-		this.starLength = 0
-		this.explosion = []
-		this.stage = {}
+		this.svgIds = 0;
+		this.starLength = 0;
+		this.explosion = [];
+		this.stage = {};
 
 	};
 
@@ -413,18 +413,14 @@
 				.delay(delay)
 				.duration(_duration)
 				.attr({
-
 					x: window.innerWidth - 50,
 					y: -50,
-
 				})
 				.each("end", function(){
 				// Animation callback
-
 					var id = this.id
 					var _this = d3.select("#" + id).remove()
 					console.log(_this)
-
 				});
 
 				console.log(starSvg)
@@ -454,13 +450,11 @@
 
 				var starFeaAnimation = new animation(star);
 				starFeaAnimation.initFeature(
-
 					["width", "height"], // features to animate
 					90, // final size
 					200, // time value
 					delay, // delay
 					[0.75,1] // bezier courve
-
 				);
 
 				var startRotation = new animation(star);
@@ -542,7 +536,6 @@
 			};
 
 
-
 			console.log("explosion set!-------------------------------------------------")
 	};
 
@@ -596,9 +589,7 @@
 
 			}else{
 
-
 				document.getElementById('scoreNumber').style.left = 10
-
 
 			}
 
