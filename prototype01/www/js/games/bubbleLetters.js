@@ -50,7 +50,7 @@ function bubbleLetters(){
         this.posdId = _position.id;
         this.pos = _position.pos;
         this.size = _size;
-
+        this.grow = false;
         this.container = new PIXI.Container();
         this.trialTimer = new ClockTimer();
 
@@ -94,8 +94,8 @@ function bubbleLetters(){
         correct_sound.play();
         console.log(this);
       }
-      if(!correct_click) { // incorrect: pop bubble, play bad sound and wait
-        this.fade = true;
+      if(!correct_click) { // incorrect: play bad sound and wait
+        //this.fade = true; // pop bubble? but that's what happens for good clicks
         assets.sounds.wrong[0].play();
       }
       return correct_click;
@@ -136,22 +136,27 @@ function bubbleLetters(){
         if(this.destroyed){
             return;
         };
-
+        if(this.grow) { // target reached
+            this.circle.scale.x += .03; // GK: target's not growing..
+            this.circle.scale.y += .03;
+            this.cStim.scale.x += .01;
+            this.cStim.scale.y += .01;
+        }
         if(this.fade){
-            this.circle.alpha -= 0.05;
-            this.cStim.alpha -= 0.05;
-            this.circle.scale.x += .02;
-            this.circle.scale.y += .02;
+            this.circle.alpha -= 0.1;
+            this.cStim.alpha -= 0.1;
+            this.circle.scale.x += .03;
+            this.circle.scale.y += .03;
             if(this.circle.alpha <= 0){
                 this.display(false)
             };
-        }else{
+        } else{
             this.ang = (this.ang + 0.05) % (Math.PI*2);
-            this.circle.width =  this.size + Math.sin(this.ang) * 2;
-            this.circle.height =  this.size + Math.sin(this.ang) * 2;
-            this.circle.rotation = Math.sin(this.ang) * 0.02;
-            this.container.position.x += .5*Math.cos(this.ang );
-            this.container.position.y += .5*Math.sin(this.ang ); //* .3; // move bubbles a bit?
+            this.circle.width = this.size + Math.sin(this.ang) * 2;
+            this.circle.height = this.size + Math.sin(this.ang) * 2;
+            //this.circle.rotation = Math.sin(this.ang) * 0.02;
+            this.container.position.x += .5*Math.cos(this.ang);
+            this.container.position.y += .5*Math.sin(this.ang); //* .3; // move bubbles a bit?
         }
     };
 
@@ -334,6 +339,7 @@ function bubbleLetters(){
       if(this.bubble[0].clicked) {
         this.finishedState = "endanimation"; // "win"
         this.trialWon = true;
+        this.bubble[0].grow = true;
         dragonfly_start_pos = this.dragonfly.position;
         var pos = [];
         for (var i=0; i<scoreIncrease; i++) {
@@ -357,16 +363,15 @@ function bubbleLetters(){
         } else {
           this.dragonfly.position.y -= this.deltay;
         }
-      }
 
-      if((dist) < 10) { // dragonfly won!
+        return false;
+      } else { // dragonfly won!
         assets.sounds.wrong[0].play();
         dragonfly_start_pos = this.dragonfly.position;
+        this.bubble[0].grow = true;
         this.finishedState = "endanimation";
         this.trialWon = false;
         return true;
-      } else {
-        return false;
       }
     }
 
@@ -446,8 +451,12 @@ function bubbleLetters(){
                 break;
 
             case "finished":
+                // pop all but the correct one (could do this in moveDragonfly)
+                for(var i=1;i<this.bubble.length;i++){
+                    this.bubble[i].fade = true;
+                }
                 for(var i=0;i<this.bubble.length;i++){
-                    this.bubble[i].fade = true; // make fade into pop -- increase size as fading
+                    this.bubble[i].animate(_updateTime);
                 }
                 score.displayStar();
                 score.displayExplosion();
