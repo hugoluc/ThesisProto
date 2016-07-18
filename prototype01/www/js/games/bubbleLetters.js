@@ -137,8 +137,8 @@ function bubbleLetters(){
             return;
         };
         if(this.grow) { // target reached
-            this.circle.scale.x += .03; // GK: target's not growing..
-            this.circle.scale.y += .03;
+            this.circle.scale.x += .004;
+            this.circle.scale.y += .004;
             this.cStim.scale.x += .01;
             this.cStim.scale.y += .01;
         }
@@ -152,8 +152,8 @@ function bubbleLetters(){
             };
         } else{
             this.ang = (this.ang + 0.05) % (Math.PI*2);
-            this.circle.width = this.size + Math.sin(this.ang) * 2;
-            this.circle.height = this.size + Math.sin(this.ang) * 2;
+            //this.circle.width = this.size + Math.sin(this.ang) * 2;
+            //this.circle.height = this.size + Math.sin(this.ang) * 2;
             //this.circle.rotation = Math.sin(this.ang) * 0.02;
             this.container.position.x += .5*Math.cos(this.ang);
             this.container.position.y += .5*Math.sin(this.ang); //* .3; // move bubbles a bit?
@@ -405,7 +405,7 @@ function bubbleLetters(){
                     this.finishedState = "win";
 
                 }else{
-                    this.clock.start(1000);
+                    this.clock.start(1500);
                     this.finishedState = "lose";
                 }
                 break;
@@ -430,8 +430,8 @@ function bubbleLetters(){
     Trial.prototype.play = function(_updateTime){
         switch(this.trialState){
             case "intro":
-                assets.sounds.letters[this.target].play();
                 if(this.intro()){
+                    assets.sounds.letters[this.target].play();
                     this.trialState = "play";
                 }
                 break;
