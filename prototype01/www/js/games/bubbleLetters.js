@@ -236,7 +236,7 @@ function bubbleLetters(){
         // create dragonfly
         //this.dragonfly = new PIXI.Sprite(assets.textures.dragonfly);
         this.dragonfly = new PIXI.extras.MovieClip(assets.sprites.dragonfly);
-        this.dragonfly.animationSpeed = 0.1;
+        this.dragonfly.animationSpeed = 0.16;
         this.dragonfly.play();
         this.dragonfly.width = 200;
         this.dragonfly.height = 100;
@@ -489,13 +489,6 @@ function bubbleLetters(){
     //---------------------------------------loading assets
 
         if(bubblegameloaded) {
-            //assets.addTexture("dragonfly","sprites/dragonfly/separate/dragonfly-0.png")
-            // try loading the frames separately as textures..
-            //assets.addTexture("dragonfly-0.png","sprites/dragonfly/separate/dragonfly-0.png")
-            //assets.addTexture("dragonfly-1.png","sprites/dragonfly/separate/dragonfly-1.png")
-            //assets.addTexture("dragonfly-2.png","sprites/dragonfly/separate/dragonfly-2.png")
-            // creating flying sprite should just work like this..
-            assets.addSprite("ladyBug_Walk",'sprites/ladyBug/ladyBug_Walk.json',4);
             assets.addSprite("dragonfly",'sprites/dragonfly/dragonfly_fly.json',3);
             assets.addTexture("bubble","img/bubble.png");
             assets.addTexture("bg","sprites/backGrounds/BackGround-05.png");
@@ -511,7 +504,6 @@ function bubbleLetters(){
         };
 
         function onAssetsLoaded(){
-          console.log(assets.sprites);
           round.init(Trial,stage, stimQ);
           setTimeout(function(){
               console.log("starting the game!");
