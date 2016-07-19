@@ -23,6 +23,15 @@ function getRandomInt(min, max) {
 
 };
 
+<<<<<<< HEAD
+=======
+function getRandomFloat(min, max){
+
+  return Math.random() * (max-min) + min;
+
+}
+
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 // hides one page and shows the next
 function clickStart(hide, show) {
 
@@ -127,6 +136,8 @@ animation.prototype.stop = function(){
 
 animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezier){
 
+
+  this.dest = _dest
   this.feaFinished = false;
   this.feaTimeSet = false;
 
@@ -137,7 +148,11 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
 
   
   if(this.feature.constructor !== Array){
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
     this.featureStart = this.obj[this.feature]
     this.featureDistance = _dest - this.featureStart
     this.featureSpeed = this.featureDistance / this.feaLength
@@ -148,6 +163,7 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
     this.featureDistance = []
     this.featureSpeed = []
 
+<<<<<<< HEAD
 
     for(var i = 0; i < this.feature.length; i++){
 
@@ -155,6 +171,15 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
       this.featureDistance.push(_dest - this.featureStart[i])
       this.featureSpeed.push(this.featureDistance[i] / this.feaLength)
 
+=======
+
+    for(var i = 0; i < this.feature.length; i++){
+
+      this.featureStart.push(this.obj[this.feature[i]])
+      this.featureDistance.push(_dest - this.featureStart[i])
+      this.featureSpeed.push(this.featureDistance[i] / this.feaLength)
+
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
     }
 
 
@@ -166,9 +191,10 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
     this.feaBezName = _bezier[0].toFixed(2) + "-" + _bezier[1].toFixed(2)
   
   };
+
 };
 
-animation.prototype.runFeature = function(){
+animation.prototype.runFeature = function(_log){
 
   if(this.feaFinished){
     return true;
@@ -190,12 +216,27 @@ animation.prototype.runFeature = function(){
   var elapsed = this.feaNow - this.feaStartTime
 
 
+<<<<<<< HEAD
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // Position after animation is done
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
   if(elapsed > this.feaLength + this.feaOff){ 
 
+=======
+  // if(_log){
+  //     console.log("distance", this.featureDistance)
+  //     console.log("obj", this.obj)
+  //     console.log("feateure", this.feature)
+  // }
+
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // Position after animation is done
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+  if(elapsed > this.feaLength + this.feaOff){ 
+
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
     if(this.feature.constructor === Array){
 
       for(var i = 0; i < this.feature.length; i++){
@@ -204,6 +245,7 @@ animation.prototype.runFeature = function(){
         this.feaFinished = true
       
       };
+<<<<<<< HEAD
 
     }else{
 
@@ -214,6 +256,18 @@ animation.prototype.runFeature = function(){
       
       };
 
+=======
+
+    }else{
+
+      for(var i = 0; i < this.feature.length; i++){
+      
+        this.obj[this.feature] = this.featureStart + this.featureDistance
+        this.feaFinished = true
+      
+      };
+
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
     };
     
     return true
@@ -231,6 +285,10 @@ animation.prototype.runFeature = function(){
         var location = Math.floor(((elapsed-this.feaOff)*999)/this.feaLength)
         bez = bezierCurveSpecs[this.feaBezName][location]
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
         if(this.feature.constructor === Array){
 
           for(var i = 0; i < this.feature.length; i++){
@@ -282,6 +340,14 @@ animation.prototype.log = function(){
     console.log("distance: ", this.distance)
     console.log("speed: ", this.speed)
     console.log("bounds: ", this.obj.getBounds() )
+<<<<<<< HEAD
+=======
+    console.log("features:-------")
+    console.log("startPos: ", this.featureStart)  
+    console.log("distance: ", this.featureDistance)
+    console.log("speed: ", this.featureSpeed)
+    console.log("dest: ", this.dest )  
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
     this.logCount++
 
@@ -292,6 +358,13 @@ animation.prototype.log = function(){
 
     console.log("---------------------")
     console.log(this.obj.x, this.obj.y)
+<<<<<<< HEAD
+=======
+    console.log(this.obj.x, this.obj.y)
+    console.log("---------------------")
+    console.log(this.obj[this.feature])
+
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
   }
 

@@ -366,39 +366,81 @@
 -------------------------------------------------------------------------------------------------------------
 */
 
-function gameScore(){
+	function gameScore(){
 
-	this.score = 0;
-	this.starts = [];
-	this.svgIds = 0
-	this.starLength = 0
+		this.score = 0;
+		this.starts = [];
+		this.svgIds = 0
+		this.starLength = 0
+		this.explosion = []
 
-};
+	};
 
-gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
+	gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 
+<<<<<<< HEAD
 	this.score = this.score + (_starsPos.length * _value);
 	var initDelay = 200;
 	var delay = 0
 	var duration = _duation || 1000
+=======
+		this.score = this.score + (_starsPos.length * _value);
+		this.valuePerStar = _value
+		var initDelay = 300;
+		var delay = 0
+		var duration = _duation || 1000
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
-	if(_svg){
+		if(_svg){
 
-		this.svg = true;
+			this.svg = true;
 
-		var starGroup = d3.select("#scoreContainer")
-		.append("svg")
-		.attr("id", "starGroup")
-		.attr({
-		  x: 0,
-		  y: 0,
-		  width : window.innerWidth,
-		  height : window.innerHeight,
-		})
+			var starGroup = d3.select("#scoreContainer")
+			.append("svg")
+			.attr("id", "starGroup")
+			.attr({
+			  x: 0,
+			  y: 0,
+			  width : window.innerWidth,
+			  height : window.innerHeight,
+			})
+
+			for(var i = 0; i < _starsPos.length; i++){
+
+				var starSvg = starGroup.append("svg:image")
+				.attr("xlink:href", "svgs/starScore.svg")
+				.attr({
+				  x: _starsPos[i].x,
+				  y: _starsPos[i].y,
+				  width : 100,
+				  height : 100,
+				})
+				.attr("id", "star-" + (this.starLength + 1))
+				.transition()
+				.delay(delay)
+				.duration(_duation)
+				.attr({
+
+					x: window.innerWidth - 50,
+					y: -50,
+
+				})
+				.each("end", function(){
+				// Animation callback
+
+					var id = this.id
+					var _this = d3.select("#" + id).remove()
+					console.log(_this)
+
+				});
+
+				console.log(starSvg)
+				this.starLength = this.starLength + 1;
+				delay = delay + initDelay
+			};
 
 
-		for(var i = 0; i < _starsPos.length; i++){
-
+<<<<<<< HEAD
 			var starSvg = starGroup.append("svg:image")
 			.attr("xlink:href", "svgs/starScore.svg")
 			.attr({
@@ -419,23 +461,66 @@ gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 			})
 			.each("end", function(){
 			// Animation callback
+=======
+		}else{
 
-				var id = this.id
-				var _this = d3.select("#" + id).remove()
-				console.log(_this)
+			this.svg = false;
 
-			});
+			for(var i = 0; i < _starsPos.length; i++){
 
-			console.log(starSvg)
-			this.starLength = this.starLength + 1;
-			delay = delay + initDelay
+				var star = new PIXI.Sprite(assets.textures.star);
+				star.x = _starsPos[i].x;
+				star.y = _starsPos[i].y;
+				star.anchor.x = 0.5
+				star.anchor.y = 0.5
+				star.width = 10;
+				star.height = 10;
+
+				this.stage.addChild(star);
+
+				var starAnimation = new animation(star);
+				starAnimation.init({x:session.canvas.width - 25, y: -50},duration,delay,[0,1]);
+
+				var starFeaAnimation = new animation(star);
+				starFeaAnimation.initFeature(
+
+					["width", "height"], // features to animate
+					90, // final size
+					200, // time value
+					delay, // delay
+					[0.75,1] // bezier courve 
+
+				);
+
+				var startRotation = new animation(star);
+				startRotation.initFeature(
+
+					"rotation", // features to animate
+					Math.PI * 2, // final position
+					duration, // time value
+					delay, // delay
+					[0.75,1] // bezier courve 
+
+				);
+				
+
+				delay = delay + initDelay
+				this.starts.push([star,starAnimation,starFeaAnimation,startRotation]);
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
+
+			};
+
+
 		};
 
 
-	}else{
+	};
 
-		this.svg = false;
+	gameScore.prototype.setExplosion = function(_pos,_radius,_duration){
 
+			var starCount = getRandomInt(30,50)
+
+<<<<<<< HEAD
 		for(var i = 0; i < _starsPos.length; i++){
 
 			var star = new PIXI.Sprite(assets.textures.star);
@@ -447,46 +532,187 @@ gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 			var starAnimation = new animation(star);
 			starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
 			delay = delay + initDelay
+=======
+			for(var i = 0; i < starCount; i++ ){
 
-			this.starts.push([star,starAnimation]);
+				var Estar = new PIXI.Sprite(assets.textures.star);
+				Estar.x = _pos.x;
+				Estar.y = _pos.y;
+				Estar.anchor.x = 0.5
+				Estar.anchor.y = 0.5
+				Estar.width = 10;
+				Estar.height = 10;
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
-		};
+				var angle = getRandomFloat(-Math.PI,Math.PI) 
 
+				var EstarAnimation = new animation(Estar);
+				EstarAnimation.init(
 
+					{
+						"x" : (_pos.x + Math.cos(angle)*_radius) * (getRandomFloat(0.95,1.05)), 
+						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.9,1.05)), 
+					},
+					_duration,
+					0,//getRandomInt(0,_duration*0.01),
+					[1,1]
+				
+				);
+
+				var startERotation = new animation(Estar);
+				startERotation.initFeature(
+
+<<<<<<< HEAD
 	};
 
+=======
+					"rotation", // features to animate
+					Math.PI * 4, // final position
+					_duration, // time value
+					0, // delay
+					[0.75,1] // bezier courve 
 
-};
+				);
+				
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
-gameScore.prototype.displayStar = function(){
+				var EstarFeaAnimation = new animation(Estar);
+				EstarFeaAnimation.initFeature(
 
-		var animationDone = true
+					"alpha",
+					0,	
+					_duration, //length
+					0, // delay
+					[0,0.75]
+				
+				);
 
+				console.log(EstarFeaAnimation)
+				this.stage.addChild(Estar)
+				this.explosion.push([Estar,EstarAnimation,EstarFeaAnimation,startERotation])
+			};
+
+
+
+			console.log("explosion set!-------------------------------------------------")
+	};
+
+	gameScore.prototype.displayExplosion = function(){
+
+<<<<<<< HEAD
 		for(var i = 0; i < this.starts.length; i++){
 
 			if(this.starts[i][1].run()){
+=======
+			var animationDone = true
+			
+			for(var i = 0; i < this.explosion.length; i++ ){
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
-				this.stage.removeChild(this.starts[i][0])
-				this.starts[i][0].destroy()
-				this.starts[i][0] = []
-				this.starts[i][1] = []
-				this.starts.splice(i,1);
+				if(!this.explosion[i][2].runFeature(true)){
 
+					animationDone = false
+				
+				};
 
-			}else{
+				if(!this.explosion[i][3].runFeature()){
 
-				animationDone = false
+					animationDone = false
+				
+				};
+
+				if(this.explosion[i][1].run()){
+
+					this.stage.removeChild(this.explosion[i][0])
+					this.explosion[i][0].destroy()
+					this.explosion[i][0] = []
+					this.explosion[i][1] = []
+					this.explosion.splice(i,1);
+
+				}else{
+
+					animationDone = false
+
+				};
 
 			};
+	};
 
-		};
+	gameScore.prototype.addScoreUI = function(){
 
+<<<<<<< HEAD
 		if(animationDone){
 
 			return true;
+=======
+		var newValue = parseInt(document.getElementById('scoreNumber').innerHTML) + this.valuePerStar;
+		document.getElementById('scoreNumber').innerHTML = newValue
+		
+		if(newValue > 9){
+
+			if(newValue > 99){
+
+				document.getElementById('scoreNumber').style.left = 10
+				document.getElementById('scoreNumber').style.top = 10
+				document.getElementById('scoreNumber').style.fontSize = "18pt"
+
+			}else{
+
+
+				document.getElementById('scoreNumber').style.left = 10
+
+
+			}
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
 		}
 
-		return false;
+	};
 
-};
+	gameScore.prototype.displayStar = function(){
+
+			var animationDone = true
+
+			for(var i = 0; i < this.starts.length; i++){
+
+				if(!this.starts[i][2].runFeature()){ //call animation function for size on each star
+
+					animationDone = false
+
+				};
+
+				if(!this.starts[i][3].runFeature()){
+
+					animationDone = false
+				
+				};
+
+				if(this.starts[i][1].run()){ //call animation function for position on each star
+
+					this.stage.removeChild(this.starts[i][0])
+					this.starts[i][0].destroy()
+					this.starts[i][0] = []
+					this.starts[i][1] = []
+					this.starts.splice(i,1);
+
+					this.addScoreUI()
+
+				}else{
+
+					animationDone = false
+
+				};
+
+
+
+			};
+
+			if(animationDone){
+
+				return true;
+
+			}
+
+			return false;
+
+	};
