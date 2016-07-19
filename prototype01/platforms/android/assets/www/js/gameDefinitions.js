@@ -378,11 +378,18 @@
 
 	gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
 
+<<<<<<< HEAD
+	this.score = this.score + (_starsPos.length * _value);
+	var initDelay = 200;
+	var delay = 0
+	var duration = _duation || 1000
+=======
 		this.score = this.score + (_starsPos.length * _value);
 		this.valuePerStar = _value
 		var initDelay = 300;
 		var delay = 0
 		var duration = _duation || 1000
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
 		if(_svg){
 
@@ -433,6 +440,28 @@
 			};
 
 
+<<<<<<< HEAD
+			var starSvg = starGroup.append("svg:image")
+			.attr("xlink:href", "svgs/starScore.svg")
+			.attr({
+			  x: _starsPos[i].x,
+			  y: _starsPos[i].y,
+			  width : 100,
+			  height : 100,
+			})
+			.attr("id", "star-" + (this.starLength + 1))
+			.transition()
+			.delay(delay)
+			.duration(_duation)
+			.attr({
+
+				x: window.innerWidth - 50,
+				y: -50,
+
+			})
+			.each("end", function(){
+			// Animation callback
+=======
 		}else{
 
 			this.svg = false;
@@ -477,6 +506,7 @@
 
 				delay = delay + initDelay
 				this.starts.push([star,starAnimation,starFeaAnimation,startRotation]);
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
 			};
 
@@ -490,6 +520,19 @@
 
 			var starCount = getRandomInt(30,50)
 
+<<<<<<< HEAD
+		for(var i = 0; i < _starsPos.length; i++){
+
+			var star = new PIXI.Sprite(assets.textures.star);
+			star.x = _starsPos[i].x;
+			star.y = _starsPos[i].y;
+
+			this.stage.addChild(star);
+
+			var starAnimation = new animation(star);
+			starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
+			delay = delay + initDelay
+=======
 			for(var i = 0; i < starCount; i++ ){
 
 				var Estar = new PIXI.Sprite(assets.textures.star);
@@ -499,6 +542,7 @@
 				Estar.anchor.y = 0.5
 				Estar.width = 10;
 				Estar.height = 10;
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
 				var angle = getRandomFloat(-Math.PI,Math.PI) 
 
@@ -518,6 +562,10 @@
 				var startERotation = new animation(Estar);
 				startERotation.initFeature(
 
+<<<<<<< HEAD
+	};
+
+=======
 					"rotation", // features to animate
 					Math.PI * 4, // final position
 					_duration, // time value
@@ -526,6 +574,7 @@
 
 				);
 				
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
 				var EstarFeaAnimation = new animation(Estar);
 				EstarFeaAnimation.initFeature(
@@ -550,9 +599,15 @@
 
 	gameScore.prototype.displayExplosion = function(){
 
+<<<<<<< HEAD
+		for(var i = 0; i < this.starts.length; i++){
+
+			if(this.starts[i][1].run()){
+=======
 			var animationDone = true
 			
 			for(var i = 0; i < this.explosion.length; i++ ){
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
 				if(!this.explosion[i][2].runFeature(true)){
 
@@ -585,6 +640,11 @@
 
 	gameScore.prototype.addScoreUI = function(){
 
+<<<<<<< HEAD
+		if(animationDone){
+
+			return true;
+=======
 		var newValue = parseInt(document.getElementById('scoreNumber').innerHTML) + this.valuePerStar;
 		document.getElementById('scoreNumber').innerHTML = newValue
 		
@@ -603,6 +663,7 @@
 
 
 			}
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
 		}
 

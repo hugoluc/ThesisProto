@@ -1,5 +1,27 @@
 {"frames": {
 
+<<<<<<< HEAD
+"dragonfly-0.png" :
+{  
+	"frame": {"x":0,"y":0,"w":800,"h":323},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":800,"h":323},
+	"sourceSize": {"w":800,"h":323},
+	"pivot": {"x":0.5,"y":0.5}
+},
+
+"dragonfly-1.png" :
+{
+	"frame": {"x":0,"y":323,"w":790,"h":319},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":790,"h":319},
+	"sourceSize": {"w":790,"h":319},
+	"pivot": {"x":0.5,"y":0.5}
+},
+
+=======
 "dragonfly-0.png":
 {
 	"frame": {"x":0,"y":0,"w":800,"h":323},
@@ -16,10 +38,28 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":790,"h":319},
 	"sourceSize": {"w":790,"h":319}
 },
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 "dragonfly-2.png":
 {
 	"frame": {"x":0,"y":642,"w":790,"h":319},
 	"rotated": false,
+<<<<<<< HEAD
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":790,"h":319},
+	"sourceSize": {"w":790,"h":319},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+
+
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "dragonfly.png",
+	"format": "RGBA8888",
+	"size": {"w":800,"h":961},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:5a7000907e879bc5b122860e8c7230ae:bb4f4893caff36746946aa2c84ee01bc:d7987f9c37cbebb12af43d10c2937ee9$"
+=======
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":790,"h":319},
 	"sourceSize": {"w":790,"h":319}
@@ -32,5 +72,6 @@
 	"size": {"w":800,"h":961},
 	"scale": "1",
 	"smartupdate": "$TexturePacker:SmartUpdate:3964b5a830dbdd922bbccbadc2d93bf0:bb4f4893caff36746946aa2c84ee01bc:1331147344a49467563aa312785cba44$"
+>>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 }
 }

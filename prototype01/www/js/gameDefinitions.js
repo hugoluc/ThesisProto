@@ -96,14 +96,23 @@
 	};
 
 	Assets.prototype.addSound = function(name,url){
+
 		if(typeof(name) == "number"){
+		
 			this.soundsNQueue.push([name,url])
+		
 		} else if(name.length===1){
+		
 			this.soundsLetterQueue.push([name,url])
+		
 		} else if(typeof(name)== "word"){ // need to distinguish words from generic sounds (bc they have different folders)
+		
 			this.soundsWordQueue.push([name,url])
+		
 		} else {
+		
 			this.soundsQueue.push([name,url])
+		
 		}
 	};
 
@@ -127,7 +136,9 @@
 			})
 
 		}else{
+		
 			this.start()
+		
 		}
 	};
 
@@ -137,36 +148,45 @@
 		this.sounds = {}
 		this.sounds.numbers = {}
 		this.sounds.words = {}
+		this.sounds.alphabet = {}
 		this.sounds.letters = {}
 		this.sprites = {}
 		this.textures = {}
 
 		for( var i=0; i < this.textureQueue.length; i++){
+		
 			this.textures[this.textureQueue[i][0]] = new PIXI.Texture.fromImage(this.textureQueue[i][1])
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
+		
 			this.sounds[this.soundsQueue[i][0]] = []
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
+		
 			this.sounds[this.soundsQueue[i][0]].push(new Audio('audio/' + this.soundsQueue[i][0] + '/' + this.soundsQueue[i][1]))
 		}
+		
 		// numbers are just like other words, so we might not need a separate Queue
 		if(this.soundsNQueue) {
+		
 			for( var i=0; i < this.soundsNQueue.length; i++){
 				this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
 			}
 		}
 
 		if(this.soundsLetterQueue) {
+		
 			for( var i=0; i < this.soundsLetterQueue.length; i++){
+
 				var path = 'audio/' + language + '/alphabet/' + this.soundsLetterQueue[i][1];
 				this.sounds.letters[String(this.soundsLetterQueue[i][0])] = new Audio(path);
 			}
 		}
 
 		if(this.soundsWordQueue) {
+		
 			for( var i=0; i < this.soundsWordQueue.length; i++){
 				this.sounds.words[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsWordQueue[i][1])
 			}
@@ -252,8 +272,6 @@
 	    this.background.width = session.canvas.width;
 	    this.background.height = session.canvas.height;
 
-
-
 	}
 
 	Round.prototype.getNextTrial = function(){
@@ -263,9 +281,11 @@
 		//console.log(stim);
 		//console.log(this.stimuli.pop()); // this does get the next one
 	 	this.trial = new this._trial(this.stimuli.pop());
+	  	
 	  	if(this.trial.init != undefined){
+
 				this.trial.init();
-			}
+		}
 	}
 
 	Round.prototype.storeSession = function(stim, queue_name) {
@@ -277,7 +297,7 @@
 
 		this.trial.destroy()
 		this.stage.removeChild(this.background)
-	  this.background.destroy(true,true)
+		this.background.destroy(true,true)
 
 	}
 
@@ -335,12 +355,13 @@
 
 			if(this.difficulty < this.diffRange[0]){
 
-				this.difficulty = this.diffRange[0];
+				this.difficulty = this.diffRange[0]
 			};
 
 			if(this.difficulty > this.diffRange[1]){
 
 				this.difficulty = this.diffRange[1];
+
 			};
 
 		}
@@ -387,7 +408,6 @@
 		if(_svg){
 
 			this.svg = true;
-
 			var starGroup = d3.select("#scoreContainer")
 			.append("svg")
 			.attr("id", "starGroup")
@@ -468,12 +488,10 @@
 
 				);
 
-
 				delay = delay + initDelay
 				this.stars.push([star,starAnimation,starFeaAnimation,startRotation]);
 
 			};
-
 
 		};
 	};
@@ -493,6 +511,7 @@
 				Estar.height = 10;
 
 				var angle = getRandomFloat(-Math.PI,Math.PI)
+
 
 				var EstarAnimation = new animation(Estar);
 				EstarAnimation.init(
@@ -642,3 +661,4 @@
 
 			return false;
 	};
+	
