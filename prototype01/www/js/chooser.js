@@ -33,7 +33,7 @@ function Start(){
       {
         name: "Alphabet",
         available: true,
-        callFunction: ""
+        callFunction: bubbleLetters
       },
 
 
@@ -54,7 +54,7 @@ function Start(){
       {
         name: "Drawing",
         available: true,
-        callFunction: ""
+        callFunction: Sketch
       },
 
       {

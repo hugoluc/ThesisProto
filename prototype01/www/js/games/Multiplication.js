@@ -1,4 +1,7 @@
+var multiplicationLoaded = false;
+
 function Multiplication(){
+
   queuesToUpdate['mathstim'] = true;
   var stimuli = stimQueues['mathstim'];
 
@@ -177,7 +180,7 @@ function Multiplication(){
 								y : (session.canvas.height/(this.eggs.instruction.length+1))*(i+1),
 								x : (this.boardSpecs.instructionWidth < 250) ? this.boardSpecs.instructionWidth/2 : 125
 								//******************************FIXME
-								// chnage to exact size of cliff after displaying cliff on transition
+								// chnge to exat size of cliff after displaying cliff on transition
 							} 
 
 
@@ -465,6 +468,7 @@ function Multiplication(){
 
 		stage.addChild(this.cliff)
 		stage.setChildIndex(this.cliff, 1)
+
 	};
 
 	Trial.prototype.setBoardSpecs = function(){
@@ -983,7 +987,7 @@ function Multiplication(){
 
     //---------------------------------------loading assets
 
-        if(proto3loaded){
+        if(!multiplicationLoaded){
 
             assets.addTexture("stick","sprites/stick/stick.png")
             assets.addTexture("leave","sprites/stick/leave.png")
@@ -1014,6 +1018,8 @@ function Multiplication(){
             assets.addTexture("bg","sprites/backGrounds/BackGround-03.png")
 
             assets.load(onAssetsLoaded)
+
+            multiplicationLoaded = true
 
         }else{
 
