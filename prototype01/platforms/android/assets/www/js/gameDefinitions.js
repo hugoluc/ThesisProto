@@ -66,7 +66,7 @@
 		this.textureQueue = [];
 		this.soundsQueue = [];
 		this.soundsNQueue = [];
-
+		this.soundsLetterQueue = [];
 		this.state = "loading";
 	};
 
@@ -96,14 +96,23 @@
 	};
 
 	Assets.prototype.addSound = function(name,url){
+
 		if(typeof(name) == "number"){
+		
 			this.soundsNQueue.push([name,url])
+		
 		} else if(name.length===1){
+		
 			this.soundsLetterQueue.push([name,url])
+		
 		} else if(typeof(name)== "word"){ // need to distinguish words from generic sounds (bc they have different folders)
+		
 			this.soundsWordQueue.push([name,url])
+		
 		} else {
+		
 			this.soundsQueue.push([name,url])
+		
 		}
 	};
 
@@ -127,7 +136,9 @@
 			})
 
 		}else{
+		
 			this.start()
+		
 		}
 	};
 
@@ -138,34 +149,44 @@
 		this.sounds.numbers = {}
 		this.sounds.words = {}
 		this.sounds.alphabet = {}
+		this.sounds.letters = {}
 		this.sprites = {}
 		this.textures = {}
 
 		for( var i=0; i < this.textureQueue.length; i++){
+		
 			this.textures[this.textureQueue[i][0]] = new PIXI.Texture.fromImage(this.textureQueue[i][1])
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
+		
 			this.sounds[this.soundsQueue[i][0]] = []
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
+		
 			this.sounds[this.soundsQueue[i][0]].push(new Audio('audio/' + this.soundsQueue[i][0] + '/' + this.soundsQueue[i][1]))
 		}
+		
 		// numbers are just like other words, so we might not need a separate Queue
 		if(this.soundsNQueue) {
+		
 			for( var i=0; i < this.soundsNQueue.length; i++){
 				this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
 			}
 		}
 
 		if(this.soundsLetterQueue) {
+		
 			for( var i=0; i < this.soundsLetterQueue.length; i++){
-				this.sounds.letters[String(this.soundsLetterQueue[i][0])] = new Audio('audio/' + language + 'alphabet/' + this.soundsLetterQueue[i][1])
+
+				var path = 'audio/' + language + '/alphabet/' + this.soundsLetterQueue[i][1];
+				this.sounds.letters[String(this.soundsLetterQueue[i][0])] = new Audio(path);
 			}
 		}
 
 		if(this.soundsWordQueue) {
+		
 			for( var i=0; i < this.soundsWordQueue.length; i++){
 				this.sounds.words[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsWordQueue[i][1])
 			}
@@ -233,12 +254,11 @@
 
 	}
 
-	Round.prototype.init = function(_Trial,_stage, stimuli){
-		//console.log("round stimuli:");
-		//console.log(stimuli);
+	Round.prototype.init = function(_Trial,_stage, _stimuli){
+
 		this.stage = _stage;
 		this._trial = _Trial;
-		this.stimuli = stimuli;
+		this.stimuli = _stimuli;
 	  	this.background = new PIXI.Sprite(assets.textures.bg);
 
 	 	this.stage.addChild(this.background);
@@ -252,33 +272,32 @@
 	    this.background.width = session.canvas.width;
 	    this.background.height = session.canvas.height;
 
-
-
 	}
 
 	Round.prototype.getNextTrial = function(){
 
-		//var stim = stimQueues['numberstim'].pop();
+		//var stim = this.stimuli.pop();
+		//console.log("Round.getNextTrial stim:")
+		//console.log(stim);
+		//console.log(this.stimuli.pop()); // this does get the next one
 	 	this.trial = new this._trial(this.stimuli.pop());
+	  	
 	  	if(this.trial.init != undefined){
 
-			this.trial.init();
-
+				this.trial.init();
 		}
-
 	}
 
 	Round.prototype.storeSession = function(stim, queue_name) {
 		//storeSession();
-		// when do we actually want to push everything back to local storage?
-		// if we do it each time they quit a game, we have to pull it back from LS again if they reopen
+		// push queue back to localstorage each time they quit a game
 	}
 
 	Round.prototype.destroy = function(){
 
 		this.trial.destroy()
 		this.stage.removeChild(this.background)
-	    this.background.destroy(true,true)
+		this.background.destroy(true,true)
 
 	}
 
@@ -319,16 +338,16 @@
 
 		if(this.scoreDifferential >= this.scoreTrashhold[1]){
 
-			console.log("increasing difficulty")
-			this.difficulty++
-			this.scoreDifferential = 0
+			console.log("increasing difficulty");
+			this.difficulty++;
+			this.scoreDifferential = 0;
 		}
 
 		if(this.scoreDifferential <= this.scoreTrashhold[0]){
 
-			console.log("decreasing difficulty")
-			this.difficulty--
-			this.scoreDifferential = 0
+			console.log("decreasing difficulty");
+			this.difficulty--;
+			this.scoreDifferential = 0;
 
 		}
 
@@ -341,12 +360,13 @@
 
 			if(this.difficulty > this.diffRange[1]){
 
-				this.difficulty = this.diffRange[1]
+				this.difficulty = this.diffRange[1];
+
 			};
 
 		}
 
-		console.log(this.difficulty)
+		console.log("difficulty: ", this.difficulty);
 
 	};
 
@@ -359,42 +379,35 @@
 	};
 
 
-
 /*
 -------------------------------------------------------------------------------------------------------------
                                                Class: Score
 -------------------------------------------------------------------------------------------------------------
 */
 
-	function gameScore(){
+	function gameScore(_round){
 
 		this.score = 0;
-		this.starts = [];
-		this.svgIds = 0
-		this.starLength = 0
-		this.explosion = []
+		this.stars = [];
+		this.svgIds = 0;
+		this.starLength = 0;
+		this.explosion = [];
+		this.stage = {};
 
 	};
 
-	gameScore.prototype.addScore = function(_starsPos, _value, _duation, _svg){
+	gameScore.prototype.addScore = function(_starsPos, _value, _duration, _svg, _index){
 
-<<<<<<< HEAD
-	this.score = this.score + (_starsPos.length * _value);
-	var initDelay = 200;
-	var delay = 0
-	var duration = _duation || 1000
-=======
 		this.score = this.score + (_starsPos.length * _value);
-		this.valuePerStar = _value
+		this.valuePerStar = _value;
 		var initDelay = 300;
-		var delay = 0
-		var duration = _duation || 1000
->>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
+		var delay = 0;
+		var duration = _duration || 1000;
+		this.index = _index || this.stage.children.length;
 
 		if(_svg){
 
 			this.svg = true;
-
 			var starGroup = d3.select("#scoreContainer")
 			.append("svg")
 			.attr("id", "starGroup")
@@ -418,20 +431,16 @@
 				.attr("id", "star-" + (this.starLength + 1))
 				.transition()
 				.delay(delay)
-				.duration(_duation)
+				.duration(_duration)
 				.attr({
-
 					x: window.innerWidth - 50,
 					y: -50,
-
 				})
 				.each("end", function(){
 				// Animation callback
-
 					var id = this.id
 					var _this = d3.select("#" + id).remove()
 					console.log(_this)
-
 				});
 
 				console.log(starSvg)
@@ -440,28 +449,6 @@
 			};
 
 
-<<<<<<< HEAD
-			var starSvg = starGroup.append("svg:image")
-			.attr("xlink:href", "svgs/starScore.svg")
-			.attr({
-			  x: _starsPos[i].x,
-			  y: _starsPos[i].y,
-			  width : 100,
-			  height : 100,
-			})
-			.attr("id", "star-" + (this.starLength + 1))
-			.transition()
-			.delay(delay)
-			.duration(_duation)
-			.attr({
-
-				x: window.innerWidth - 50,
-				y: -50,
-
-			})
-			.each("end", function(){
-			// Animation callback
-=======
 		}else{
 
 			this.svg = false;
@@ -476,20 +463,18 @@
 				star.width = 10;
 				star.height = 10;
 
-				this.stage.addChild(star);
+				this.stage.addChildAt(star,this.index);
 
 				var starAnimation = new animation(star);
 				starAnimation.init({x:session.canvas.width - 25, y: -50},duration,delay,[0,1]);
 
 				var starFeaAnimation = new animation(star);
 				starFeaAnimation.initFeature(
-
 					["width", "height"], // features to animate
 					90, // final size
 					200, // time value
 					delay, // delay
-					[0.75,1] // bezier courve 
-
+					[0.75,1] // bezier courve
 				);
 
 				var startRotation = new animation(star);
@@ -499,40 +484,22 @@
 					Math.PI * 2, // final position
 					duration, // time value
 					delay, // delay
-					[0.75,1] // bezier courve 
+					[0.75,1] // bezier courve
 
 				);
-				
 
 				delay = delay + initDelay
-				this.starts.push([star,starAnimation,starFeaAnimation,startRotation]);
->>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
+				this.stars.push([star,starAnimation,starFeaAnimation,startRotation]);
 
 			};
 
-
 		};
-
-
 	};
 
 	gameScore.prototype.setExplosion = function(_pos,_radius,_duration){
 
 			var starCount = getRandomInt(30,50)
 
-<<<<<<< HEAD
-		for(var i = 0; i < _starsPos.length; i++){
-
-			var star = new PIXI.Sprite(assets.textures.star);
-			star.x = _starsPos[i].x;
-			star.y = _starsPos[i].y;
-
-			this.stage.addChild(star);
-
-			var starAnimation = new animation(star);
-			starAnimation.init({x:session.canvas.width - star.width/2, y:-star.width/2},duration,delay,[0,1]);
-			delay = delay + initDelay
-=======
 			for(var i = 0; i < starCount; i++ ){
 
 				var Estar = new PIXI.Sprite(assets.textures.star);
@@ -542,49 +509,44 @@
 				Estar.anchor.y = 0.5
 				Estar.width = 10;
 				Estar.height = 10;
->>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
-				var angle = getRandomFloat(-Math.PI,Math.PI) 
+				var angle = getRandomFloat(-Math.PI,Math.PI)
+
 
 				var EstarAnimation = new animation(Estar);
 				EstarAnimation.init(
 
 					{
-						"x" : (_pos.x + Math.cos(angle)*_radius) * (getRandomFloat(0.95,1.05)), 
-						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.9,1.05)), 
+						"x" : (_pos.x + Math.cos(angle)*_radius) * (getRandomFloat(0.95,1.05)),
+						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.9,1.05)),
 					},
 					_duration,
 					0,//getRandomInt(0,_duration*0.01),
 					[1,1]
-				
+
 				);
 
 				var startERotation = new animation(Estar);
 				startERotation.initFeature(
 
-<<<<<<< HEAD
-	};
-
-=======
 					"rotation", // features to animate
 					Math.PI * 4, // final position
 					_duration, // time value
 					0, // delay
-					[0.75,1] // bezier courve 
+					[0.75,1] // bezier courve
 
 				);
-				
->>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
+
 
 				var EstarFeaAnimation = new animation(Estar);
 				EstarFeaAnimation.initFeature(
 
 					"alpha",
-					0,	
+					0,
 					_duration, //length
 					0, // delay
 					[0,0.75]
-				
+
 				);
 
 				console.log(EstarFeaAnimation)
@@ -593,32 +555,25 @@
 			};
 
 
-
 			console.log("explosion set!-------------------------------------------------")
 	};
 
 	gameScore.prototype.displayExplosion = function(){
 
-<<<<<<< HEAD
-		for(var i = 0; i < this.starts.length; i++){
-
-			if(this.starts[i][1].run()){
-=======
 			var animationDone = true
-			
+
 			for(var i = 0; i < this.explosion.length; i++ ){
->>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
 				if(!this.explosion[i][2].runFeature(true)){
 
 					animationDone = false
-				
+
 				};
 
 				if(!this.explosion[i][3].runFeature()){
 
 					animationDone = false
-				
+
 				};
 
 				if(this.explosion[i][1].run()){
@@ -640,14 +595,9 @@
 
 	gameScore.prototype.addScoreUI = function(){
 
-<<<<<<< HEAD
-		if(animationDone){
-
-			return true;
-=======
 		var newValue = parseInt(document.getElementById('scoreNumber').innerHTML) + this.valuePerStar;
 		document.getElementById('scoreNumber').innerHTML = newValue
-		
+
 		if(newValue > 9){
 
 			if(newValue > 99){
@@ -658,42 +608,38 @@
 
 			}else{
 
-
 				document.getElementById('scoreNumber').style.left = 10
 
-
 			}
->>>>>>> 6152595bbaabf23c5dca4d132b805ac8e52611f4
 
 		}
-
 	};
 
 	gameScore.prototype.displayStar = function(){
 
 			var animationDone = true
 
-			for(var i = 0; i < this.starts.length; i++){
+			for(var i = 0; i < this.stars.length; i++){
 
-				if(!this.starts[i][2].runFeature()){ //call animation function for size on each star
+				if(!this.stars[i][2].runFeature()){ //call animation function for size on each star
 
 					animationDone = false
 
 				};
 
-				if(!this.starts[i][3].runFeature()){
+				if(!this.stars[i][3].runFeature()){
 
 					animationDone = false
-				
+
 				};
 
-				if(this.starts[i][1].run()){ //call animation function for position on each star
+				if(this.stars[i][1].run()){ //call animation function for position on each star
 
-					this.stage.removeChild(this.starts[i][0])
-					this.starts[i][0].destroy()
-					this.starts[i][0] = []
-					this.starts[i][1] = []
-					this.starts.splice(i,1);
+					this.stage.removeChild(this.stars[i][0])
+					this.stars[i][0].destroy()
+					this.stars[i][0] = []
+					this.stars[i][1] = []
+					this.stars.splice(i,1);
 
 					this.addScoreUI()
 
@@ -714,5 +660,5 @@
 			}
 
 			return false;
-
 	};
+	
