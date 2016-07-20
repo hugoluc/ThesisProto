@@ -3,7 +3,5 @@
 prototype01/hooks/*
 prototype01/plugins/*
 prototype01/platforms/*
-prototype01/platforms/*
 *.class
-*.lock
 *.properties
