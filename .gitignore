@@ -4,3 +4,6 @@ hooks/
 platforms/
 plugins/
 *.class
+*.lock
+
+*.bin
