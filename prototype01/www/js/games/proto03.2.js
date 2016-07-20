@@ -2,6 +2,7 @@ var proto3loaded = false;
 var stimCount = -1;
 
 function proto03(){
+
   // difficulty phases:
   // increase maxOptions every 5 correct trials (decrease after 2 incorrect?)
   // increase maxAddends along with maxOptions
@@ -12,6 +13,7 @@ function proto03(){
   var minAddends = 2;
   var maxAddends = 3;
   var maxOptions = 4;
+
   //queuesToUpdate['mathstim'] = true;
   //var stimuli = stimQueues['mathstim'];
   queuesToUpdate['numberstim'] = true;
@@ -20,7 +22,8 @@ function proto03(){
 
 /*------------------------------------------------------------------------------
                               Class: lillyFinal
-------------------------------------------------------------------------------*/
+------------------------------------------------------------------------------
+*/
 
     function lillyFinal(){
         this.specs = {}
@@ -200,7 +203,6 @@ function proto03(){
             })
         }
     };
-
 
 
 /*
@@ -568,15 +570,20 @@ function proto03(){
 */
 
     function Trial(_stim){
+
         console.log(_stim)
         stimCount++;
         // check if _stim.options is undefined, in which case generate random trial
         // let's make sure we don't generate the answer as an extra (too easy!)
 
-  		  // origstim is the final desired sum. It is used to draw smaller lillypad
+  		// origstim is the final desired sum. It is used to draw smaller lillypad
         // so the user has at least one way to solve the problem
         this.origstim = _stim; // e.g. {id:"1", audio:"1", text:"one", priority: 2}
-        this.stimuli = this.createAdditionProblem(_stim);
+
+        var sub = true
+        if(Math.random() < 0.5) sub = false 
+        console.log(sub)
+        this.stimuli = this.createAdditionProblem(_stim,true);
 
         console.log(this.stimuli);
 
@@ -616,39 +623,86 @@ function proto03(){
         this.leavesToFade = 0;
     };
 
-    Trial.prototype.createAdditionProblem = function(stim) {
+    Trial.prototype.createAdditionProblem = function(stim,_sub) {
       // given a single number (desired sum), want to generate a set of addends
       // and potentially add another value that is too large
+     
       var total = parseInt(stim.id);
-      if(total==1) { // special simple cases
-        if(Math.random()>.5) return [1,0,0];
-        return [1,1,0];
-      } else if(total==2) {
-        if(Math.random()>.5) return [1,1,0];
-        return [1,1,1];
-      } else if(total==3) {
-        if(Math.random()>.5) return [1,2,0];
-        return [2,1,1]; // [1,1,1,0] is boring
-      }
       var values = [];
+
+      console.log(">>>>>>>>>>>")
+      console.log(_sub)
+     
+     if(total < 4){
+        console.log("less then 4!")
+
+        if(total==1) { // special simple cases
+
+            if(Math.random() > 0.5) return [1,0,0];
+            values= [1,1,0];
+
+        } else if(total==2) {
+
+                if( Math.random() > 0.5) return [1,1,0];
+                values= [1,1,1];
+
+        } else if(total==3) {
+
+                if(Math.random()>.5) return [1,2,0];
+                values= [2,1,1]; // [1,1,1,0] is boring
+
+        }
+
+        if(_sub){
+
+            values[1] =+ values[0]
+            values[0] = values[0]*-1
+
+
+        }
+
+        return values
+
+    }
+
       var cumSum = 0;
-      var Naddends = getRandomInt(minAddends, maxAddends);
+      var Naddends = getRandomInt(minAddends, maxAddends); // get number of addends. Ex.: (2+3+4 = 9) addednts = 3
+     
       for (var i = 0; i < Naddends-1; i++) {
+     
         var addend = getRandomInt(1,total-cumSum-1);
         cumSum += addend;
         values.push(addend);
+      
       }
+      
       values.push(total - cumSum);
-      //if(values.length < maxOptions) { // add (maxOptions-values.length)
-      for(i=0; i<=(maxOptions-values.length); i++) {
-        if(Math.random()<.6) {
-          values.push(getRandomInt(0,total-1));
-        } else {
-          values.push(getRandomInt(total+1, total+3));
-        }
+
+      if(_sub){
+
+        values[1] =+ values[0]
+        values[0] = values[0]*-1
+
       }
-      return values;
+      
+      for(i=0; i <= (maxOptions-values.length); i++) {
+      
+        if(Math.random() < 0.6) {
+      
+          values.push(getRandomInt(0,total-1));
+      
+        } else {
+      
+          values.push(getRandomInt(total+1, total+3));
+      
+        }
+    
     }
+
+    
+      return values;
+    
+    };
 
     Trial.prototype.init = function(){
         var lilipadValues = this.stimuli; // need to deep copy?
