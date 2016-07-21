@@ -1,6 +1,6 @@
-var game_loaded = false;
 
 function spellingGame(){
+  var game_loaded = false;
   /*
   -------------------------------------------------------------------------------------------------------------
                                                  Class: Assets

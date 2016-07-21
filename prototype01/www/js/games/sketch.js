@@ -46,6 +46,7 @@ var __slice = Array.prototype.slice;
       this.actions = [];
       this.action = [];
       this.canvas.bind('click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', this.onEvent);
+      this.drawAlphabet();
       if (this.options.toolLinks) {
         $('body').delegate("a[href=\"#" + (this.canvas.attr('id')) + "\"]", 'click', function(e) {
           var $canvas, $this, key, sketch, _i, _len, _ref;
@@ -111,6 +112,22 @@ var __slice = Array.prototype.slice;
       return false;
     };
 
+    Sketch.prototype.drawAlphabet = function() {
+      this.context.font="30px Verdana";
+      // Create gradient
+      var gradient = this.context.createLinearGradient(0,0, this.el.width,0);
+      gradient.addColorStop("0","magenta");
+      gradient.addColorStop("0.5","blue");
+      gradient.addColorStop("1.0","red");
+      // Fill with gradient
+      this.context.fillStyle = gradient;
+      var spacing = (this.el.width - 50) / letters.length;
+      for (var i = 0; i < letters.length; i++) {
+        this.context.fillText(letters[i].text, 50 + i*spacing, this.el.height-60);
+        this.context.fillText(letters[i].text.toLowerCase(), 51 + i*spacing, this.el.height-28)
+      }
+    };
+
     Sketch.prototype.redraw = function() {
       var sketch;
       this.el.width = this.canvas.width();
@@ -124,6 +141,7 @@ var __slice = Array.prototype.slice;
       if (this.painting && this.action) {
         return $.sketch.tools[this.action.tool].draw.call(sketch, this.action);
       }
+      this.drawAlphabet(); // redraw the alphabet at the bottom
     };
     return Sketch;
   })();
@@ -216,24 +234,7 @@ var Sketch = function() {
   $.each([3, 5, 10, 15], function() {
     $('#container-exp .tools').append("<a href='#sketch' data-size='" + this + "' style='margin: 2px; background: #ccc'>" + this + "</a> ");
   });
-
-  var ctx = canvas.getContext("2d");
-
-  ctx.font="30px Verdana";
-  // Create gradient
-  var gradient=ctx.createLinearGradient(0,0,canvas.width,0);
-  gradient.addColorStop("0","magenta");
-  gradient.addColorStop("0.5","blue");
-  gradient.addColorStop("1.0","red");
-  // Fill with gradient
-  ctx.fillStyle=gradient;
-
-  var spacing = (canvas.width - 50) / letters.length;
-  for (var i = 0; i < letters.length; i++) {
-    ctx.fillText(letters[i].text, 50 + i*spacing, canvas.height-60);
-    ctx.fillText(letters[i].text.toLowerCase(), 51 + i*spacing, canvas.height-28)
-  }
-
+  
   $('#sketch').sketch();
 
 };

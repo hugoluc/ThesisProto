@@ -1,6 +1,7 @@
 *.bin
 *.lock
-hooks/
-platforms/
-plugins/
-config.xml
+prototype01/hooks/*
+prototype01/plugins/*
+prototype01/platforms/*
+*.class
+*.properties

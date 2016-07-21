@@ -7,7 +7,8 @@ var MainMenu = function() {
 function Start(){
 
   //------------->> move this inside module that handles game displaying
-  var availableGames = [
+  // should store this on the first session and update available when exiting a game
+  var Games = [
 
       {
         name: "Counting",
@@ -36,6 +37,11 @@ function Start(){
         callFunction: bubbleLetters
       },
 
+      {
+        name: "Memory",
+        available: true,
+        callFunction: memory
+      },
 
       {
         name: "Word Guess",
@@ -64,8 +70,8 @@ function Start(){
       },
 
       {
-        name: "WorldMap",
-        available: true,
+        name: "World Map",
+        available: false,
         callFunction: WorldMap
       }
   ]
@@ -73,25 +79,26 @@ function Start(){
   // hide experiment and show chooser
   var containerMainMenu = document.getElementById("container-chooser")
 
-  for(var i =0; i<availableGames.length; i++){
+  for(var i =0; i<Games.length; i++){
+    // only add it if they have made enough progress to get to it!
+    if(Games[i].available) {
+      game = document.createElement("div");
+      game.id = i;
+      game.className = "MenuButton";
+      game.innerHTML = Games[i].name;
 
-    game = document.createElement("div");
-    game.id = i
-    game.className = "MenuButton"
-    game.innerHTML = availableGames[i].name
 
 
+      var gameClick = function(){
 
-    var gameClick = function(){
+        clickStart('container-chooser','container-exp');
+        currentview = new Games[this.id].callFunction();
 
-      clickStart('container-chooser','container-exp');
-      currentview = new availableGames[this.id].callFunction();
+      }
 
+      game.onclick = gameClick;
+      containerMainMenu.appendChild(game);
     }
-
-    game.onclick = gameClick
-    containerMainMenu.appendChild(game)
-
   }
 
   if(!PIXIInitialized){
