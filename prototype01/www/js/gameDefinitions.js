@@ -98,21 +98,21 @@
 	Assets.prototype.addSound = function(name,url){
 
 		if(typeof(name) == "number"){
-		
+
 			this.soundsNQueue.push([name,url])
-		
+
 		} else if(name.length===1){
-		
+
 			this.soundsLetterQueue.push([name,url])
-		
+
 		} else if(typeof(name)== "word"){ // need to distinguish words from generic sounds (bc they have different folders)
-		
+
 			this.soundsWordQueue.push([name,url])
-		
+
 		} else {
-		
+
 			this.soundsQueue.push([name,url])
-		
+
 		}
 	};
 
@@ -136,9 +136,9 @@
 			})
 
 		}else{
-		
+
 			this.start()
-		
+
 		}
 	};
 
@@ -154,30 +154,30 @@
 		this.textures = {}
 
 		for( var i=0; i < this.textureQueue.length; i++){
-		
+
 			this.textures[this.textureQueue[i][0]] = new PIXI.Texture.fromImage(this.textureQueue[i][1])
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
-		
+
 			this.sounds[this.soundsQueue[i][0]] = []
 		}
 
 		for( var i=0; i < this.soundsQueue.length; i++){
-		
+
 			this.sounds[this.soundsQueue[i][0]].push(new Audio('audio/' + this.soundsQueue[i][0] + '/' + this.soundsQueue[i][1]))
 		}
-		
+
 		// numbers are just like other words, so we might not need a separate Queue
 		if(this.soundsNQueue) {
-		
+
 			for( var i=0; i < this.soundsNQueue.length; i++){
 				this.sounds.numbers[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsNQueue[i][1])
 			}
 		}
 
 		if(this.soundsLetterQueue) {
-		
+
 			for( var i=0; i < this.soundsLetterQueue.length; i++){
 
 				var path = 'audio/' + language + '/alphabet/' + this.soundsLetterQueue[i][1];
@@ -186,7 +186,7 @@
 		}
 
 		if(this.soundsWordQueue) {
-		
+
 			for( var i=0; i < this.soundsWordQueue.length; i++){
 				this.sounds.words[String(this.soundsNQueue[i][0])] = new Audio('audio/' + language + '/' + this.soundsWordQueue[i][1])
 			}
@@ -281,7 +281,7 @@
 		//console.log(stim);
 		//console.log(this.stimuli.pop()); // this does get the next one
 	 	this.trial = new this._trial(this.stimuli.pop());
-	  	
+
 	  	if(this.trial.init != undefined){
 
 				this.trial.init();
@@ -661,4 +661,3 @@
 
 			return false;
 	};
-	

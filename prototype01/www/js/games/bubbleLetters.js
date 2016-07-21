@@ -10,7 +10,7 @@ var nonblueColors = ["#DE1B1B","#CBE32D","#D9853B","#FFE658","#DF3D82","#7D1935"
   (slowly at first) towards the target. if the target is clicked before the
   dragonfly reaches it, a point is scored (more for faster?). if the wrong
   bubble is popped or if the dragonfly gets there first, (or dragonfly gets a point?)
-  number of distractors increases after 3 right, and speed adjusts constantly
+  number of distractors increases after 3 (1?) right, and speed adjusts constantly
 */
 
 function bubbleLetters(){
@@ -532,6 +532,7 @@ function bubbleLetters(){
                 assets.destroy();
                 finishGame = false;
                 currentview = new MainMenu(); // assets?
+                //bubblegameloaded = false; // or does leaving it on prevent re-loading assets?
                 return;
             }
 
@@ -543,14 +544,14 @@ function bubbleLetters(){
             previousTime = current;
             lag = lag + elapsed;
 
-              while (lag >= MS_PER_UPDATE){
+            while (lag >= MS_PER_UPDATE){
               round.play(lag/MS_PER_UPDATE);
               lag = lag - MS_PER_UPDATE;
             }
 
               // render the stage
-              session.render(stage);
-              requestAnimationFrame(update);
+            session.render(stage);
+            requestAnimationFrame(update);
             if(statsBol) session.stats.end();
 
         }
