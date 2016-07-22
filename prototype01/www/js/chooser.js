@@ -9,13 +9,11 @@ function Start(){
   //------------->> move this inside module that handles game displaying
   // should store this on the first session and update available when exiting a game
   var Games = [
-
       {
         name: "Counting",
         available: true,
         callFunction: proto02
       },
-
 
       {
         name: "Addition",
@@ -23,13 +21,11 @@ function Start(){
         callFunction: proto03
       },
 
-
       {
         name: "Multiplication",
         available: true,
         callFunction: Multiplication
       },
-
 
       {
         name: "Alphabet",
@@ -49,13 +45,11 @@ function Start(){
         callFunction: Hangman
       },
 
-
       {
         name: "Word Find",
         available: true,
         callFunction: WordFind
       },
-
 
       {
         name: "Drawing",
@@ -73,8 +67,14 @@ function Start(){
         name: "World Map",
         available: false,
         callFunction: WorldMap
+      },
+
+      {
+        name: "Piano",
+        available: true,
+        callFunction: Piano
       }
-  ]
+  ];
 
   // hide experiment and show chooser
   var containerMainMenu = document.getElementById("container-chooser")

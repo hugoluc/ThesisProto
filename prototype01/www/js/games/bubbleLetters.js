@@ -45,7 +45,7 @@ function bubbleLetters(){
         var _this = this;
 
         this.value = _value;
-          this.id = _id;
+        this.id = _id;
         this.clicked = false;
         this.posdId = _position.id;
         this.pos = _position.pos;
@@ -79,10 +79,10 @@ function bubbleLetters(){
         this.cStim.x = this.pos.x + this.size*0.5;
         this.cStim.y = this.pos.y + this.size*0.5;
 
-        this.circle.rotation = 0.1
+        this.circle.rotation = 0.1;
         this.container.addChild(this.cStim);
-        stage.addChild(this.container)
-        this.display(false)
+        stage.addChild(this.container);
+        this.display(false);
     };
 
 

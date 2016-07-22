@@ -26,10 +26,12 @@ function memory(){
   var timer;
   var timer_txt;
   var nCount = 60;
-  var colordeck = new Array(1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8);
   var ncol = 4;
   var nrow = 4;
+  var colordeck = new Array(1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8);
 
+
+  //function Trial(_stim){
   function init(){
     // create an new instance of a pixi stage and make it Interactive (mandatory)
   	//stage = new PIXI.Stage(0xffffff, true);
@@ -46,7 +48,7 @@ function memory(){
     background.beginFill(0xcccccc);
     background.drawRect(90, 50, ncol*(stimSize+2), nrow*(stimSize+2));
     stage.addChild(background);
-
+    
   	//Game Grid container for all Tiles.
   	gameGrid = new PIXI.Container();
   	stage.addChild(gameGrid);
@@ -54,7 +56,7 @@ function memory(){
   	for (var x=1; x<=ncol; x++) {
   		for (var y=1; y<=nrow; y++) {
   			var random_card = Math.floor(Math.random()*colordeck.length);
-      	//defaultImage = PIXI.Sprite.fromImage(assetFolder+"color_default.png");
+      	//defaultImage = PIXI.Sprite.fromImage(assetsDir+"card_back.png");
         graphics = new PIXI.Graphics();
         graphics.beginFill(0xe74c3c); // Red
         defaultImage = graphics.drawRoundedRect(0, 0, 85, 85, 10); // drawRoundedRect(x, y, width, height, radius)
@@ -170,8 +172,8 @@ function memory(){
 
   function reset_tiles() {
     graphics = new PIXI.Graphics();
-    graphics.beginFill(0xe74c3c); // Red
-    defaultImage = graphics.drawRoundedRect(0, 0, 85, 85, 10); // drawRoundedRect(x, y, width, height, radius)
+    graphics.beginFill(0xe74c3c); // red
+    defaultImage = graphics.drawRoundedRect(0, 0, stimSize-5, stimSize-5, 10); // drawRoundedRect(x, y, width, height, radius)
     graphics.endFill();
   	first_tile.addChild( defaultImage );
   	second_tile.addChild( defaultImage );
@@ -221,6 +223,8 @@ function memory(){
 
       function onAssetsLoaded(){
         //round.init(Trial,stage, stimQ);
+        // maybe select a random type of stimQ?
+        // or the type the user hasn't played in a while?
         init();
         setTimeout(function(){
             console.log("starting the game!");
