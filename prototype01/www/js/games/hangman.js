@@ -129,7 +129,7 @@ var HangmanTrial = function(pars) {
       .attr("class", "button")
       .attr("r", button_width/2)
       .attr("fill", "blue")
-      .style("opacity", .4);
+      .style("opacity", .3);
 
     d3.selectAll(".button")
       .on(click_type, function(d) {
