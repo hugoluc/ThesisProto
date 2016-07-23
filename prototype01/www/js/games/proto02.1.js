@@ -416,6 +416,7 @@ function proto02(){
             this.playing = [];
             this.audioTimer = new ClockTimer();
             this.wrongClicks = 0;
+            this.stimPlayed = false;
         };
 
         Trial.prototype.intro = function(){
@@ -423,8 +424,10 @@ function proto02(){
             switch(this.introState){
 
                 case "displaySound":
-
-                    assets.sounds.numbers[this.correct].play();
+                    if(!this.stimPlayed) {
+                      assets.sounds.numbers[this.correct].play();
+                      this.stimPlayed = true;
+                    }
 
                     if(this.trialTimer.timeOut()){
 

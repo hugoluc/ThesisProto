@@ -5,3 +5,5 @@ prototype01/plugins/*
 prototype01/platforms/*
 *.class
 *.properties
+
+*.log
