@@ -13,14 +13,14 @@ function Start(){
         name: "Counting",
         available: true,
         callFunction: proto02,
-        icon: "../img/Menu/ladybug_icon.png"
+        icon: "img/Menu/ladybug_icon.png"
       },
 
       {
         name: "Addition",
         available: true,
         callFunction: proto03,
-        icon: "../img/Menu/ants_icon.png"
+        icon: "img/Menu/ants_icon.png"
       },
 
       {
@@ -33,7 +33,7 @@ function Start(){
         name: "Alphabet",
         available: true,
         callFunction: bubbleLetters,
-        icon: "../img/Menu/dragonfly_icon.png"
+        icon: "img/Menu/dragonfly_icon.png"
       },
 
       {
@@ -64,7 +64,7 @@ function Start(){
         name: "Shapes",
         available: true,
         callFunction: Shapes,
-        icon: "../img/Menu/shapes_icon.png"
+        icon: "img/Menu/shapes_icon.png"
       },
 
       {
@@ -89,9 +89,11 @@ function Start(){
       game = document.createElement("div");
       game.id = i;
       game.className = "MenuButton";
-      game.innerHTML = Games[i].name;
-
-
+      if(Games[i].icon) {
+        game.innerHTML = "<img src='"+Games[i].icon+"' width=170 height=170 />"
+      } else {
+        game.innerHTML = "<p>"+Games[i].name+"</p>";
+      }
 
       var gameClick = function(){
 

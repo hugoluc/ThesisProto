@@ -6,8 +6,8 @@ var Piano = function() {
     this.destroy = function(){
         $("#piano").remove();
         $("#piano_back").remove();
-        console.log("quitting");
-        currentview = new MainMenu(); // assets?
+        $("canvas").remove(); // remove the noise waveforms
+        currentview = new MainMenu(); 
     };
     // or just show header-exp
     $("#container-exp").append("<image src='img/Header/back.png' width=100 onclick='currentview.destroy()' id='piano_back'></image>");
