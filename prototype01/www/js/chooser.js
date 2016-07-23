@@ -12,13 +12,15 @@ function Start(){
       {
         name: "Counting",
         available: true,
-        callFunction: proto02
+        callFunction: proto02,
+        icon: "../img/Menu/ladybug_icon.png"
       },
 
       {
         name: "Addition",
         available: true,
-        callFunction: proto03
+        callFunction: proto03,
+        icon: "../img/Menu/ants_icon.png"
       },
 
       {
@@ -30,7 +32,8 @@ function Start(){
       {
         name: "Alphabet",
         available: true,
-        callFunction: bubbleLetters
+        callFunction: bubbleLetters,
+        icon: "../img/Menu/dragonfly_icon.png"
       },
 
       {
@@ -60,7 +63,8 @@ function Start(){
       {
         name: "Shapes",
         available: true,
-        callFunction: Shapes
+        callFunction: Shapes,
+        icon: "../img/Menu/shapes_icon.png"
       },
 
       {

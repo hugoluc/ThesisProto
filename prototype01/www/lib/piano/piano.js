@@ -3,11 +3,19 @@
  */
 
 var Piano = function() {
+    this.destroy = function(){
+        $("#piano").remove();
+        $("#piano_back").remove();
+        console.log("quitting");
+        currentview = new MainMenu(); // assets?
+    };
+    // or just show header-exp
+    $("#container-exp").append("<image src='img/Header/back.png' width=100 onclick='currentview.destroy()' id='piano_back'></image>");
+    $("#container-exp").append($("<div id='piano'></div>"));
 
     //
     // Setup keys!
     //
-
     var notesOffset = 0;
 
     var blackKeys = {
@@ -25,7 +33,7 @@ var Piano = function() {
         return blackKeys[(i % 12) + (i < 0 ? 12 : 0)] || '';
     }
 
-    var $keys = $('<div>', {'class': 'keys'}).appendTo('#container-exp');
+    var $keys = $('<div>', {'class': 'keys'}).appendTo('#piano');
 
     var buildingPiano = false;
 
@@ -489,7 +497,7 @@ var Piano = function() {
     //
     (function() {
         var shouldAnimate = true,
-            $piano = $('#container-exp'),
+            $piano = $('#piano'),
             W = $piano.width(),
             H = 100, // was 500
             $canvas = $('<canvas>', {
@@ -615,7 +623,7 @@ var Piano = function() {
             })
             .attr('width', bW)
             .attr('height', bH)
-            .appendTo('#container-exp'),
+            .appendTo('#piano'),
             button = $button.get(0),
             bctx = button.getContext('2d'),
             coords = [
