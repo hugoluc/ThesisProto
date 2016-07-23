@@ -177,7 +177,7 @@ function bubbleLetters(){
         this.origstim = _stim; // in original form to push back on stimulus queue
         this.clock = new ClockTimer();
 
-          this.trialState = "intro";
+        this.trialState = "intro";
         this.introState = "playSound";
 
         this.bubble = [];
@@ -228,13 +228,11 @@ function bubbleLetters(){
             this.bubble[i].init(bubval, this.getPos(i), this.specs.stimWidth, i)
         }
 
-        //console.log(this.bubble[0]);
         // first bubble is target
         this.targetx = this.bubble[0].circle.x;
         this.targety = this.bubble[0].circle.y + 25;
 
         // create dragonfly
-        //this.dragonfly = new PIXI.Sprite(assets.textures.dragonfly);
         this.dragonfly = new PIXI.extras.MovieClip(assets.sprites.dragonfly);
         this.dragonfly.animationSpeed = 0.16;
         this.dragonfly.play();
@@ -266,24 +264,24 @@ function bubbleLetters(){
     Trial.prototype.getSpecs = function(){
         var obj = {};
         obj.canvasMargin = 30;
-    obj.stimWidth = 130;
-    obj.margin = 15;
+        obj.stimWidth = 130;
+        obj.margin = 15;
 
-    obj.width = session.canvas.width-(2*obj.canvasMargin)-obj.stimWidth/2;
+        obj.width = session.canvas.width-(2*obj.canvasMargin)-obj.stimWidth/2;
         obj.height = session.canvas.height-(2*obj.canvasMargin);
 
-    obj.moduleSize = obj.stimWidth+(obj.margin*2);
+        obj.moduleSize = obj.stimWidth+(obj.margin*2);
 
-    obj.moduleWidthCount = Math.floor(obj.width/obj.moduleSize);
-    obj.moduleHeightCount = Math.floor(obj.height/obj.moduleSize);
+        obj.moduleWidthCount = Math.floor(obj.width/obj.moduleSize);
+        obj.moduleHeightCount = Math.floor(obj.height/obj.moduleSize);
 
-    obj.widthInter = obj.width/obj.moduleWidthCount;
-    obj.heightInter = obj.height/obj.moduleHeightCount;
+        obj.widthInter = obj.width/obj.moduleWidthCount;
+        obj.heightInter = obj.height/obj.moduleHeightCount;
 
-    obj.marginW = (obj.widthInter - obj.stimWidth)/2;
-    obj.marginH = (obj.heightInter - obj.stimWidth)/2;
+        obj.marginW = (obj.widthInter - obj.stimWidth)/2;
+        obj.marginH = (obj.heightInter - obj.stimWidth)/2;
 
-    return obj;
+        return obj;
     };
 
     Trial.prototype.getMatrixPosition = function(){
@@ -517,7 +515,7 @@ function bubbleLetters(){
         if(statsBol){
             session.stats.domElement.style.display = "block";
         };
-        
+
         var finishGame = false;
         var previousTime = Date.now();
         var MS_PER_UPDATE = 16.66667;

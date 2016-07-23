@@ -17,7 +17,6 @@ function memory(){
   var first_tile;
   var second_tile;
   var gameGrid;
-  var logo;
   var pause_timer;
   var defaultImage;
   var pairsFinished = 8;
@@ -31,7 +30,19 @@ function memory(){
   var colordeck = new Array(1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8);
 
 
-  //function Trial(_stim){
+  function Trial(_stim){
+    this.stim = _stim; // although we need (ncol*nrow) / 2 stimuli -- not just one
+  }
+
+  Trial.prototype.destroy = function(){
+      // for(var i = 0; i<this.bubble.length; i++){
+      //     this.bubble[i].destroy()
+      // }
+      //
+      // stage.removeChild(this.dragonfly);
+      // this.dragonfly.destroy();
+  };
+
   function init(){
     // create an new instance of a pixi stage and make it Interactive (mandatory)
   	//stage = new PIXI.Stage(0xffffff, true);
@@ -48,7 +59,7 @@ function memory(){
     background.beginFill(0xcccccc);
     background.drawRect(90, 50, ncol*(stimSize+2), nrow*(stimSize+2));
     stage.addChild(background);
-    
+
   	//Game Grid container for all Tiles.
   	gameGrid = new PIXI.Container();
   	stage.addChild(gameGrid);
@@ -57,14 +68,10 @@ function memory(){
   		for (var y=1; y<=nrow; y++) {
   			var random_card = Math.floor(Math.random()*colordeck.length);
       	//defaultImage = PIXI.Sprite.fromImage(assetsDir+"card_back.png");
-        graphics = new PIXI.Graphics();
-        graphics.beginFill(0xe74c3c); // Red
-        defaultImage = graphics.drawRoundedRect(0, 0, 85, 85, 10); // drawRoundedRect(x, y, width, height, radius)
-        graphics.endFill();
   			tile = new PIXI.Container();
   			tile.col = colordeck[random_card];
   			colordeck.splice(random_card,1);
-  			tile.addChild(defaultImage);
+  			tile.addChild( get_default_tile() );
   			tile.position.x = 97 + (x-1)*stimSize;
   			tile.position.y = 57 + (y-1)*stimSize;
   			gameGrid.addChild(tile);
@@ -75,44 +82,57 @@ function memory(){
   	}
   }
 
+  function get_text_card(letter) {
+    var tmp = new PIXI.Container();
+    graphics = new PIXI.Graphics();
+    graphics.beginFill(0x0033ee); // green-blue
+    graphics.drawRoundedRect(0, 0, 85, 85, 10); // drawRoundedRect(x, y, width, height, radius)
+    graphics.endFill();
+    tmp.addChild(graphics);
+    var txt = new PIXI.Text(letter, {font:"40px Arial", fill:"#FFFFFF"});
+  	txt.position.x = 25;
+  	txt.position.y = 20;
+  	//stage.addChild(txt);
+    tmp.addChild(txt)
+    return tmp;
+  }
 
   function tile_clicked(){
   	var clicked = this;
-  	//clicked.scale.x = 0.9;
-  	//clicked.scale.y = 0.9;
+  	clicked.scale.x = 0.97;
+  	clicked.scale.y = 0.97;
 
   	if (first_tile == null) {
   		first_tile = clicked;
 
   		switch( clicked.col ) {
-
-  			case 1: first_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"banana.png") ); break;
-  			case 2: first_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"cherry.png") );break;
-  			case 3: first_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"grape.png") );break;
-  			case 4: first_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"lemon.png") );break;
-  			case 5: first_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"melon.png") );break;
-  			case 6: first_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"orange.png") );break;
-  			case 7: first_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"strawberry.png") );break;
-  			case 8: first_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"watermelon.png") );break;
+        // PIXI.Sprite.fromImage(assetFolder+"banana.png")
+  			case 1: first_tile.addChild( get_text_card('A') ); break;
+  			case 2: first_tile.addChild( get_text_card('B') );break;
+  			case 3: first_tile.addChild( get_text_card('C') );break;
+  			case 4: first_tile.addChild( get_text_card('D') );break;
+  			case 5: first_tile.addChild( get_text_card('E') );break;
+  			case 6: first_tile.addChild( get_text_card('F') );break;
+  			case 7: first_tile.addChild( get_text_card('G') );break;
+  			case 8: first_tile.addChild( get_text_card('H') );break;
   		}
 
   	} else if (second_tile == null && first_tile != clicked) {
   		second_tile = clicked;
 
   		switch( clicked.col ) {
-  			case 1: second_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"banana.png") ); break;
-  			case 2: second_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"cherry.png") );break;
-  			case 3: second_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"grape.png") );break;
-  			case 4: second_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"lemon.png") );break;
-  			case 5: second_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"melon.png") );break;
-  			case 6: second_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"orange.png") );break;
-  			case 7: second_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"strawberry.png") );break;
-  			case 8: second_tile.addChild( PIXI.Sprite.fromImage(assetFolder+"watermelon.png") );break;
+  			case 1: second_tile.addChild( get_text_card('a') ); break;
+  			case 2: second_tile.addChild( get_text_card('b') );break;
+  			case 3: second_tile.addChild( get_text_card('c') );break;
+  			case 4: second_tile.addChild( get_text_card('d') );break;
+  			case 5: second_tile.addChild( get_text_card('e') );break;
+  			case 6: second_tile.addChild( get_text_card('f') );break;
+  			case 7: second_tile.addChild( get_text_card('g') );break;
+  			case 8: second_tile.addChild( get_text_card('h') );break;
   		}
 
   		//Check if we have a pair or not.
   		if (first_tile.col == second_tile.col) {
-
 
   			console.log("PAIR FOUND")
 
@@ -170,13 +190,21 @@ function memory(){
   	timer_txt.text = "Time's Up!";
   }
 
+  function get_default_tile() {
+    var deftile = new PIXI.Graphics();
+    deftile.beginFill(0xe74c3c); // red
+    deftile.drawRoundedRect(0, 0, stimSize-5, stimSize-5, 10); // drawRoundedRect(x, y, width, height, radius)
+    deftile.endFill();
+    return deftile;
+  }
+
   function reset_tiles() {
-    graphics = new PIXI.Graphics();
-    graphics.beginFill(0xe74c3c); // red
-    defaultImage = graphics.drawRoundedRect(0, 0, stimSize-5, stimSize-5, 10); // drawRoundedRect(x, y, width, height, radius)
-    graphics.endFill();
-  	first_tile.addChild( defaultImage );
-  	second_tile.addChild( defaultImage );
+  	first_tile.addChild( get_default_tile() );
+  	second_tile.addChild( get_default_tile() );
+    first_tile.scale.x = 1;
+  	first_tile.scale.y = 1;
+    second_tile.scale.x = 1;
+  	second_tile.scale.y = 1;
   	first_tile = null;
   	second_tile = null;
   }
@@ -209,7 +237,7 @@ function memory(){
 
       //---------------------------------------loading assets
 
-      if(bubblegameloaded) {
+      if(game_loaded) {
 
           for (var i = 0; i < letters.length; i++) {
             assets.addSound(letters[i].text,letters[i].audio + '.mp3');
@@ -222,10 +250,10 @@ function memory(){
       };
 
       function onAssetsLoaded(){
-        //round.init(Trial,stage, stimQ);
+        round.init(Trial, stage, stimQ);
         // maybe select a random type of stimQ?
         // or the type the user hasn't played in a while?
-        init();
+        init(stimQ);
         setTimeout(function(){
             console.log("starting the game!");
             session.show();
@@ -253,7 +281,7 @@ function memory(){
               assets.destroy();
               finishGame = false;
               currentview = new MainMenu(); // assets?
-              //bubblegameloaded = false; // or does leaving it on prevent re-loading assets?
+              game_loaded = false; // or does leaving it on prevent re-loading assets?
               return;
           }
 

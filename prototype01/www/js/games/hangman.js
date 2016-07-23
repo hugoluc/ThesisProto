@@ -213,8 +213,8 @@ var HangmanTrial = function(pars) {
        .attr('y',ypos)
        .attr('width', 50)
        .attr('height', 50)
-       .attr("xlink:href","sprites/stick/leave.png");
-       //.attr("transform", "rotate("+getRandomInt(0,180)+")");
+       .attr("xlink:href","sprites/stick/leave.png")
+       .attr("transform", "rotate("+getRandomInt(0,180)+")");
 
     var myLabel = screend3.append("g").append("text")
       .attr("x", screen_width+50)
@@ -249,16 +249,16 @@ var Hangman = function() { // doesn't work a second time right now..
 
   this.destroy = function() {
     //clearTimeout();
-    screend3.selectAll("*")
-      .transition() // d3.select("#background")
-      .each("end",function() {
-        d3.select(this)
-          .transition()
-          .style("opacity",0)
-          .delay(0)
-          .duration(0)
-          .remove();
-       });
+    // screend3.selectAll("*")
+    //   .transition() // d3.select("#background")
+    //   .each("end",function() {
+    //     d3.select(this)
+    //       .transition()
+    //       .style("opacity",0)
+    //       .delay(0)
+    //       .duration(0)
+    //       .remove();
+    //    });
     // selectAll and remove "g", "svg", "circle", "rect" ...?
     screend3.select("#header-exp").transition().style("display : none");
     screend3.select("#background").remove(); // #background
