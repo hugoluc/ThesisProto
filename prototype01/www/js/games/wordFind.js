@@ -1,13 +1,18 @@
 
 //<div><button id='solve'>Solve Puzzle</button></div>
+// could make a 'hint' button that shows a word (or starting letter?)
 
 var WordFind = function() {
-  $("#container-exp").append("<div id='puzzle'></div>")
-  $("#container-exp").append("<div id='words'></div>")
+  document.getElementById("header-exp").style.display = "inline";
+  $("#container-exp").append("<div id='puzzle'></div>");
+  $("#container-exp").append("<div id='words'></div>");
+  $("#container-exp").css("background-color","green");
 
   this.destroy = function() {
-    session.hide();
-    // remove #puzzle and #words ?
+    //session.hide();
+    document.getElementById("header-exp").style.display = "none";
+    $("#puzzle").remove();
+    $("#words").remove();
     currentview = new MainMenu(assets);
   }
 

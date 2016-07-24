@@ -21,14 +21,14 @@ body{
 
     display: inline-block;
     background: blue;
-    width: 100px;
-    height: 100px;
-    margin: 10px
+    width: 170px;
+    height: 170px;
+    margin: 15px
 }
 
 #starGroup {
 
-        position: absolute;    
+        position: absolute;
 
 }
 
@@ -78,10 +78,10 @@ body{
 
 #scoreNumber{
 
-    display: table-cell; 
+    display: table-cell;
     position: absolute;
 
-    left: 20px; 
+    left: 20px;
     top: 4px;
     font-size: 26pt;
     font-weight: bold;
@@ -111,6 +111,10 @@ body{
 
 canvas{
     margin-top : 10%;
+}
+
+piano-button {
+    margin-top : 0%;
 }
 
 #sketch {

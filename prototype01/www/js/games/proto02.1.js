@@ -416,6 +416,7 @@ function proto02(){
             this.playing = [];
             this.audioTimer = new ClockTimer();
             this.wrongClicks = 0;
+            this.stimPlayed = false;
         };
 
         Trial.prototype.intro = function(){
@@ -423,8 +424,10 @@ function proto02(){
             switch(this.introState){
 
                 case "displaySound":
-
-                    assets.sounds.numbers[this.correct].play()
+                    if(!this.stimPlayed) {
+                      assets.sounds.numbers[this.correct].play();
+                      this.stimPlayed = true;
+                    }
 
                     if(this.trialTimer.timeOut()){
 
@@ -1099,9 +1102,9 @@ function proto02(){
                         this.audioQueue[0][i].play()
                     }
 
-                    var time  = 180
+                    var time = 180;
 
-                    this.audioTimer.start(time)
+                    this.audioTimer.start(time);
                     this.audioQueuePlay = true;
 
                 }
@@ -1116,17 +1119,14 @@ function proto02(){
 
                         for(var i = 0; i<this.audioQueue[0].length; i++){
 
-                            this.audioQueue[0][i].currentTime = 0
-                            this.playing.push(this.audioQueue[0][i])
-                            this.audioQueue[0][i].play()
+                            this.audioQueue[0][i].currentTime = 0;
+                            this.playing.push(this.audioQueue[0][i]);
+                            this.audioQueue[0][i].play();
 
                         }
 
-                        var time  = 180
-
-                        this.audioTimer.start(time)
-
-
+                        var time  = 180;
+                        this.audioTimer.start(time);
 
                     }else{
 
@@ -1137,10 +1137,10 @@ function proto02(){
                     return
 
                     if(this.audioQueue.length > 0 && this.audioQueue[0].paused){
-                        this.audioQueue.splice(0,1)
-                        this.audioQueue[0].currentTime = 0
-                        this.audioQueue[0].play()
-                        this.audioTimer.start(180)
+                        this.audioQueue.splice(0,1);
+                        this.audioQueue[0].currentTime = 0;
+                        this.audioQueue[0].play();
+                        this.audioTimer.start(180);
                     }else{
                         this.audioQueuePlay = false;
                     }
@@ -1189,36 +1189,36 @@ function proto02(){
             session.show();
             round.init(Trial,stage,stimuli);
 
-            var scoreRange = [-3,1] // -3 = decrese difficulty, 3 = increase difficulty
-            var difficultyRange = [0,15] // 0=superSlow, 10=superfast
+            var scoreRange = [-3,1]; // -3 = decrease difficulty, 3 = increase difficulty
+            var difficultyRange = [0,15]; // 0=superSlow, 10=superfast
             round.setDifficultyParams(scoreRange,difficultyRange,5);
 
-            session.render(stage)
+            session.render(stage);
             update();
         };
 
         //---------------------------------------loading assets
 
-            assets.addSprite("ladyBug_Walk",'sprites/ladyBug/ladyBug_Walk.json',4)
-            assets.addSprite("ladyBug_fly",'sprites/ladyBug/ladyBug_fly.json',4)
+            assets.addSprite("ladyBug_Walk",'sprites/ladyBug/ladyBug_Walk.json',4);
+            assets.addSprite("ladyBug_fly",'sprites/ladyBug/ladyBug_fly.json',4);
 
-            assets.addTexture("counter_blue",'sprites/ladyBug/Instructions/counter_blue.png')
-            assets.addTexture("counter_red",'sprites/ladyBug/Instructions/counter_red.png')
-            assets.addTexture("counter_gold",'sprites/ladyBug/Instructions/counter_gold.png')
-            assets.addTexture("instructions_blue",'sprites/ladyBug/Instructions/instructions_blue.png')
-            assets.addTexture("instructions_red",'sprites/ladyBug/Instructions/instructions_red.png')
+            assets.addTexture("counter_blue",'sprites/ladyBug/Instructions/counter_blue.png');
+            assets.addTexture("counter_red",'sprites/ladyBug/Instructions/counter_red.png');
+            assets.addTexture("counter_gold",'sprites/ladyBug/Instructions/counter_gold.png');
+            assets.addTexture("instructions_blue",'sprites/ladyBug/Instructions/instructions_blue.png');
+            assets.addTexture("instructions_red",'sprites/ladyBug/Instructions/instructions_red.png');
 
-            assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png')
+            assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png');
 
             if(window.innerWidth < 1200){
-                assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png')
+                assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png');
             }else{
-                assets.addTexture("bg",'sprites/backGrounds/BackGround-01_2x.png')
+                assets.addTexture("bg",'sprites/backGrounds/BackGround-01_2x.png');
             }
 
 
             for (var i = 0; i < numbers.length; i++) {
-
+              //assets.sounds.numbers
               assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
 
             };
@@ -1279,17 +1279,14 @@ function proto02(){
                 console.log('finishGame - storing session!');
                 round.storeSession(stimuli, 'numberstim');
 
-                session.stats.domElement.style.display = "none"
+                session.stats.domElement.style.display = "none";
                 round.destroy();
                 assets.destroy();
                 finishGame = false;
-                session.render(stage)
-
+                session.render(stage);
                 //console.log(">>>>>>>>",stimQueues['numberstim'])
 
                 currentview = new MainMenu();
-
-
                 return
             }
 

@@ -9,20 +9,19 @@ function Start(){
   //------------->> move this inside module that handles game displaying
   // should store this on the first session and update available when exiting a game
   var Games = [
-
       {
         name: "Counting",
         available: true,
-        callFunction: proto02
+        callFunction: proto02,
+        icon: "img/Menu/ladybug_icon.png"
       },
-
 
       {
         name: "Addition",
         available: true,
-        callFunction: proto03
+        callFunction: proto03,
+        icon: "img/Menu/ants_icon.png"
       },
-
 
       {
         name: "Multiplication",
@@ -30,11 +29,11 @@ function Start(){
         callFunction: Multiplication
       },
 
-
       {
         name: "Alphabet",
         available: true,
-        callFunction: bubbleLetters
+        callFunction: bubbleLetters,
+        icon: "img/Menu/dragonfly_icon.png"
       },
 
       {
@@ -49,13 +48,11 @@ function Start(){
         callFunction: Hangman
       },
 
-
       {
         name: "Word Find",
         available: true,
         callFunction: WordFind
       },
-
 
       {
         name: "Drawing",
@@ -66,15 +63,22 @@ function Start(){
       {
         name: "Shapes",
         available: true,
-        callFunction: Shapes
+        callFunction: Shapes,
+        icon: "img/Menu/shapes_icon.png"
       },
 
       {
         name: "World Map",
         available: false,
         callFunction: WorldMap
+      },
+
+      {
+        name: "Piano",
+        available: true,
+        callFunction: Piano
       }
-  ]
+  ];
 
   // hide experiment and show chooser
   var containerMainMenu = document.getElementById("container-chooser")
@@ -85,9 +89,11 @@ function Start(){
       game = document.createElement("div");
       game.id = i;
       game.className = "MenuButton";
-      game.innerHTML = Games[i].name;
-
-
+      if(Games[i].icon) {
+        game.innerHTML = "<img src='"+Games[i].icon+"' width=170 height=170 />"
+      } else {
+        game.innerHTML = "<p>"+Games[i].name+"</p>";
+      }
 
       var gameClick = function(){
 
