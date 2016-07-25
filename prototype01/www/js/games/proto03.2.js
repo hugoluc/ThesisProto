@@ -1002,14 +1002,15 @@ function proto03(){
 
             for(var i = 0; i<this.ants.sprites.length; i++){
 
+                var antSubtracted = false;
+
+
                 //*****************************
                 // Ants on the ORIGIN lillipad
                 //*****************************
-
                 if(this.ants.sprites[i].id == _origin){
 
                     // Generate position for animation
-
                         
                         var t0 = { //start of the stick
                             x: this.stick.x,
@@ -1034,7 +1035,8 @@ function proto03(){
                                 };
 
                                 oCounter++                         
-                                
+                                antSubtracted = true;
+
                                 var trajectory = [t0,t1,t2];
 
                             //Move rest of the ants to regular ants division on positive lillipad
@@ -1059,6 +1061,7 @@ function proto03(){
 
                         this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.ori));
                         this.antsToAnimate.origin.push(i);
+                        this.ants.sprites[i].subtracted = antSubtracted
                         offset.ori++;
                         posCount++;
                 
@@ -1074,6 +1077,9 @@ function proto03(){
 
                         if(tCounter < negativeValue){
 
+                            oCounter++                         
+                            antSubtracted = true;
+
                         }else{
 
                         };
@@ -1085,8 +1091,8 @@ function proto03(){
                     };
 
                     this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.tar));
-
                     this.antsToAnimate.target.push(i);
+                    this.ants.sprites[i].subtracted = antSubtracted
                     offset.tar++;
                     posCount++;
             
@@ -1240,6 +1246,33 @@ function proto03(){
 
 
                 if(done){
+                    console.log("animation done!")
+
+                    if(this.subtracting == "target"){
+
+                        var indexCounter = 0
+
+                        for(var i = 0; i<this.antsToAnimate.origin.length; i++){
+
+                            console.log(this.ants.sprites[this.antsToAnimate.origin[i]])
+
+                            if(this.ants.sprites[this.antsToAnimate.origin[i-indexCounter]].subtracted){
+
+                                console.log(this.ants)
+                                this.ants.sprites[this.antsToAnimate.origin[i-indexCounter]].destroy()
+                                this.ants.sprites.splice(this.antsToAnimate.origin[i-indexCounter],1)
+                                indexCounter++
+
+                            }
+
+                        }
+
+                    }else{
+
+
+
+
+                    }
 
                     return true
                 };
@@ -1633,9 +1666,6 @@ function proto03(){
                     var AnimationDone = this.animateAnts()
 
                     if(countDone && AnimationDone){
-
-                        console.log(this.lillySmall[this.countDownTargets[0]].cNumber.text)
-                        console.log(this.lillySmall[this.countDownTargets[1]].cNumber.text)
 
                         if(this.lillySmall[this.countDownTargets[0]].cNumber.text == 0) this.lillySmall[this.countDownTargets[0]].fade = true
                         if(this.lillySmall[this.countDownTargets[1]].cNumber.text == 0) this.lillySmall[this.countDownTargets[1]].fade = true
