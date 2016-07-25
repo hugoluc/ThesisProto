@@ -707,7 +707,6 @@ function proto03(){
 
         
           return values;
-        
     };
 
     Trial.prototype.init = function(){
@@ -796,7 +795,7 @@ function proto03(){
             this.antsAdd--
         
         }
-    }
+    };
 
     //Check if the stick was droped over an lillipad
     //Initializes operation and animation
@@ -893,9 +892,30 @@ function proto03(){
             this.countDownTargets = [_origin,_target];
 
             //update value for lillypads
-            this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
-            console.log("new vaue:", this.lillySmall[_target].value)
-            this.lillySmall[_origin].value = 0;
+            if(this.subtracting == "target"){
+
+                this.lillySmall[_origin].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
+                this.lillySmall[_target].value = 0;
+                console.log("new target vaue:", this.lillySmall[_target].value)
+                console.log("new origin vaue:", this.lillySmall[_origin].value)
+
+
+            }else if (this.subtracting == "origin"){
+
+                this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
+                console.log("new vaue:", this.lillySmall[_target].value)
+                this.lillySmall[_origin].value = 0;
+
+
+            }else{
+
+                this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
+                console.log("new vaue:", this.lillySmall[_target].value)
+                this.lillySmall[_origin].value = 0;
+
+            };
+
+
 
 
         };
@@ -914,7 +934,7 @@ function proto03(){
             val : 400,
             tar : 0,
             ori : 0,
-        }
+        };
 
         //****************
         // FINAL LILLIPAD
@@ -940,9 +960,9 @@ function proto03(){
                     this.antsToAnimate.origin.push(i);
                     offset.ori++;
                     posCount++;
-                }
-            }
 
+                };
+            };
 
         //*****************
         // REGULAR LILLIPAD
@@ -968,7 +988,8 @@ function proto03(){
 
                 var negativeValue =  parseInt(this.lillySmall[_target].cNumber.text[1])
 
-            }
+            };
+
             console.log("negative value lillypag is: ", negativeValue)
 
 
@@ -1016,21 +1037,15 @@ function proto03(){
                                 
                                 var trajectory = [t0,t1,t2];
 
-
                             //Move rest of the ants to regular ants division on positive lillipad
                             }else{
 
-
                                 //center of lillipad
-                                var t2 = {
-                                    x : this.lillySmall[_target].circle.x,
-                                    y : this.lillySmall[_target].circle.y
-                                };
-
-                                var trajectory = [t0,t1]; //[ this.lillySmall[_origin].antsDivision[posCount] ]; // needs to be an array!
+                                this.lillySmall[_origin].setAntsDvision(this.ants.size);
+                                var trajectory = [ this.lillySmall[_origin].antsDivision[posCount-oCounter]]; // needs to be an array!
                                 console.log("TRAJECTORY:", trajectory)
 
-                            }        
+                            };        
 
                         //ADDITION! Move ants based on direction of stick
                         }else{
@@ -1061,13 +1076,13 @@ function proto03(){
 
                         }else{
 
-                        }
+                        };
 
                     }else if(this.subtracting === false){
 
                         var trajectory = [ this.lillySmall[_target].antsDivision[posCount] ];
 
-                    }
+                    };
 
                     this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.tar));
 
@@ -1092,14 +1107,12 @@ function proto03(){
         var targDone = false;
         var tar = {};
 
-
-
-        //LIllYSMALL
+        //TARGET
         if(this.countDownTargets[1] != "final"){
 
             tar = this.lillySmall[this.countDownTargets[1]]
 
-            if(tar.cNumber.text < tar.value){
+            if(tar.cNumber.text != tar.value){ // chanye to equal the number it should be in the end
 
                 tar.cNumber.text = parseInt(tar.cNumber.text) + this.antsAdd;
                 this.antsAdd = 0;
@@ -1108,9 +1121,6 @@ function proto03(){
 
                 targDone = true;
             };
-
-            console.log(tar)
-            if(tar.cNumber.text == 0) targDone = true
 
 
         // FINAL LILLYPAD COUNT
@@ -1130,8 +1140,8 @@ function proto03(){
 
         }
 
-        //lillypad to subtract
-        if(this.lillySmall[this.countDownTargets[0]].cNumber.text > 0){
+        //lillypad to subtract (origin)
+        if(this.lillySmall[this.countDownTargets[0]].cNumber.text != this.lillySmall[this.countDownTargets[0]].value){ // chanye to equal the number it should be in the end
 
             this.lillySmall[this.countDownTargets[0]].cNumber.text = parseInt(this.lillySmall[this.countDownTargets[0]].cNumber.text) + this.antsSub;
             this.antsSub = 0;
@@ -1140,11 +1150,10 @@ function proto03(){
             oriDone = true;
         };
 
-
         if(oriDone && targDone){
             return true;
         } else{
-            console.log(oriDone, targDone) // true false
+            console.log(oriDone,targDone)
             return false;
         }
     };
@@ -1221,7 +1230,6 @@ function proto03(){
 
                         if(!this.ants.sprites[this.antsToAnimate.origin[i]].move() || !this.ants.sprites[this.antsToAnimate.origin[i]].AnimationDone){
                    
-                            console.log("NOT DONE!")
                             done = false;
                    
                         };
@@ -1232,7 +1240,6 @@ function proto03(){
 
 
                 if(done){
-                    console.log("DONE!")
 
                     return true
                 };
@@ -1626,7 +1633,14 @@ function proto03(){
                     var AnimationDone = this.animateAnts()
 
                     if(countDone && AnimationDone){
-                        this.lillySmall[this.countDownTargets[0]].fade = true
+
+                        console.log(this.lillySmall[this.countDownTargets[0]].cNumber.text)
+                        console.log(this.lillySmall[this.countDownTargets[1]].cNumber.text)
+
+                        if(this.lillySmall[this.countDownTargets[0]].cNumber.text == 0) this.lillySmall[this.countDownTargets[0]].fade = true
+                        if(this.lillySmall[this.countDownTargets[1]].cNumber.text == 0) this.lillySmall[this.countDownTargets[1]].fade = true
+
+
                         this.fadeStick = true;
                         this.performOperation = false
 
