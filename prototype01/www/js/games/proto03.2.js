@@ -221,6 +221,7 @@ function proto03(){
     };
 
     lillySmall.prototype.init = function(_value,_position,_size,_id,_antSize){
+       
         var _this = this;
 
         this.value = _value;
@@ -519,8 +520,9 @@ function proto03(){
 
             this.rotate(this.state)
 
-            if(this.animation.run()){
+            if(this.animation.run()){ // if ant reached a step in the trajectory:
 
+                console.log("Ant State: ", this.state)
                 this.state++
 
                 if(this.state != this.trajectory.length){
@@ -531,7 +533,7 @@ function proto03(){
 
                     }else if(this.state == 2){
 
-                        console.log(round.trial.finishedState)
+                        // console.log(round.trial.finishedState)
                         round.trial.antMoveDone("add")
                     };
 
@@ -544,8 +546,8 @@ function proto03(){
 
         }else{
 
+            console.log(">>>>>>>>> ANTS ANIMATION DONE")
             round.trial.leavesToFade++;
-            console.log(round.trial.finishedState)
             this.AnimationDone = true;
             return true;
         }
@@ -902,26 +904,11 @@ function proto03(){
     // set position of the ants for the animation based on origin and target lillipads
     Trial.prototype.setAnimateAnts = function(_origin,_target){
 
-        console.log("setting ants")
+        console.log("setting new ants position")
         console.log("negative lillypad: " + this.subtracting)
 
         this.AnimationDone = false;
         var posCount = 0;
-
-        //*******************************
-        // Set first and second position
-        // for the ants animation 
-        //*******************************
-
-        var t0 = {
-            x: this.stick.x,
-            y: this.stick.y,
-        }
-
-        var t1 = {
-            x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
-            y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width),
-        }
 
         var offset = {//offset start time for animations
             val : 400,
@@ -929,7 +916,11 @@ function proto03(){
             ori : 0,
         }
 
-        if(_target == "final"){ // > if you droped the stick over the final circle
+        //****************
+        // FINAL LILLIPAD
+        //****************
+
+        if(_target == "final"){ // if the user drops the stick over the final circle:
 
             var extraAnts = this.lillySmall[_origin].value - this.lillyFinal.value
             if(extraAnts < 0) {extraAnts = 0};
@@ -952,66 +943,145 @@ function proto03(){
                 }
             }
 
-        }else{ // if you dropped the stick over a small lillypad
+
+        //*****************
+        // REGULAR LILLIPAD
+        //******************
+
+        }else{ 
 
             this.lillySmall[_target].setAntsDvision(this.ants.size);
             this.antsToAnimate.target = [];
             this.antsToAnimate.origin = [];
             this.antsToAnimate.id = {ogirin : _origin, target : _target};
+            
+            var oCounter = 0
+            var tCounter = 0
+
+            // Get negative value from the lillipad to be
+            // used later in creating ants animations
+            if(this.subtracting == "origin"){
+
+                var negativeValue =  parseInt(this.lillySmall[_origin].cNumber.text[1])
+
+            }else if(this.subtracting == "target"){
+
+                var negativeValue =  parseInt(this.lillySmall[_target].cNumber.text[1])
+
+            }
+            console.log("negative value lillypag is: ", negativeValue)
+
+
+            //*************************************************
+            // Check all ants to see if they are over one of 
+            // the lillipads selected by the user.
+            // Ogigin = lillipad clicked first
+            // Target = lillipad in wich the stik was released
+            //*************************************************
 
             for(var i = 0; i<this.ants.sprites.length; i++){
 
+                //*****************************
+                // Ants on the ORIGIN lillipad
+                //*****************************
+
                 if(this.ants.sprites[i].id == _origin){
 
-                    //*************************************************************************
-                    // Change directiong of the ants animation if the origin number in negative
-                    // Ants will aways move to the negative lillypad for subtractions
-                    //*************************************************************************
+                    // Generate position for animation
 
-                    if(this.subtracting == "origin"){
-
-                        var t1 = {
+                        
+                        var t0 = { //start of the stick
                             x: this.stick.x,
                             y: this.stick.y,
                         };
 
-                        var t0 = {
+                        var t1 = { // end of the stick
                             x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
                             y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width),
                         };
 
-                        var t2 = this.lillySmall[_target].antsDivision[posCount];         
+                        //SUBTRACION! Move ants to negative lillipad!
+                        if(this.subtracting == "target"){
 
-                    }else{
+                            // Only move enoguth ants to make target zero
+                            if(oCounter < negativeValue){
 
-                        var t2 = this.lillySmall[_target].antsDivision[posCount];
+                                //center of lillipad
+                                var t2 = {
+                                    x : this.lillySmall[_target].circle.x,
+                                    y : this.lillySmall[_target].circle.y
+                                };
 
-                    };
+                                oCounter++                         
+                                
+                                var trajectory = [t0,t1,t2];
 
-                    var trajectory = [t0,t1,t2];
-                    console.log(trajectory)
 
-                    this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.ori));
-                    this.antsToAnimate.origin.push(i);
-                    offset.ori++;
-                    posCount++;
+                            //Move rest of the ants to regular ants division on positive lillipad
+                            }else{
+
+
+                                //center of lillipad
+                                var t2 = {
+                                    x : this.lillySmall[_target].circle.x,
+                                    y : this.lillySmall[_target].circle.y
+                                };
+
+                                var trajectory = [t0,t1]; //[ this.lillySmall[_origin].antsDivision[posCount] ]; // needs to be an array!
+                                console.log("TRAJECTORY:", trajectory)
+
+                            }        
+
+                        //ADDITION! Move ants based on direction of stick
+                        }else{
+
+                            var t2 = this.lillySmall[_target].antsDivision[posCount];
+                            var trajectory = [t0,t1,t2];
+
+                        };
+
+                    // Create trajectory and add ant to be animates
+
+                        this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.ori));
+                        this.antsToAnimate.origin.push(i);
+                        offset.ori++;
+                        posCount++;
+                
+
+                //*****************************
+                // Ants on the TARGET lillipad
+                //*****************************
 
                 }else if(this.ants.sprites[i].id == _target){
 
-                    var trajectory = [ this.lillySmall[_target].antsDivision[posCount] ];
+                    // if the origin is negative move "extra" ants from target to origin to make subtraction
+                    if(this.subtracting === "origin"){ 
+
+                        if(tCounter < negativeValue){
+
+                        }else{
+
+                        }
+
+                    }else if(this.subtracting === false){
+
+                        var trajectory = [ this.lillySmall[_target].antsDivision[posCount] ];
+
+                    }
 
                     this.ants.sprites[i].setTrajectory(trajectory,length,(offset.val * offset.tar));
 
                     this.antsToAnimate.target.push(i);
                     offset.tar++;
                     posCount++;
+            
                 };
 
+                console.log("ants position set!");
+            
             };
 
-        };;
-
-        console.log("ants set!");
+        };
     };
 
     //<< ******* CALLED ON LOOP ******* >>
@@ -1022,27 +1092,40 @@ function proto03(){
         var targDone = false;
         var tar = {};
 
+
+
         //LIllYSMALL
         if(this.countDownTargets[1] != "final"){
 
             tar = this.lillySmall[this.countDownTargets[1]]
 
             if(tar.cNumber.text < tar.value){
+
                 tar.cNumber.text = parseInt(tar.cNumber.text) + this.antsAdd;
                 this.antsAdd = 0;
+
             } else{
+
                 targDone = true;
             };
 
+            console.log(tar)
+            if(tar.cNumber.text == 0) targDone = true
+
+
         // FINAL LILLYPAD COUNT
         }else{
+
             tar = this.lillyFinal;
-            //console.log(tar.cNumber.text,this.countDownTargets[0])
             if(tar.cNumber.text > tar.value - this.lillySmall[this.countDownTargets[0]].value){
+
                 tar.cNumber.text = parseInt(tar.cNumber.text) - this.antsAdd;
                 this.antsAdd = 0;
+
             } else{
+
                 targDone = true;
+
             };
 
         }
@@ -1061,6 +1144,7 @@ function proto03(){
         if(oriDone && targDone){
             return true;
         } else{
+            console.log(oriDone, targDone) // true false
             return false;
         }
     };
@@ -1070,60 +1154,93 @@ function proto03(){
 
         var done = true;
 
-        if(this.subtracting === false){
+        //*********************
+        //move ants for ADITION
+        //*********************
+            if(this.subtracting === false){
 
-            if(_target != "final"){ // animate ants on target lillypad 
-                
-                for(var i = 0; i<this.antsToAnimate.target.length; i++){
-                
-                    if(!this.ants.sprites[this.antsToAnimate.target[i]].move() || !this.ants.sprites[this.antsToAnimate.target[i]].AnimationDone){
-                        done = false;
+                if(_target != "final"){ // animate ants on target lillypad 
+                    
+                    for(var i = 0; i<this.antsToAnimate.target.length; i++){
+                    
+                        if(!this.ants.sprites[this.antsToAnimate.target[i]].move() || !this.ants.sprites[this.antsToAnimate.target[i]].AnimationDone){
+                            done = false;
+                        };
+
                     };
 
                 };
 
-            };
-
-            for(var i = 0; i<this.antsToAnimate.origin.length; i++){// animate ants on origin lillypad 
-               
-                if(!this.ants.sprites[this.antsToAnimate.origin[i]].move() || !this.ants.sprites[this.antsToAnimate.origin[i]].AnimationDone){
-               
-                    done = false;
-               
-                };
-
-            };
-
-
-            if(done){ // set new ids for origin ants
-
-                var newId = this.antsToAnimate.id.target;
-
-                for(var i = 0; i<this.antsToAnimate.origin.length; i++){
-
-                    this.ants.sprites[this.antsToAnimate.origin[i]].id = newId;
+                for(var i = 0; i<this.antsToAnimate.origin.length; i++){// animate ants on origin lillypad 
+                   
+                    if(!this.ants.sprites[this.antsToAnimate.origin[i]].move() || !this.ants.sprites[this.antsToAnimate.origin[i]].AnimationDone){
+                   
+                        done = false;
+                   
+                    };
 
                 };
+
+
+                if(done){ // set new ids for origin ants
+
+                    var newId = this.antsToAnimate.id.target;
+
+                    for(var i = 0; i<this.antsToAnimate.origin.length; i++){
+
+                        this.ants.sprites[this.antsToAnimate.origin[i]].id = newId;
+
+                    };
 
                 return true;
-            
 
+                };
 
+        //*************************
+        //Move ants for SUBTRACTION
+        //*************************
             }else{
 
+                //Negative value on origin lillipad! Only move ants on target
+                if(this.subtracting == "origin"){
+                    
+                    for(var i = 0; i<this.antsToAnimate.target.length; i++){
+
+                        if(!this.ants.sprites[this.antsToAnimate.target[i]].move() || !this.ants.sprites[this.antsToAnimate.target[i]].AnimationDone){
+                   
+                            done = false;
+                   
+                        };
+
+                    };
+
+                //Negative value on target lillipad! Only move ants on origin
+                }else{
+
+                    for(var i = 0; i<this.antsToAnimate.origin.length; i++){
+
+                        if(!this.ants.sprites[this.antsToAnimate.origin[i]].move() || !this.ants.sprites[this.antsToAnimate.origin[i]].AnimationDone){
+                   
+                            console.log("NOT DONE!")
+                            done = false;
+                   
+                        };
+
+                    };
+
+                };
 
 
-                // animate ants for subtractions
+                if(done){
+                    console.log("DONE!")
+
+                    return true
+                };
+
+            };
 
 
-
-            }
-
-        }else{
-
-            return false;
-
-        };
+        return false;
     };
 
     Trial.prototype.finalAnimation = function(){
