@@ -588,7 +588,7 @@ function proto03(){
         var sub = true
         if(Math.random() < 0.5) sub = false 
         console.log(sub)
-        this.stimuli = this.createAdditionProblem(_stim,true);
+        this.stimuli = [-4,3,1,8]//this.createAdditionProblem(_stim,true);
 
         console.log(this.stimuli);
 
@@ -873,7 +873,7 @@ function proto03(){
         this.fadeStick = true;
     };
 
-    // instantly updates values(not text) of the lillypads based on the operaion 
+    // Updates values (not text) of the lillypads based on the operaion 
     Trial.prototype.updateOperation = function(_origin,_target){
 
         if(_target == "final"){
@@ -891,8 +891,17 @@ function proto03(){
             // set countdown
             this.countDownTargets = [_origin,_target];
 
-            //update value for lillypads
+            //SUBTRACTION
             if(this.subtracting == "target"){
+
+                if(Math.abs(this.lillySmall[_target].value) > this.lillySmall[_origin].value){
+
+                    //inverting values
+                    _origin = _target ^ _origin
+                    _target = _origin ^ _target
+                    _origin = _target ^ _origin                    
+                    
+                } 
 
                 this.lillySmall[_origin].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
                 this.lillySmall[_target].value = 0;
@@ -902,11 +911,23 @@ function proto03(){
 
             }else if (this.subtracting == "origin"){
 
+                if(Math.abs(this.lillySmall[_origin].value) > this.lillySmall[_target].value){
+
+                    //inverting values
+                    _origin = _target ^ _origin
+                    _target = _origin ^ _target
+                    _origin = _target ^ _origin                    
+                    
+                } 
+
                 this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
-                console.log("new vaue:", this.lillySmall[_target].value)
+                console.log("new target vaue:", this.lillySmall[_target].value)
+                console.log("new origin vaue:", this.lillySmall[_origin].value)
                 this.lillySmall[_origin].value = 0;
 
 
+
+            //ADITION
             }else{
 
                 this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
@@ -941,6 +962,17 @@ function proto03(){
         //****************
 
         if(_target == "final"){ // if the user drops the stick over the final circle:
+
+  
+            var t0 = { //start of the stick
+                x: this.stick.x,
+                y: this.stick.y,
+            };
+
+            var t1 = { // end of the stick
+                x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
+                y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width),
+            };
 
             var extraAnts = this.lillySmall[_origin].value - this.lillyFinal.value
             if(extraAnts < 0) {extraAnts = 0};
@@ -1201,17 +1233,20 @@ function proto03(){
         };
 
 
-
         if(oriDone && targDone){
+
             return true;
+            
         } else{
-            //console.log(oriDone,targDone)
+
             return false;
         }
     };
 
     //<< ******* CALLED ON LOOP ******* >>
     Trial.prototype.animateAnts = function(_origin,_target){
+
+        if (this.AnimationDone) return
 
         var done = true;
 
@@ -1295,6 +1330,9 @@ function proto03(){
 
 
                 if(done){
+
+                    console.log("animating ants done!")
+                    this.AnimationDone = true
 
                     //*******************************************
                     //Removing ants that wen on negatice lillipad
