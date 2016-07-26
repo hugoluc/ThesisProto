@@ -14,22 +14,31 @@
 
 // console.log(getFiles("book_images/hyena_and_raven"));
 
-// directory with flat text (.txt) files, one sentence per line, 
+// directory with flat text (.txt) files, one sentence per line,
 // and pages separated by a number on its own line
 var textdir = "book_text/";
 // directory with book images, alphabetically (one per page)
 var imgdir = "book_images/";
+// directory with book audio: 0.mp3 is the title,
+// and 1.mp3 through N.mp3 are audio corresponding to the lines of text
+var audiodir = "book_audio/";
 
-var books = {"english":[], 
-		 "swahili":[]};
+var books = {"english":[], "swahili":[]};
 
-books.english.push({"text":"hyena_and_raven",images:"hyena_and_raven"});
-books.english.push({"text":"adhabu",images:"adhabu"});
+books.swahili.push({title:"Anansi, Kunguru na Mamba", text:"anansi_kunguru", images:"anansi_the_crows", audio:"anansi_kunguru"});
+books.swahili.push({title:"Anansi na Hekima", text:"anansi_na_hekima", images:"anansi_and_wisdom", audio:"anansi_na_hekima"});
+//books.swahili.push({title:, text:"anansi_na_kasa", images:"anansi_and_turtle"});
+//books.swahili.push({title:, text:"anansi_na_tai", images:"anansi_and_vulture"});
+books.swahili.push({title:"Fisi na Kunguru", text:"fisi_na_kunguru", images:"hyena_and_raven"});
+
+books.english.push({title:"Hyena and Raven", text:"hyena_and_raven", images:"hyena_and_raven", audio:"hyena_and_raven"});
+books.english.push({title:"Adhabu", text:"adhabu", images:"adhabu"});
 
 function loadBook(book) {
   // get listing of images in imgdir, load the text and split into pages, and show the first page (title?)
+	console.log(imgdir+book.images);
   $.ajax({
-  url: imgdir+book.images, //"http://yoursite.com/images/",
+  url: imgdir+book.images+'/', //"http://yoursite.com/images/",
     success: function(data){
       $(data).find("td > a").each(function(){
         console.log("file: " + $(this).attr("href"));
@@ -60,7 +69,7 @@ function LoadFile(strRawContents) {
     var arrLines = strRawContents.split("\n");
     //console.log("File " + oFrame.src + " has " + arrLines.length + " lines");
     var title = arrLines[0]; // title
-    var sentences = []; 
+    var sentences = [];
     for (var i = 1; i < arrLines.length; i++) {
         var curLine = arrLines[i];
         if( curLine.length<3 ) {
@@ -92,15 +101,15 @@ function showPage(n) {
 	var i;
 	var x = document.getElementsByClassName("mySlides");
 	var dots = document.getElementsByClassName("pg-btn");
-	if (n > x.length) {slideIndex = 1}    
+	if (n > x.length) {slideIndex = 1}
 	if (n < 1) {slideIndex = x.length} ;
 	for (i = 0; i < x.length; i++) {
-		x[i].style.display = "none";  
+		x[i].style.display = "none";
 	}
 	for (i = 0; i < dots.length; i++) {
 		dots[i].className = dots[i].className.replace(" w3-red", "");
 	}
-	x[slideIndex-1].style.display = "block";  
+	x[slideIndex-1].style.display = "block";
 	dots[slideIndex-1].className += " w3-red";
 
 	document.getElementById("book-text").innerHTML = "";
@@ -110,8 +119,8 @@ function showPage(n) {
 }
 
 // books.append({title: "Where is my bat?", directory: "where_is_my_bat",
-// 	images: ["bat00.jpg", "bat01.jpg", "bat02.jpg", "bat03.jpg", "bat04.jpg", 
-// 			 "bat05.jpg", "bat06.jpg", "bat07.jpg", "bat08.jpg"], 
+// 	images: ["bat00.jpg", "bat01.jpg", "bat02.jpg", "bat03.jpg", "bat04.jpg",
+// 			 "bat05.jpg", "bat06.jpg", "bat07.jpg", "bat08.jpg"],
 // 	english: ["Where is my bat?",
 // 		"I have lost my bat, and I cannot find it.",
 // 		"I looked behind the door. It was not there.",
@@ -120,24 +129,24 @@ function showPage(n) {
 // 		"I searched inside the box. There was no sign of it.",
 // 		"I searched the attic. It was not there.",
 // 		"I looked here, there and everywhere. I could not find it anywhere.",
-// 		""], 
-// 	attribution: {author: "Meera Tendolkar and Madhav Chavan", 
-// 	illustrator: "Rijuta Ghate", 
-// 	organization: "Pratham Books"} 
+// 		""],
+// 	attribution: {author: "Meera Tendolkar and Madhav Chavan",
+// 	illustrator: "Rijuta Ghate",
+// 	organization: "Pratham Books"}
 //  });
 
 
-// books.append({title: "What are you doing?", 
-// 	images: [], 
-// 	english: [], 
+// books.append({title: "What are you doing?",
+// 	images: [],
+// 	english: [],
 // 	attribution: {author: "Nina Orange", illustrator: "Wiehan de Jager"}
 // });
 
 
 // books.append({title: {english: "Hyena and Raven", swahili: "Fisi na kunguru"}, directory: "hyena_and_raven",
-// 	images: ["hr00.jpg", "hr00.jpg", "hr02.jpg", "hr03.jpg", "hr04.jpg", "hr05.jpg", "hr06.jpg", "hr07.jpg", "hr08.jpg", "hr09.jpg", "hr10.jpg"], 
+// 	images: ["hr00.jpg", "hr00.jpg", "hr02.jpg", "hr03.jpg", "hr04.jpg", "hr05.jpg", "hr06.jpg", "hr07.jpg", "hr08.jpg", "hr09.jpg", "hr10.jpg"],
 // 	english: ["Hyena and Raven were once great friends, even though they were quite different in some ways. Raven could fly but Hyena was only able to walk.", // change pic
-// 		'One day Hyena, curious to know something about his friend, asked Raven, "What is this white thing which is always below your neck?"', 
+// 		'One day Hyena, curious to know something about his friend, asked Raven, "What is this white thing which is always below your neck?"',
 // 		'Raven answered, "It is the fatty meat which I usually eat in the sky. I have been eating it for so long now it is stuck on my neck."',
 // 		"On hearing about meat, saliva started pouring out of Hyena's mouth, for he was greedy and he loved meat very much.",
 // 		"Hyena really wanted to eat that meat. But how could he reach the meat in the sky if he had no wings to fly?",
@@ -145,7 +154,7 @@ function showPage(n) {
 // 		"Raven was not mean, so he gave him some feathers. Hyena sewed them together into wings.",
 // 		"He fastened them to his body and tried to take off into the sky.",
 // 		"But he was far too heavy for the few feathers to carry him, so he had to think of another plan.", // change
-// 		'"Please, my friend," he asked Raven, "could I hold onto your tail as you fly up into the sky?"', 
+// 		'"Please, my friend," he asked Raven, "could I hold onto your tail as you fly up into the sky?"',
 // 		'"All right," said Raven. "I know how much you want to fly. Let us do it tomorrow morning."',
 // 		"When day came, Hyena took hold of Raven's tail and Raven flew up into the sky.", // change
 // 		'Raven flew and flew and flew until he was exhausted. But Hyena said, "Just a little further, my friend!"',
@@ -162,7 +171,7 @@ function showPage(n) {
 // 		"He woke up howling in pain, with a broken leg and dark scars all over his body.", // change
 // 		"From that day to now, Hyena limps and he has many scars on his body.",
 // 		"He has never been able to fly. And he and Raven are no longer friends."
-// 	], 
+// 	],
 // 	swahili: ["Fisi na kunguru walikuwa marafiki sana hapo awali ingawaje tabia zao zilikuwa tofauti sana kwa njia nyingine. Kunguru aliweza kuruka lakini fisi hakuweza isipokuwa kutembea tu.",
 // 	'Siku moja fisi alikuwa na hamu kumfahamu zaidi rafiki yake. Alimwuliza kunguru, "kitu hiki cheupe kilichopo nyuma ya shingo lako ni kitu gani?"',
 // 	'"Ni nyama nono ambayo kawaida inaliwa wakati ninaporuka angani. Nimekuwa ninaila tangu muda mrefu hadi sasa imenibandika shingoni."',
@@ -189,4 +198,3 @@ function showPage(n) {
 // 	],
 // 	attribution: {author: "Ann Nduku", illustrator: "Wiehan de Jager"}
 // });
-
