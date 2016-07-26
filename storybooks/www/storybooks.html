@@ -3,8 +3,8 @@
   <head>
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <script src="js/books.js"></script>
-    <script src="lib/jquery.min.js"></script> 
-    
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/howler.js"></script>
     <link rel="stylesheet" href="css/w3.css">
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <style>
@@ -24,7 +24,7 @@
     <img class="mySlides" src="book_images/hyena_and_raven/hyena_and_raven-0004.jpg" style="width:100%">
   </div>
   <div class="w3-container w3-half" id="book-text">
-      
+
   </div>
 </div>
 
@@ -34,18 +34,29 @@
     <button class="w3-btn" onclick="plusDivs(1)">&#10095;</button>
   </div>
   <div class="w3-section" id="page-btns">
-      <button class="w3-btn pg-btn" onclick="currentDiv(1)">1</button> 
-      <button class="w3-btn pg-btn" onclick="currentDiv(2)">2</button> 
-      <button class="w3-btn pg-btn" onclick="currentDiv(3)">3</button> 
-      <button class="w3-btn pg-btn" onclick="currentDiv(4)">4</button> 
-      <button class="w3-btn pg-btn" onclick="currentDiv(5)">5</button> 
+      <button class="w3-btn pg-btn" onclick="currentDiv(1)">1</button>
+      <button class="w3-btn pg-btn" onclick="currentDiv(2)">2</button>
+      <button class="w3-btn pg-btn" onclick="currentDiv(3)">3</button>
+      <button class="w3-btn pg-btn" onclick="currentDiv(4)">4</button>
+      <button class="w3-btn pg-btn" onclick="currentDiv(5)">5</button>
   </div>
 </div>
 
 
 <script>
-    loadBook(books.english[0])
+    //loadBook(books.english[0]);
+    loadBook(books.swahili[0]);
 
+    var sound = new Howl({
+      src: ['sound.webm', 'sound.mp3', 'sound.wav'],
+      autoplay: true,
+      loop: true,
+      volume: 0.9,
+      rate: .8,
+      onend: function() {
+        console.log('Finished!');
+      }
+    });
     // $.get("book_text/hyena_and_raven.txt", function (raw) {
     //     pages = LoadFile(raw);
     //     showPage(slideIndex);
@@ -56,4 +67,3 @@
   </body>
 
 </html>
-
