@@ -20,7 +20,7 @@ function Multiplication(){
 			{ 
 				stimuli : {
 
-					values : [10,8,6],
+					values : [9,8,6],
 					// Maybe use this later to terermine in wich direction the game is testing the user 		
 
 				},
@@ -31,6 +31,8 @@ function Multiplication(){
 		]
 
 		this.stimuli = specs[0].stimuli;
+		this.correctAnswears = this.stimuli.values.slice()
+		this.aswear = []
 		this.boardMatrix = {}
 		this.lastTarget = ""
 		this.nestCreated = false 
@@ -134,8 +136,9 @@ function Multiplication(){
 		
 		case "Win":
 
+			break;
 
-
+		case "loose":
 
 			break;
 
@@ -318,6 +321,8 @@ function Multiplication(){
 					"graphic" : new PIXI.Graphics(),// interactive area of the board
 					"tile" : {x : i, y : _y}, // x and y coordinates of the tiles
 					"pos" : pos, // pixel position of the tile aligned on the top left corner
+					"used" : false,
+
 				}
 
 				stage.addChild(this.boardMatrix[indice].sprite)
@@ -629,8 +634,6 @@ function Multiplication(){
 
 	Trial.prototype.deleteNest = function(_index){ // delete nest on _index
 						
-		console.log("before",this.nests)
-
 		for(var i = 0; i < this.selection.tiles.length; i++){
 
 			if(this.selection.tiles[i].sprite != undefined){
@@ -642,14 +645,9 @@ function Multiplication(){
 			};
 
 		};
-
-
-		console.log("after:", this.nests)
 	};
 
 	Trial.prototype.drag = function(_event,_this){
-
-		console.log("draging")
 
 		if(_this.dragging && this.playState == "drawingNest"){ // ensure that only one tile will trigger the reponse
 
@@ -659,14 +657,44 @@ function Multiplication(){
 				y : _event.data.global.y
 			};
 
-			for(object in this.boardMatrix){ // check with tile is below cursor and draw nest based on the position
+			for(object in this.boardMatrix){ // check wich tile is below cursor and draw nest based on the position
 
 				if(this.boardMatrix[object].graphic.containsPoint(point)){
 
 					if(this.boardMatrix[object].tile != this.lastTarget){
 
 						this.deleteNest()
-						this.drawNest(this.boardMatrix[this.firstClickTile].tile,this.boardMatrix[object].tile)
+
+						this.selection = this.calculateSelection( // calculate new selection
+							
+							this.boardMatrix[this.firstClickTile].tile,
+							this.boardMatrix[object].tile
+						
+						)
+
+						for(var i = 0; i<this.selection.tiles.length; i++){
+
+							if(this.boardMatrix[this.selection.tiles[i].id].used){
+
+								console.log("overlap!")
+								var id = this.lastTarget.x + "-" + this.lastTarget.y
+
+								this.selection = this.calculateSelection( // calculate new selection
+									
+									this.boardMatrix[this.firstClickTile].tile,
+									this.boardMatrix[id].tile
+								
+								)
+
+								this.drawNest()			
+								return
+
+							}
+
+						};
+
+						this.drawNest()
+						this.lastTarget = this.boardMatrix[object].tile
 						return;	
 
 					};
@@ -680,30 +708,25 @@ function Multiplication(){
 	};
 
 	Trial.prototype.clickEnd = function(_this){
+		
 		console.log("clickend!")
 
 		if(!this.nestCreated && this.playState == "drawingNest"){ // ensure that only one tile will trigger the reponse
 
 			this.boardMatrix[this.firstClickTile].graphic.dragging = false;
-			console.log(this.playState)			
-			this.playState = "placingEggs"
 
-			if(this.selection.tiles.length == this.stimuli.values ){
+			for(var i=0; i<this.selection.tiles.length; i++){
+				
+				var id = this.selection.tiles[i].id;
+				this.boardMatrix[id].used = true;
 
-				this.aswear = true
-
-			}else{
-
-				this.aswear = false
-				this.playState = "drawingNest"
 			};
 
-			this.nests[this.nestCount] = this.selection
-			this.selection = { tiles : [] }
-			this.nestCount++
-			this.nestCreated = true
-			console.log("nestCount: ", this.nestCount)
-			console.log(this.nests)
+			this.nests[this.nestCount] = this.selection;
+			this.selection = { tiles : [] };
+			this.nestCount++;
+			this.nestCreated = true;
+			this.checkAnswer();
 
 		}else if(_this.id == this.firstClickTile && this.playState == "drawingNest"){
 
@@ -712,18 +735,53 @@ function Multiplication(){
 		};
 	};
 
+	Trial.prototype.checkAnswer = function(){
+			
+
+			var correct = false
+			var id;
+
+			for(var i = 0; i < this.stimuli.values.length; i++){
+
+				console.log(this.nests[this.nestCount-1].tiles.length,this.stimuli.values[i])
+
+
+				if(this.nests[this.nestCount-1].tiles.length == this.stimuli.values[i]){
+
+					id = i
+					correct = true
+					break;
+					
+				};
+
+			};
+
+			if(correct){
+
+				this.aswear.push(true);
+				this.correctAnswears.splice(i,1)
+				console.log(this.correctAnswears)
+
+			}else{
+				this.aswear = false;
+				this.playState = "loose"
+				console.log("YOU LOOSE!")	
+			}
+
+			console.log(">>>>>>>>>>>>>")
+			console.log(this.aswear.length,this.stimuli.values)
+			if(this.aswear.length == this.stimuli.values.length){
+
+				this.playState = "win"
+				console.log("YOU WIN!")
+
+			};
+	};
+
 	Trial.prototype.drawNest = function(_start,_end){ 
 			
-
-			var start = _start
-			var end = _end;
-
-			this.selection = this.calculateSelection( // calculate new selection
-				
-				start,
-				end 
-			
-			)
+			// var start = _start
+			// var end = _end;
 
 			function createNestTile( _arrayPos,_asset,_this,_flip){
 
@@ -910,8 +968,6 @@ function Multiplication(){
 
 
 			};
-
-			this.lastTarget = end;  
 	};
 
 	Trial.prototype.calculateSelection = function(_start,_end){

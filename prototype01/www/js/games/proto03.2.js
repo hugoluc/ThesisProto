@@ -1864,13 +1864,15 @@ function proto03(){
 
         function onAssetsLoaded(){
 
-        console.log("assetsloaded!")
-        round.init(Trial,stage, stimuli);
+            console.log("assetsloaded!")
+            round.init(Trial,stage, stimuli);
 
             setTimeout(function(){
+
                 console.log("starting the game!")
                 session.show()
                 update();
+                
             });
         };
 
