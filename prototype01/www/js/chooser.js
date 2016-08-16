@@ -24,7 +24,7 @@ function Start(){
       },
 
       {
-        name: "Multiplication",
+        name: "Multiply",
         available: true,
         callFunction: Multiplication
       },
@@ -43,7 +43,7 @@ function Start(){
       },
 
       {
-        name: "Word Guess",
+        name: "Spelling",
         available: true,
         callFunction: Hangman
       },
@@ -71,12 +71,6 @@ function Start(){
         name: "World Map",
         available: false,
         callFunction: WorldMap
-      },
-
-      {
-        name: "Piano",
-        available: true,
-        callFunction: Piano
       }
   ];
 
