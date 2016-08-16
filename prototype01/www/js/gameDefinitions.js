@@ -502,16 +502,17 @@
 
 			for(var i = 0; i < starCount; i++ ){
 
+				var size = getRandomInt(7,15)
 				var Estar = new PIXI.Sprite(assets.textures.star);
 				Estar.x = _pos.x;
 				Estar.y = _pos.y;
 				Estar.anchor.x = 0.5
 				Estar.anchor.y = 0.5
-				Estar.width = 10;
-				Estar.height = 10;
+				Estar.width = size;
+				Estar.height = size;
 
 				var angle = getRandomFloat(-Math.PI,Math.PI)
-
+				var duration = getRandomInt(300,_duration)
 
 				var EstarAnimation = new animation(Estar);
 				EstarAnimation.init(
@@ -520,7 +521,7 @@
 						"x" : (_pos.x + Math.cos(angle)*_radius) * (getRandomFloat(0.95,1.05)),
 						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.9,1.05)),
 					},
-					_duration,
+					duration,
 					0,//getRandomInt(0,_duration*0.01),
 					[1,1]
 
@@ -543,8 +544,8 @@
 
 					"alpha",
 					0,
-					_duration, //length
-					0, // delay
+					duration*0.7, //length
+					duration*0.3, // delay
 					[0,0.75]
 
 				);
