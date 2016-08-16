@@ -243,7 +243,7 @@ animation.prototype.runFeature = function(_log){
 
       if(this.feaBezier){
 
-        var location = Math.floor(((elapsed-this.feaOff)*999)/this.feaLength)
+        var location = Math.floor(((elapsed-this.offset)*bezierCurveSpecs[this.bezName].length - 1)/this.anLength)
         bez = bezierCurveSpecs[this.feaBezName][location]
 
 
@@ -465,7 +465,7 @@ animation.prototype.run = function(){
       if(this.bezier){
 
 
-        var location = Math.floor(((elapsed-this.offset)*999)/this.anLength)
+        var location = Math.floor(((elapsed-this.offset)*bezierCurveSpecs[this.bezName].length - 1)/this.anLength)
         bez = bezierCurveSpecs[this.bezName][location]
 
         this.obj.y = this.startPos.y + (this.distance.y * bez)
