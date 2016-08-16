@@ -295,9 +295,11 @@
 
 	Round.prototype.destroy = function(){
 
-		this.trial.destroy()
+		
 		this.stage.removeChild(this.background)
 		this.background.destroy(true,true)
+
+		this.trial.destroy(this.stage)
 
 	}
 

@@ -1029,17 +1029,50 @@ function Multiplication(){
 		};
 	};
 
-	Trial.prototype.destroy = function(){
 
-		for(object in  this.boardMatrix){
 
-			stage.removeChild(this.boardMatrix[object].sprite);
-			this.boardMatrix[object].sprite.destroy(true,true);
+	Trial.prototype.destroy = function(_stage){
 
-			stage.removeChild(this.boardMatrix[object].graphic);
-			this.boardMatrix[object].graphic.destroy(true,true);
+		// for(object in  this.boardMatrix){
 
-		};
+		// 	stage.removeChild(this.boardMatrix[object].sprite);
+		// 	this.boardMatrix[object].sprite.destroy(true,true);
+
+		// 	stage.removeChild(this.boardMatrix[object].graphic);
+		// 	this.boardMatrix[object].graphic.destroy(true,true);
+
+		// };
+
+		while(stage.children[0]) stage.removeChild(stage.children[0])
+
+		return
+
+		console.log(stage.children.length)
+
+		for (var i = 0; i < stage.children.length; i++){
+
+			console.log(stage.children[0])
+
+			if(stage.children[i].children.length > 0){
+				
+				stage.removeChild(stage.children[i])
+				stage.children[i].destroy(true,true);
+
+
+			}else{
+
+				stage.removeChild(stage.children[i])
+				stage.children[i].destroy(true,true);
+
+			}
+
+			console.log(i)
+		console.log(stage.children.length)
+		}
+
+		console.log(stage.children.length)
+		console.log(stage)
+		console.log("Destruction DONE!")
 	};
 
 
@@ -1091,7 +1124,7 @@ function Multiplication(){
 
             assets.load(onAssetsLoaded)
 
-            multiplicationLoaded = true
+            //multiplicationLoaded = true
 
         }else{
 
@@ -1141,7 +1174,7 @@ function Multiplication(){
                 currentview = new MainMenu(assets)
 
                 return
-            }
+            };
 
             if(statsBol) session.stats.begin()
 
@@ -1151,19 +1184,20 @@ function Multiplication(){
   	        previousTime = current;
   	        lag = lag + elapsed;
 
-        	  while (lag >= MS_PER_UPDATE){
-              round.play(lag/MS_PER_UPDATE);
-              lag = lag - MS_PER_UPDATE;
+        	 while (lag >= MS_PER_UPDATE){
 
-  	        }
+	              round.play(lag/MS_PER_UPDATE);
+	              lag = lag - MS_PER_UPDATE;
 
-        	        //---------------->> Thing that renders the whole stage
-        	        session.render(stage)
+  	        };
 
-        	        requestAnimationFrame(update);
+	        //---------------->> Thing that renders the whole stage
+	        session.render(stage)
 
-                if(statsBol)session.stats.end()
+	        requestAnimationFrame(update);
 
-        }
+        	if(statsBol)session.stats.end()
 
-}
+        };
+
+};
