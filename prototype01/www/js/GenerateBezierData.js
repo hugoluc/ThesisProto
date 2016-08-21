@@ -5,8 +5,6 @@ var control = 5
 
 var resolution = Math.pow(10,decimals)
 var bezierData = {}
-var t0 = {x:0,y:0}
-var t3 = {x:1,y:1}
 
 var bezier = function (_t,_p0,_p1,_p2,_p3){
 
@@ -29,13 +27,15 @@ var bezier = function (_t,_p0,_p1,_p2,_p3){
   return {x:px,y:py}
 };
 
+var t0 = {x:0,y:0}
+var t3 = {x:1,y:1}
 
 for(var i=0; i<control; i++){ // get x values (get one x and y value for every 0.005 in x)
 
 
 	var n1 = i/(control - 1) 
-	console.log(n1 + ">>")
-	console.log((n1 * resolution) + "-----------------")
+	// console.log(n1 + ">>")
+	// console.log((n1 * resolution) + "-----------------")
 	n1 = n1.toFixed(2)
 
 	//creating t0
@@ -50,6 +50,8 @@ for(var i=0; i<control; i++){ // get x values (get one x and y value for every 0
 		var t1 = {x:n1,y:0}
 		var t2 = {x:n2,y:1}
 
+		console.log(t0,t1,t2,t3)
+
 		for (var l = 0; l < resolution; l++) {
 
 			var t = l/resolution
@@ -61,6 +63,12 @@ for(var i=0; i<control; i++){ // get x values (get one x and y value for every 0
 			//bezierData[name].push(yVal)
 
 			bezierData[name].push(bezier(t,t0,t1,t2,t3).x.toFixed(10))
+
+			if(l < 10){
+
+				console.log(bezier(t,t0,t1,t2,t3).y.toFixed(10))
+
+			}
 
 		};
 
