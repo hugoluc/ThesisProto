@@ -435,7 +435,7 @@ function proto02(){
                         dest.x = this.instructionWidth*1.2;
                         dest.y = session.canvas.height-(this.instructionWidth * 1.5);
 
-                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[0.75,1]);
+                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[1,0]);
                         this.introState = "moveToCorner";
 
                     }
@@ -577,7 +577,6 @@ function proto02(){
 
             return false;
         };
-
 
         Trial.prototype.init = function(){
 

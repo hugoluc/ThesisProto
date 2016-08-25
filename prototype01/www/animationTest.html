@@ -11,55 +11,21 @@
         <script type="text/javascript">
 
         console.log("starting")
-        var name = "0.00-0.75"
+        var name = "0.00-0.00"
 
         var hight = window.innerHeight - 50
-
-        var bezierTest = function (_t,_p0,_p1,_p2,_p3){
-
-          var _u = 1 - _t;
-          var _tt = _t * _t;
-          var _uu = _u * _u;
-          var _uuu = _uu * _u;
-          var _ttt = _tt * _t;
-
-          var px = _uuu * _p0.x; //first term
-          px = px + (3 * _uu * _t * _p1.x); //second term
-          px = px + (3 * _u * _tt * _p2.x); //third term
-          px = px + (_ttt * _p3.x); //fourth term
-
-          var py = (_uuu * _p0.y) ; //first term
-          py = py + (3 * _uu * _t * _p1.y); //second term
-          py = py + (3 * _u * _tt * _p2.y); //third term
-          py = py + (_ttt * _p3.y); //fourth term
-
-         // console.log(">>", px,py)
-          return {x:px,y:py}
-        };
 
         function setup() {
             // Sets the screen to be 640 pixels wide and 360 pixels high
             createCanvas(hight, hight);
-            background(0,0,0)
-            stroke(255,023,120);        
+            background(0,0,0) 
+            stroke(255,023,120);
                           
-            // for(var i = 0; i<bezierCurveSpecs[name].length;i++){
-             for(var i = 0; i<1;i = i + 0.001){
+             for(var i = 0; i < 1 ; i = i + 0.01){
+                
+                var x = i;
 
-                var t0 = {x:0,y:0}
-                var t1 = {x:1,y:0}
-                var t2 = {x:0,y:1}
-                var t3 = {x:1,y:1}
-
-                var x = bezierTest(i,t0,t1,t2,t3).x
-                var y = bezierTest(i,t0,t1,t2,t3).y
-
-               // console.log(i,x,y)
-
-                ellipse(x*hight,abs(y-1)*hight,2,2)
-
-                // console.log(bezierCurveSpecs[name][i]*400)
-                // ellipse(i,hight-bezierCurveSpecs[name][i]*hight,2,2)
+                ellipse(x*height,hight-bezierCurveSpecs[name][i*100]*hight,2,2)
 
             }
 

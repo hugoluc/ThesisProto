@@ -1,3 +1,5 @@
+var fs = require('fs')
+
 /**
  * https://github.com/gre/bezier-easing
  * BezierEasing - use bezier curve for transition easing function
@@ -112,15 +114,45 @@ function bezier (mX1, mY1, mX2, mY2) {
 
 };
 
-var getBezierTforX = new bezier(1,1,0,3,0,3);
-var CONTROL_PRECISION = 0.1;
+
+var CONTROLS = 5;
 var FRAMES = 300 // 5 seconds animation
 var bezierData = {}
 
-for(){
+for(var c = 0; c < CONTROLS; c++){
+
+  var n1 = (c/(CONTROLS-1)).toFixed(2)
 
 
-  for(){
+  for(var c2 = 0; c2 < CONTROLS; c2++){
+
+    var n2 = (c2/(CONTROLS-1)).toFixed(2)
+    name = n1 + "-" + n2
+    bezierData[name] = []
+
+    var MX1 = n1
+    var MY1 = 1.00
+    var MX2 = n2
+    var MY2 = 0.00
+    var getBezierTforX = new bezier(
+      MX1, // MX1
+      MY1, // MY1*
+      MX2, // MX2
+      MY2  // MY2*
+    );
+
+    console.log(n2)
+
+    for(var i = 0; i<1;i = i + 0.01){
+
+      var x = i;
+      var t = getBezierTforX(x);
+      var y = calcBezier(t,MY1,MY2)
+      bezierData[name].push(t.toFixed(10))
+      //bezierData[name].push(Math.abs(y-1).toFixed(10));
+
+    };
+
 
   };
 
@@ -129,14 +161,7 @@ for(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+fs.writeFile('bezier.js', "var bezierCurveSpecs = " + JSON.stringify(bezierData,null,4), function (err) {
+  if (err) return console.log(err);
+  console.log('Hello World > helloworld.txt');
+});
