@@ -435,7 +435,7 @@ function proto02(){
                         dest.x = this.instructionWidth*1.2;
                         dest.y = session.canvas.height-(this.instructionWidth * 1.5);
 
-                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[1,0]);
+                        this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[0.25,0.00]);
                         this.introState = "moveToCorner";
 
                         console.log("-----------------------------------------------------------")
@@ -446,8 +446,6 @@ function proto02(){
 
 
                 case "moveToCorner":
-
-                    this.instruction.customAnimation.log()
 
                     if(this.instruction.customAnimation.run()){
                         return true;
@@ -520,17 +518,19 @@ function proto02(){
 
                 case "nextTrial":
 
-                    this.displayFeedbacks()
-                    score.displayStar();
-                    score.displayExplosion();
+                  var nextTrialDone = true;
 
-                    if(this.nextTrial()){
+                  this.displayFeedbacks()
 
-                      return true;
+                  if(!score.displayStar()) nextTrialDone = false;
+                  if(!score.displayExplosion()) nextTrialDone = false ;
+                  if(!this.nextTrial()) nextTrialDone = false;
 
-                    };
+                  if(nextTrialDone){
+                    return true;
+                  }
 
-                    break;
+                  break;
 
                 };
 
