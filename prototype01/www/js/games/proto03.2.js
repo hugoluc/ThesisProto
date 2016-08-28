@@ -1614,7 +1614,7 @@ function proto03(){
                     dest.x = session.canvas.width - this.lillyFinal.container.getBounds().width/2 - 30;
                     dest.y = (session.canvas.height/2)// + (this.lillyFinal.container.getBounds().height/2);
 
-                    this.lillyFinal.customAnimation.init(dest,500,0,[0.75,1])
+                    this.lillyFinal.customAnimation.init(dest,500,0,[1,0])
 
                     this.introState = "moveFinalLillypad"
 

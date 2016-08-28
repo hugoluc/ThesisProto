@@ -1,10 +1,12 @@
 fs = require('fs');
 
-var decimals = 3
+var decimals = 4
 var control = 5
 
 var resolution = Math.pow(10,decimals)
 var bezierData = {}
+var t0 = {x:0,y:0}
+var t3 = {x:1,y:1}
 
 var bezier = function (_t,_p0,_p1,_p2,_p3){
 
@@ -27,8 +29,6 @@ var bezier = function (_t,_p0,_p1,_p2,_p3){
   return {x:px,y:py}
 };
 
-var t0 = {x:0,y:0}
-var t3 = {x:1,y:1}
 
 for(var i=0; i<control; i++){ // get x values (get one x and y value for every 0.005 in x)
 
@@ -44,33 +44,34 @@ for(var i=0; i<control; i++){ // get x values (get one x and y value for every 0
 		var n2 = j/(control-1)
 		n2 = n2.toFixed(2)
 
+
 		name = n1 + "-"+ n2
+
+		console.log(name)
+
 		bezierData[name] = []
 
 		var t1 = {x:n1,y:0}
 		var t2 = {x:n2,y:1}
 
-		console.log(t0,t1,t2,t3)
-
 		for (var l = 0; l < resolution; l++) {
 
 			var t = l/resolution
+			var xVal = bezier(t,t0,t1,t2,t3).x.toFixed(4).toString()
 
-			// var xVal = toString(bezier(t,t0,t1,t2,t3).x.toFixed(4)) 
-			// if xVal[4] == 5 && xVal[4] == lasXval+1
-			// 		var yVal = toString(bezier(t,t0,t1,t2,t3).y.toFixed(4))
-			//		lastXval = xVal 
-			//bezierData[name].push(yVal)
+			//console.log(xVal)
+			if (xVal[5] == (l%2)*5){ // rethink this
 
-			bezierData[name].push(bezier(t,t0,t1,t2,t3).x.toFixed(10))
+				//console.log(">>>>>>>>>>>>>>", xVal[3],xVal[4])
+				var yVal = bezier(t,t0,t1,t2,t3).y.toFixed(10).toString()
+				bezierData[name].push(yVal)
 
-			if(l < 10){
-
-				console.log(bezier(t,t0,t1,t2,t3).y.toFixed(10))
-
+				
 			}
-
+		
 		};
+
+		console.log(bezierData[name].length)
 
 	}
 
@@ -84,7 +85,7 @@ for(var i=0; i<control; i++){ // get x values (get one x and y value for every 0
 bezier.config = {"resolution": resolution, "decimals" : decimals, "control" : control }
 
 
-fs.writeFile('bezier.js', "var bezierCurveSpecs = " + JSON.stringify(bezierData,null,1), function (err) {
+fs.writeFile('bezierTest.js', "var bezierCurveSpecs = " + JSON.stringify(bezierData,null,1), function (err) {
   if (err) return console.log(err);
   console.log('Hello World > helloworld.txt');
 });
