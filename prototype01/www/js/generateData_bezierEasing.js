@@ -1,4 +1,3 @@
-var fs = require('fs')
 
 /**
  * https://github.com/gre/bezier-easing
@@ -7,6 +6,8 @@ var fs = require('fs')
  */
 
 // These values are established by empiricism with tests (tradeoff: performance VS precision)
+fs = require('fs');
+
 var NEWTON_ITERATIONS = 4;
 var NEWTON_MIN_SLOPE = 0.001;
 var SUBDIVISION_PRECISION = 0.0000001;
@@ -44,18 +45,18 @@ function binarySubdivide (aX, aA, aB, mX1, mX2) {
 function newtonRaphsonIterate (aX, aGuessT, mX1, mX2) {
 
  for (var i = 0; i < NEWTON_ITERATIONS; ++i) {
-  
+
    var currentSlope = getSlope(aGuessT, mX1, mX2);
-   
+
    if (currentSlope === 0.0) {
      return aGuessT;
    }
-   
+
    var currentX = calcBezier(aGuessT, mX1, mX2) - aX;
    aGuessT -= currentX / currentSlope;
 
  }
- 
+
  return aGuessT;
 }
 
@@ -114,26 +115,26 @@ function bezier (mX1, mY1, mX2, mY2) {
 
 };
 
-
-var CONTROLS = 5;
+var CONTROLS = 4;
 var FRAMES = 300 // 5 seconds animation
 var bezierData = {}
 
-for(var c = 0; c < CONTROLS; c++){
+for(var c = 0; c <= CONTROLS; c++){
 
-  var n1 = (c/(CONTROLS-1)).toFixed(2)
+  var n1 = (c/CONTROLS).toFixed(2)
 
+  for(var c2 = 0; c2 <= CONTROLS; c2++){
 
-  for(var c2 = 0; c2 < CONTROLS; c2++){
-
-    var n2 = (c2/(CONTROLS-1)).toFixed(2)
-    name = n1 + "-" + n2
+    var n2 = (c2/CONTROLS).toFixed(2)
+    var name = n1 + "-" + n2;
     bezierData[name] = []
 
     var MX1 = n1
-    var MY1 = 1.00
+    var MY1 = 0//
+
     var MX2 = n2
-    var MY2 = 0.00
+    var MY2 = 1//
+
     var getBezierTforX = new bezier(
       MX1, // MX1
       MY1, // MY1*
@@ -141,24 +142,20 @@ for(var c = 0; c < CONTROLS; c++){
       MY2  // MY2*
     );
 
-    console.log(n2)
+    for(var f = 0; f < FRAMES; f++){
 
-    for(var i = 0; i<1;i = i + 0.01){
-
-      var x = i;
+      var x = f/FRAMES;
       var t = getBezierTforX(x);
       var y = calcBezier(t,MY1,MY2)
-      bezierData[name].push(t.toFixed(10))
-      //bezierData[name].push(Math.abs(y-1).toFixed(10));
+
+      bezierData[name].push(y)
+
 
     };
 
-
   };
 
-
 };
-
 
 
 fs.writeFile('bezier.js', "var bezierCurveSpecs = " + JSON.stringify(bezierData,null,4), function (err) {

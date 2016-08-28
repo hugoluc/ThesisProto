@@ -438,12 +438,17 @@ function proto02(){
                         this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[1,0]);
                         this.introState = "moveToCorner";
 
+                        console.log("-----------------------------------------------------------")
+
                     }
 
                     break;
 
 
                 case "moveToCorner":
+
+                    this.instruction.customAnimation.log()
+
                     if(this.instruction.customAnimation.run()){
                         return true;
                     }

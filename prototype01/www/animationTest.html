@@ -18,14 +18,16 @@
         function setup() {
             // Sets the screen to be 640 pixels wide and 360 pixels high
             createCanvas(hight, hight);
-            background(0,0,0) 
+            background(0,0,0)
             stroke(255,023,120);
-                          
-             for(var i = 0; i < 1 ; i = i + 0.01){
-                
-                var x = i;
 
-                ellipse(x*height,hight-bezierCurveSpecs[name][i*100]*hight,2,2)
+            console.log(bezierCurveSpecs[name])
+
+
+             for(var i = 0; i < bezierCurveSpecs[name].length ; i++){
+
+                var x = i;
+                ellipse(i,hight-bezierCurveSpecs[name][i]*hight,2,2)
 
             }
 
