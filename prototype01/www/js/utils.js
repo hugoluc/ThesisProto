@@ -177,6 +177,9 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
 
   };
 
+  console.log("INITING FEATURE: ", this.feature)
+  console.log("Current Lavue is: ", this.obj[this.feature]);
+
 };
 
 animation.prototype.runFeature = function(_log){
@@ -185,20 +188,22 @@ animation.prototype.runFeature = function(_log){
     return true;
   };
 
-  var last = this.feaNow;
-  this.feaNow = Date.now();
-  var frameTime = this.feaNow - last;
-
-  if(!this.feaTimeSet){
+  if(!this.feaTimeSet){ // caaled only the first frame of animation
 
     this.feaStartTime = Date.now();
-    this.feaLastTime = Date.now();
-    this.feaTimeSet = true;
     frameTime =  0
+    elapsed = 0
+    this.feaTimeSet = true;
+
+  }else{
+
+    var elapsed = this.feaNow - this.feaStartTime
 
   };
 
-  var elapsed = this.feaNow - this.feaStartTime
+  var last = this.feaNow;
+  this.feaNow = Date.now();
+  var frameTime = this.feaNow - last;
 
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // Position after animation is done
@@ -238,7 +243,7 @@ animation.prototype.runFeature = function(_log){
 
       if(this.feaBezier){
 
-        var location = Math.floor(((elapsed-this.offset)*bezierCurveSpecs[this.bezName].length - 1)/this.anLength)
+        var location = Math.floor(((elapsed-this.feaOff)*(bezierCurveSpecs[this.feaBezName].length-1))/this.feaLength)
         bez = bezierCurveSpecs[this.feaBezName][location]
 
 
@@ -252,6 +257,19 @@ animation.prototype.runFeature = function(_log){
 
         }else{
 
+          if(this.print){
+
+            console.log("location ", location);
+            console.log("bezdata ", bez);
+            console.log("feature", this.feature)
+            console.log("featureValue ", this.obj[this.feature]);
+            console.log("last ", last);
+            console.log("this.now ", this.feaNow);
+            console.log("framtetime ", frameTime);
+            console.log("this.starttime ", this.feaStartTime);
+
+          }
+
           this.obj[this.feature] = this.featureStart + (this.featureDistance * bez)
 
         }
@@ -263,18 +281,13 @@ animation.prototype.runFeature = function(_log){
           for(var i = 0; i < this.feature.length; i++){
 
             this.obj[this.feature[i]] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i])
-
-            // console.log(">>>>>>>>>>>>>>>>>")
-            // console.log(i, this.obj[this.feature[i]])
-            // console.log(frameTime, this.featureSpeed[i])
-
             this.obj[this.feature[i]] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i])
 
           }
 
         }else{
 
-          this.obj[this.feature] = this.obj[this.feature[i]] + (frameTime * this.featureSpeed[i])
+          this.obj[this.feature] = this.obj[this.feature] + (frameTime * this.featureSpeed)
 
         };
 
@@ -286,7 +299,6 @@ animation.prototype.runFeature = function(_log){
 
   };
 };
-
 animation.prototype.log = function(){
 
   if(this.logCount == 0){
@@ -299,10 +311,14 @@ animation.prototype.log = function(){
     console.log("speed: ", this.speed)
     console.log("bounds: ", this.obj.getBounds() )
     console.log("features:-------")
+    console.log("Feature: ", this.feature );
+    console.log("feature value ", this.obj[this.feature])
     console.log("startPos: ", this.featureStart)
     console.log("distance: ", this.featureDistance)
     console.log("speed: ", this.featureSpeed)
     console.log("dest: ", this.dest )
+    console.log("Bezier:--------");
+    console.log("bezfeature:", this.feaBezName);
     console.log(">>>>>>>>>>>>>>>>>>>>>")
 
     this.logCount++
@@ -314,6 +330,11 @@ animation.prototype.log = function(){
 
     console.log("---------------------")
     console.log(this.obj.x, this.obj.y)
+    if(this.feature){
+
+    console.log("feature: ", this.obj[this.feature])
+
+    }
 
     this.print = true
 
@@ -445,7 +466,10 @@ animation.prototype.run = function(){
   }else{
 
     var elapsed = this.now - this.StartTime
+
   }
+
+
   if(elapsed > this.anLength+this.offset){
 
     this.obj.x =  this.startPos.x + this.distance.x
