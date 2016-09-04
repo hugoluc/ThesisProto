@@ -135,7 +135,6 @@ animation.prototype.stop = function(){
 
 animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezier){
 
-
   this.dest = _dest
   this.feaFinished = false;
   this.feaTimeSet = false;
@@ -167,7 +166,6 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
 
     }
 
-
   }
 
   if(_bezier != undefined ){
@@ -177,8 +175,8 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
 
   };
 
-  console.log("INITING FEATURE: ", this.feature)
-  console.log("Current Lavue is: ", this.obj[this.feature]);
+  //console.log("INITIALIZING FEATURE: ", this.feature);
+  //console.log("Current Value is: ", this.obj[this.feature]);
 
 };
 
@@ -191,13 +189,13 @@ animation.prototype.runFeature = function(_log){
   if(!this.feaTimeSet){ // caaled only the first frame of animation
 
     this.feaStartTime = Date.now();
-    frameTime =  0
-    elapsed = 0
+    frameTime =  0;
+    elapsed = 0;
     this.feaTimeSet = true;
 
   }else{
 
-    var elapsed = this.feaNow - this.feaStartTime
+    var elapsed = this.feaNow - this.feaStartTime;
 
   };
 

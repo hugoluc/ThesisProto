@@ -646,47 +646,35 @@ function proto02(){
 
         Trial.prototype.getSpotPos = function(_i){
 
-            return (this.availableSpots[_i] * this.ladyBugs[0].container.width) + this.instructionWidth*4
+            return (this.availableSpots[_i] * this.ladyBugs[0].container.width) + this.instructionWidth*4;
         };
 
         Trial.prototype.storeStim = function(){
+            var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
             if(this.wrongClicks===0) {
               var newpriority = this.stimuli.priority + .5;
             } else {
               var newpriority = this.stimuli.priority - Math.log(this.wrongClicks);
             }
-            this.stimuli.priority = newpriority;
+            this.stimuli.priority = newpriority + rand_adjust;
             return(this.stimuli);
         };
 
         Trial.prototype.createInstructions = function(){
 
-
             if(this.correct < 6){
-
-                this.bugType = 1
-
+                this.bugType = 1;
             }else if(this.correct < 11){
-
                 if(this.correct == 9){
-
-                    this.bugType = 3
-
+                  this.bugType = 3;
                 }else{
-
-                this.bugType = 2
-
+                  this.bugType = 2;
                 }
 
             }else if(this.correct < 16) {
-
-                this.bugType = 3
-
-
+                this.bugType = 3;
             }else{
-
-                this.bugType = 4
-
+                this.bugType = 4;
             }
 
             // Single bug: from 1 to 5
@@ -697,80 +685,74 @@ function proto02(){
             //get Instruction available size
 
             //-------------------------------------------------------------bg BLUE
-            this.bgBlue = new PIXI.Container()
+            this.bgBlue = new PIXI.Container();
 
             //blue bg for numbers
-            this.nunBgBlue = new PIXI.Sprite(assets.textures.instructions_blue)
-            this.nunBgBlue.anchor.x = 0.5
-            this.nunBgBlue.anchor.y = 0.5
-            this.nunBgBlue.width = this.instructionWidth*2
-            this.nunBgBlue.height = this.instructionWidth*2
-            this.bgBlue.addChild(this.nunBgBlue)
+            this.nunBgBlue = new PIXI.Sprite(assets.textures.instructions_blue);
+            this.nunBgBlue.anchor.x = 0.5;
+            this.nunBgBlue.anchor.y = 0.5;
+            this.nunBgBlue.width = this.instructionWidth*2;
+            this.nunBgBlue.height = this.instructionWidth*2;
+            this.bgBlue.addChild(this.nunBgBlue);
 
-            this.countBgBlue = new PIXI.Sprite(assets.textures.instructions_blue)
-            this.countBgBlue.anchor.x = 0.5
-            this.countBgBlue.anchor.y = 0.5
-            this.countBgBlue.width = this.instructionWidth*2.1
-            this.countBgBlue.height = this.instructionWidth*2.1
-            this.countBgBlue.x = this.instructionWidth
-            this.bgBlue.addChild(this.countBgBlue)
+            this.countBgBlue = new PIXI.Sprite(assets.textures.instructions_blue);
+            this.countBgBlue.anchor.x = 0.5;
+            this.countBgBlue.anchor.y = 0.5;
+            this.countBgBlue.width = this.instructionWidth*2.1;
+            this.countBgBlue.height = this.instructionWidth*2.1;
+            this.countBgBlue.x = this.instructionWidth;
+            this.bgBlue.addChild(this.countBgBlue);
 
-            this.bgBlue.customAnimation = new animation(this.bgBlue)
-            this.instruction.addChild(this.bgBlue)
+            this.bgBlue.customAnimation = new animation(this.bgBlue);
+            this.instruction.addChild(this.bgBlue);
 
             //-------------------------------------------------------------bg RED
-            this.bgRed = new PIXI.Container()
+            this.bgRed = new PIXI.Container();
 
             //red bg for numbers
-            this.nunBgRed = new PIXI.Sprite(assets.textures.instructions_red)
-            this.nunBgRed.anchor.x = 0.5
-            this.nunBgRed.anchor.y = 0.5
-            this.nunBgRed.width = this.instructionWidth*2
-            this.nunBgRed.height = this.instructionWidth*2
-            this.bgRed.addChild(this.nunBgRed)
+            this.nunBgRed = new PIXI.Sprite(assets.textures.instructions_red);
+            this.nunBgRed.anchor.x = 0.5;
+            this.nunBgRed.anchor.y = 0.5;
+            this.nunBgRed.width = this.instructionWidth*2;
+            this.nunBgRed.height = this.instructionWidth*2;
+            this.bgRed.addChild(this.nunBgRed);
 
-            this.countBgRed = new PIXI.Sprite(assets.textures.instructions_red)
-            this.countBgRed.anchor.x = 0.5
-            this.countBgRed.anchor.y = 0.5
-            this.countBgRed.width = this.instructionWidth*2.1
-            this.countBgRed.height = this.instructionWidth*2.1
-            this.countBgRed.x = this.instructionWidth
-            this.bgRed.addChild(this.countBgRed)
+            this.countBgRed = new PIXI.Sprite(assets.textures.instructions_red);
+            this.countBgRed.anchor.x = 0.5;
+            this.countBgRed.anchor.y = 0.5;
+            this.countBgRed.width = this.instructionWidth*2.1;
+            this.countBgRed.height = this.instructionWidth*2.1;
+            this.countBgRed.x = this.instructionWidth;
+            this.bgRed.addChild(this.countBgRed);
 
-            this.bgRed.customAnimation = new animation(this.bgRed)
+            this.bgRed.customAnimation = new animation(this.bgRed);
             this.bgRed.renderable = false;
-            this.bgRed.alpha = 0
-            this.instruction.addChild(this.bgRed)
+            this.bgRed.alpha = 0;
+            this.instruction.addChild(this.bgRed);
 
             this.counter = {
-
                 blue : [],
                 red: [],
                 gold: []
+            };
 
-            }
+            var MaxWidth = this.instructionWidth*2;
+            var MaxHeight = this.instructionWidth*2.5;
 
-            var MaxWidth = this.instructionWidth*2
-            var MaxHeight = this.instructionWidth*2.5
+            var width =  this.bugType + ((this.bugType-1)/3);
+            var height = Math.ceil(this.correct/this.bugType) + ((Math.ceil(this.correct/this.bugType) - 1)/3 );
 
-            var width =  this.bugType + ((this.bugType-1)/3)
-            var height = Math.ceil(this.correct/this.bugType) + ((Math.ceil(this.correct/this.bugType) - 1)/3 )
-
-            var counterWidth = (MaxWidth / width) / 2
-            var counterHeight = (MaxHeight / height) / 2
-            var counterSize = []
+            var counterWidth = (MaxWidth / width) / 2;
+            var counterHeight = (MaxHeight / height) / 2;
+            var counterSize = [];
 
             if(this.correct == 1){
-
-                var counterSize = counterWidth/2
-
+                var counterSize = counterWidth/2;
             }else{
-
                 var counterSize = counterWidth < counterHeight ? counterWidth : counterHeight;
-
             }
 
-            var counterMargin = counterSize/3
+            var counterMargin = counterSize/3;
 
             width = (this.bugType * counterSize) + (this.bugType-1 * counterMargin)
 
@@ -784,7 +766,7 @@ function proto02(){
 
                 for(var i = 0; i < this.correct; i++){
 
-                    column = column%this.bugType
+                    column = column%this.bugType;
 
                     if(column == 0){row++}
 
@@ -796,99 +778,91 @@ function proto02(){
                     this.counter[key][i].y = startY + (row * (counterSize+counterMargin) )
                     this.counter[key][i].x = startX + (column*(counterSize + counterMargin))
 
-                    this.counter[key][i].width = counterSize
-                    this.counter[key][i].height = counterSize
+                    this.counter[key][i].width = counterSize;
+                    this.counter[key][i].height = counterSize;
 
                     if(key == "blue"){
-
-                        this.bgBlue.addChild(this.counter[key][i])
-
+                        this.bgBlue.addChild(this.counter[key][i]);
                     }else if(key == "red"){
-
-                        this.bgRed.addChild(this.counter[key][i])
+                        this.bgRed.addChild(this.counter[key][i]);
                     }else{
-                        this.counter[key][i].renderable = false
-                        this.instruction.addChild(this.counter[key][i])
+                        this.counter[key][i].renderable = false;
+                        this.instruction.addChild(this.counter[key][i]);
                     }
 
-                    column++
+                    column++;
 
                 };
 
             };
 
-            var fontSize = this.instructionWidth*0.8
+            var fontSize = this.instructionWidth*0.8;
 
             this.rNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#592c33", stroke:"#592c33", strokeThickness: 2, });
-            this.rNumber.anchor.x = 0.5
-            this.rNumber.anchor.y = 0.5
+            this.rNumber.anchor.x = 0.5;
+            this.rNumber.anchor.y = 0.5;
             this.bgRed.addChild(this.rNumber);
 
             this.bNumber =  new PIXI.Text(this.correct, {font: fontSize + "px Arial", weight:"Bold", fill:"#2c6875", stroke:"#2c6875", strokeThickness: 2, });
-            this.bNumber.anchor.x = 0.5
-            this.bNumber.anchor.y = 0.5
+            this.bNumber.anchor.x = 0.5;
+            this.bNumber.anchor.y = 0.5;
             this.bgBlue.addChild(this.bNumber);
 
-            stage.addChild(this.instruction)
+            stage.addChild(this.instruction);
 
             // 0 -- 15
 
-            var treshold = 20 + round.difficulty*4
-            var value = getRandomInt(0,100)
+            var treshold = 20 + round.difficulty*4;
+            var value = getRandomInt(0,100);
 
-            console.log(value,treshold)
+            console.log(value,treshold);
             if( value <= treshold && this.correct > 2 ){
-
                 this.rNumber.alpha = 0;
                 this.bNumber.alpha = 0;
                 this.nunBgBlue.alpha = 0;
                 this.nunBgRed.alpha = 0;
-
             };
         };
 
         Trial.prototype.destroy = function(){
 
             for(var i=0; i<this.ladyBugs.length; i++){
-              this.ladyBugs[i].destroy()
+              this.ladyBugs[i].destroy();
             };
 
-            this.instruction.removeChildren(0,this.instruction.children.length)
+            this.instruction.removeChildren(0,this.instruction.children.length);
 
             for (key in this.counter){
                 for(var i = 0; i < this.correct; i++){
-                    this.counter[key][i].destroy()
+                    this.counter[key][i].destroy();
                 }
             }
 
-            this.countBgBlue.destroy()
-            this.countBgRed.destroy()
-            this.nunBgBlue.destroy()
-            this.nunBgRed.destroy()
+            this.countBgBlue.destroy();
+            this.countBgRed.destroy();
+            this.nunBgBlue.destroy();
+            this.nunBgRed.destroy();
 
-            this.bNumber.destroy(true,true)
-            this.rNumber.destroy(true,true)
+            this.bNumber.destroy(true,true);
+            this.rNumber.destroy(true,true);
 
-            stage.removeChild(this.instruction)
-            this.instruction.destroy(true,true)
+            stage.removeChild(this.instruction);
+            this.instruction.destroy(true,true);
         };
 
         Trial.prototype.getFoils = function(){
 
           // get numFoils foils that are within +/-3 of the target number
-          var corNum = parseInt(this.correct)
+          var corNum = parseInt(this.correct);
           var min = corNum - 3;
           var foils = [];
 
           for (var i = 0; i < numFoils; i++) {
 
-
-             var thisFoil = getRandomInt(min, corNum + 3)
+             var thisFoil = getRandomInt(min, corNum + 3);
 
              while (thisFoil == this.correct || thisFoil < 1){
-
-                thisFoil = getRandomInt(min, corNum + 3)
-
+                thisFoil = getRandomInt(min, corNum + 3);
              }
 
             foils.push(thisFoil);

@@ -51,7 +51,7 @@ function loadStimulusQueue(stimuli, chunkSize) {
 
     if(i%chunkSize==0) priority += 1;
 
-    if(stimuli[i].priority==null) stimuli[i].priority = priority;
+    if(stimuli[i].priority==null) stimuli[i].priority = priority + .01*i;
 
     pq.push(stimuli[i]);
     //console.log(stimuli[i]);
