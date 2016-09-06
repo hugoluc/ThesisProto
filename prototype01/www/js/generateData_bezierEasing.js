@@ -148,7 +148,7 @@ for(var c = 0; c <= CONTROLS; c++){
       var t = getBezierTforX(x);
       var y = calcBezier(t,MY1,MY2)
 
-      bezierData[name].push(y)
+      bezierData[name].push(y.toFixed(10))
 
 
     };
