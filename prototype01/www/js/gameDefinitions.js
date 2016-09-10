@@ -9,7 +9,6 @@
 		this.renderer = {};
 		this.canvas = {};
 
-
 		this.init = function(){
 
 			var header = document.getElementById("header-exp").style.height = window.innerHeight*0.08
@@ -398,6 +397,7 @@
 
 	};
 
+
 	gameScore.prototype.addScore = function(_starsPos, _value, _duration, _svg, _index){
 
 		this.score = this.score + (_starsPos.length * _value);
@@ -407,7 +407,7 @@
 		var duration = _duration || 1000;
 		this.index = _index || this.stage.children.length;
 
-		if(_svg){
+		if(_svg){ // draw svg star
 
 			this.svg = true;
 			var starGroup = d3.select("#scoreContainer")
@@ -418,6 +418,7 @@
 			  y: 0,
 			  width : window.innerWidth,
 			  height : window.innerHeight,
+
 			})
 
 			for(var i = 0; i < _starsPos.length; i++){
@@ -442,16 +443,14 @@
 				// Animation callback
 					var id = this.id
 					var _this = d3.select("#" + id).remove()
-					console.log(_this)
 				});
 
-				console.log(starSvg)
 				this.starLength = this.starLength + 1;
 				delay = delay + initDelay
 			};
 
 
-		}else{
+		}else{// draw PIXI canvas star
 
 			this.svg = false;
 
@@ -467,18 +466,21 @@
 
 				this.stage.addChildAt(star,this.index);
 
+				//set animation for position
 				var starAnimation = new animation(star);
-				starAnimation.init({x:session.canvas.width - 25, y: -50},duration,delay,[0,1]);
+				starAnimation.init({x:session.canvas.width - 25, y: -50},duration,0,[0,1]);
 
+				//set animation for size
 				var starFeaAnimation = new animation(star);
 				starFeaAnimation.initFeature(
 					["width", "height"], // features to animate
 					90, // final size
-					200, // time value
+					duration, // time value
 					delay, // delay
-					[0.75,1] // bezier courve
+					[0,0] // bezier courve
 				);
 
+				//set animation for rotation
 				var startRotation = new animation(star);
 				startRotation.initFeature(
 
@@ -486,7 +488,7 @@
 					Math.PI * 2, // final position
 					duration, // time value
 					delay, // delay
-					[0.75,1] // bezier courve
+					[0,1] // bezier courve
 
 				);
 
@@ -496,6 +498,63 @@
 			};
 
 		};
+	};
+
+	gameScore.prototype.displayStar = function(){
+
+		var animationDone = true
+
+
+		for(var i = 0; i < this.stars.length; i++){
+
+
+
+			if(!this.stars[i][2].runFeature()){ //call animation function for size on each star
+
+				animationDone = false
+
+			};
+
+			if(!this.stars[i][3].runFeature()){//call animation for rotation
+
+
+				animationDone = false
+
+			}else {
+								console.log("rotation done!!!")
+			};
+
+			if(this.stars[i][1].run()){ //call animation function for position on each star
+
+				this.stage.removeChild(this.stars[i][0])
+				this.stars[i][0].destroy()
+				this.stars[i][0] = []
+				this.stars[i][1] = []
+				this.stars.splice(i,1);
+
+				this.addScoreUI()
+
+			}else{
+
+				animationDone = false
+
+			};
+
+
+
+
+		};
+
+
+
+
+		if(animationDone){
+
+			return true;
+
+		}
+
+		return false;
 	};
 
 	gameScore.prototype.setExplosion = function(_pos,_radius,_duration){
@@ -521,11 +580,12 @@
 
 					{
 						"x" : (_pos.x + Math.cos(angle)*_radius) * (getRandomFloat(0.95,1.05)),
-						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.9,1.05)),
+						"y" : (_pos.y + Math.sin(angle)*_radius) * (getRandomFloat(0.95,1.05)),
 					},
+
 					duration,
-					0,//getRandomInt(0,_duration*0.01),
-					[1,1]
+					getRandomInt(0,_duration*0.01),
+					[0,1]
 
 				);
 
@@ -536,27 +596,24 @@
 					Math.PI * 4, // final position
 					_duration, // time value
 					0, // delay
-					[0.75,1] // bezier courve
+					[0,1] // bezier courve
 
 				);
 
-
 				var EstarFeaAnimation = new animation(Estar);
 				EstarFeaAnimation.initFeature(
-
 					"alpha",
 					0,
 					duration*0.7, //length
 					duration*0.3, // delay
-					[0,0.75]
+					[0,1]
 
 				);
 
-				console.log(EstarFeaAnimation)
 				this.stage.addChild(Estar)
 				this.explosion.push([Estar,EstarAnimation,EstarFeaAnimation,startERotation])
-			};
 
+			};
 
 			console.log("explosion set!-------------------------------------------------")
 	};
@@ -567,17 +624,15 @@
 
 			for(var i = 0; i < this.explosion.length; i++ ){
 
-				if(!this.explosion[i][2].runFeature(true)){
-
+				if(!this.explosion[i][2].runFeature()){
 					animationDone = false
 
-				};
+				}
 
 				if(!this.explosion[i][3].runFeature()){
 
 					animationDone = false
-
-				};
+				}
 
 				if(this.explosion[i][1].run()){
 
@@ -594,6 +649,13 @@
 				};
 
 			};
+
+			if(animationDone) {
+				return true
+			}else {
+				return false
+			}
+
 	};
 
 	gameScore.prototype.addScoreUI = function(){
@@ -616,51 +678,4 @@
 			}
 
 		}
-	};
-
-	gameScore.prototype.displayStar = function(){
-
-			var animationDone = true
-
-			for(var i = 0; i < this.stars.length; i++){
-
-				if(!this.stars[i][2].runFeature()){ //call animation function for size on each star
-
-					animationDone = false
-
-				};
-
-				if(!this.stars[i][3].runFeature()){
-
-					animationDone = false
-
-				};
-
-				if(this.stars[i][1].run()){ //call animation function for position on each star
-
-					this.stage.removeChild(this.stars[i][0])
-					this.stars[i][0].destroy()
-					this.stars[i][0] = []
-					this.stars[i][1] = []
-					this.stars.splice(i,1);
-
-					this.addScoreUI()
-
-				}else{
-
-					animationDone = false
-
-				};
-
-
-
-			};
-
-			if(animationDone){
-
-				return true;
-
-			}
-
-			return false;
 	};

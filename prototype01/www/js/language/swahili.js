@@ -15,7 +15,7 @@ var feedback = [
 ];
 
 var numbers = [
-  {id:"0", audio:"0_sifuri", text:"sifuri", seq:[]},
+  //{id:"0", audio:"0_sifuri", text:"sifuri", seq:[]},
   {id:"1", audio:"1_moja", text:"moja", seq:[]},
   {id:"2", audio:"2_mbili", text:"mbili", seq:[]},
   {id:"3", audio:"3_tatu", text:"tatu", seq:[]},
@@ -142,7 +142,7 @@ var animals = [
   {id:"goat", text:"mbuzi", audio:"mbuzi", image:"goat"},
   {id:"deer", text:"paa", audio:"paa", image:"deer"},
   {id:"horse", text:"farasi", audio:"farasi", image:"horse"},
-  {id:"crab", text:"kaa", audio:"kaa", image:"crab"}
+  {id:"crab", text:"kaa", audio:"kaa", image:"crab"},
   {id:"alligator", text:"aligeta", audio:"aligeta", image:"alligator"},
   {id:"crocodile", text:"mamba", audio:"mamba", image:"crocodile"},
   {id:"duck", text:"bata", audio:"bata", image:"duck"},
