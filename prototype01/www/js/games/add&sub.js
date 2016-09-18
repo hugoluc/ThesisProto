@@ -1880,13 +1880,13 @@ function proto03(){
 
             if(finishGame){
 
-                console.log("finishing Game")
+                console.log("finishing Game");
 
-                session.stats.domElement.style.display = "none"
-                round.destroy()
-                assets.destroy()
-                finishGame = false
-                currentview = new MainMenu(assets)
+                session.stats.domElement.style.display = "none";
+                round.destroy();
+                assets.destroy();
+                finishGame = false;
+                currentview = new MainMenu(assets);
 
                 return
             }
