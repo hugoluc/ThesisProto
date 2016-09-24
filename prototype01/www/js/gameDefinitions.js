@@ -3,28 +3,51 @@
                                                Class: canvasSession
 -------------------------------------------------------------------------------------------------------------
 */
-
 	function CanvasSession(){
 
 		this.renderer = {};
 		this.canvas = {};
 
+		var resolution = window.devicePixelRatio;
+
 		this.init = function(){
 
 			var header = document.getElementById("header-exp").style.height = window.innerHeight*0.08
-			this.renderer = new PIXI.WebGLRenderer ( window.innerWidth, window.innerHeight-header+1 ); //PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight-header+1);
-			this.canvas = document.getElementById("container-exp").appendChild(this.renderer.view);
-			this.canvas.style.marginTop = header
+			var resolution = 1//window.devicePixelRatio;
+			this.width = document.documentElement.clientWidth;
+			this.height = document.documentElement.clientHeight;
+
+			console.log(document.getElementsByTagName('body')[0].clientHeight)
+
+			console.log("resolution:", resolution)
+			console.log(this.width, this.height)
+			console.log(document.documentElement.clientWidth,document.documentElement.clientHeight)
+
+			this.canvas = window.document.createElement("canvas")
 			this.canvas.style.display = "none"
+			this.container = document.getElementById("container-exp").appendChild(this.canvas);
 
 			this.stats = new Stats();
-		    document.body.appendChild( this.stats.domElement );
-		    this.stats.domElement.style.position = "absolute";
-		    this.stats.domElement.style.top = "0px";
-		    this.stats.domElement.style.zIndex = 10;
-		    this.stats.domElement.id = "stats"
-		    this.stats.domElement.style.display = "none"
+	    document.body.appendChild( this.stats.domElement );
+	    this.stats.domElement.style.position = "absolute";
+	    this.stats.domElement.style.top = "0px";
+	    this.stats.domElement.style.zIndex = 10;
+	    this.stats.domElement.id = "stats"
+	    this.stats.domElement.style.display = "none"
 
+		}
+
+		this.setRenderer = function(){
+
+			this.width = document.documentElement.clientWidth;
+			this.height = document.documentElement.clientHeight;
+
+			var rendererOption = {
+				"view" : this.canvas,
+				"antialias" : true,
+				"resolution" : 1,
+			}
+			this.renderer = new PIXI.autoDetectRenderer(document.documentElement.clientWidth, document.documentElement.clientHeight, rendererOption);
 		}
 
 		this.render = function(_stage){
@@ -35,7 +58,6 @@
 			this.canvas.style.display = "inline";
 			document.getElementById("header-exp").style.display = "inline"
 		}
-
 
 		this.hide = function(){
 			this.canvas.style.display = "none";
@@ -258,19 +280,14 @@
 		this.stage = _stage;
 		this._trial = _Trial;
 		this.stimuli = _stimuli;
-	  	this.background = new PIXI.Sprite(assets.textures.bg);
+	  this.background = new PIXI.Sprite(assets.textures.bg);
+		this.background.width = session.width;
+		this.background.height = session.height;
 
 	 	this.stage.addChild(this.background);
 
 	 	this.getNextTrial();
 	 	session.render(_stage);
-
-	   	//console.log(x, x.width)
-
-	   	// var ratio = this.background.height/this.background.width
-	    this.background.width = session.canvas.width;
-	    this.background.height = session.canvas.height;
-
 	}
 
 	Round.prototype.getNextTrial = function(){
@@ -294,7 +311,7 @@
 
 	Round.prototype.destroy = function(){
 
-		
+
 		this.stage.removeChild(this.background)
 		this.background.destroy(true,true)
 
@@ -396,7 +413,6 @@
 		this.stage = {};
 
 	};
-
 
 	gameScore.prototype.addScore = function(_starsPos, _value, _duration, _svg, _index){
 
