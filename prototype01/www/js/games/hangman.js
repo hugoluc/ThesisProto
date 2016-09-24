@@ -26,14 +26,27 @@ var HangmanTrial = function(pars) {
   self.audiofile = pars['audio'];
   self.audio = new Audio('audio/'+language+'/'+self.audiofile+'.mp3');
   self.image = pars['image']; // if there's no image, need a default one (circle?)
-  self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split("")); // unique letters to guess--decrement when each is clicked
-
+  self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split(""));
+  // unique letters to guess--decrement when each is clicked
+  
   // end trial (read word)
   self.finish = function(won, callback) {
+    var decision = Math.random();
     if(won) {
       console.log("hooray! play feedback['good_job']..animation");
+      if(decision>.67) {
+        var fb = new Audio('audio/'+language+'/feedback/'+"very_good.mp3");
+        fb.play();
+      } else if(decision>.33) {
+        var fb = new Audio('audio/'+language+'/feedback/'+"good_job.mp3");
+        fb.play();
+      } // sometimes don't say anything (don't be too repetitive)
     } else {
       console.log("lost: try again?")
+      if(decision>.5) {
+        var fb = new Audio('audio/'+language+'/feedback/'+'try_again.mp3');
+        fb.play();
+      }
     }
     var final_view_time = 3500; // how long they see the word and picture at the end
     self.audio.play()
@@ -193,7 +206,7 @@ var HangmanTrial = function(pars) {
     // GK: replace veil with N leaves that disappear as wrong guesses are made
     if(self.image) {
       var myImg = screend3.append("image")
-        .attr("xlink:href", function(d) { return "svgs/"+ self.image +".svg"; })
+        .attr("xlink:href", function(d) { return "svgs/"+ self.image +".png"; }) // worked with .svg
         .attr("x", xpos)
         .attr("y", ypos)
         .attr("width",imageSize)

@@ -1,7 +1,4 @@
-The Staring
-Game
-Mozambican folktale
-English
+The Staring Game
 
 A long time ago, the rabbit and the snake were good friends.
 
@@ -12,8 +9,8 @@ But the rabbit was much cleverer than the snake, and the snake knew it!
 
 2
 
-So, they were discussing who could stare the longest. The snake said:
-Let's try it. 
+So, they were discussing who could stare the longest. 
+The snake said: Let's try it. 
 I will win by staring at you.
 So the rabbit agreed to the staring game.
 
