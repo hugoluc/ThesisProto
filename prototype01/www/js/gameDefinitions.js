@@ -116,13 +116,13 @@
 		this.textureQueue.push([name,url]);
 	};
 
-	Assets.prototype.addSound = function(name,url){
+	Assets.prototype.addSound = function(name,url,queue_name){
 
 		if(typeof(name) == "number"){
 
 			this.soundsNQueue.push([name,url])
 
-		} else if(name.length===1){
+		} else if(queue_name==="letters"){
 
 			this.soundsLetterQueue.push([name,url])
 

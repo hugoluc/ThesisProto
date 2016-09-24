@@ -169,6 +169,7 @@ function bubbleLetters(){
     function Trial(_stim){
         stimCount++;
         this.target = _stim.text; // the target letter the dragonfly approaches
+        this.targetAudio = _stim.audio;
         this.lowercase = false;
         // eventually mix in some lower case letters
         if(stimCount>10 & Math.random()<.5) this.lowercase = true;
@@ -433,6 +434,8 @@ function bubbleLetters(){
             case "intro":
                 if(this.intro()){
                     assets.sounds.letters[this.target].play();
+                    console.log("playing: "+this.target);
+                    console.log(assets.sounds.letters[this.target]);
                     this.trialState = "play";
                 }
                 break;
@@ -492,7 +495,8 @@ function bubbleLetters(){
             assets.addTexture("bg","sprites/backGrounds/BackGround-05.png");
 
             for (var i = 0; i < letters.length; i++) {
-              assets.addSound(letters[i].text,letters[i].audio + '.mp3');
+              console.log("text: "+letters[i].text +" audiofile: "+letters[i].audio);
+              assets.addSound(letters[i].text,letters[i].audio + '.mp3', "letters");
             };
             assets.addSound("wrong",'wrong.mp3');
             assets.addSound("correct1",correctSounds[0][0].audio + '.mp3');
@@ -504,7 +508,7 @@ function bubbleLetters(){
         function onAssetsLoaded(){
           round.init(Trial,stage, stimQ);
           setTimeout(function(){
-              console.log("starting the game!");
+              console.log("starting bubbleLetters!");
               session.show();
               update();
           });
