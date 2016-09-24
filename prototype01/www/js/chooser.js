@@ -1,7 +1,5 @@
 var MainMenu = function() {
-
   clickStart('container-exp','container-chooser');
-
 };
 
 function Start(){
@@ -91,6 +89,9 @@ function Start(){
 
       var gameClick = function(){
 
+        document.getElementById("container-exp").style.height = window.innerHeight
+        session.setRenderer();
+
         clickStart('container-chooser','container-exp');
         currentview = new Games[this.id].callFunction();
 
@@ -108,7 +109,6 @@ function Start(){
       score = new gameScore();
 
       assets.addTexture('star',"sprites/star/star.png")
-
       session.init();
       PIXIInitialized = true;
 
