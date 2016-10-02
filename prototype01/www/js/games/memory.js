@@ -7,6 +7,8 @@
 // with the appropriate stimuli
 
 function memory(){
+  var clock = new ClockTimer();
+  var scoreIncrease = 1; // increase scoreIncrease by 1 every 5 correct trials
   var game_loaded = true;
   queuesToUpdate['alphabetstim'] = true;
   var stimQ = stimQueues['alphabetstim'];
@@ -16,7 +18,7 @@ function memory(){
   var tile;
   var first_tile;
   var second_tile;
-  var gameGrid;
+  this.gameGrid;
   var pause_timer;
   var defaultImage;
   var pairsFinished = 8;
@@ -61,8 +63,8 @@ function memory(){
     stage.addChild(background);
 
   	//Game Grid container for all Tiles.
-  	gameGrid = new PIXI.Container();
-  	stage.addChild(gameGrid);
+  	this.gameGrid = new PIXI.Container();
+  	stage.addChild(this.gameGrid);
 
   	for (var x=1; x<=ncol; x++) {
   		for (var y=1; y<=nrow; y++) {
@@ -74,7 +76,7 @@ function memory(){
   			tile.addChild( get_default_tile() );
   			tile.position.x = 97 + (x-1)*stimSize;
   			tile.position.y = 57 + (y-1)*stimSize;
-  			gameGrid.addChild(tile);
+  			this.gameGrid.addChild(tile);
   			tile.interactive = true;
   			tile.buttonMode = true;
   			tile.click = tile_clicked;
@@ -137,9 +139,21 @@ function memory(){
   			console.log("PAIR FOUND")
 
   			if(pairsFinished != 1) {
-  				pairsFinished--;
+          var pos = [];
+          for (var i=0; i<scoreIncrease; i++) {
+            pos.push({ x: 200, y: 300}); // need click/tile position
+          }
+          score.addScore(pos, scoreIncrease);
+          correct_sound.play();
+          score.setExplosion({ x: 200, y: 300},100,1000);
+          clock.start(1000);
+          score.displayStar();
+          score.displayExplosion();
+
+          pairsFinished--;
   				setTimeout(remove_tiles, 1000);
   				console.log("TO PAIR: " + pairsFinished);
+
 
   			} else {
 
@@ -147,7 +161,7 @@ function memory(){
   				timer.stop();
   				stage.removeChild(progressBarTimer);
   				timer_txt.text = "Well Done!";
-  				stage.removeChild(gameGrid);
+  				stage.removeChild(this.gameGrid);
   				//showWinnerSpriteSheet();
 
   			}
@@ -210,8 +224,8 @@ function memory(){
   }
 
   function remove_tiles() {
-  	gameGrid.removeChild(first_tile);
-  	gameGrid.removeChild(second_tile);
+  	this.gameGrid.removeChild(first_tile);
+  	this.gameGrid.removeChild(second_tile);
   	first_tile = null;
   	second_tile = null;
   }
@@ -279,7 +293,7 @@ function memory(){
               session.stats.domElement.style.display = "none";
               round.destroy();
               assets.destroy();
-              finishGame = false;
+              finishGame = true; // false?
               currentview = new MainMenu(); // assets?
               game_loaded = false; // or does leaving it on prevent re-loading assets?
               return;
