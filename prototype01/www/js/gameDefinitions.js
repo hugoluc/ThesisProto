@@ -151,6 +151,8 @@
 				this.loader.add(this.pixiLoaderQueue[i][1])
 			}
 
+			console.log(this.loader.load)
+
 			this.loader.load( function(){
 				console.log("PIXI loader call back")
 				_this.start()
@@ -158,9 +160,11 @@
 
 		}else{
 
+			console.log("PIXI loader call back")
 			this.start()
 
 		}
+
 	};
 
 	Assets.prototype.start = function(){
@@ -316,7 +320,6 @@
 		this.background.destroy(true,true)
 
 		this.trial.destroy(this.stage)
-
 	}
 
 	Round.prototype.play = function(){

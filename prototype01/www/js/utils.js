@@ -124,11 +124,9 @@ function animation(obj){
   this.logCount = 0
 
   this.print = false
-
 };
 
 animation.prototype.stop = function(){
-
   this.finished = true;
   this.obj = [];
 };
@@ -136,14 +134,13 @@ animation.prototype.stop = function(){
 animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezier){
 
   this.dest = _dest
+  console.log(_dest)
   this.feaFinished = false;
   this.feaTimeSet = false;
-
 
   this.feature = _feature
   this.feaLength = _length
   this.feaOff = _offset || 0
-
 
   if(this.feature.constructor !== Array){
 
@@ -157,11 +154,26 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
     this.featureDistance = []
     this.featureSpeed = []
 
-
     for(var i = 0; i < this.feature.length; i++){
 
+      if(this.feature[i] == "scale.x"){
+
+        this.feature[i] = this.obj
+
+      }else if (this.feature[i] == "scale.y"){
+
+
+      }
+
       this.featureStart.push(this.obj[this.feature[i]])
-      this.featureDistance.push(_dest - this.featureStart[i])
+
+      if(_dest.constructor !== Array){
+        this.featureDistance.push(_dest - this.featureStart[i])
+      }else{
+        this.featureDistance.push(_dest[i] - this.featureStart[i])
+      }
+
+
       this.featureSpeed.push(this.featureDistance[i] / this.feaLength)
 
     }
@@ -297,6 +309,7 @@ animation.prototype.runFeature = function(_log){
 
   };
 };
+
 animation.prototype.log = function(){
 
   if(this.logCount == 0){
@@ -343,64 +356,6 @@ animation.prototype.log = function(){
   }
 
 }
-
-animation.prototype.init = function(dest,length,offset,bezier){
-
-  this.finished = false;
-  this.timeSet = false;
-
-  if(bezier != undefined ){
-    this.bezier = true;
-    this.bezName = bezier[0].toFixed(2) + "-" + bezier[1].toFixed(2)
-  }
-
-  this.dest = {
-    x : dest.x,
-    y : dest.y,
-  }
-
-  this.offset = offset || 0;
-  this.anLength = length || 2000;
-
-  var start = {};
-
-  if(this.obj.constructor.name != "Container"){
-
-    start.x = this.obj.x
-    start.y = this.obj.y
-
-    this.startPos = {};
-    this.startPos.x = this.obj.x;
-    this.startPos.y = this.obj.y;
-
-    this.distance = {};
-    this.distance.x = this.dest.x - (start.x);
-    this.distance.y =  this.dest.y - (start.y);
-
-
-
-  }else{
-
-
-    start.x = this.obj.getBounds().x
-    start.y = this.obj.getBounds().y
-
-    this.startPos = {};
-    this.startPos.x = this.obj.x;
-    this.startPos.y = this.obj.y;
-
-    this.distance = {};
-    this.distance.x = this.dest.x - (this.startPos.x);
-    this.distance.y =  this.dest.y - (this.startPos.y);
-
-  }
-
-  this.speed = {};
-  this.speed.x = this.distance.x/this.anLength;
-  this.speed.y = this.distance.y/this.anLength;
-
-  this.now = 0;
-};
 
 animation.prototype.setPos = function(dest){
 
@@ -462,11 +417,8 @@ animation.prototype.run = function(){
     frameTime =  0
 
   }else{
-
     var elapsed = this.now - this.StartTime
-
   }
-
 
   if(elapsed > this.anLength+this.offset){
 
@@ -510,4 +462,167 @@ animation.prototype.run = function(){
 
 
   }
+};
+
+animation.prototype.init = function(dest,length,offset,bezier){
+
+  this.finished = false;
+  this.timeSet = false;
+
+  if(bezier != undefined ){
+    this.bezier = true;
+    this.bezName = bezier[0].toFixed(2) + "-" + bezier[1].toFixed(2)
+  }
+
+  this.dest = {
+    x : dest.x,
+    y : dest.y,
+  }
+
+  this.offset = offset || 0;
+  this.anLength = length || 2000;
+
+  var start = {};
+
+  if(this.obj.constructor.name != "Container"){
+
+    start.x = this.obj.x
+    start.y = this.obj.y
+
+    this.startPos = {};
+    this.startPos.x = this.obj.x;
+    this.startPos.y = this.obj.y;
+
+    this.distance = {};
+    this.distance.x = this.dest.x - (start.x);
+    this.distance.y =  this.dest.y - (start.y);
+
+
+
+  }else{
+
+
+    start.x = this.obj.getBounds().x
+    start.y = this.obj.getBounds().y
+
+    this.startPos = {};
+    this.startPos.x = this.obj.x;
+    this.startPos.y = this.obj.y;
+
+    this.distance = {};
+    this.distance.x = this.dest.x - (this.startPos.x);
+    this.distance.y =  this.dest.y - (this.startPos.y);
+
+  }
+
+  this.speed = {};
+  this.speed.x = this.distance.x/this.anLength;
+  this.speed.y = this.distance.y/this.anLength;
+
+  this.now = 0;
+};
+
+animation.prototype.runScale = function(){
+
+  if(this.finished){
+    return true
+  }
+
+  var last = this.now;
+  this.now = Date.now();
+  var frameTime = this.now - last;
+  var elapsed;
+
+  if(!this.timeSet){
+
+    this.StartTime = Date.now();
+    this.lastTime = this.StartTime
+    this.timeSet = true;
+    frameTime =  0
+
+  }else{
+    var elapsed = this.now - this.StartTime
+  }
+
+  if(elapsed > this.anLength+this.offset){
+
+    this.obj.scale.x =  this.startPos.x + this.distance.x
+    this.obj.scale.y =  this.startPos.y + this.distance.y
+    this.finished = true;
+
+    return true
+
+  }else{
+
+    if(elapsed >= this.offset){
+
+      if(this.bezier){
+
+        var location = Math.floor(((elapsed-this.offset)*bezierCurveSpecs[this.bezName].length - 1)/this.anLength)
+        bez = bezierCurveSpecs[this.bezName][location]
+
+        if(this.print){
+
+          console.log("bezire!--:")
+          console.log("position:", this.obj.scale.x,this.obj.scale.y);
+          console.log(location)
+          console.log(bez)
+
+        }
+
+        this.obj.scale.y = this.startPos.y + (this.distance.y * bez);
+        this.obj.scale.x = this.startPos.x + (this.distance.x * bez);
+
+      }else{
+
+        this.obj.scale.x = this.obj.scale.x + frameTime * this.speed.x;
+        this.obj.scale.y = this.obj.scale.y + frameTime * this.speed.y;
+
+      }
+
+    }
+
+    return false
+
+
+  }
+};
+
+animation.prototype.initScale = function(dest,length,offset,bezier){
+
+  this.finished = false;
+  this.timeSet = false;
+
+  if(bezier != undefined ){
+    this.bezier = true;
+    this.bezName = bezier[0].toFixed(2) + "-" + bezier[1].toFixed(2)
+  }
+
+  this.dest = {
+    x : dest.x,
+    y : dest.y,
+  }
+
+  this.offset = offset || 0;
+  this.anLength = length || 2000;
+
+  var start = {};
+
+  start.x = this.obj.scale.x
+  start.y = this.obj.scale.y
+
+  this.startPos = {};
+  this.startPos.x = this.obj.scale.x;
+  this.startPos.y = this.obj.scale.y;
+
+  this.distance = {};
+  this.distance.x = this.dest.x - (this.startPos.x);
+  this.distance.y =  this.dest.y - (this.startPos.y);
+
+  this.speed = {};
+  this.speed.x = this.distance.x/this.anLength;
+  this.speed.y = this.distance.y/this.anLength;
+
+  this.now = 0;
+
 };

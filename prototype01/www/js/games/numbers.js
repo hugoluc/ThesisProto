@@ -1194,7 +1194,6 @@ function proto02(){
                 assets.addTexture("bg",'sprites/backGrounds/BackGround-01_2x.png');
             }
 
-
             for (var i = 0; i < numbers.length; i++) {
               //assets.sounds.numbers
               assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');

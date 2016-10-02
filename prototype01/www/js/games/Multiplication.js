@@ -14,6 +14,8 @@ function Multiplication(){
 -------------------------------------------------------------------------------------------------------------
 */
 
+  var numberss = [20]
+
 	function Trial(_stimuli,_correct){
 
 		var specs = [
@@ -22,7 +24,7 @@ function Multiplication(){
 
 				stimuli : {
 
-					values : [20],
+					values : numberss,
 					// Maybe use this later to terermine in wich direction the game is testing the user
 
 				},
@@ -46,12 +48,7 @@ function Multiplication(){
 		this.playState = "intro"
 		this.introState = "intruction"
 
-		this.eggs = {
-
-			drag : [],
-			instruction : []
-
-		}
+		this.eggs = {}
 
 		this.setBoardSpecs() // set board variables and sizes
 		this.boardContainers = []
@@ -59,7 +56,7 @@ function Multiplication(){
 		for(var i = 0; i < 4; i++){
 
 			this.boardContainers[i] = new PIXI.Container()
-			stage.addChild(this.boardContainers[i])
+			//stage.addChild(this.boardContainers[i])
 			this.boardContainers[i].customAnimation = new animation(this.boardContainers[i])
 
 		};
@@ -68,41 +65,62 @@ function Multiplication(){
 		// Create Sprites for intructions eggs
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-		if((session.height/this.stimuli.values.length) * 0.7 < this.boardSpecs.instructionWidth*0.7){
 
-			var eggSize = (session.height/this.stimuli.values.length) * 0.7
-
-		}else{
-
-			var eggSize = this.boardSpecs.instructionWidth*0.7
-
-		}
-
+    //called for moutiple times if stimuli has more than one number
 		for(var i = 0; i < this.stimuli.values.length; i++){
 
-			var sprite = new PIXI.Sprite(assets.textures.egg)
-			sprite.x = 300 + i * 100
-			sprite.y = 300
-			sprite.anchor.x = 0.5
-			sprite.anchor.y = 0.5
-			sprite.width = 0
-			sprite.height = 0
-			sprite.customAnimation = new animation(sprite)
-			sprite.customAnimation.initFeature(
+      console.log(i)
 
-				["width", "height"], // features to animate
-				eggSize, // final value of animation
-				300, // time of animation
-				(100 * i), // delay
-				[0.5,1] //bezier animation handles
+      var container = new PIXI.Container()
+
+      for(var j = 0; j < this.stimuli.values[i]; j++){
+
+        var sprite = new PIXI.Sprite(assets.textures.eggBlue)
+  			sprite.anchor.x = 0.5
+  			sprite.anchor.y = 0.5
+        container.addChild(sprite)
+      }
+
+      var bounds = container.getBounds()
+      var distance = 30
+
+
+      var eggFinalSize = (this.boardSpecs.maxHeight - ((this.stimuli.values.length-1)*distance))/this.stimuli.values.length
+      var finalScale = eggFinalSize/container.children[0].texture.baseTexture.source.height
+
+      if((container.children[0].texture.baseTexture.source.width)*finalScale > this.boardSpecs.instructionWidth * 0.7){
+
+        var eggFinalSize = this.boardSpecs.instructionWidth * 0.5
+        var finalScale = eggFinalSize/container.children[0].texture.baseTexture.source.width
+
+      }
+
+
+      container.scale.x = 0
+      container.scale.y = 0
+      container.x = 300 + i * ((container.children[0].texture.baseTexture.source.width)*(finalScale))
+      container.y = 300
+
+      console.log(bounds)
+
+      console.log(container.x,container.y)
+
+			container.customAnimation = new animation(container)
+      container.customAnimation.initScale(
+
+				{x : finalScale, y : finalScale}, //Final value of animation
+				500, // Time of animation
+				(100 * i), // Delay
+				[0,0] //Bezier animation handles
 
 			)
 
-			stage.addChild(sprite)
-
-			this.eggs.instruction.push(sprite)
+			stage.addChild(container)
+			this.eggs[this.stimuli.values[i] + ""] = container
 
 		};
+
+    console.log(this.eggs)
 
 		this.timer = new ClockTimer();
 		this.timer.start(1000);
@@ -157,37 +175,45 @@ function Multiplication(){
 
 					var done = true
 
-					for(var i=0; i < this.eggs.instruction.length; i++ ){
+					for(i in this.eggs){
 
-						if(!this.eggs.instruction[i].customAnimation.runFeature()){
-							//animate eggs
+						if(!this.eggs[i].customAnimation.runScale()){
 
 							done = false;
 						};
 
 					};
 
-
 					if(done){
 
-						for(var i=0; i < this.eggs.instruction.length; i++ ){
+            var counter = 0
+            var finalYpos;
 
+            for(i in this.eggs){
+
+              if(this.stimuli.values.length == 1){
+                finalYpos = session.height/2
+              }else{
+                var eggHeight = this.eggs[this.stimuli.values[0]].getBounds().height
+                var spacing = (this.boardSpecs.maxHeight - (this.stimuli.values.length*eggHeight)) / (this.stimuli.values.length-1)
+                finalYpos = (eggHeight/2) + this.boardSpecs.boardMargin + (eggHeight * counter) + (spacing * counter)
+                console.log(eggHeight,spacing,finalYpos)
+              }
 
 							var pos = {
-								y : (session.height/(this.eggs.instruction.length+1))*(i+1),
-								x : (this.boardSpecs.instructionWidth < 250) ? this.boardSpecs.instructionWidth/2 : 125
-								//******************************FIXME
-								// chnge to exat size of cliff after displaying cliff on transition
+								y : finalYpos,
+								x : this.boardSpecs.x/2
 							}
 
-
-							this.eggs.instruction[i].customAnimation.init(
+							this.eggs[i].customAnimation.init(
 
 								pos,
-								500,
-								100,
-								[0.75,1]
+								1500,
+								100*counter,
+								[0.75,0.25]
 							)
+
+              counter++
 
 						};
 
@@ -208,9 +234,9 @@ function Multiplication(){
 
 					var done = true
 
-					for(var i=0; i < this.eggs.instruction.length; i++ ){
+          for(i in this.eggs){
 
-						if(!this.eggs.instruction[i].customAnimation.run()){
+						if(!this.eggs[i].customAnimation.run()){
 							done = false;
 						};
 
@@ -300,11 +326,13 @@ function Multiplication(){
 
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+    this.grid = new PIXI.Container()
+
 		for(var i=0; i<this.boardSpecs.columns; i++){
 
 			var _y = 0
 
-			for(var j=this.boardSpecs.rows-1; j >= 0; j--){
+			for(var j = this.boardSpecs.rows-1; j >= 0; j--){
 
 
 				var indice = i + "-" + _y
@@ -316,6 +344,8 @@ function Multiplication(){
 
 				};
 
+        console.log(this.boardSpecs.y)
+
 				this.boardMatrix[indice] = {
 
 					"sprite" : new PIXI.Sprite(assets.textures.boardLeaves), // sprite od the board background
@@ -326,8 +356,7 @@ function Multiplication(){
 
 				}
 
-				stage.addChild(this.boardMatrix[indice].sprite)
-				stage.addChild(this.boardMatrix[indice].graphic)
+        this.grid.addChild(this.boardMatrix[indice].graphic)
 				_y++;
 
 
@@ -359,6 +388,8 @@ function Multiplication(){
 				this.boardContainers[containerPosition].addChild(this.boardMatrix[indice].sprite)
 
 			};
+
+
 		};
 
 
@@ -366,12 +397,9 @@ function Multiplication(){
 		// Initiate board containers animations
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-
 		for(var i=0; i<this.boardContainers.length; i++){
 
 			if(i > 1){
-
-				console.log(">>>>>>>>>>>>", i)
 
 				this.boardContainers[i].customAnimation.setPos({
 					x : this.boardContainers[i].x,
@@ -381,8 +409,6 @@ function Multiplication(){
 
 			}else{
 
-				console.log(divisionHoz)
-
 				this.boardContainers[i].customAnimation.setPos({
 					x : this.boardContainers[i].x,
 					y : - this.boardSpecs.x - (divisionHoz*this.tileSize)
@@ -390,7 +416,6 @@ function Multiplication(){
 				})
 
 			}
-
 
 			this.boardContainers[i].customAnimation.init(
 
@@ -401,14 +426,11 @@ function Multiplication(){
 
 			)
 
-
 		}
-
 
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		// Create Sprites for the board background
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 
 		var _this = this;
 
@@ -420,20 +442,19 @@ function Multiplication(){
 
 		for(object in  this.boardMatrix){
 
-			//*************************************************** <FIXME> REPLACE GRAPHIC BY SPRITE
-			this.boardMatrix[object].graphic.beginFill(0xFF00BB, 0.0);
-      this.boardMatrix[object].graphic.lineStyle(2, 0x0000FF, 1);
+			this.boardMatrix[object].graphic.beginFill(0xFFFFFF, 0.0);
+      this.boardMatrix[object].graphic.lineStyle(2, 0xb9b03f, 0.5);
 			this.boardMatrix[object].graphic.drawRect(this.boardMatrix[object].pos.x, this.boardMatrix[object].pos.y, this.boardSpecs.tileSize, this.boardSpecs.tileSize);
 			this.boardMatrix[object].graphic.endFill();
 			this.boardMatrix[object].graphic.id = object
 			this.boardMatrix[object].graphic.interactive = true;
 
-            //touch start
+      //touch start
 			this.boardMatrix[object].graphic
 			.on('mousedown', click)
             .on('touchstart', click)
 
-            //touch end
+        //touch end
     		.on('mouseup', function(){_this.clickEnd(this)})
             .on('mouseupoutside', function(){_this.clickEnd(this)})
             .on('touchend', function(){_this.clickEnd(this)})
@@ -452,18 +473,99 @@ function Multiplication(){
 
 		};
 
-		//>>>>>>>>>>>>>>>>>>>>>>>>>
-		// Create Sprites for cliff
-		//>>>>>>>>>>>>>>>>>>>>>>>>>
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		// Create Sprites for Branches
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-		this.cliff = new PIXI.Sprite(assets.textures.cliff)
-		this.cliff.x = 0
-		this.cliff.y = 0
-		this.cliff.height = session.height
-		this.cliff.width = (this.boardSpecs.instructionWidth < 250) ? this.boardSpecs.instructionWidth : 250
+    var TL = new PIXI.Sprite(assets.textures.TL)
+    stage.addChild(TL)
+    var TR = new PIXI.Sprite(assets.textures.TR)
+    stage.addChild(TR)
+    var BL = new PIXI.Sprite(assets.textures.BL)
+    stage.addChild(BL)
+    var BR = new PIXI.Sprite(assets.textures.BR)
+    stage.addChild(BR)
 
-		stage.addChild(this.cliff)
-		stage.setChildIndex(this.cliff, 1)
+    if(this.boardSpecs.rows < 3){
+
+      var scale = (this.tileSize*1.4) / TL.getBounds().height
+      TL.x = this.boardSpecs.x + this.tileSize * 0.5
+      TR.x = this.boardSpecs.x + ((this.boardSpecs.columns * this.tileSize)/2)
+      BL.x = this.boardSpecs.x + (this.tileSize*0.2)
+      BL.y = session.height - (BL.getBounds().height * scale)
+      BR.x = this.boardSpecs.x +  ((this.boardSpecs.columns * this.tileSize)/2)
+      BR.y = session.height - (BR.getBounds().height * scale)
+
+    }else if(this.boardSpecs.rows == 3){
+
+      var scale = (this.tileSize*2.2) / TL.getBounds().height
+      TL.x = this.boardSpecs.x + this.tileSize * 0.5
+      TR.x = this.boardSpecs.x + ((this.boardSpecs.columns * this.tileSize)/2)
+      BL.x = this.boardSpecs.x + (this.tileSize*0.2)
+      BL.y = session.height - (BL.getBounds().height * scale)
+      BR.x = this.boardSpecs.x +  ((this.boardSpecs.columns * this.tileSize)/2)
+      BR.y = session.height - (BR.getBounds().height * scale)
+
+    }else{
+
+      var scale = (session.height/2) / TR.getBounds().height
+      TR.x = this.boardSpecs.x + ((this.boardSpecs.columns * this.tileSize)/2)
+
+      TL.x = this.boardSpecs.x + (this.boardSpecs.columns/8 * this.tileSize)
+
+      BL.x = this.boardSpecs.x + (this.boardSpecs.columns/8 * this.tileSize)
+      BL.y = session.height -  (BL.getBounds().height * scale)
+
+      BR.x = this.boardSpecs.x +  ((this.boardSpecs.columns * this.tileSize)/2)
+      BR.y = session.height - (BR.getBounds().height * scale)
+
+    }
+
+    TL.scale.x = TL.scale.y = scale
+    TR.scale.x = TR.scale.y = scale
+    BL.scale.x = BL.scale.y = scale
+    BR.scale.x = BR.scale.y = scale
+
+    stage.addChild(this.grid)
+
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		// Create Sprites for cover leaves
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    var CLBR = new PIXI.Sprite(assets.textures["CL-BR"])
+    var scale = ((this.tileSize * 0.8) + ((session.height - (this.boardSpecs.rows*this.tileSize))/2))/ CLBR.getBounds().height
+
+
+    var CLContainer = new PIXI.Container()
+
+    CLBR.scale.x = CLBR.scale.y = scale
+    CLBR.y = session.height - (CLBR.getBounds().height*scale)
+    CLBR.x = session.width - (CLBR.getBounds().width*scale)
+
+    var CLTL = new PIXI.Sprite(assets.textures["CL-TL"])
+    CLTL.scale.x = (session.width * 0.15)/CLTL.getBounds().width
+    CLTL.scale.y = CLTL.scale.x = scale
+    CLContainer.addChild(CLTL)
+
+    var CLTM = new PIXI.Sprite(assets.textures["CL-TM"])
+    CLTM.scale.x = scale
+    CLTM.scale.y = scale
+    CLTM.x = (session.width/2) - (CLTM.getBounds().width*scale)/2
+    CLContainer.addChild(CLTM)
+
+    var CLTR = new PIXI.Sprite(assets.textures["CL-TR"])
+    CLTR.scale.x = CLTR.scale.y = scale
+    CLTR.x = session.width - (CLTR.getBounds().width*scale)
+    CLContainer.addChild(CLTR)
+
+    var CLBL = new PIXI.Sprite(assets.textures["CL-BL"])
+    CLBL.scale.x = CLBL.scale.y = scale
+    CLBL.y = session.height - (CLBL.getBounds().height*scale)
+
+    CLContainer.addChild(CLBL)
+
+    CLContainer.addChild(CLBR)
+    stage.addChild(CLContainer)
 	};
 
 	Trial.prototype.setBoardSpecs = function(){
@@ -482,7 +584,6 @@ function Multiplication(){
 		this.boardSpecs.y = this.boardSpecs.boardMargin + (session.height * 0.1);
 		this.boardSpecs.maxWidth = session.width - this.boardSpecs.instructionWidth - (2 * this.boardSpecs.boardMargin);
 		this.boardSpecs.maxHeight = session.height - (2 * this.boardSpecs.boardMargin) - (session.height * 0.1);
-
 
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		//create board specs for games with more than one eggs
@@ -520,7 +621,7 @@ function Multiplication(){
 						)
 
 				}else{
-				// If there is an odd number of divisors use the two number from the middle
+				// If there is an even number of divisors use the two number from the middle
 				// ex.: 2 x 4 = 8
 				// FINAL NUMBER: 8
 				// ALL POSSIBLE DIVISORS: 1,2,4,8
@@ -536,7 +637,7 @@ function Multiplication(){
 
 			};
 
-			console.log(divisors)
+      console.log(divisors)
 
 			//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 			//Simple algorithms to determine values of
@@ -544,11 +645,13 @@ function Multiplication(){
 			//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 			this.boardSpecs.rows = 0
 			this.boardSpecs.columns = 0
-			var areas = Math.floor(divisors.length/2)
+			var areas = Math.floor(divisors.length/2) // number of vertical areas
+      var divisorIdCounter = 0
 
 			for(var i = 0; i <= areas ; i++){
 
-				var id = i*2
+        var id = divisorIdCounter
+        divisorIdCounter++
 
 				if(i != areas){
 
@@ -560,7 +663,7 @@ function Multiplication(){
 
 					};
 
-				}else{
+				}else{ // last insertion
 
 					this.boardSpecs.rows += divisors[id][1]
 
@@ -585,14 +688,13 @@ function Multiplication(){
 				this.tileSize = this.boardSpecs.tileSize
 	    }
 
-
-      //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  		//create board specs for games with more than one eggs
-  		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  		//create board specs for games with just one eggs
+  		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 		}else{
 
-			this.boardSpecs.rows = Math.ceil(Math.sqrt(this.stimuli.values)) + getRandomInt(0,3)
+			this.boardSpecs.rows = Math.ceil(Math.sqrt(this.stimuli.values))// + getRandomInt(0,3)
 
 			if(Math.ceil(this.boardSpecs.maxWidth / (this.boardSpecs.maxHeight / this.boardSpecs.rows)) - 1 < Math.ceil(Math.sqrt(this.stimuli.values))){
 			// check if board is going to be big enough to fit the answear if squares are based on the rows
@@ -609,7 +711,13 @@ function Multiplication(){
 				this.boardSpecs.columns = Math.ceil(this.boardSpecs.maxWidth / (this.boardSpecs.maxHeight / this.boardSpecs.rows)) - 1
 
 			};
+
 		};
+
+    //set corerct x and y position
+    this.boardSpecs.x = this.boardSpecs.instructionWidth + this.boardSpecs.boardMargin + (this.boardSpecs.maxWidth-(this.boardSpecs.columns * this.tileSize))/2
+    this.boardSpecs.y = this.boardSpecs.boardMargin + ((session.height-(2*this.boardSpecs.boardMargin))-(this.boardSpecs.rows * this.tileSize))/2
+
 	};
 
 	Trial.prototype.clickStart = function(_event){
@@ -800,7 +908,7 @@ function Multiplication(){
 				sprite.anchor.y = 0.5
 
 				_this.selection.tiles[_arrayPos].sprite = sprite
-				stage.addChild(_this.selection.tiles[_arrayPos].sprite)
+				stage.addChildAt(_this.selection.tiles[_arrayPos].sprite,stage.children.length - 1)
 
 			};
 
@@ -1074,12 +1182,33 @@ function Multiplication(){
 
         if(!multiplicationLoaded){
 
-            assets.addTexture("stick","sprites/stick/stick.png")
-            assets.addTexture("leave","sprites/stick/leave.png")
-            assets.addTexture("branch","sprites/stick/branch.png")
+
+            //cover leaves
+            assets.addTexture("CL-BL","sprites/coverLeaves/BL.png")
+            assets.addTexture("CL-BR","sprites/coverLeaves/BR.png")
+            assets.addTexture("CL-TL","sprites/coverLeaves/TL.png")
+            assets.addTexture("CL-TM","sprites/coverLeaves/TM.png")
+            assets.addTexture("CL-TR","sprites/coverLeaves/TR.png")
+
+            //Branches
+            assets.addTexture("CBL","sprites/Branches/C-BL.png")
+            assets.addTexture("CTL","sprites/Branches/C-TL.png")
+            assets.addTexture("CTR","sprites/Branches/C-TR.png")
+            assets.addTexture("BL","sprites/Branches/BL.png")
+            assets.addTexture("BR","sprites/Branches/BR.png")
+            assets.addTexture("TL","sprites/Branches/TL.png")
+            assets.addTexture("TR","sprites/Branches/TR.png")
+
+            //eggs
+            assets.addTexture("eggBlue","sprites/eggs/Egg-Blue.png")
+            assets.addTexture("eggOrange","sprites/eggs/Egg-Orange.png")
+            assets.addTexture("spot01","sprites/eggs/spot-01.png")
+            assets.addTexture("spot02","sprites/eggs/spot-02.png")
+            assets.addTexture("spot03","sprites/eggs/spot-03.png")
+            assets.addTexture("egg-shadow","sprites/eggs/Shadow.png")
+
 
       			assets.addTexture("cliff","sprites/eggs/cliff.png")
-      			assets.addTexture("egg","sprites/eggs/egg.png")
 
       			//assets for rectangle nest
       			assets.addTexture("CBL","sprites/nest/CBL.png")
