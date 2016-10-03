@@ -434,7 +434,7 @@ animation.prototype.run = function(){
 
       if(this.bezier){
 
-        var location = Math.floor(((elapsed-this.offset)*bezierCurveSpecs[this.bezName].length - 1)/this.anLength)
+        var location = parseInt(Math.floor(((elapsed-this.offset)*(bezierCurveSpecs[this.bezName].length-1))/this.anLength))
         bez = bezierCurveSpecs[this.bezName][location]
 
         if(this.print){
@@ -443,6 +443,12 @@ animation.prototype.run = function(){
           console.log("position:", this.obj.x,this.obj.y);
           console.log(location)
           console.log(bez)
+
+        }
+        if(bez == undefined){
+
+          console.log("error on dezier data!")
+          console.log(location)
 
         }
 
