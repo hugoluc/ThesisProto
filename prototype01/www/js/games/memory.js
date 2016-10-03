@@ -7,21 +7,23 @@
 // with the appropriate stimuli
 
 function memory(){
+  var self = this;
   var clock = new ClockTimer();
   var scoreIncrease = 1; // increase scoreIncrease by 1 every 5 correct trials
   var game_loaded = true;
-  queuesToUpdate['alphabetstim'] = true;
-  var stimQ = stimQueues['alphabetstim'];
+  //queuesToUpdate['alphabetstim'] = true;
+  //var stimQ = stimQueues['alphabetstim'];
   var stimSize = 90;
   var stage;
   var renderer;
-  var tile;
+  //var tile;
   var first_tile;
   var second_tile;
-  this.gameGrid;
+  self.flippedTiles = [];
+  self.gameGrid;
   var pause_timer;
   var defaultImage;
-  var pairsFinished = 8;
+  //var pairsFinished = 8;
   var progressBarContainer;
   var progressBarTimer;
   var timer;
@@ -29,8 +31,67 @@ function memory(){
   var nCount = 60;
   var ncol = 4;
   var nrow = 4;
-  var colordeck = new Array(1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8);
+  var pairsFinished = (ncol * nrow) / 2;
+  self.tiles = [];
 
+  var Tile = function(x, y, stim) {
+    var _this = this;
+    this.x = x;
+    this.y = y;
+    this.stim = stim;
+    this.container = new PIXI.Container();
+    this.container.position.x = x;
+    this.container.position.y = y;
+    this.container.interactive = true;
+    this.container.buttonMode = true;
+    this.container.mousedown = this.container.touchstart = function(){ click(); }
+    this.clicked = false;
+    this.width = stimSize;
+    this.height = stimSize;
+
+    function click() {
+      _this.click();
+    }
+  };
+
+  Tile.prototype.drawFaceDown = function() {
+    var graphics = new PIXI.Graphics();
+    graphics.beginFill(0xe74c3c); // red
+    graphics.drawRoundedRect(0, 0, this.width-5, this.height-5, 10); // drawRoundedRect(x, y, width, height, radius)
+    graphics.endFill();
+    this.container.addChild(graphics)
+    this.isFaceUp = false;
+  }
+
+  Tile.prototype.click = function(){ //_this,_event
+    //console.log(this.stim); // a few are undefined??
+    this.drawFaceUp();
+    //tile_clicked(this);
+  }
+
+  Tile.prototype.drawFaceUp = function() {
+    var graphics = new PIXI.Graphics();
+    graphics.beginFill(0x0033ee); // green-blue
+    graphics.drawRoundedRect(0, 0, 85, 85, 10); // drawRoundedRect(x, y, width, height, radius)
+    graphics.endFill();
+    this.container.addChild(graphics);
+    var txt = new PIXI.Text(this.stim.text, {font:"40px Arial", fill:"#FFFFFF"});
+  	txt.position.x = 25;
+  	txt.position.y = 20;
+  	//stage.addChild(txt);
+    this.container.addChild(txt)
+    this.isFaceUp = true;
+  }
+
+  Tile.prototype.destroy = function(){
+      //this.container.removeChild(this.circle);
+      //this.circle.destroy();
+      //this.circle = [];
+      stage.removeChild(this.container);
+      this.container.destroy(true);
+      this.container = [];
+      this.destroyed = true;
+  };
 
   function Trial(_stim){
     this.stim = _stim; // although we need (ncol*nrow) / 2 stimuli -- not just one
@@ -45,43 +106,43 @@ function memory(){
       // this.dragonfly.destroy();
   };
 
-  function init(){
+  function init(pairs){
     // create an new instance of a pixi stage and make it Interactive (mandatory)
   	//stage = new PIXI.Stage(0xffffff, true);
   	//renderer = PIXI.autoDetectRenderer(800, 500);
   	//document.body.appendChild(renderer.view);
-  	initGame();
+  	initGame(pairs);
   	drawTimerBar();
   	requestAnimationFrame( update );
   }
 
-  function initGame() {
+  function initGame(pairs) {
   	//Game background
   	background = new PIXI.Graphics();
     background.beginFill(0xcccccc);
-    background.drawRect(90, 50, ncol*(stimSize+2), nrow*(stimSize+2));
+    background.drawRect(120, 50, ncol*(stimSize+2), nrow*(stimSize+2));
     stage.addChild(background);
 
   	//Game Grid container for all Tiles.
-  	this.gameGrid = new PIXI.Container();
-  	stage.addChild(this.gameGrid);
-
+  	self.gameGrid = new PIXI.Container();
+  	stage.addChild(self.gameGrid);
   	for (var x=1; x<=ncol; x++) {
   		for (var y=1; y<=nrow; y++) {
-  			var random_card = Math.floor(Math.random()*colordeck.length);
+  			var random_card = Math.floor(Math.random()*pairs.length);
       	//defaultImage = PIXI.Sprite.fromImage(assetsDir+"card_back.png");
-  			tile = new PIXI.Container();
-  			tile.col = colordeck[random_card];
-  			colordeck.splice(random_card,1);
-  			tile.addChild( get_default_tile() );
-  			tile.position.x = 97 + (x-1)*stimSize;
-  			tile.position.y = 57 + (y-1)*stimSize;
-  			this.gameGrid.addChild(tile);
-  			tile.interactive = true;
-  			tile.buttonMode = true;
-  			tile.click = tile_clicked;
+  			var stim = pairs[random_card];
+  			pairs.splice(random_card,1);
+
+        var tmp = new Tile(127 + (x-1)*stimSize, 57 + (y-1)*stimSize, stim);
+        self.gameGrid.addChild(tmp.container)
+        self.tiles.push(tmp);
   		}
   	}
+
+    for(var i=0; i<self.tiles.length; i++) {
+      self.tiles[i].drawFaceDown();
+      //console.log(self.tiles[i])
+    }
   }
 
   function get_text_card(letter) {
@@ -99,8 +160,38 @@ function memory(){
     return tmp;
   }
 
-  function tile_clicked(){
-  	var clicked = this;
+  mouseClicked = function() {
+    for (var i = 0; i < tiles.length; i++) {
+        if (tiles[i].isUnderMouse(mouseX, mouseY)) {
+            if (flippedTiles.length < 2 && !tiles[i].isFaceUp) {
+                tiles[i].drawFaceUp();
+                flippedTiles.push(tiles[i]);
+                if (flippedTiles.length === 2) {
+                    numTries++;
+                    if (flippedTiles[0].face === flippedTiles[1].face) {
+                        flippedTiles[0].isMatch = true;
+                        flippedTiles[1].isMatch = true;
+                    }
+                    delayStartFC = frameCount;
+                    loop();
+                }
+            }
+        }
+    }
+    var foundAllMatches = true;
+    for (var i = 0; i < tiles.length; i++) {
+        foundAllMatches = foundAllMatches && tiles[i].isMatch;
+    }
+    if (foundAllMatches) {
+        fill(0, 0, 0);
+        textSize(20);
+        text("You found them all in " + numTries + " tries!", 20, 375);
+    }
+  };
+
+  function tile_clicked(clicked){
+    console.log(clicked)
+    //var clicked = this;
   	clicked.scale.x = 0.97;
   	clicked.scale.y = 0.97;
 
@@ -161,7 +252,7 @@ function memory(){
   				timer.stop();
   				stage.removeChild(progressBarTimer);
   				timer_txt.text = "Well Done!";
-  				stage.removeChild(this.gameGrid);
+  				stage.removeChild(self.gameGrid);
   				//showWinnerSpriteSheet();
 
   			}
@@ -204,17 +295,19 @@ function memory(){
   	timer_txt.text = "Time's Up!";
   }
 
-  function get_default_tile() {
-    var deftile = new PIXI.Graphics();
-    deftile.beginFill(0xe74c3c); // red
-    deftile.drawRoundedRect(0, 0, stimSize-5, stimSize-5, 10); // drawRoundedRect(x, y, width, height, radius)
-    deftile.endFill();
-    return deftile;
-  }
+  // function get_default_tile() {
+  //   var deftile = new PIXI.Graphics();
+  //   deftile.beginFill(0xe74c3c); // red
+  //   deftile.drawRoundedRect(0, 0, stimSize-5, stimSize-5, 10); // drawRoundedRect(x, y, width, height, radius)
+  //   deftile.endFill();
+  //   return deftile;
+  // }
 
   function reset_tiles() {
-  	first_tile.addChild( get_default_tile() );
-  	second_tile.addChild( get_default_tile() );
+  	//first_tile.addChild( get_default_tile() );
+  	//second_tile.addChild( get_default_tile() );
+    first_tile.drawFaceDown();
+  	second_tile.drawFaceDown();
     first_tile.scale.x = 1;
   	first_tile.scale.y = 1;
     second_tile.scale.x = 1;
@@ -224,8 +317,8 @@ function memory(){
   }
 
   function remove_tiles() {
-  	this.gameGrid.removeChild(first_tile);
-  	this.gameGrid.removeChild(second_tile);
+  	self.gameGrid.removeChild(first_tile);
+  	self.gameGrid.removeChild(second_tile);
   	first_tile = null;
   	second_tile = null;
   }
@@ -234,46 +327,61 @@ function memory(){
   	//To be done.
   }
 
-
   //-------------------------------------------
   // Global functions and variables
   //-------------------------------------------
 
-      // create the root of the scene graph and main classes
-      var stage = new PIXI.Container();
-      var round = new Round();
-      score.stage = stage;
+  // create the root of the scene graph and main classes
+  var stage = new PIXI.Container();
+  var round = new Round();
+  score.stage = stage;
 
-      this.destroy = function(){
-          finishGame = true;
-          session.hide()
+  this.destroy = function(){
+      finishGame = true;
+      session.hide()
+  };
+
+  //---------------------------------------loading assets
+
+  if(game_loaded) {
+
+      for (var i = 0; i < letters.length; i++) {
+        assets.addSound(letters[i].text,letters[i].audio + '.mp3');
       };
+      assets.addSound("wrong",'wrong.mp3');
+      assets.addSound("correct1",correctSounds[0][0].audio + '.mp3');
+      assets.load(onAssetsLoaded);
+  } else {
+      onAssetsLoaded();
+  };
 
-      //---------------------------------------loading assets
+  function onAssetsLoaded(){
+    queuesToUpdate['alphabetstim'] = true;
+    var stimQ = stimQueues['alphabetstim'];
 
-      if(game_loaded) {
+    var pairs = [];
+    for (var i = 0; i < pairsFinished; i++) {
+      var s_low = stimQ.pop()
+      s_low.text = s_low.text.toLowerCase();
+      var s_up = $.extend(true, {}, s_low);
+      s_up.text = s_up.text.toUpperCase();
+      pairs.push(s_low);
+      pairs.push(s_up);
+    }
+    console.log(pairs);
+    // maybe select a random type of stimQ?
+    // - definitely want shapes, could do number/quantity and small addition/subtraction
+    // or the type the user hasn't played in a while?
 
-          for (var i = 0; i < letters.length; i++) {
-            assets.addSound(letters[i].text,letters[i].audio + '.mp3');
-          };
-          assets.addSound("wrong",'wrong.mp3');
-          assets.addSound("correct1",correctSounds[0][0].audio + '.mp3');
-          assets.load(onAssetsLoaded);
-      } else {
-          onAssetsLoaded();
-      };
+    round.init(Trial, stage, stimQ);
 
-      function onAssetsLoaded(){
-        round.init(Trial, stage, stimQ);
-        // maybe select a random type of stimQ?
-        // or the type the user hasn't played in a while?
-        init(stimQ);
-        setTimeout(function(){
-            console.log("starting the game!");
-            session.show();
-            update();
-        });
-      };
+    init(pairs);
+    setTimeout(function(){
+        console.log("starting the game!");
+        session.show();
+        update();
+    });
+  };
 
       //---------------------------------------LOOP
       var statsBol = false;
