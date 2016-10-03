@@ -76,6 +76,9 @@ function Multiplication(){
       for(var j = 0; j < this.stimuli.values[i]; j++){
 
         var sprite = new PIXI.Sprite(assets.textures.eggBlue)
+
+        console.log(sprite.getBounds().height)
+
   			sprite.anchor.x = 0.5
   			sprite.anchor.y = 0.5
         container.addChild(sprite)
@@ -95,15 +98,10 @@ function Multiplication(){
 
       }
 
-
       container.scale.x = 0
       container.scale.y = 0
       container.x = 300 + i * ((container.children[0].texture.baseTexture.source.width)*(finalScale))
       container.y = 300
-
-      console.log(bounds)
-
-      console.log(container.x,container.y)
 
 			container.customAnimation = new animation(container)
       container.customAnimation.initScale(

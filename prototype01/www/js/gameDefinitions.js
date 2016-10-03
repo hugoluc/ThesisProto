@@ -89,6 +89,8 @@
 		this.soundsNQueue = [];
 		this.soundsLetterQueue = [];
 		this.state = "loading";
+		this.counter = 0
+
 	};
 
 	Assets.prototype.addSprite = function(name,url,count){
@@ -151,8 +153,6 @@
 				this.loader.add(this.pixiLoaderQueue[i][1])
 			}
 
-			console.log(this.loader.load)
-
 			this.loader.load( function(){
 				console.log("PIXI loader call back")
 				_this.start()
@@ -160,7 +160,6 @@
 
 		}else{
 
-			console.log("PIXI loader call back")
 			this.start()
 
 		}
@@ -178,18 +177,26 @@
 		this.sprites = {}
 		this.textures = {}
 
+
+		//>>>>>>>>>>>>>>>>>>>>>>>
+		// LOADING -- TEXTURE --
+		//>>>>>>>>>>>>>>>>>>>>>>>
+
 		for( var i=0; i < this.textureQueue.length; i++){
 
 			this.textures[this.textureQueue[i][0]] = new PIXI.Texture.fromImage(this.textureQueue[i][1])
 		}
+
+		//>>>>>>>>>>>>>>>>>>>>>
+		// LOADING -- SOUND --
+		//>>>>>>>>>>>>>>>>>>>>>
 
 		for( var i=0; i < this.soundsQueue.length; i++){
 
 			this.sounds[this.soundsQueue[i][0]] = []
 		}
 
-		for( var i=0; i < this.soundsQueue.length; i++){
-
+		for(var i=0; i < this.soundsQueue.length; i++){
 			this.sounds[this.soundsQueue[i][0]].push(new Audio('audio/' + this.soundsQueue[i][0] + '/' + this.soundsQueue[i][1]))
 		}
 
@@ -217,6 +224,12 @@
 			}
 		}
 
+		this.textures
+
+		//>>>>>>>>>>>>>>>>>>>>>>>
+		// LOADING -- SPRITES --
+		//>>>>>>>>>>>>>>>>>>>>>>>
+
 		for( var i=0; i < this.pixiLoaderQueue.length; i++){
 
 			this.sprites[this.pixiLoaderQueue[i][0]] = []
@@ -232,7 +245,47 @@
 
 		}
 
-		this.callback()
+
+		function checkLoaded(_this){
+
+			console.log("checking if all textures are loaded")
+
+			_this.counter++
+			var loadDone = true
+
+
+			for(i in _this.textures){
+
+				console.log(i,_this.textures[i].baseTexture.source.width == 0)
+
+				if(_this.textures[i].baseTexture.source.width == 0){
+
+					loadDone = false
+
+				}
+
+			}
+
+
+			if(!loadDone){
+
+				_this.couner = 0
+				setTimeout(function(){
+
+					checkLoaded(_this)
+
+				},100)
+
+			}else{
+
+				_this.callback()
+
+			}
+
+		}
+
+		checkLoaded(this)
+
 	};
 
 	Assets.prototype.destroy = function(){
