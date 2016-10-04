@@ -16,7 +16,6 @@ function memory(){
   var stimSize = 90;
   var stage;
   var renderer;
-  //var tile;
   var first_tile;
   var second_tile;
   self.flippedTiles = [];
@@ -33,6 +32,7 @@ function memory(){
   var nrow = 4;
   var pairsFinished = (ncol * nrow) / 2;
   self.tiles = [];
+  self.numTries = 0;
 
   var Tile = function(x, y, stim) {
     var _this = this;
@@ -63,10 +63,31 @@ function memory(){
     this.isFaceUp = false;
   }
 
-  Tile.prototype.click = function(){ //_this,_event
-    //console.log(this.stim); // a few are undefined??
-    this.drawFaceUp();
-    //tile_clicked(this);
+  Tile.prototype.click = function(){
+    if (self.flippedTiles.length < 2 && !this.isFaceUp) {
+        this.drawFaceUp();
+        self.flippedTiles.push(this);
+        if (self.flippedTiles.length === 2) {
+            self.numTries++;
+            if (self.flippedTiles[0].stim.id === self.flippedTiles[1].stim.id) {
+                self.flippedTiles[0].isMatch = true;
+                self.flippedTiles[1].isMatch = true;
+            }
+            //delayStartFC = frameCount;
+            //loop(); // audio and score stuff
+            handle_click();
+        }
+    }
+
+    var foundAllMatches = true;
+    for (var i = 0; i < self.tiles.length; i++) {
+        foundAllMatches = foundAllMatches && self.tiles[i].isMatch;
+    }
+    if (foundAllMatches) {
+        fill(0, 0, 0);
+        textSize(20);
+        text("You found them all in " + numTries + " tries!", 20, 375);
+    }
   }
 
   Tile.prototype.drawFaceUp = function() {
@@ -75,6 +96,8 @@ function memory(){
     graphics.drawRoundedRect(0, 0, 85, 85, 10); // drawRoundedRect(x, y, width, height, radius)
     graphics.endFill();
     this.container.addChild(graphics);
+    //this.container.scale.x = 0.97;
+  	//this.container.scale.y = 0.97;
     var txt = new PIXI.Text(this.stim.text, {font:"40px Arial", fill:"#FFFFFF"});
   	txt.position.x = 25;
   	txt.position.y = 20;
@@ -160,73 +183,10 @@ function memory(){
     return tmp;
   }
 
-  mouseClicked = function() {
-    for (var i = 0; i < tiles.length; i++) {
-        if (tiles[i].isUnderMouse(mouseX, mouseY)) {
-            if (flippedTiles.length < 2 && !tiles[i].isFaceUp) {
-                tiles[i].drawFaceUp();
-                flippedTiles.push(tiles[i]);
-                if (flippedTiles.length === 2) {
-                    numTries++;
-                    if (flippedTiles[0].face === flippedTiles[1].face) {
-                        flippedTiles[0].isMatch = true;
-                        flippedTiles[1].isMatch = true;
-                    }
-                    delayStartFC = frameCount;
-                    loop();
-                }
-            }
-        }
-    }
-    var foundAllMatches = true;
-    for (var i = 0; i < tiles.length; i++) {
-        foundAllMatches = foundAllMatches && tiles[i].isMatch;
-    }
-    if (foundAllMatches) {
-        fill(0, 0, 0);
-        textSize(20);
-        text("You found them all in " + numTries + " tries!", 20, 375);
-    }
-  };
-
-  function tile_clicked(clicked){
-    console.log(clicked)
-    //var clicked = this;
-  	clicked.scale.x = 0.97;
-  	clicked.scale.y = 0.97;
-
-  	if (first_tile == null) {
-  		first_tile = clicked;
-
-  		switch( clicked.col ) {
-        // PIXI.Sprite.fromImage(assetFolder+"banana.png")
-  			case 1: first_tile.addChild( get_text_card('A') ); break;
-  			case 2: first_tile.addChild( get_text_card('B') );break;
-  			case 3: first_tile.addChild( get_text_card('C') );break;
-  			case 4: first_tile.addChild( get_text_card('D') );break;
-  			case 5: first_tile.addChild( get_text_card('E') );break;
-  			case 6: first_tile.addChild( get_text_card('F') );break;
-  			case 7: first_tile.addChild( get_text_card('G') );break;
-  			case 8: first_tile.addChild( get_text_card('H') );break;
-  		}
-
-  	} else if (second_tile == null && first_tile != clicked) {
-  		second_tile = clicked;
-
-  		switch( clicked.col ) {
-  			case 1: second_tile.addChild( get_text_card('a') ); break;
-  			case 2: second_tile.addChild( get_text_card('b') );break;
-  			case 3: second_tile.addChild( get_text_card('c') );break;
-  			case 4: second_tile.addChild( get_text_card('d') );break;
-  			case 5: second_tile.addChild( get_text_card('e') );break;
-  			case 6: second_tile.addChild( get_text_card('f') );break;
-  			case 7: second_tile.addChild( get_text_card('g') );break;
-  			case 8: second_tile.addChild( get_text_card('h') );break;
-  		}
-
+  function handle_click() {
+    // only gets called when two tiles have been clicked
   		//Check if we have a pair or not.
-  		if (first_tile.col == second_tile.col) {
-
+  		if (self.flippedTiles[0].stim.id === self.flippedTiles[1].stim.id) {
   			console.log("PAIR FOUND")
 
   			if(pairsFinished != 1) {
@@ -245,16 +205,13 @@ function memory(){
   				setTimeout(remove_tiles, 1000);
   				console.log("TO PAIR: " + pairsFinished);
 
-
   			} else {
-
   				console.log("YOU WON!");
   				timer.stop();
   				stage.removeChild(progressBarTimer);
   				timer_txt.text = "Well Done!";
   				stage.removeChild(self.gameGrid);
   				//showWinnerSpriteSheet();
-
   			}
 
   		} else {
@@ -262,8 +219,6 @@ function memory(){
   			console.log("NO PAIR FOUND")
   			setTimeout(reset_tiles, 1000);
   		}
-  	}
-
   }
 
   function drawTimerBar(){
@@ -304,23 +259,17 @@ function memory(){
   // }
 
   function reset_tiles() {
-  	//first_tile.addChild( get_default_tile() );
-  	//second_tile.addChild( get_default_tile() );
-    first_tile.drawFaceDown();
-  	second_tile.drawFaceDown();
-    first_tile.scale.x = 1;
-  	first_tile.scale.y = 1;
-    second_tile.scale.x = 1;
-  	second_tile.scale.y = 1;
-  	first_tile = null;
-  	second_tile = null;
+    for (var i = 0; i < self.flippedTiles.length; i++) {
+       self.flippedTiles[i].drawFaceDown();
+    }
+    self.flippedTiles = [];
   }
 
   function remove_tiles() {
-  	self.gameGrid.removeChild(first_tile);
-  	self.gameGrid.removeChild(second_tile);
-  	first_tile = null;
-  	second_tile = null;
+    for (var i = 0; i < self.flippedTiles.length; i++) {
+  	   self.gameGrid.removeChild(self.flippedTiles[i]);
+    }
+  	self.flippedTiles = [];
   }
 
   function showWinnerSpriteSheet() {
