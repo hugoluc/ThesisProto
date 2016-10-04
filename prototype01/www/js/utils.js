@@ -134,7 +134,6 @@ animation.prototype.stop = function(){
 animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezier){
 
   this.dest = _dest
-  console.log(_dest)
   this.feaFinished = false;
   this.feaTimeSet = false;
 
@@ -310,30 +309,30 @@ animation.prototype.runFeature = function(_log){
   };
 };
 
-animation.prototype.log = function(){
+animation.prototype.log = function(_target){
 
   if(this.logCount == 0){
 
-    console.log(">>>>>>>>>>>>>>>>>>>>>")
-    console.log(this.obj.x,this.obj.y)
-    console.log(this.obj.constructor.name);
-    console.log("startPos: ", this.startPos)
-    console.log("distance: ", this.distance)
-    console.log("speed: ", this.speed)
-    console.log("bounds: ", this.obj.getBounds() )
-    console.log("features:-------")
-    console.log("Feature: ", this.feature );
-    console.log("feature value ", this.obj[this.feature])
-    console.log("startPos: ", this.featureStart)
-    console.log("distance: ", this.featureDistance)
-    console.log("speed: ", this.featureSpeed)
-    console.log("dest: ", this.dest )
-    console.log("Bezier:--------");
-    console.log("bezfeature:", this.feaBezName);
-    console.log(">>>>>>>>>>>>>>>>>>>>>")
+      console.log(">>>>>>>>>>>>>>>>>>>>>")
+      console.log(this.obj.x,this.obj.y)
+      console.log(this.obj.constructor.name);
+      console.log("startPos: ", this.startPos)
+      console.log("distance: ", this.distance)
+      console.log("speed: ", this.speed)
+      console.log("bounds: ", this.obj.getBounds() )
+      console.log("features:-------")
+      console.log("Feature: ", this.feature );
+      console.log("feature value ", this.obj[this.feature])
+      console.log("startPos: ", this.featureStart)
+      console.log("distance: ", this.featureDistance)
+      console.log("speed: ", this.featureSpeed)
+      console.log("dest: ", this.dest )
+      console.log("Bezier:--------");
+      console.log("bezfeature:", this.feaBezName);
+      console.log(">>>>>>>>>>>>>>>>>>>>>")
+
 
     this.logCount++
-
 
   }else if(this.logCount < 10){
 
@@ -445,6 +444,7 @@ animation.prototype.run = function(){
           console.log(bez)
 
         }
+
         if(bez == undefined){
 
           console.log("error on dezier data!")
@@ -530,42 +530,44 @@ animation.prototype.init = function(dest,length,offset,bezier){
 
 animation.prototype.runScale = function(){
 
-  if(this.finished){
+  if(this.scalefFnished){
     return true
   }
 
-  var last = this.now;
-  this.now = Date.now();
-  var frameTime = this.now - last;
+  var last = this.scaleNow;
+  this.scaleNow = Date.now();
+  var frameTime = this.scaleNow - last;
   var elapsed;
 
-  if(!this.timeSet){
+  if(!this.scaleTimeSet){
 
-    this.StartTime = Date.now();
-    this.lastTime = this.StartTime
-    this.timeSet = true;
+    this.scaleStartTime = Date.now();
+    this.scaleLastTime = this.scaleStartTime
+    this.scaleTimeSet = true;
     frameTime =  0
 
   }else{
-    var elapsed = this.now - this.StartTime
+    var elapsed = this.scaleNow - this.scaleStartTime
   }
 
-  if(elapsed > this.anLength+this.offset){
+  if(elapsed > this.scaleAnLength+this.scaleOffset){
 
-    this.obj.scale.x =  this.startPos.x + this.distance.x
-    this.obj.scale.y =  this.startPos.y + this.distance.y
-    this.finished = true;
+
+    this.obj.scale.x =  this.scaleStartPos.x + this.scaleDistance.x
+    this.obj.scale.y =  this.scaleStartPos.y + this.scaleDistance.y
+    this.scaleFinished = true;
 
     return true
 
   }else{
 
-    if(elapsed >= this.offset){
 
-      if(this.bezier){
+    if(elapsed >= this.scaleOffset){
 
-        var location = Math.floor(((elapsed-this.offset)*bezierCurveSpecs[this.bezName].length - 1)/this.anLength)
-        bez = bezierCurveSpecs[this.bezName][location]
+      if(this.scaleBezier){
+
+        var location = Math.floor(((elapsed-this.scaleOffset)*(bezierCurveSpecs[this.scaleBezName].length - 1))/this.scaleAnLength)
+        bez = bezierCurveSpecs[this.scaleBezName][location]
 
         if(this.print){
 
@@ -576,13 +578,13 @@ animation.prototype.runScale = function(){
 
         }
 
-        this.obj.scale.y = this.startPos.y + (this.distance.y * bez);
-        this.obj.scale.x = this.startPos.x + (this.distance.x * bez);
+        this.obj.scale.y = this.scaleStartPos.y + (this.scaleDistance.y * bez);
+        this.obj.scale.x = this.scaleStartPos.x + (this.scaleDistance.x * bez);
 
       }else{
 
-        this.obj.scale.x = this.obj.scale.x + frameTime * this.speed.x;
-        this.obj.scale.y = this.obj.scale.y + frameTime * this.speed.y;
+        this.obj.scale.x = this.obj.scale.x + frameTime * this.scaleSpeed.x;
+        this.obj.scale.y = this.obj.scale.y + frameTime * this.scaleSpeed.y;
 
       }
 
@@ -590,45 +592,44 @@ animation.prototype.runScale = function(){
 
     return false
 
-
   }
 };
 
 animation.prototype.initScale = function(dest,length,offset,bezier){
 
-  this.finished = false;
-  this.timeSet = false;
+  this.scaleFinished = false;
+  this.scaleTimeSet = false;
 
   if(bezier != undefined ){
-    this.bezier = true;
-    this.bezName = bezier[0].toFixed(2) + "-" + bezier[1].toFixed(2)
+    this.scaleBezier = true;
+    this.scaleBezName = bezier[0].toFixed(2) + "-" + bezier[1].toFixed(2)
   }
 
-  this.dest = {
+  this.scaleDest = {
     x : dest.x,
     y : dest.y,
   }
 
-  this.offset = offset || 0;
-  this.anLength = length || 2000;
+  this.scaleOffset = offset || 0;
+  this.scaleAnLength = length || 2000;
 
   var start = {};
 
   start.x = this.obj.scale.x
   start.y = this.obj.scale.y
 
-  this.startPos = {};
-  this.startPos.x = this.obj.scale.x;
-  this.startPos.y = this.obj.scale.y;
+  this.scaleStartPos = {};
+  this.scaleStartPos.x = this.obj.scale.x;
+  this.scaleStartPos.y = this.obj.scale.y;
 
-  this.distance = {};
-  this.distance.x = this.dest.x - (this.startPos.x);
-  this.distance.y =  this.dest.y - (this.startPos.y);
+  this.scaleDistance = {};
+  this.scaleDistance.x = this.scaleDest.x - (this.scaleStartPos.x);
+  this.scaleDistance.y =  this.scaleDest.y - (this.scaleStartPos.y);
 
-  this.speed = {};
-  this.speed.x = this.distance.x/this.anLength;
-  this.speed.y = this.distance.y/this.anLength;
+  this.scaleSpeed = {};
+  this.scaleSpeed.x = this.scaleDistance.x/this.scaleAnLength;
+  this.scaleSpeed.y = this.scaleDistance.y/this.scaleAnLength;
 
-  this.now = 0;
+  this.scaleNow = 0;
 
 };
