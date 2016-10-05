@@ -13,8 +13,7 @@ function memory(){
   var game_loaded = true;
   //queuesToUpdate['alphabetstim'] = true;
   //var stimQ = stimQueues['alphabetstim'];
-  var stimSize = 90;
-  var stage;
+  var stimSize = 95;
   var renderer;
   var first_tile;
   var second_tile;
@@ -57,8 +56,10 @@ function memory(){
   Tile.prototype.drawFaceDown = function() {
     var graphics = new PIXI.Graphics();
     graphics.beginFill(0xe74c3c); // red
-    graphics.drawRoundedRect(0, 0, this.width-5, this.height-5, 10); // drawRoundedRect(x, y, width, height, radius)
+    graphics.drawRoundedRect(0, 0, this.width-8, this.height-8, 10); // drawRoundedRect(x, y, width, height, radius)
     graphics.endFill();
+    this.container.scale.x = 1.0;
+  	this.container.scale.y = 1.0;
     this.container.addChild(graphics)
     this.isFaceUp = false;
   }
@@ -72,6 +73,8 @@ function memory(){
             if (self.flippedTiles[0].stim.id === self.flippedTiles[1].stim.id) {
                 self.flippedTiles[0].isMatch = true;
                 self.flippedTiles[1].isMatch = true;
+                console.log(this.stim);
+                assets.sounds.letters[this.stim.audio].play();
             }
             //delayStartFC = frameCount;
             //loop(); // audio and score stuff
@@ -84,24 +87,24 @@ function memory(){
         foundAllMatches = foundAllMatches && self.tiles[i].isMatch;
     }
     if (foundAllMatches) {
-        fill(0, 0, 0);
-        textSize(20);
-        text("You found them all in " + numTries + " tries!", 20, 375);
+        // end round and go on to next
+        //text("You found them all in " + numTries + " tries!", 20, 375);
     }
   }
 
   Tile.prototype.drawFaceUp = function() {
     var graphics = new PIXI.Graphics();
     graphics.beginFill(0x0033ee); // green-blue
-    graphics.drawRoundedRect(0, 0, 85, 85, 10); // drawRoundedRect(x, y, width, height, radius)
+    graphics.drawRoundedRect(0, 0, stimSize-8, stimSize-8, 10); // drawRoundedRect(x, y, width, height, radius)
     graphics.endFill();
     this.container.addChild(graphics);
-    //this.container.scale.x = 0.97;
-  	//this.container.scale.y = 0.97;
+    this.container.scale.x = 0.97;
+  	this.container.scale.y = 0.97;
     var txt = new PIXI.Text(this.stim.text, {font:"40px Arial", fill:"#FFFFFF"});
-  	txt.position.x = 25;
-  	txt.position.y = 20;
-  	//stage.addChild(txt);
+    txt.position.x = (stimSize-8) / 2;
+    txt.position.y = (stimSize-8) / 2;
+    txt.anchor.x = 0.5;
+    txt.anchor.y = 0.5;
     this.container.addChild(txt)
     this.isFaceUp = true;
   }
@@ -130,8 +133,6 @@ function memory(){
   };
 
   function init(pairs){
-    // create an new instance of a pixi stage and make it Interactive (mandatory)
-  	//stage = new PIXI.Stage(0xffffff, true);
   	//renderer = PIXI.autoDetectRenderer(800, 500);
   	//document.body.appendChild(renderer.view);
   	initGame(pairs);
@@ -140,11 +141,11 @@ function memory(){
   }
 
   function initGame(pairs) {
-  	//Game background
-  	background = new PIXI.Graphics();
-    background.beginFill(0xcccccc);
-    background.drawRect(120, 50, ncol*(stimSize+2), nrow*(stimSize+2));
-    stage.addChild(background);
+  	// gray rectangle background (want it or not?)
+  	//background = new PIXI.Graphics();
+    //background.beginFill(0xcccccc);
+    //background.drawRect(120, 50, ncol*(stimSize+2), nrow*(stimSize+2));
+    //stage.addChild(background);
 
   	//Game Grid container for all Tiles.
   	self.gameGrid = new PIXI.Container();
@@ -156,7 +157,7 @@ function memory(){
   			var stim = pairs[random_card];
   			pairs.splice(random_card,1);
 
-        var tmp = new Tile(127 + (x-1)*stimSize, 57 + (y-1)*stimSize, stim);
+        var tmp = new Tile(129 + (x-1)*stimSize, 59 + (y-1)*stimSize, stim);
         self.gameGrid.addChild(tmp.container)
         self.tiles.push(tmp);
   		}
@@ -168,20 +169,6 @@ function memory(){
     }
   }
 
-  function get_text_card(letter) {
-    var tmp = new PIXI.Container();
-    graphics = new PIXI.Graphics();
-    graphics.beginFill(0x0033ee); // green-blue
-    graphics.drawRoundedRect(0, 0, 85, 85, 10); // drawRoundedRect(x, y, width, height, radius)
-    graphics.endFill();
-    tmp.addChild(graphics);
-    var txt = new PIXI.Text(letter, {font:"40px Arial", fill:"#FFFFFF"});
-  	txt.position.x = 25;
-  	txt.position.y = 20;
-  	//stage.addChild(txt);
-    tmp.addChild(txt)
-    return tmp;
-  }
 
   function handle_click() {
     // only gets called when two tiles have been clicked
@@ -196,27 +183,28 @@ function memory(){
           }
           score.addScore(pos, scoreIncrease);
           correct_sound.play();
-          score.setExplosion({ x: 200, y: 300},100,1000);
-          clock.start(1000);
-          score.displayStar();
-          score.displayExplosion();
+          // score.setExplosion({ x: 200, y: 300},100,1000);
+          // clock.start(1000);
+          // score.displayStar();
+          // score.displayExplosion();
 
           pairsFinished--;
   				setTimeout(remove_tiles, 1000);
-  				console.log("TO PAIR: " + pairsFinished);
+  				console.log("remaining pairs: " + pairsFinished);
 
   			} else {
   				console.log("YOU WON!");
   				timer.stop();
   				stage.removeChild(progressBarTimer);
-  				timer_txt.text = "Well Done!";
+  				timer_txt.text = "Well Done!"; // play kazi nzuri
   				stage.removeChild(self.gameGrid);
+          // destroy and start next round??
   				//showWinnerSpriteSheet();
+          verbal_audio_feedback(true);
   			}
 
   		} else {
-
-  			console.log("NO PAIR FOUND")
+        assets.sounds.wrong[0].play();
   			setTimeout(reset_tiles, 1000);
   		}
   }
@@ -247,16 +235,10 @@ function memory(){
   }
 
   function onTimerComplete(event){
-  	timer_txt.text = "Time's Up!";
+  	timer_txt.text = "Time's Up!"; // feedback in that language
+    verbal_audio_feedback(true);
+    // timeout for a few seconds and then a new round -- with more time, and maybe fewer tiles
   }
-
-  // function get_default_tile() {
-  //   var deftile = new PIXI.Graphics();
-  //   deftile.beginFill(0xe74c3c); // red
-  //   deftile.drawRoundedRect(0, 0, stimSize-5, stimSize-5, 10); // drawRoundedRect(x, y, width, height, radius)
-  //   deftile.endFill();
-  //   return deftile;
-  // }
 
   function reset_tiles() {
     for (var i = 0; i < self.flippedTiles.length; i++) {
@@ -267,7 +249,7 @@ function memory(){
 
   function remove_tiles() {
     for (var i = 0; i < self.flippedTiles.length; i++) {
-  	   self.gameGrid.removeChild(self.flippedTiles[i]);
+  	   self.gameGrid.removeChild(self.flippedTiles[i].container);
     }
   	self.flippedTiles = [];
   }
@@ -293,9 +275,9 @@ function memory(){
   //---------------------------------------loading assets
 
   if(game_loaded) {
-
+      assets.addTexture("bg","sprites/backGrounds/BackGround-05.png");
       for (var i = 0; i < letters.length; i++) {
-        assets.addSound(letters[i].text,letters[i].audio + '.mp3');
+        assets.addSound(letters[i].audio,letters[i].audio + '.mp3', "letters");
       };
       assets.addSound("wrong",'wrong.mp3');
       assets.addSound("correct1",correctSounds[0][0].audio + '.mp3');
@@ -348,7 +330,7 @@ function memory(){
           if(finishGame){
               console.log("ending memory game");
               session.stats.domElement.style.display = "none";
-              round.destroy();
+              round.destroy(); // error here gameDefinitions:316
               assets.destroy();
               finishGame = true; // false?
               currentview = new MainMenu(); // assets?

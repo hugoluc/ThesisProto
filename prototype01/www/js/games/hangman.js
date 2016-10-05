@@ -28,26 +28,10 @@ var HangmanTrial = function(pars) {
   self.image = pars['image']; // if there's no image, need a default one (circle?)
   self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split(""));
   // unique letters to guess--decrement when each is clicked
-  
+
   // end trial (read word)
   self.finish = function(won, callback) {
-    var decision = Math.random();
-    if(won) {
-      console.log("hooray! play feedback['good_job']..animation");
-      if(decision>.67) {
-        var fb = new Audio('audio/'+language+'/feedback/'+"very_good.mp3");
-        fb.play();
-      } else if(decision>.33) {
-        var fb = new Audio('audio/'+language+'/feedback/'+"good_job.mp3");
-        fb.play();
-      } // sometimes don't say anything (don't be too repetitive)
-    } else {
-      console.log("lost: try again?")
-      if(decision>.5) {
-        var fb = new Audio('audio/'+language+'/feedback/'+'try_again.mp3');
-        fb.play();
-      }
-    }
+    verbal_audio_feedback(won); // won: "good job" / "very good" / "". lost: "try again" / ""
     var final_view_time = 3500; // how long they see the word and picture at the end
     self.audio.play()
     self.blanks.transition()
