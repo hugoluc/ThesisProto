@@ -1867,7 +1867,7 @@ function proto03(){
             session.stats.domElement.style.display = "block"
         };
 
-        var finishGame = false
+        var finishGame = true
         var previousTime = Date.now();
         var MS_PER_UPDATE = 16.66667;
         var lag = 0

@@ -70,7 +70,7 @@ function proto02(){
             this.container.addChild(this.sprite.nBg);
 
             //number variables
-            this.number =  new PIXI.Text("12", {font:"30px Arial", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 2});
+            this.number =  new PIXI.Text("12", {font:"30px BalooBhai", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 0});
             this.number.anchor.x = 0.5
             this.number.anchor.y = 0.5
             this.number.x = this.sprite.walk.x + (this.sprite.walk.width*0.5)// - (this.number.textWidth/2)
@@ -1222,7 +1222,7 @@ function proto02(){
 
         //---------------------------------------LOOP
 
-        var statsBol = false;
+        var statsBol = true;
 
         if(statsBol){
 

@@ -26,6 +26,8 @@
         <script src="js/wordfind.js" type="text/javascript"></script>
         <script src="js/wordfindgame.js" type="text/javascript"></script>
         <script src="lib/topojson.v1.min.js"></script>
+        <script src="lib/opentype.js" type="text/javascript"></script>
+
 
         <!-- utils and definitions -->
         <script src="js/gameDefinitions.js" type="text/javascript"></script>
@@ -59,7 +61,7 @@
 
             var language = "swahili"; // "english"
             var user = initStorage();
-            var PIXIInitialized = false
+            var PIXIInitialized = false;
             var currentview;
 
 
@@ -69,8 +71,6 @@
             })
 
             $(window).load( function(){
-
-                console.log("jquery")
 
                 Start();
 
