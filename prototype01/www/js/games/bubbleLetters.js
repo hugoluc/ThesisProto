@@ -54,7 +54,11 @@ function bubbleLetters(){
         this.container = new PIXI.Container();
         this.trialTimer = new ClockTimer();
 
-        this.circle = new PIXI.Sprite(assets.textures.bubble);
+        if(Math.random()>.5) {
+          this.circle = new PIXI.Sprite(assets.textures.flower1); // .bubble
+        } else {
+          this.circle = new PIXI.Sprite(assets.textures.flower2);
+        }
         this.circle.width = this.size;
         this.circle.height = this.size;
         this.circle.anchor.x = 0.5;
@@ -155,8 +159,8 @@ function bubbleLetters(){
             //this.circle.width = this.size + Math.sin(this.ang) * 2;
             //this.circle.height = this.size + Math.sin(this.ang) * 2;
             //this.circle.rotation = Math.sin(this.ang) * 0.02;
-            this.container.position.x += .5*Math.cos(this.ang);
-            this.container.position.y += .5*Math.sin(this.ang); //* .3; // move bubbles a bit?
+            this.container.position.x += .2*Math.cos(this.ang);
+            this.container.position.y += .2*Math.sin(this.ang); //* .3; // move bubbles a bit?
         }
     };
 
@@ -234,11 +238,11 @@ function bubbleLetters(){
         this.targety = this.bubble[0].circle.y + 25;
 
         // create dragonfly
-        this.dragonfly = new PIXI.extras.MovieClip(assets.sprites.dragonfly);
+        this.dragonfly = new PIXI.extras.MovieClip(assets.sprites.bee);
         this.dragonfly.animationSpeed = 0.16;
         this.dragonfly.play();
-        this.dragonfly.width = 200;
-        this.dragonfly.height = 100;
+        this.dragonfly.width = 250;
+        this.dragonfly.height = 200;
         this.dragonfly.position.x = dragonfly_start_pos.x;
         this.dragonfly.position.y = dragonfly_start_pos.y;
         this.dragonfly.anchor.y = 0.5;
@@ -264,9 +268,9 @@ function bubbleLetters(){
 
     Trial.prototype.getSpecs = function(){
         var obj = {};
-        obj.canvasMargin = 30;
-        obj.stimWidth = 130;
-        obj.margin = 15;
+        obj.canvasMargin = 50; // was 30
+        obj.stimWidth = 150;
+        obj.margin = 30; // was 15
 
         obj.width = session.canvas.width-(2*obj.canvasMargin)-obj.stimWidth/2;
         obj.height = session.canvas.height-(2*obj.canvasMargin);
@@ -490,9 +494,13 @@ function bubbleLetters(){
     //---------------------------------------loading assets
 
         if(bubblegameloaded) {
-            assets.addSprite("dragonfly",'sprites/dragonfly/dragonfly_fly.json',3);
-            assets.addTexture("bubble","img/bubble.png");
-            assets.addTexture("bg","sprites/backGrounds/BackGround-05.png");
+            //assets.addSprite("dragonfly",'sprites/dragonfly/dragonfly_fly.json',3);
+            assets.addSprite("bee",'sprites/bee/bee_fly.json',3);
+            //assets.addTexture("bubble","img/bubble.png");
+            assets.addTexture("flower1","sprites/flower1.png");
+            assets.addTexture("flower2","sprites/flower2.png");
+            //assets.addTexture("bg","sprites/backGrounds/BackGround-05.png");
+            assets.addTexture("bg","sprites/backGrounds/flower_background.png");
 
             for (var i = 0; i < letters.length; i++) {
               console.log("text: "+letters[i].text +" audiofile: "+letters[i].audio);
