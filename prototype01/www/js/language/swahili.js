@@ -57,30 +57,30 @@ var numbers = [
 // for each consonant could record each vowel sound (ba be bi bo bu)
 // just do alphabet for now
 var letters = [
-  {id:1, text:"A", audio:"ah", seq:[]},
-  {id:2, text:"B", audio:"be", seq:[]},
-  {id:3, text:"Ch", audio:"che", seq:[]},
-  {id:4, text:"D", audio:"de", seq:[]},
-  {id:5, text:"E", audio:"eh", seq:[]},
-  {id:6, text:"F", audio:"ef", seq:[]}, // 'fe' ?
-  {id:7, text:"G", audio:"ge", seq:[]},
-  {id:8, text:"H", audio:"he", seq:[]},
-  {id:9, text:"I", audio:"i", seq:[]},
-  {id:10, text:"J", audio:"je", seq:[]},
-  {id:11, text:"K", audio:"ka", seq:[]},
-  {id:12, text:"L", audio:"le", seq:[]},
-  {id:13, text:"M", audio:"me", seq:[]}, // 'em'?
-  {id:14, text:"N", audio:"ne", seq:[]}, // 'en' ?
-  {id:15, text:"O", audio:"o", seq:[]},
-  {id:16, text:"P", audio:"pe", seq:[]},
-  {id:18, text:"R", audio:"re", seq:[]},
-  {id:19, text:"S", audio:"si", seq:[]}, // 'se' ?
-  {id:20, text:"T", audio:"te", seq:[]},
-  {id:21, text:"U", audio:"u", seq:[]},
-  {id:22, text:"V", audio:"ve", seq:[]},
-  {id:23, text:"W", audio:"we", seq:[]}, // 'wa' ?
-  {id:25, text:"Y", audio:"ya", seq:[]}, // should be ye ?
-  {id:26, text:"Z", audio:"ze", seq:[]}
+  {id:1, text:"A", audio:"A", seq:[]},
+  {id:2, text:"B", audio:"B", seq:[]},
+  {id:3, text:"Ch", audio:"C", seq:[]},
+  {id:4, text:"D", audio:"D", seq:[]},
+  {id:5, text:"E", audio:"E", seq:[]},
+  {id:6, text:"F", audio:"F", seq:[]},
+  {id:7, text:"G", audio:"G", seq:[]},
+  {id:8, text:"H", audio:"H", seq:[]},
+  {id:9, text:"I", audio:"I", seq:[]},
+  {id:10, text:"J", audio:"J", seq:[]},
+  {id:11, text:"K", audio:"K", seq:[]},
+  {id:12, text:"L", audio:"L", seq:[]},
+  {id:13, text:"M", audio:"M", seq:[]},
+  {id:14, text:"N", audio:"N", seq:[]},
+  {id:15, text:"O", audio:"O", seq:[]},
+  {id:16, text:"P", audio:"P", seq:[]},
+  {id:18, text:"R", audio:"R", seq:[]},
+  {id:19, text:"S", audio:"S", seq:[]},
+  {id:20, text:"T", audio:"T", seq:[]},
+  {id:21, text:"U", audio:"U", seq:[]},
+  {id:22, text:"V", audio:"V", seq:[]},
+  {id:23, text:"W", audio:"W", seq:[]},
+  {id:25, text:"Y", audio:"Y", seq:[]},
+  {id:26, text:"Z", audio:"Z", seq:[]}
   ];
 
 var shapes = [
