@@ -31,7 +31,7 @@ function Start(){
         name: "Alphabet",
         available: true,
         callFunction: bubbleLetters,
-        icon: "img/Menu/dragonfly_icon.png"
+        icon: "img/Menu/bee_icon.png"
       },
 
       {
@@ -69,6 +69,12 @@ function Start(){
         name: "World Map",
         available: false,
         callFunction: WorldMap
+      },
+
+      {
+        name: "Snake",
+        available: true,
+        callFunction: Snake
       }
   ];
 
