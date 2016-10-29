@@ -11,7 +11,8 @@ var feedback = [
   {id:"good_job", text:"kazi nzuri", audio:"kazi_nzuri"},
   {id:"welcome", text:"karibu", audio:"karibu"},
   {id:"go", text:"kwenda", audio:"kwenda"},
-  {id:"goodbye", text:"kwaheri", audio:"kwaheri"}
+  {id:"goodbye", text:"kwaheri", audio:"kwaheri"},
+  {id:"try_again", text:"jaribu tena", audio:"jaribu_tena_try_again"}
 ];
 
 var numbers = [
@@ -84,15 +85,15 @@ var letters = [
   ];
 
 var shapes = [
-  {id:"star", text:"nyota", image:"star", audio:"nyota"},
-  {id:"semicircle", text:"nusuduara", image:"semicircle", audio:"nusuduara"},
   {id:"circle", text:"duara", image:"circle", audio:"duara"},
-  {id:"triangle", text:"pembetatu", image:"triangle", audio:"pembetatu"},
+  {id:"triangle", text:"pembetatu", image:"triangle-eq", audio:"pembetatu"},
   {id:"square", text:"mraba", image:"square", audio:"mraba"},
   {id:"rectangle", text:"mstatili", image:"rectangle", audio:"mstatili"},
   {id:"pentagon", text:"pembetano", image:"pentagon", audio:"pembetano"},
   {id:"hexagon", text:"pembesita", image:"hexagon", audio:"pembesita"},
-  {id:"octagon", text:"pembenane", image:"octagon", audio:"pembenane"}
+  {id:"octagon", text:"pembenane", image:"octagon", audio:"pembenane"},
+  {id:"star", text:"nyota", image:"star", audio:"nyota"},
+  {id:"semicircle", text:"nusuduara", image:"semicircle", audio:"nusuduara"}
   ];
 
 // need to record: tembo (elephant)

@@ -8,7 +8,7 @@
 
 function memory(){
   var self = this;
-  var clock = new ClockTimer();
+  //var clock = new ClockTimer();
   var scoreIncrease = 1; // increase scoreIncrease by 1 every 5 correct trials
   var game_loaded = true;
   //queuesToUpdate['alphabetstim'] = true;
@@ -21,20 +21,36 @@ function memory(){
   self.gameGrid;
   var pause_timer;
   var defaultImage;
-  //var pairsFinished = 8;
   var progressBarContainer;
   var progressBarTimer;
   var timer;
   var timer_txt;
-  var nCount = 60;
+  var nCount = 60; // time given to complete: adjust for difficulty
+  var maxTime = 60;
   var ncol = 4;
-  var nrow = 4;
+  var nrow = 2; // start with 2x4 (4 pairs), increase to 4x4 or 4x5 max
+  var maxRows = 5; // 4*5 = 10 pairs...
   var pairsFinished = (ncol * nrow) / 2;
   self.tiles = [];
   self.numTries = 0;
 
-  var Tile = function(x, y, stim) {
+  queuesToUpdate['alphabetstim'] = true;
+  var stimQ = stimQueues['alphabetstim'];
+
+  var pairs = [];
+  for (var i = 0; i < pairsFinished; i++) {
+    var s_low = stimQ.pop()
+    s_low.text = s_low.text.toLowerCase();
+    var s_up = $.extend(true, {}, s_low);
+    s_up.text = s_up.text.toUpperCase();
+    pairs.push(s_low);
+    pairs.push(s_up);
+  }
+  console.log(pairs);
+
+  var Tile = function(trial, x, y, stim) {
     var _this = this;
+    this.trial = trial;
     this.x = x;
     this.y = y;
     this.stim = stim;
@@ -73,12 +89,12 @@ function memory(){
             if (self.flippedTiles[0].stim.id === self.flippedTiles[1].stim.id) {
                 self.flippedTiles[0].isMatch = true;
                 self.flippedTiles[1].isMatch = true;
-                console.log(this.stim);
+                //console.log(this.stim);
                 assets.sounds.letters[this.stim.audio].play();
             }
             //delayStartFC = frameCount;
             //loop(); // audio and score stuff
-            handle_click();
+            this.trial.handle_click();
         }
     }
 
@@ -88,6 +104,15 @@ function memory(){
     }
     if (foundAllMatches) {
         // end round and go on to next
+        // var feedback = new Howl({
+        //   src: ['audio/'+language+'/feedback/'+'very_good'+'.mp3'],
+        //   autoplay: true,
+        //   onend: function() {
+        //     console.log("next trial");
+        //     console.log(this.trialState);
+        //   }
+        // });
+        this.trialState = "finished";
         //text("You found them all in " + numTries + " tries!", 20, 375);
     }
   }
@@ -120,10 +145,14 @@ function memory(){
   };
 
   function Trial(_stim){
+    stimCount++;
+    console.log(_stim)
     this.stim = _stim; // although we need (ncol*nrow) / 2 stimuli -- not just one
+    this.trialState = "play";
+    this.clock = new ClockTimer();
   }
 
-  Trial.prototype.destroy = function(){
+  Trial.prototype.destroy = function() {
       // for(var i = 0; i<this.bubble.length; i++){
       //     this.bubble[i].destroy()
       // }
@@ -132,21 +161,8 @@ function memory(){
       // this.dragonfly.destroy();
   };
 
-  function init(pairs){
-  	//renderer = PIXI.autoDetectRenderer(800, 500);
-  	//document.body.appendChild(renderer.view);
-  	initGame(pairs);
-  	drawTimerBar();
-  	requestAnimationFrame( update );
-  }
-
-  function initGame(pairs) {
-  	// gray rectangle background (want it or not?)
-  	//background = new PIXI.Graphics();
-    //background.beginFill(0xcccccc);
-    //background.drawRect(120, 50, ncol*(stimSize+2), nrow*(stimSize+2));
-    //stage.addChild(background);
-
+  Trial.prototype.init = function() {
+    nCount = maxTime;
   	//Game Grid container for all Tiles.
   	self.gameGrid = new PIXI.Container();
   	stage.addChild(self.gameGrid);
@@ -157,7 +173,7 @@ function memory(){
   			var stim = pairs[random_card];
   			pairs.splice(random_card,1);
 
-        var tmp = new Tile(129 + (x-1)*stimSize, 59 + (y-1)*stimSize, stim);
+        var tmp = new Tile(this, 129 + (x-1)*stimSize, 59 + (y-1)*stimSize, stim);
         self.gameGrid.addChild(tmp.container)
         self.tiles.push(tmp);
   		}
@@ -167,36 +183,88 @@ function memory(){
       self.tiles[i].drawFaceDown();
       //console.log(self.tiles[i])
     }
+
+  	this.drawTimerBar();
+  	//requestAnimationFrame( update );
   }
 
+  Trial.prototype.play = function(_updateTime){
+      switch(this.trialState){
+          case "play":
 
-  function handle_click() {
+              break;
+
+          case "finished":
+              for(var i=1;i<(nrow*ncol);i++){
+                  self.tiles[i].fade = true;
+              }
+              score.displayStar();
+              score.displayExplosion();
+
+              if(this.finished()){
+                  return true;
+              }
+              break;
+          };
+          return false;
+  };
+
+  Trial.prototype.finished = function() {
+      switch(this.finishedState){
+          case "endanimation":
+              this.adjustDifficulty(this.trialWon);
+              if(this.trialWon){
+                  this.clock.start(1500);
+                  this.finishedState = "win";
+                  console.log("finished-win");
+              }else{
+                  this.clock.start(1500);
+                  this.finishedState = "lose";
+                  console.log("finished-lose");
+              }
+              break;
+
+          case "lose":
+              console.log("time ran out");
+              if(this.clock.timeOut()) {
+                this.finishedState = "callNext";
+              }
+              break;
+
+          case "win":
+              if(this.clock.timeOut()) {
+                this.finishedState = "callNext";
+              }
+              break;
+
+          case "callNext":
+              return true;
+              break;
+      }
+
+      return false;
+  };
+
+  Trial.prototype.handle_click = function() {
     // only gets called when two tiles have been clicked
   		//Check if we have a pair or not.
   		if (self.flippedTiles[0].stim.id === self.flippedTiles[1].stim.id) {
   			console.log("PAIR FOUND")
 
   			if(pairsFinished != 1) {
-          var pos = [];
-          for (var i=0; i<scoreIncrease; i++) {
-            pos.push({ x: 200, y: 300}); // need click/tile position
-          }
-          score.addScore(pos, scoreIncrease);
+          //score.addScore(pos, scoreIncrease);
           correct_sound.play();
-          // score.setExplosion({ x: 200, y: 300},100,1000);
-          // clock.start(1000);
-          // score.displayStar();
-          // score.displayExplosion();
-
+          this.finishedState = "endanimation";
           pairsFinished--;
   				setTimeout(remove_tiles, 1000);
   				console.log("remaining pairs: " + pairsFinished);
 
   			} else {
-  				console.log("YOU WON!");
+          this.trialWon = true;
+          this.trialState = "finished";
   				timer.stop();
   				stage.removeChild(progressBarTimer);
-  				timer_txt.text = "Well Done!"; // play kazi nzuri
+  				timer_txt.text = ''; // play kazi nzuri / "Well Done!";
   				stage.removeChild(self.gameGrid);
           // destroy and start next round??
   				//showWinnerSpriteSheet();
@@ -209,7 +277,7 @@ function memory(){
   		}
   }
 
-  function drawTimerBar(){
+  Trial.prototype.drawTimerBar = function(){
 
   	progressBarTimer = new PIXI.Graphics();
   	progressBarTimer.beginFill(0xaaaaff);
@@ -217,16 +285,43 @@ function memory(){
   	progressBarTimer.position.y = 450;
   	progressBarTimer.position.x = 50;
   	stage.addChild(progressBarTimer);
-  	timer_txt = new PIXI.Text(nCount, {font:"40px Arial", fill:"#FFFFFF"});
+  	timer_txt = new PIXI.Text(maxTime, {font:"40px Arial", fill:"#FFFFFF"});
   	timer_txt.position.x = 50;
   	timer_txt.position.y = progressBarTimer.position.y + 20;
   	stage.addChild(timer_txt);
-  	timer = new Timer(1000, 60); // 1 second * 60 times
+  	timer = new Timer(1000, maxTime); // 1 second * 60 times
     timer.addEventListener(TimerEvent.TIMER, onTick)
-    timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete)
+    timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete)
     timer.start();
 
   }
+
+  Trial.prototype.adjustDifficulty = function(won) {
+    if(won) {
+      scoreIncrease++;
+      if(scoreIncrease>2) {
+        maxTime = maxTime - 5; // less time
+        if(scoreIncrease>5 & nrow<maxRows) nrow++; // another row
+      }
+    } else {
+      scoreIncrease--;
+      if(scoreIncrease<1) {
+        maxTime = maxTime + 5;
+        if(scoreIncrease<0 & nrow>2) nrow--;
+      }
+    }
+  }
+
+  // how does it make sense to adjust for each stim on the trial?
+  Trial.prototype.storeStim = function() {
+      if(this.trialWon) {
+        var newpriority = this.stim.priority + .03;
+      } else {
+        var newpriority = this.stim.priority; // Math.log(this.wrongClicks+1) or -.1
+      }
+      this.stim.priority = newpriority;
+      return this.stim;
+  };
 
   function onTick(event){
   	nCount--;
@@ -234,9 +329,11 @@ function memory(){
   	progressBarTimer.scale.x = 1 - event.target.currentCount / 60;
   }
 
-  function onTimerComplete(event){
-  	timer_txt.text = "Time's Up!"; // feedback in that language
-    verbal_audio_feedback(true);
+  Trial.prototype.onTimerComplete = function(event){
+    this.trialWon = false;
+    this.trialState = "finished"
+  	timer_txt.text = "Try again!"; // feedback in that language
+    verbal_audio_feedback(false);
     // timeout for a few seconds and then a new round -- with more time, and maybe fewer tiles
   }
 
@@ -287,26 +384,14 @@ function memory(){
   };
 
   function onAssetsLoaded(){
-    queuesToUpdate['alphabetstim'] = true;
-    var stimQ = stimQueues['alphabetstim'];
 
-    var pairs = [];
-    for (var i = 0; i < pairsFinished; i++) {
-      var s_low = stimQ.pop()
-      s_low.text = s_low.text.toLowerCase();
-      var s_up = $.extend(true, {}, s_low);
-      s_up.text = s_up.text.toUpperCase();
-      pairs.push(s_low);
-      pairs.push(s_up);
-    }
-    console.log(pairs);
     // maybe select a random type of stimQ?
     // - definitely want shapes, could do number/quantity and small addition/subtraction
     // or the type the user hasn't played in a while?
 
     round.init(Trial, stage, stimQ);
 
-    init(pairs);
+    //init(pairs);
     setTimeout(function(){
         console.log("starting the game!");
         session.show();
@@ -332,7 +417,7 @@ function memory(){
               session.stats.domElement.style.display = "none";
               round.destroy(); // error here gameDefinitions:316
               assets.destroy();
-              finishGame = true; // false?
+              finishGame = false; // false?
               currentview = new MainMenu(); // assets?
               game_loaded = false; // or does leaving it on prevent re-loading assets?
               return;
@@ -346,10 +431,10 @@ function memory(){
           previousTime = current;
           lag = lag + elapsed;
 
-          // while (lag >= MS_PER_UPDATE){
-          //   round.play(lag/MS_PER_UPDATE);
-          //   lag = lag - MS_PER_UPDATE;
-          // }
+          while (lag >= MS_PER_UPDATE){
+            round.play(lag/MS_PER_UPDATE);
+            lag = lag - MS_PER_UPDATE;
+          }
 
           // render the stage
           session.render(stage);
