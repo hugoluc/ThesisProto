@@ -21,11 +21,21 @@ var HangmanTrial = function(pars) {
   var self = this;
   //self.guesses_made = 0
   console.log(pars);
+  $.get("svgs/"+ pars['image'] +".png") // or .svg?
+    .done(function() { // image exists
+        self.image = "svgs/"+ pars['image'] +".png";
+        console.log(";aldkjfal;sdkj")
+    }).fail(function() { // no image -- use default
+        self.image = "svgs/unknown.png";
+        console.log("FAIL dog")
+    })
   self.wrong_guesses = 0 // max = 10
   self.answer = pars['text']; // a word, e.g.: {id:"radio", text:"radio", audio:"radio", image:"radio"},
   self.audiofile = pars['audio'];
   self.audio = new Audio('audio/'+language+'/'+self.audiofile+'.mp3');
-  self.image = pars['image']; // if there's no image, need a default one (circle?)
+  //self.image = pars['image']; // if there's no image, need a default one (circle?)
+
+  console.log(self.image); // undefined the second time!
   self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split("")); // unique letters to guess--decrement when each is clicked
 
   // end trial (read word)
@@ -129,7 +139,7 @@ var HangmanTrial = function(pars) {
       .attr("class", "button")
       .attr("r", button_width/2)
       .attr("fill", "blue")
-      .style("opacity", .3);
+      .style("opacity", .4);
 
     d3.selectAll(".button")
       .on(click_type, function(d) {
@@ -193,7 +203,7 @@ var HangmanTrial = function(pars) {
     // GK: replace veil with N leaves that disappear as wrong guesses are made
     if(self.image) {
       var myImg = screend3.append("image")
-        .attr("xlink:href", function(d) { return "svgs/"+ self.image +".svg"; })
+        .attr("xlink:href", function(d) { return self.image; }) // .svg
         .attr("x", xpos)
         .attr("y", ypos)
         .attr("width",imageSize)
@@ -213,8 +223,8 @@ var HangmanTrial = function(pars) {
        .attr('y',ypos)
        .attr('width', 50)
        .attr('height', 50)
-       .attr("xlink:href","sprites/stick/leave.png")
-       .attr("transform", "rotate("+getRandomInt(0,180)+")");
+       .attr("xlink:href","sprites/stick/leave.png");
+       //.attr("transform", "rotate("+getRandomInt(0,180)+")");
 
     var myLabel = screend3.append("g").append("text")
       .attr("x", screen_width+50)
@@ -249,16 +259,16 @@ var Hangman = function() { // doesn't work a second time right now..
 
   this.destroy = function() {
     //clearTimeout();
-    // screend3.selectAll("*")
-    //   .transition() // d3.select("#background")
-    //   .each("end",function() {
-    //     d3.select(this)
-    //       .transition()
-    //       .style("opacity",0)
-    //       .delay(0)
-    //       .duration(0)
-    //       .remove();
-    //    });
+    screend3.selectAll("*")
+      .transition() // d3.select("#background")
+      .each("end",function() {
+        d3.select(this)
+          .transition()
+          .style("opacity",0)
+          .delay(0)
+          .duration(0)
+          .remove();
+       });
     // selectAll and remove "g", "svg", "circle", "rect" ...?
     screend3.select("#header-exp").transition().style("display : none");
     screend3.select("#background").remove(); // #background

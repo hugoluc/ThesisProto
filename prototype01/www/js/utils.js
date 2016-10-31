@@ -630,3 +630,24 @@ animation.prototype.initScale = function(dest,length,offset,bezier){
   this.scaleNow = 0;
 
 };
+
+// gives generic verbal feedback (e.g., for end of a round--not just a trial)
+function verbal_audio_feedback(won) {
+  var decision = Math.random();
+  if(won) {
+    console.log("hooray! play feedback['good_job']..animation");
+    if(decision>.67) {
+      var fb = new Audio('audio/'+language+'/feedback/'+"very_good.mp3");
+      fb.play();
+    } else if(decision>.33) {
+      var fb = new Audio('audio/'+language+'/feedback/'+"good_job.mp3");
+      fb.play();
+    } // sometimes don't say anything (don't be too repetitive)
+  } else {
+    console.log("lost: try again?")
+    if(decision>.5) {
+      var fb = new Audio('audio/'+language+'/feedback/'+'try_again.mp3');
+      fb.play();
+    }
+  }
+}
