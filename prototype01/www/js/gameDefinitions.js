@@ -470,7 +470,16 @@
 
 	};
 
+	//called once to set up position of score and adding to score varaible
 	gameScore.prototype.addScore = function(_starsPos, _value, _duration, _svg, _index){
+
+		// _starsPos : (array) [{x:,y:}]
+		// _value : (int) value to be added to score for each star;
+		// _duration : length of animation
+		// _svg : (bool) false for canvas
+		// _index : z-index of sprite
+
+		console.log("start set!")
 
 		this.score = this.score + (_starsPos.length * _value);
 		this.valuePerStar = _value;
@@ -572,66 +581,10 @@
 		};
 	};
 
-	gameScore.prototype.displayStar = function(){
-
-		var animationDone = true
-
-
-		for(var i = 0; i < this.stars.length; i++){
-
-
-
-			if(!this.stars[i][2].runFeature()){ //call animation function for size on each star
-
-				animationDone = false
-
-			};
-
-			if(!this.stars[i][3].runFeature()){//call animation for rotation
-
-
-				animationDone = false
-
-			}else {
-								console.log("rotation done!!!")
-			};
-
-			if(this.stars[i][1].run()){ //call animation function for position on each star
-
-				this.stage.removeChild(this.stars[i][0])
-				this.stars[i][0].destroy()
-				this.stars[i][0] = []
-				this.stars[i][1] = []
-				this.stars.splice(i,1);
-
-				this.addScoreUI()
-
-			}else{
-
-				animationDone = false
-
-			};
-
-
-
-
-		};
-
-
-
-
-		if(animationDone){
-
-			return true;
-
-		}
-
-		return false;
-	};
-
+	//called once to adjust position of explosion
 	gameScore.prototype.setExplosion = function(_pos,_radius,_duration){
 
-			var starCount = getRandomInt(30,50)
+			var starCount = getRandomInt(30,50);
 
 			for(var i = 0; i < starCount; i++ ){
 
@@ -686,8 +639,59 @@
 				this.explosion.push([Estar,EstarAnimation,EstarFeaAnimation,startERotation])
 
 			};
+	};
 
-			console.log("explosion set!-------------------------------------------------")
+	gameScore.prototype.displayStar = function(){
+
+		var animationDone = true
+
+		for(var i = 0; i < this.stars.length; i++){
+
+			if(!this.stars[i][2].runFeature()){ //call animation function for size on each star
+
+				animationDone = false
+
+			};
+
+			if(!this.stars[i][3].runFeature()){//call animation for rotation
+
+				animationDone = false
+
+			}else {
+								console.log("rotation done!!!")
+			};
+
+			if(this.stars[i][1].run()){ //call animation function for position on each star
+
+				this.stage.removeChild(this.stars[i][0])
+				this.stars[i][0].destroy()
+				this.stars[i][0] = []
+				this.stars[i][1] = []
+				this.stars.splice(i,1);
+
+				this.addScoreUI()
+
+			}else{
+
+				animationDone = false
+
+			};
+
+
+
+
+		};
+
+
+
+
+		if(animationDone){
+
+			return true;
+
+		}
+
+		return false;
 	};
 
 	gameScore.prototype.displayExplosion = function(){

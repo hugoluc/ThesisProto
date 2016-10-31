@@ -14,7 +14,7 @@ function Multiplication(){
 -------------------------------------------------------------------------------------------------------------
 */
 
-  var numberss = [24]
+  var numberss = [14]
 
 	function Trial(_stimuli,_correct){
 
@@ -76,11 +76,25 @@ function Multiplication(){
       y : this.boardSpecs.rows-1
     }
 
+    var hEnd = {
+      x : this.boardSpecs.columns-1,
+      y : 0
+    }
+
+    var vEnd = {
+      x : 0,
+      y : this.boardSpecs.rows-1
+    }
+
     var fullNestSelection = this.calculateSelection(start,end)
+    var HlineSelection = this.calculateSelection(start,hEnd)
+    var VlineSelection = this.calculateSelection(start,vEnd)
 
     for(var i = 0; i< this.stimuli.values.length; i++){
 
      this.createFullNests(fullNestSelection)
+     this.createFullNests(HlineSelection)
+     this.createFullNests(VlineSelection)
 
     };
 
@@ -98,7 +112,7 @@ function Multiplication(){
         //called for moutiple times if stimuli has more than one number
     		for(var i = 0; i < this.stimuli.values.length; i++){
 
-          var container = new PIXI.Container()
+          var container = new PIXI.Container() // container for all eggs of each sirimuli
           var suport = new PIXI.Graphics()
           suport.scale.y = 0.9
           container.addChild(suport)
@@ -112,29 +126,54 @@ function Multiplication(){
           }
 
           var _this = this;
+
           function eggsclicked(){
-            console.log("clicke don eggs")
-            if(_this.playState == "placingEggs" && _this.answearGiven == this.id ){
-               _this.eggsClicked = true;
-             }
+
+            if(_this.answearGiven == this.id){ // correct answear given || orrect nest size
+
+              if(_this.playState == "Win" && !this.clicked){
+                this.clicked = true
+
+                var pos = {
+                  x : this.getBounds().x + (this.getBounds().width/2),
+                  y : this.getBounds().y + (this.getBounds().height/2)
+                }
+                score.addScore([pos], 1, 1000, false)
+                score.setExplosion(pos,100,800)
+
+              }
+              if(_this.playState == "placingEggs"){
+                _this.EggsClickedValue = this.id
+                _this.eggsToNestAnimation()
+                _this.eggsClicked = true;
+              }
+
+
+            }else{ //wrong answear given || wrong nest size
+              _this.eggsClicked = true;
+              _this.EggsClickedValue = this.id
+              _this.answearGiven = this.id
+              _this.eggsToNestAnimation()
+            }
           }
 
-          // creating container with all eggs and numbers
+          var nCounter = 0;
+
+          // filling container with all eggs and numbers
           for(var j = 0; j < this.stimuli.values[i]; j++){
 
             var allEggAssests = new PIXI.Container()
             allEggAssests.id = this.stimuli.values[i]
             allEggAssests.interactive = true;
             allEggAssests.on("mousedown", eggsclicked)
+            allEggAssests.clicked = false;
 
             var shadow = new PIXI.Sprite(assets.textures["eggShadow"])
             shadow.anchor.x = 0.5
             shadow.anchor.y = 0.5
 
             if(j != this.stimuli.values[i]-1){
-
               shadow.alpha = 0
-
             }
 
             allEggAssests.addChild(shadow)
@@ -165,7 +204,8 @@ function Multiplication(){
               strokeThickness : 1,
             };
 
-            var richText = new PIXI.Text(this.stimuli.values[i],style);
+            var richText = new PIXI.Text(j+1,style);
+            nCounter++
             richText.anchor.x = 0.5
             richText.anchor.y = 0.5
             richText.y = -20
@@ -186,10 +226,11 @@ function Multiplication(){
             var finalScale = eggFinalSize/source.width
           }
 
-          //generating animations
-          var toNestAnimationScale = (this.tileSize/2)/eggFinalSize
+          //generating animations for individual eggs
+          var toNestAnimationScale = (this.tileSize/2)/eggFinalSize;
           for(var j = 1; j < container.children.length; j++){
 
+            //move egg to nest and scale acordinly
             container.children[j].animation = new animation(container.children[j])
             container.children[j].animation.initScale(
 
@@ -199,10 +240,21 @@ function Multiplication(){
               [0,0] //Bezier animation handles
 
             )
+            container.children[j].fadeAnimation = new animation(container.children[j])
+            container.children[j].fadeAnimation.initFeature(
+
+              "alpha", //feature to animate
+              0, //Final value of animation
+              500, // Time of animation
+              0, // Delay
+              [0,0] //Bezier animation handles
+
+            )
+
           }
 
           //adjust suport position and size
-          suport.y =+  ((source.height/4)*(finalScale))
+          suport.y =+ ((source.height/4)*(finalScale))
           suport.lineStyle(0);
           suport.beginFill(0xffffda, 1);
           suport.drawCircle(0, 0,((source.width)*(finalScale)));
@@ -266,14 +318,19 @@ function Multiplication(){
       }
 
       if(done) {
+
         this.eggsClicked = false;
         if(this.aswear.length == this.stimuli.values.length){
 
   				this.playState = "Win"
+          this.eggsClicked = false;
+
   				console.log("YOU WIN!")
 
   			}else{
+
           this.playState = "drawingNest"
+
         }
       }
 
@@ -284,10 +341,33 @@ function Multiplication(){
 
 		case "Win":
 
+      score.displayStar();
+      score.displayExplosion();
+      var done = true;
+
+      for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+
+        if(this.eggs[this.answearGiven].children[i].clicked){
+          if(!this.eggs[this.answearGiven].children[i].fadeAnimation.runFeature()){
+            done = false
+          }
+        }else{
+          done = false
+        }
+
+      }
+
+      console.log(done)
+
+      if(done){
+        return true;
+      }
 
 			break;
 
 		case "Lose":
+
+
 
 			break;
 
@@ -859,27 +939,26 @@ function Multiplication(){
 	Trial.prototype.drag = function(_event,_this){
 
     if(this.playState != "drawingNest"){
-
       return;
-
     }
-
 
 		if(_this.dragging){ // ensure that only one tile will trigger the reponse
 
 			var point = { // get mouse position
-
 				x : _event.data.global.x,
 				y : _event.data.global.y
 			};
 
-			for(object in this.boardMatrix){ // check wich tile is below cursor and draw nest based on the position
+			for(object in this.boardMatrix){
+      // check wich tile is below cursor and draw nest based on the position
 
 				if(this.boardMatrix[object].graphic.containsPoint(point)){
 
 					if(this.boardMatrix[object].tile != this.lastTarget){
+          //only draw when user changes to a different tile
 
 						this.deleteNest()
+            //delete previous nest
 
 						this.selection = this.calculateSelection( // calculate new selection
 
@@ -891,6 +970,7 @@ function Multiplication(){
 						for(var i = 0; i<this.selection.tiles.length; i++){
 
 							if(this.boardMatrix[this.selection.tiles[i].id].used){
+              //if user changes to a tile with a nest already in it
 
 								console.log("overlap!")
 								var id = this.lastTarget.x + "-" + this.lastTarget.y
@@ -922,6 +1002,184 @@ function Multiplication(){
 		};
   };
 
+  Trial.prototype.showNest = function(_selection){
+
+    var selection = _selection
+
+		function showNestTile(_arrayPos,_asset,_this,_flip,_){
+
+      var sprite = _this.fullNests[_asset].splice(0,1)[0]
+
+			if(_flip){
+
+				sprite.width = -_this.tileSize * 1.6
+				sprite.rotation = -Math.PI * 1.5
+
+			}else{
+				sprite.width = _this.tileSize * 1.6
+			};
+
+			sprite.height = _this.tileSize * 1.6
+			sprite.x = _this.boardMatrix[_this.selection.tiles[_arrayPos].id].pos.x + _this.tileSize*0.5,
+			sprite.y = _this.boardMatrix[_this.selection.tiles[_arrayPos].id].pos.y + _this.tileSize*0.5,
+			sprite.anchor.x = 0.5
+			sprite.anchor.y = 0.5
+
+			_this.selection.tiles[_arrayPos].sprite = sprite
+      _this.selection.tiles[_arrayPos].sprite.nestAssetsId = _asset
+      _this.selection.tiles[_arrayPos].sprite.alpha = 1
+			stage.addChildAt(_this.selection.tiles[_arrayPos].sprite,stage.children.length - 2)
+
+		};
+
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		//Creating sprites for the Nest based on
+		//the position of the array stored in the
+		//selection and in boardMatrix.
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+		if(selection.tiles.rows * selection.tiles.columns  <= 1){// Draw nest in the shape of a single saquare
+
+		}else if(selection.columns > 1 && selection.rows > 1){ // Draw nest in the shape of a rectangle
+
+			//>>>>>>>>>>>>>>>>>>
+			//Creating Corners:
+			//>>>>>>>>>>>>>>>>>>
+
+			//--------------------------------------------------------corner bottom left
+			showNestTile( 0, "CBL", this )
+
+			//--------------------------------------------------------corner top right
+			showNestTile(
+				(selection.rows  * selection.columns) -1,
+				"CTR",
+				this
+			);
+
+			//--------------------------------------------------------corner top left
+			showNestTile(
+				selection.rows - 1,
+				"CTL",
+				this
+			);
+
+			//--------------------------------------------------------corner bottom right
+			showNestTile(
+				selection.rows * (selection.columns-1),
+				"CBR",
+				this
+			);
+
+			//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+			//Creating TOP/BOTTOM sides + Middle:
+			//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+			for(var i = 0; i < selection.columns-2; i++){
+
+				//side-top
+				var top = ((i + 1) * selection.rows ) + selection.rows - 1;
+				showNestTile( top , "ST", this );
+
+
+				//side-bottom
+				var bot = (i + 1) * selection.rows
+				showNestTile( bot , "SB", this );
+
+
+				// Middle
+				for(var j = 0; j < selection.rows-2; j++){
+
+					var midId = ((i + 1) * selection.rows) + 1 + j
+					showNestTile( midId , "M", this );
+
+				};
+
+			};
+
+
+			//>>>>>>>>>>>>>>>>>>>>>>>>>>
+			//Creating LEFT/RIGHT sides
+			//>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+			for(var i = 0; i < selection.rows-2; i++){
+
+				//side-left
+				var left = i + 1
+
+				showNestTile( left , "SL", this );
+
+				//side-right
+				var right = 1  + i + ((selection.columns-1) * selection.rows)
+				showNestTile( right , "SR", this );
+
+			};
+
+
+		}else{ // Draw nest in the shape of a line
+
+			if(selection.rows == 1){ //horizontal line
+
+				//Top
+				showNestTile(
+					selection.tiles.length-1,
+					"LT",
+					this,
+					true
+					)
+
+				//Middle
+				for(var i = 0; i < selection.columns-2; i++){
+
+
+					showNestTile(
+						i+1,
+						"LM",
+						this,
+						true
+						)
+
+				};
+
+				//Bottom
+				showNestTile(
+					0,
+					"LB",
+					this,
+					true
+					)
+
+			}else{ //vertical line
+
+				//BOTTOM
+				showNestTile(
+					0,
+					"LB",
+					this
+					)
+
+				//Middle
+				for(var i = 0; i < selection.rows-2; i++){
+
+
+					showNestTile(
+						i+1,
+						"LM",
+						this
+						)
+
+				};
+
+				//TOP
+				showNestTile(
+					selection.tiles.length-1,
+					"LT",
+					this
+					)
+
+			};
+		};
+  };
+
 	Trial.prototype.clickEnd = function(_this){
 
 		console.log("clickend!")
@@ -938,9 +1196,6 @@ function Multiplication(){
 
 			};
 
-			this.nests[this.nestCount] = this.selection;
-			this.nestCount++;
-			this.nestCreated = true;
 			this.checkAnswer();
 
 		}else if(_this.id == this.firstClickTile && this.playState == "drawingNest"){
@@ -952,81 +1207,319 @@ function Multiplication(){
 
 	Trial.prototype.checkAnswer = function(){
 
-			var correct = false
-			var id;
+    if(this.selection.tiles.length == 0){
+      return;
+    }
 
-			for(var i = 0; i < this.stimuli.values.length; i++){
+    this.nests[this.nestCount] = this.selection;
+    this.nestCount++;
+    this.nestCreated = true;
 
-        console.log(this.nests[this.nestCount-1].tiles.length, this.stimuli.values[i])
+		var correct = false;
+		var id;
 
-				if(this.nests[this.nestCount-1].tiles.length == this.stimuli.values[i]){
-					id = i
-					correct = true
-					break;
-				};
+		for(var i = 0; i < this.stimuli.values.length; i++){
 
+			if(this.nests[this.nestCount-1].tiles.length == this.stimuli.values[i]){
+				id = i
+				correct = true
+				break;
 			};
+		};
 
+		if(correct){
 
-			if(correct){
-
-				this.aswear.push(true);
-				this.answearGiven = this.stimuli.values[id+""]
-
-        var scale = 1/this.eggs[this.answearGiven].scale.x
-
-        var a = stage.removeChild(this.eggs[this.answearGiven])
-        stage.addChildAt(a,stage.children.length-1)
-
-        //set animation for eggs
-        for(var j = 1; j < this.eggs[this.answearGiven].children.length; j++){
-
-
-          var offset = {
-            x : (this.tileSize*scale/2),
-            y : (this.tileSize*scale/2)
-          }
-
-          var origin = this.selection.tiles[0]
-
-          //change animation based on position over the nestCount
-          if(this.selection.tiles[j-1].x - origin.x  == 0){ // left side
-            offset.x =offset.x + (this.tileSize*scale/4)
-          }else if(this.selection.tiles[j-1].x - origin.x == this.selection.columns-1){ // right side
-            offset.x = offset.x - (this.tileSize*scale/4)
-          }
-
-          //Change animation based on position over the nestCount
-          if(this.selection.tiles[j-1].y - origin.y == 0){ // top side
-            offset.y = offset.y - (this.tileSize*scale/4)
-          }else if(this.selection.tiles[j-1].y - origin.y == this.selection.rows-1){ // top side
-            offset.y = offset.y + (this.tileSize*scale/4)
-          }
-
-          var pos = {
-            x : ( offset.x + (this.boardMatrix[this.selection.tiles[j-1].id].pos.x - this.eggs[this.answearGiven].x) * scale),
-            y : ( offset.y + (this.boardMatrix[this.selection.tiles[j-1].id].pos.y - this.eggs[this.answearGiven].y) * scale)
-          }
-
-          this.eggs[this.answearGiven].children[j].animation.init(
-            pos, //Final value of animation
-            500, // Time of animation
-            (200 * j), // Delay
-            [0,0] //Bezier animation handles
-          )
-
-          this.playState = "placingEggs"
-        }
-
-			  this.selection = { tiles : [] };
-
+			this.aswear.push(true);
+			this.answearGiven = this.stimuli.values[id+""]
+      this.playState = "placingEggs"
 
 			}else{
+
 				this.aswear = false;
-				this.playState = "Lose"
+				this.playState = "placingEggs"
 				console.log("YOU LOSE!")
 			}
 	};
+
+  Trial.prototype.eggsToNestAnimation = function(){
+
+    //>>>>>>>>>>>>>>>>>>>>>>
+    //set animation for eggs
+    //>>>>>>>>>>>>>>>>>>>>>>
+
+    //adjust layer on staging so eggs are displayed on top of the nest
+    var eggIndex = this.EggsClickedValue;
+    var a = stage.removeChild(this.eggs[eggIndex])
+    stage.addChildAt(a,stage.children.length-1)
+
+    //Assiging position for animation on every egg
+    var scale = 1/this.eggs[eggIndex].scale.x
+    var l = this.selection.rows
+    var counter = 0;
+    var firstNestTile = this.selection.tiles[0]
+    var finalNestTile = this.selection.tiles[this.selection.tiles.length-1]
+    var extraCount = this.eggs[eggIndex].children.length-this.selection.tiles.length-1
+    var outsideNestPos = []
+
+    console.log(firstNestTile,finalNestTile)
+
+    //fucntion declarations
+
+    var _this = this;
+
+    function populateRight(){
+
+      console.log(">>>>>>>>>RIGHT")
+
+      for(var i = 1;i < _this.boardSpecs.columns - finalNestTile.x; i++){
+        for(var j = 0; j < _this.selection.rows; j++){
+
+          var x = finalNestTile.x + i;
+          var y = finalNestTile.y - j;
+
+          var pos = {
+            x : ((_this.boardMatrix[x + "-" + y].pos.x - _this.eggs[eggIndex].x) * scale) + (_this.tileSize/2),
+            y : ((_this.boardMatrix[x + "-" + y].pos.y - _this.eggs[eggIndex].y) * scale) + (_this.tileSize/2)
+          }
+          outsideNestPos.push(pos);
+        }
+      }
+
+    }
+
+    function populateBottom(){
+
+      console.log(">>>>>>>>>> BOTTOM")
+      console.log(finalNestTile.y)
+
+
+
+      for(var i = 0;i < finalNestTile.y-1; i++){
+
+        for(var j = 0; j < _this.boardSpecs.columns; j++){
+
+          var x = j;
+          var y = finalNestTile.y - _this.selection.rows - i;
+
+          console.log("i:" + i + "  -  " + "j:" + j )
+          console.log(x,y)
+
+          var pos = {
+            x : ((_this.boardMatrix[x + "-" + y].pos.x - _this.eggs[eggIndex].x) * scale) + (_this.tileSize/2),
+            y : ((_this.boardMatrix[x + "-" + y].pos.y - _this.eggs[eggIndex].y) * scale) + (_this.tileSize/2)
+          }
+          outsideNestPos.push(pos);
+        }
+      }
+
+    }
+
+    function populateLeft(_eggs){
+
+      if(_eggs == 0) return
+
+      console.log(">>>>>>>>>> LEFT")
+      console.log(_eggs)
+
+      //get how many columns to populate based on number of _eggs
+      var start = firstNestTile.x - colToPop
+      var colToPop = Math.ceil(_eggs/_this.selection.rows)
+      var lastColumnReminder = _eggs%_this.selection.rows
+      var finalReminder;
+
+      console.log(colToPop)
+      console.log(lastColumnReminder)
+
+      if(lastColumnReminder == 0){
+
+        finalReminder = _this.selection.rows
+
+      }else{
+
+        finalReminder = lastColumnReminder
+
+      }
+
+      for(var i = 0;i < finalReminder; i++){
+
+        var x = firstNestTile.x - colToPop;
+        var y = finalNestTile.y - i;
+
+        var pos = {
+          x : ((_this.boardMatrix[x + "-" + y].pos.x - _this.eggs[eggIndex].x) * scale) + (_this.tileSize/2),
+          y : ((_this.boardMatrix[x + "-" + y].pos.y - _this.eggs[eggIndex].y) * scale) + (_this.tileSize/2)
+        }
+
+        outsideNestPos.push(pos);
+
+      }
+
+      console.log("-------------------")
+
+      for(var i = 0;i < colToPop-1; i++){
+        for(var j = 0; j < _this.selection.rows; j++){
+
+          var x = firstNestTile.x - colToPop + i + 1;
+          var y = finalNestTile.y - j;
+
+          console.log("i:" + i + "  -  " + "j:" + j )
+          console.log(x,y)
+
+          var pos = {
+            x : ((_this.boardMatrix[x + "-" + y].pos.x - _this.eggs[eggIndex].x) * scale) + (_this.tileSize/2),
+            y : ((_this.boardMatrix[x + "-" + y].pos.y - _this.eggs[eggIndex].y) * scale) + (_this.tileSize/2)
+          }
+          outsideNestPos.push(pos);
+          extraCount--
+        }
+      }
+    }
+
+    function populateTop(_eggs){
+
+      console.log(">>>>>>>>>> TOP")
+      console.log(_eggs)
+
+      //get how many columns to populate based on number of _eggs
+      var rowToPop = Math.ceil(_eggs/_this.boardSpecs.columns)
+      var start = firstNestTile.x - rowToPop
+      var lastColumnReminder = _eggs%_this.boardSpecs.columns
+      var finalReminder;
+
+      console.log(rowToPop)
+      console.log(lastColumnReminder)
+
+      if(lastColumnReminder == 0){
+
+        finalReminder = _this.boardSpecs.columns
+
+      }else{
+
+        finalReminder = lastColumnReminder
+
+      }
+
+      for(var i = 0;i < finalReminder; i++){
+
+        var x = (_this.boardSpecs.columns - finalReminder) + i;
+        var y = finalNestTile.y + 1;
+
+        var pos = {
+          x : ((_this.boardMatrix[x + "-" + y].pos.x - _this.eggs[eggIndex].x) * scale) + (_this.tileSize/2),
+          y : ((_this.boardMatrix[x + "-" + y].pos.y - _this.eggs[eggIndex].y) * scale) + (_this.tileSize/2)
+        }
+
+        outsideNestPos.push(pos);
+
+      }
+
+      for(var i = 0;i < rowToPop-1; i++){
+        for(var j = 0; j < _this.boardSpecs.collumns; j++){
+
+          var x = j;
+          var y = finalNestTile.y + i;
+
+          console.log("i:" + i + "  -  " + "j:" + j )
+          console.log(x,y)
+
+          var pos = {
+            x : ((_this.boardMatrix[x + "-" + y].pos.x - _this.eggs[eggIndex].x) * scale) + (_this.tileSize/2),
+            y : ((_this.boardMatrix[x + "-" + y].pos.y - _this.eggs[eggIndex].y) * scale) + (_this.tileSize/2)
+          }
+          outsideNestPos.push(pos);
+        }
+      }
+    }
+
+    //check wich areas needs to be populated
+    //if (exta eggs >= availabe area)  fill area & call next
+
+    var areas = {
+      right   : (this.boardSpecs.columns - finalNestTile.x - 1) * (this.selection.rows),
+      left    : firstNestTile.x * this.selection.rows,
+      bottom  : firstNestTile.y * this.boardSpecs.columns,
+    }
+
+    console.log(">>>>>>>>>>>>>>");
+    console.log(areas)
+    console.log(extraCount)
+
+    if(areas.right >= extraCount){
+      //if you can fit all eggs on the right, only populate the right
+      console.log("1")
+      populateRight()
+
+    }else if(areas.left >= extraCount - areas.right){
+      //if you can fit all remaining on the left and right, only populate the left and right
+      console.log("2")
+      populateLeft(extraCount - areas.right)
+      populateRight()
+
+    }else if( areas.bottom >= extraCount - areas.left - areas.right){
+      console.log("3")
+      populateLeft(areas.left)
+      populateRight()
+      populateBottom()
+
+    }else{
+
+      populateTop(extraCount - areas.left - areas.bottom - areas.right)
+      populateLeft(areas.left)
+      populateRight()
+      populateBottom()
+
+    }
+
+    //set final position and initiate animation
+    for(var j = 0; j < this.eggs[eggIndex].children.length-1; j++){
+
+      //placing eggs outside nest
+      if(j > this.selection.tiles.length-1){
+
+        var pos = outsideNestPos[counter]
+        counter++
+
+      //Place eggs inside nest
+      }else{
+
+        var index = (l - 1) - (j%l) + (Math.floor(j/l)*l);
+        var offset = {
+          x : (this.tileSize*scale/2),
+          y : (this.tileSize*scale/2)
+        }
+
+        //offset animation position based on position over the nestCount
+        if(this.selection.tiles[index].x - firstNestTile.x  == 0){ // left side
+          offset.x =offset.x + (this.tileSize*scale/4)
+        }else if(this.selection.tiles[index].x - firstNestTile.x == this.selection.columns-1){ // right side
+          offset.x = offset.x - (this.tileSize*scale/4)
+        }
+
+        //offset animation position based on position over the nestCount
+        if(this.selection.tiles[index].y - firstNestTile.y == 0){ // top side
+          offset.y = offset.y - (this.tileSize*scale/4)
+        }else if(this.selection.tiles[index].y - firstNestTile.y == this.selection.rows-1){ // top side
+          offset.y = offset.y + (this.tileSize*scale/4)
+        }
+
+        var pos = {
+          x : ( offset.x + (this.boardMatrix[this.selection.tiles[index].id].pos.x - this.eggs[eggIndex].x) * scale),
+          y : ( offset.y + (this.boardMatrix[this.selection.tiles[index].id].pos.y - this.eggs[eggIndex].y) * scale)
+        }
+      }
+      console.log(pos)
+
+      //initiation animation
+      this.eggs[eggIndex].children[j+1].animation.init(
+        pos, //Final value of animation
+        500, // Time of animation
+        (200 * j), // Delay
+        [0,0] //Bezier animation handles
+      )
+    }
+
+    this.selection = { tiles : [] };
+  };
 
 	Trial.prototype.createFullNests = function(_selection){
 
@@ -1035,7 +1528,8 @@ function Multiplication(){
 			function createNestTile(_arrayPos,_asset,_this,_flip,_){
 
 				var sprite = new PIXI.Sprite(assets.textures[_asset]);
-				if(_flip){
+
+        if(_flip){
 					sprite.width = -_this.tileSize * 1.6
 					sprite.rotation = -Math.PI * 1.5
 				}else{
@@ -1200,187 +1694,6 @@ function Multiplication(){
 
 				};
 			};
-
-  };
-
-  Trial.prototype.showNest = function(_selection){
-
-    var selection = _selection
-
-		function showNestTile(_arrayPos,_asset,_this,_flip,_){
-
-      var sprite = _this.fullNests[_asset].splice(0,1)[0]
-
-			if(_flip){
-
-				sprite.width = -_this.tileSize * 1.6
-				sprite.rotation = -Math.PI * 1.5
-
-			}else{
-				sprite.width = _this.tileSize * 1.6
-
-			};
-
-			sprite.height = _this.tileSize * 1.6
-			sprite.x = _this.boardMatrix[_this.selection.tiles[_arrayPos].id].pos.x + _this.tileSize*0.5,
-			sprite.y = _this.boardMatrix[_this.selection.tiles[_arrayPos].id].pos.y + _this.tileSize*0.5,
-			sprite.anchor.x = 0.5
-			sprite.anchor.y = 0.5
-
-			_this.selection.tiles[_arrayPos].sprite = sprite
-      _this.selection.tiles[_arrayPos].sprite.nestAssetsId = _asset
-      _this.selection.tiles[_arrayPos].sprite.alpha = 1
-			stage.addChildAt(_this.selection.tiles[_arrayPos].sprite,stage.children.length - 2)
-
-		};
-
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		//Creating sprites for the Nest based on
-		//the position of the array stored in the
-		//selection and in boardMatrix.
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-		if(selection.tiles.rows * selection.tiles.columns  <= 1){// Draw nest in the shape of a single saquare
-
-		}else if(selection.columns > 1 && selection.rows > 1){ // Draw nest in the shape of a rectangle
-
-			//>>>>>>>>>>>>>>>>>>
-			//Creating Corners:
-			//>>>>>>>>>>>>>>>>>>
-
-			//--------------------------------------------------------corner bottom left
-			showNestTile( 0, "CBL", this )
-
-			//--------------------------------------------------------corner top right
-			showNestTile(
-				(selection.rows  * selection.columns) -1,
-				"CTR",
-				this
-			);
-
-			//--------------------------------------------------------corner top left
-			showNestTile(
-				selection.rows - 1,
-				"CTL",
-				this
-			);
-
-			//--------------------------------------------------------corner bottom right
-			showNestTile(
-				selection.rows * (selection.columns-1),
-				"CBR",
-				this
-			);
-
-			//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-			//Creating TOP/BOTTOM sides + Middle:
-			//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-			for(var i = 0; i < selection.columns-2; i++){
-
-				//side-top
-				var top = ((i + 1) * selection.rows ) + selection.rows - 1;
-				showNestTile( top , "ST", this );
-
-
-				//side-bottom
-				var bot = (i + 1) * selection.rows
-				showNestTile( bot , "SB", this );
-
-
-				// Middle
-				for(var j = 0; j < selection.rows-2; j++){
-
-					var midId = ((i + 1) * selection.rows) + 1 + j
-					showNestTile( midId , "M", this );
-
-				};
-
-			};
-
-
-			//>>>>>>>>>>>>>>>>>>>>>>>>>>
-			//Creating LEFT/RIGHT sides
-			//>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-			for(var i = 0; i < selection.rows-2; i++){
-
-				//side-left
-				var left = i + 1
-
-				showNestTile( left , "SL", this );
-
-				//side-right
-				var right = 1  + i + ((selection.columns-1) * selection.rows)
-				showNestTile( right , "SR", this );
-
-			};
-
-
-		}else{ // Draw nest in the shape of a line
-
-			if(selection.rows == 1){ //horizontal line
-
-				//Top
-				showNestTile(
-					selection.tiles.length-1,
-					"LT",
-					this,
-					true
-					)
-
-				//Middle
-				for(var i = 0; i < selection.columns-2; i++){
-
-
-					showNestTile(
-						i+1,
-						"LM",
-						this,
-						true
-						)
-
-				};
-
-				//Bottom
-				showNestTile(
-					0,
-					"LB",
-					this,
-					true
-					)
-
-			}else{ //vertical line
-
-				//BOTTOM
-				showNestTile(
-					0,
-					"LB",
-					this
-					)
-
-				//Middle
-				for(var i = 0; i < selection.rows-2; i++){
-
-
-					showNestTile(
-						i+1,
-						"LM",
-						this
-						)
-
-				};
-
-				//TOP
-				showNestTile(
-					selection.tiles.length-1,
-					"LT",
-					this
-					)
-
-			};
-		};
-
   };
 
 	Trial.prototype.calculateSelection = function(_start,_end){
@@ -1494,8 +1807,8 @@ function Multiplication(){
 
 	// create the root of the scene graph and main classes
     var stage = new PIXI.Container();
-
     var round = new Round();
+    score.stage = stage;
 
     this.destroy = function(){
         finishGame = true;

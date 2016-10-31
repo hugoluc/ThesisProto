@@ -186,9 +186,6 @@ animation.prototype.initFeature = function(_feature,_dest,_length,_offset,_bezie
 
   };
 
-  //console.log("INITIALIZING FEATURE: ", this.feature);
-  //console.log("Current Value is: ", this.obj[this.feature]);
-
 };
 
 animation.prototype.runFeature = function(_log){
