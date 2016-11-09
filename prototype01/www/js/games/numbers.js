@@ -6,6 +6,12 @@ function proto02(){
   logTime("counting");
   var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
   // modify game dynamics if scoreDifferential reaches +3 or -3
+  // try {
+  //   var walkSpeed = store.get("walkSpeed");
+  //   console.log("walkSpeed: "+walkSpeed);
+  // } catch(err) {
+  //   var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
+  // }
   var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
   var numFoils = 3; // +2 if 3x correct, -1 if 3x incorrect
   var scoreIncrease = 1; // initially 1, but goes higher as they progress
@@ -305,7 +311,7 @@ function proto02(){
             var _this = this;
 
             // check if its correct
-            if(this.startNumber == round.trial.stimuli.id){
+            if(this.startNumber == round.trial.origstim.id){
 
 
                 console.log(">>CLICK<<")
@@ -401,7 +407,7 @@ function proto02(){
 
             //_stimuli.id = 10
             this.ladyBugs = [];
-            this.stimuli = _stimuli;
+            this.origstim = _stimuli;
             this.correct = _stimuli.id;
             this.correctImput = false;
             this.answerGiven = false;
@@ -653,12 +659,12 @@ function proto02(){
         Trial.prototype.storeStim = function(){
             var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
             if(this.wrongClicks===0) {
-              var newpriority = this.stimuli.priority + .5;
+              var newpriority = this.origstim.priority + .5;
             } else {
-              var newpriority = this.stimuli.priority - Math.log(this.wrongClicks);
+              var newpriority = this.origstim.priority - Math.log(this.wrongClicks);
             }
-            this.stimuli.priority = newpriority + rand_adjust;
-            return(this.stimuli);
+            this.origstim.priority = newpriority + rand_adjust;
+            return(this.origstim);
         };
 
         Trial.prototype.createInstructions = function(){

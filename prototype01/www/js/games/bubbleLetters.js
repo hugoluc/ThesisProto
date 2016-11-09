@@ -18,6 +18,8 @@ function bubbleLetters(){
   queuesToUpdate['alphabetstim'] = true;
   logTime('alphabet');
   var stimQ = stimQueues['alphabetstim'];
+  console.log("stimQ: ");
+  console.log(stimQ);
   var dragonfly_start_pos = {'x':250, 'y':250};
   var stimCount = -1;
   bubblegameloaded = true;
@@ -505,7 +507,7 @@ function bubbleLetters(){
             assets.addTexture("bg","sprites/backGrounds/flower_background.png");
 
             for (var i = 0; i < letters.length; i++) {
-              console.log("text: "+letters[i].text +" audiofile: "+letters[i].audio);
+              //console.log("text: "+letters[i].text +" audiofile: "+letters[i].audio);
               assets.addSound(letters[i].text,letters[i].audio + '.mp3', "letters");
             };
             assets.addSound("wrong",'wrong.mp3');

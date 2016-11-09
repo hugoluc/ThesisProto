@@ -4,10 +4,14 @@ function Hangman() {
   logTime('hangman');
   var stimQ = stimQueues['objectstim'];
   var nextTrial = false; // ready to go on
-
+  var current_stim = null;
   // stage 1. pop up a word, play the word, and then show the object
   // stage 2. pop up a word and show a few objects; let them click. (if wrong, play the word)
-  var max_guesses = 10;
+  try {
+    var max_guesses = store.get("max_hangman_guesses");
+  } catch(err) {
+    var max_guesses = 10;
+  }
 
   var imageSize = 240;
   var stim_diam = 80
@@ -60,6 +64,7 @@ function Hangman() {
 
   var HangmanTrial = function(pars) {
     var self = this;
+    self.starttime = Date.now();
     self.origstim = pars;
     self.image = "svgs/"+ pars['image'] +".png";
     self.guesses_made = 0;
@@ -104,8 +109,8 @@ function Hangman() {
         .transition()
         .delay(final_view_time)
         .remove();
-      // GK: return the orig stim with modified priority
-      var tr_dat = {"word":self.answer, "won":won, "wrong_guesses":self.wrong_guesses};
+      // log trial and return the orig stim with modified priority
+      logTrial({"starttime":self.starttime, "endtime":Date.now(), "stimtype":'word', "stim":self.answer, "total_clicks":self.guesses_made, "incorrect_clicks":self.wrong_guesses});
       setTimeout(function(){ callback(self.origstim) }, final_view_time); // pass data
     }
 
@@ -304,8 +309,12 @@ function Hangman() {
 
   this.destroy = function() {
     logTime("hangman-end");
-    storeSession();
-    queuesToUpdate["objectstim"] = false;
+    //storeSession();
+    //queuesToUpdate["objectstim"] = false;
+    console.log(self);
+    console.log(this);
+    stimQueues['objectstim'].push(current_stim);
+    storeQueue('objectstim');
     //clearTimeout();
     screend3.selectAll("*")
       .transition() // d3.select("#background")
@@ -319,7 +328,7 @@ function Hangman() {
        });
     // selectAll and remove "g", "svg", "circle", "rect" ...?
     screend3.select("#header-exp").transition().style("display : none");
-    screend3.select("#background").remove(); // #background
+    //screend3.select("#background").remove(); // #background
     finishGame = true;
 	  session.hide();
     currentview = new MainMenu(assets);
@@ -354,7 +363,8 @@ function Hangman() {
       console.log("feedback? (kazi_nzuri.mp3) fun animation?");
       next();
     } else {
-      var tr = new HangmanTrial(stimQ.pop());
+      current_stim = stimQ.pop();
+      var tr = new HangmanTrial(current_stim);
       trial_index += 1;
       tr.doTrial(storeData);
     }

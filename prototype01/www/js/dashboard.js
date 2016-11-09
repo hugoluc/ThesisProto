@@ -27,5 +27,16 @@ var Dashboard = function() {
       //console.log(key, '==', val);
   })
 
+  this.uploadTrialData = function() {
+    var data = enumerateLoggedTrials();
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify(data),
+      contentType: "application/json",
+      complete: callback
+    });
+  }
+
   $('#sessions').html(output);
 }

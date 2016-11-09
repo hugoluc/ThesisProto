@@ -15,6 +15,7 @@
 // define initial sets for each game (to be loaded if no database exists)
 var sessionStart;
 var user;
+var LAST_TRIAL_KEY; // incremented each time a trial is logged
 var chunkSize = 7; // number of stimuli to be put in at each priority (i.e., put in one 'round')
 // which queues have been modified and need to be re-stored: set true when a game uses the stack
 var queuesToUpdate = {
@@ -48,18 +49,15 @@ function loadStimulusQueue(stimuli, chunkSize) {
   var priority = 0;
 
   for (var i = 0; i < stimuli.length; i++) {
-
     if(i%chunkSize==0) priority += 1;
-
     if(stimuli[i].priority==null) stimuli[i].priority = priority + .01*i;
-
     pq.push(stimuli[i]);
     //console.log(stimuli[i]);
   }
 
   return(pq)
-
 }
+
 
 // update timestamped list of activities (high-level)
 // -- might want to log exit timestamps, so we know when they quit vs. turn off
@@ -82,70 +80,82 @@ function initStorage() {
   //user = null; // for testing defaults
 
   if(user==null) {
-
     user = getRandomInt(1,999999999);
     console.log('first time! assigned userID: ' + user);
     store.set('user', user);
     store.set('activityLog', []);
-    stimQueues['alphabetstim'] = loadStimulusQueue(letters, chunkSize); // we could just initialize PQs with all stimuli...
-    stimQueues['numberstim'] = loadStimulusQueue(numbers, chunkSize);
-    stimQueues['wordstim'] = loadStimulusQueue(words, chunkSize);
-    stimQueues['objectstim'] = loadStimulusQueue(objects, chunkSize); // things we have images for..
-    // shapes don't need their own...not enough of them
+    //store.set('trialLog', []); // if we do a list it must be read back to add to
+    store.set('LAST_TRIAL_KEY', 0);
   } else {
-
-    console.log('welcome back user '+user+': loading queues')
-    try {
-      stimQueues['alphabetstim'] = loadStimulusQueue(store.get('alphabetstim'), chunkSize);
-    } catch(err) {
-      stimQueues['alphabetstim'] = loadStimulusQueue(letters, chunkSize);
-      console.log("alphabetstim missing: resetting queue");
-    }
-    try {
-      stimQueues['numberstim'] = loadStimulusQueue(store.get('numberstim'), chunkSize);
-    } catch(err) {
-      stimQueues['numberstim'] = loadStimulusQueue(numbers, chunkSize);
-      console.log("numberstim missing: resetting queue");
-    }
-    try {
-      stimQueues['wordstim'] = loadStimulusQueue(store.get('wordstim'), chunkSize);
-    } catch(err) {
-      stimQueues['wordstim'] = loadStimulusQueue(words, chunkSize);
-      console.log("wordstim missing: resetting queue");
-    }
-    try {
-      stimQueues['objectstim'] = loadStimulusQueue(store.get('objectstim'), chunkSize);
-    } catch(err) {
-      stimQueues['objectstim'] = loadStimulusQueue(objects, chunkSize);
-      console.log("objectstim missing: resetting queue");
-    }
-    //stimQueues['mathstim'] = loadStimulusQueue(store.get('mathstim'), chunkSize);
-
-    // other game-specific state variables (e.g., dropSpeed, numFoils, etc) ?
-    // maybe load some overall session stats...(duration, total correct/incorrect, games played)
+    console.log('welcome back user '+user+': loading queues');
   }
+  try {
+    stimQueues['alphabetstim'] = loadStimulusQueue(store.get('alphabetstim'), chunkSize);
+  } catch(err) {
+    stimQueues['alphabetstim'] = loadStimulusQueue(letters, chunkSize);
+    console.log("alphabetstim missing: resetting queue");
+  }
+  try {
+    stimQueues['numberstim'] = loadStimulusQueue(store.get('numberstim'), chunkSize);
+  } catch(err) {
+    stimQueues['numberstim'] = loadStimulusQueue(numbers, chunkSize);
+    console.log("numberstim missing: resetting queue");
+  }
+  try {
+    stimQueues['wordstim'] = loadStimulusQueue(store.get('wordstim'), chunkSize);
+  } catch(err) {
+    stimQueues['wordstim'] = loadStimulusQueue(words, chunkSize);
+    console.log("wordstim missing: resetting queue");
+  }
+  try {
+    stimQueues['objectstim'] = loadStimulusQueue(store.get('objectstim'), chunkSize);
+  } catch(err) {
+    stimQueues['objectstim'] = loadStimulusQueue(objects, chunkSize);
+    console.log("objectstim missing: resetting queue");
+  }
+  //stimQueues['mathstim'] = loadStimulusQueue(store.get('mathstim'), chunkSize);
+
+  // other game-specific state variables (e.g., dropSpeed, numFoils, etc) ?
+  // maybe load some overall session stats...(duration, total correct/incorrect, games played)
+
 
   // I think we need a correct and incorrect, so we can draw an incorrect (targ) + correct foil...
   return(user);
 }
 
-// any time they press the back button, store the current queues
+// store low-level data:
+// {"starttime":, "endtime":, "stimtype":, "stim":, "correct_clicks":, "incorrect_clicks":}
+function logTrial(trial_data) {
+  var key = store.get('LAST_TRIAL_KEY') + 1;
+  store.set('tr'+key, trial_data);
+}
+
+// extracts all of the stored trial data (for visualization or upload to server)
+function enumerateLoggedTrials() {
+  var trials = []
+  for (var i = 1; i < LAST_TRIAL_KEY; i++) {
+    var trdat = store.get('tr'+i);
+    trdat.user = user;
+    trdat.index = i;
+    trials.push(trdat);
+  }
+  console.log(trials);
+  return(trials);
+}
+
+function storeQueue(queue_name) {
+  store.set(queue_name, stimQueues[queue_name].content);
+}
+
+// any time they press the back button, store the updated queues -- but don't destroy!
 function storeSession() {
   for(var key in queuesToUpdate) {
     if(queuesToUpdate[key]) { // only update modified queues
-      var stimuli = [];
-      while(stimQueues[key].size() > 0) {
-        stimuli.push(stimQueues[key].pop());
-      }
-
-      store.set(key, stimuli);
-      console.log("stored "+key+" in local storage:");
-      console.log(stimuli);
-
+      store.set(key, stimQueues[key].content);
+      //console.log("stored "+key+" in local storage:");
+      //console.log(stimuli);
     }
-    //store.set('alphabetstim',stimQueues['alphabetstim']); // must convert PQ objects to list..
   }
-
   store.set('lastSession', Date.now());
 }
 

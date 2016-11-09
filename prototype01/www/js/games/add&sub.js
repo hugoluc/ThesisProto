@@ -1,8 +1,11 @@
 var proto3loaded = false;
-var stimCount = -1;
 
 function proto03(){
-
+  try {
+    var stimCount = store.get("ant_problems_solved");
+  } catch(err) {
+    var stimCount = -1;
+  }
   // difficulty phases:
   // increase maxOptions every 5 correct trials (decrease after 2 incorrect?)
   // increase maxAddends along with maxOptions
@@ -571,9 +574,10 @@ function proto03(){
 */
 
     function Trial(_stim){
-
+        this.starttime = Date.now();
         console.log(_stim)
         stimCount++;
+        store.set('ant_problems_solved', stimCount);
         // check if _stim.options is undefined, in which case generate random trial
         // let's make sure we don't generate the answer as an extra (too easy!)
 
@@ -581,13 +585,13 @@ function proto03(){
         // so the user has at least one way to solve the problem
         this.origstim = _stim; // e.g. {id:"1", audio:"1", text:"one", priority: 2}
 
-        var subtract = false;
+        this.subtract = false;
         if(stimCount > number_of_only_addition_problems) {
           // could make greater likelihood of subtraction problems as stimCount increases
-          if(Math.random() < .5) subtract = true;
+          if(Math.random() < .5) this.subtract = true;
         }
 
-        this.stimuli = this.createAdditionProblem(_stim, subtract);
+        this.stimuli = this.createAdditionProblem(_stim, this.subtract);
 
         console.log(this.stimuli);
 
@@ -1482,13 +1486,13 @@ function proto03(){
 
             var angle = getAngle(this.stick.startX, this.stick.startY, _data.x, _data.y)
 
-            this.stick.rotation = angle + Math.PI*1.5
+            this.stick.rotation = angle + Math.PI*1.5;
 
-            var sine = Math.sin(angle)
-            var cosine = Math.cos(angle)
+            var sine = Math.sin(angle);
+            var cosine = Math.cos(angle);
 
-            var opos = sine * (this.lillywith/2)*0.9
-            var adj = cosine * (this.lillywith/2)*0.9
+            var opos = sine * (this.lillywith/2)*0.9;
+            var adj = cosine * (this.lillywith/2)*0.9;
 
             this.stick.x = this.stick.startX + opos// + (this.specs.lillyWidth*0.7);
             this.stick.y = this.stick.startY - adj// + (this.specs.lillyWidth*0.65);
@@ -1562,7 +1566,7 @@ function proto03(){
                     id: i,
                     pos:{
                         x:(this.specs.widthInter*i)+this.specs.margingW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
-                        y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin+getRandomInt(-20,20),
+                        y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin+getRandomInt(-20,20)
                     }
 	    		});
 			}
@@ -1571,10 +1575,10 @@ function proto03(){
     	}
 
     	for(var i=0; i<allPos.length; i++){
-    		this.matrixAvailable.push(i)
+    		this.matrixAvailable.push(i);
     	}
 
-        return allPos
+        return allPos;
     };
 
     Trial.prototype.getPos = function(_i){
@@ -1654,6 +1658,7 @@ function proto03(){
 
     Trial.prototype.storeStim = function(){
         //console.log(this);
+        logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'ant', "stim":this.origstim.id, "correct":this.correctSum, "subtraction":this.subtract});
         var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
         if(this.correctSum) {
           var newpriority = this.origstim.priority + .5;

@@ -283,7 +283,7 @@
 	  this.background = new PIXI.Sprite(assets.textures.bg);
 		this.background.width = session.width;
 		this.background.height = session.height;
-
+		this.current_stim = null;
 	 	this.stage.addChild(this.background);
 
 	 	this.getNextTrial();
@@ -292,22 +292,18 @@
 
 	Round.prototype.getNextTrial = function(){
 
-		//var stim = this.stimuli.pop();
-		//console.log("Round.getNextTrial stim:")
-		//console.log(stim);
-		//console.log(this.stimuli.pop()); // this does get the next one
-	 	this.trial = new this._trial(this.stimuli.pop());
+		this.current_stim = this.stimuli.pop();
+	 	this.trial = new this._trial(this.current_stim);
 
-	  	if(this.trial.init != undefined){
-
-				this.trial.init();
+	  if(this.trial.init != undefined){
+			this.trial.init();
 		}
 	}
 
 	Round.prototype.storeSession = function(stim, queue_name) {
-		//console.log("Round.prototype.storeSession: " + queue_name);
-		//console.log(stim);
-		storeSession(); // push queue back to localstorage when a game is quit
+		stimQueues[queue_name].push(this.current_stim); // keep current stim
+		//storeSession(); // push queue back to localstorage when a game is quit
+		storeQueue(queue_name);
 		queuesToUpdate[queue_name] = false;
 	}
 
