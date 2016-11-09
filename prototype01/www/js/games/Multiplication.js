@@ -4,8 +4,7 @@ function Multiplication(){
 
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
-
-
+  console.log("----------------------------------", stimuli)
 
 
 /*
@@ -14,23 +13,25 @@ function Multiplication(){
 -------------------------------------------------------------------------------------------------------------
 */
 
-  var numberss = [14]
+  var numbers = [stimuli.content[2]]
 
 	function Trial(_stimuli,_correct){
 
-		var specs = [
+    var specs = []
+    for(var i = 0; i < numbers.length; i++){
 
-			{
-				stimuli : {
-					values : numberss,
-					// Maybe use this later to terermine in wich direction the game is testing the user
-				},
-			}
-		]
+      specs.push({
+        stimuli : {
+          values : numbers[i].id
+        }
+      })
+
+    }
 
     this.counter = 0
 
 		this.stimuli = specs[0].stimuli;
+    this._stimuli = numbers
 		this.aswear = []
 		this.boardMatrix = {}
 		this.lastTarget = ""
@@ -101,6 +102,7 @@ function Multiplication(){
     this.createEggs();
 		this.timer = new ClockTimer();
 		this.timer.start(1000);
+
 	};
 
   Trial.prototype.createEggs = function(){
@@ -592,10 +594,10 @@ function Multiplication(){
       .on('touchstart', click)
 
       //touch end
-  		.on('mouseup', function(){_this.clickEnd(this)})
-      .on('mouseupoutside', function(){_this.clickEnd(this)})
-      .on('touchend', function(){_this.clickEnd(this)})
-      .on('touchendoutside', function(){_this.clickEnd(this)})
+  		.on('mouseup', function(event){ console.log(event); _this.clickEnd(this)})
+      .on('mouseupoutside', function(event){console.log(event); _this.clickEnd(this)})
+      .on('touchend', function(event){console.log(event); _this.clickEnd(this)})
+      .on('touchendoutside', function(event){console.log(event);_this.clickEnd(this)})
 
       //drag
       .on('mousemove', function(_event){_this.drag(_event,this)})
@@ -905,20 +907,14 @@ function Multiplication(){
 
 	Trial.prototype.clickStart = function(_event){
 
-		if(this.playState == "drawingNest"){
+		if(this.playState == "drawingNest" && !this.singleClick){
 
 			this.nestCreated = false;
 			this.firstClickTile = _event.target.id
 			this.lastTarget = this.boardMatrix[_event.target.id].tile
 			_event.target.dragging = true;
 
-			console.log(_event.target.id)
-
-		}else if(this.playState == "win"){
-
-
-
-		};
+		}
 	};
 
 	Trial.prototype.deleteNest = function(_index){ // delete nest on _index
@@ -928,11 +924,11 @@ function Multiplication(){
 			if(this.selection.tiles[i].sprite != undefined){
 
         this.selection.tiles[i].sprite.alpha = 0
+        this.selection.tiles[i].sprite.rotation = 0
         this.fullNests[this.selection.tiles[i].sprite.nestAssetsId].push(this.selection.tiles[i].sprite)
 				this.selection.tiles[i].sprite = undefined;
 
 			};
-
 		};
 	};
 
@@ -943,6 +939,8 @@ function Multiplication(){
     }
 
 		if(_this.dragging){ // ensure that only one tile will trigger the reponse
+
+      this.singleClick = false;
 
 			var point = { // get mouse position
 				x : _event.data.global.x,
@@ -1006,18 +1004,18 @@ function Multiplication(){
 
     var selection = _selection
 
-		function showNestTile(_arrayPos,_asset,_this,_flip,_){
+		function showNestTile(_arrayPos,_asset,_this,_flip){
 
       var sprite = _this.fullNests[_asset].splice(0,1)[0]
 
-			if(_flip){
-
-				sprite.width = -_this.tileSize * 1.6
-				sprite.rotation = -Math.PI * 1.5
-
-			}else{
-				sprite.width = _this.tileSize * 1.6
-			};
+      if(_flip){
+        sprite.rotation = -Math.PI / 2;
+        sprite.width = _this.tileSize * 1.6
+      }else{
+        console.log(_asset)
+        sprite.width = Math.abs(_this.tileSize * 1.6)
+        sprite.rotation = 0
+      }
 
 			sprite.height = _this.tileSize * 1.6
 			sprite.x = _this.boardMatrix[_this.selection.tiles[_arrayPos].id].pos.x + _this.tileSize*0.5,
@@ -1038,7 +1036,7 @@ function Multiplication(){
 		//selection and in boardMatrix.
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-		if(selection.tiles.rows * selection.tiles.columns  <= 1){// Draw nest in the shape of a single saquare
+		if(selection.rows * selection.columns  <= 1){// Draw nest in the shape of a single saquare
 
 		}else if(selection.columns > 1 && selection.rows > 1){ // Draw nest in the shape of a rectangle
 
@@ -1122,14 +1120,13 @@ function Multiplication(){
 				//Top
 				showNestTile(
 					selection.tiles.length-1,
-					"LT",
+					"LB",
 					this,
 					true
 					)
 
 				//Middle
 				for(var i = 0; i < selection.columns-2; i++){
-
 
 					showNestTile(
 						i+1,
@@ -1143,7 +1140,7 @@ function Multiplication(){
 				//Bottom
 				showNestTile(
 					0,
-					"LB",
+					"LT",
 					this,
 					true
 					)
@@ -1178,14 +1175,34 @@ function Multiplication(){
 
 			};
 		};
+
   };
 
 	Trial.prototype.clickEnd = function(_this){
 
-		console.log("clickend!")
-    console.log(stage)
+		console.log("---------------------click end!")
+    console.log(this.boardMatrix[this.firstClickTile].tile)
+    console.log(this.boardMatrix[_this.id].tile)
+    console.log(_this.id)
 
-		if(!this.nestCreated && this.playState == "drawingNest"){ // ensure that only one tile will trigger the response
+		if(!this.nestCreated && this.playState == "drawingNest"){
+    // ensure that only one tile will trigger the response
+
+      if(this.singleClick){
+
+        this.selection = this.calculateSelection( // calculate new selection
+          this.boardMatrix[this.firstClickTile].tile,
+          this.boardMatrix[_this.id].tile
+        )
+
+        this.showNest(this.selection)
+
+      } else if(this.selection.tiles.length == 0){
+
+        this.singleClick = true;
+
+      }
+
 
 			this.boardMatrix[this.firstClickTile].graphic.dragging = false;
 
@@ -1525,16 +1542,12 @@ function Multiplication(){
 
       var selection = _selection
 
+      console.log("----------------------", stage.children.length)
+      console.log(stage.children[stage.children.length-1])
+
 			function createNestTile(_arrayPos,_asset,_this,_flip,_){
 
 				var sprite = new PIXI.Sprite(assets.textures[_asset]);
-
-        if(_flip){
-					sprite.width = -_this.tileSize * 1.6
-					sprite.rotation = -Math.PI * 1.5
-				}else{
-					sprite.width = _this.tileSize * 1.6
-				};
 
 				sprite.height = _this.tileSize * 1.6
 				sprite.x = _this.boardMatrix[selection.tiles[_arrayPos].id].pos.x + _this.tileSize*0.5,
@@ -1544,6 +1557,9 @@ function Multiplication(){
         sprite.alpha = 0
 
         _this.fullNests[_asset].push(sprite)
+
+
+
         stage.addChildAt(sprite,stage.children.length-1)
 
 			};
@@ -1698,7 +1714,7 @@ function Multiplication(){
 
 	Trial.prototype.calculateSelection = function(_start,_end){
 
-    console.log(_start,_end)
+    // console.log(_start,_end)
 
 		var selectedTile = []
 
@@ -1759,47 +1775,62 @@ function Multiplication(){
 
 	Trial.prototype.destroy = function(_stage){
 
-		// for(object in  this.boardMatrix){
+    for(var i = 0; i < stage.children.length; i++) {
 
-		// 	stage.removeChild(this.boardMatrix[object].sprite);
-		// 	this.boardMatrix[object].sprite.destroy(true,true);
+      console.log(i)
 
-		// 	stage.removeChild(this.boardMatrix[object].graphic);
-		// 	this.boardMatrix[object].graphic.destroy(true,true);
+      if(stage.children[0].id != "bg"){
+        stage.removeChild(stage.children[0])
+        stage.children[0].destroy(true,true)
+      }
 
-		// };
+    }
 
-		while(stage.children[0]) stage.removeChild(stage.children[0])
+    function remove(_child){
 
-		return
+      if(_child.children.length > 0){
 
-		console.log(stage.children.length)
+        for(var i = 0; i < _child.children.length; i++){
+          remove(_child.children[i])
+        }
+
+      }
+
+      if(_child.id == "bg"){
+        return;
+      }
+
+      stage.removeChild(_child)
+      _child.destroy();
+
+    }
+
 
 		for (var i = 0; i < stage.children.length; i++){
 
-			console.log(stage.children[0])
+      remove(stage.children[i])
 
-			if(stage.children[i].children.length > 0){
-
-				stage.removeChild(stage.children[i])
-				stage.children[i].destroy(true,true);
-
-
-			}else{
-
-				stage.removeChild(stage.children[i])
-				stage.children[i].destroy(true,true);
-
-			}
-
-			console.log(i)
-  		console.log(stage.children.length)
 		}
+
+
+
 
 		console.log(stage.children.length)
 		console.log(stage)
 		console.log("Destruction DONE!")
 	};
+
+  Trial.prototype.storeStim = function(){
+
+      var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
+      var newpriority = this._stimuli[0].priority
+
+      this._stimuli[0].priority = newpriority + rand_adjust;
+
+      console.log(this._stimuli[0])
+      return(this._stimuli[0]);
+
+  };
 
 //------------------------------------------
 // Global functions and variables

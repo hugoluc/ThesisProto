@@ -340,6 +340,8 @@
 	  this.background = new PIXI.Sprite(assets.textures.bg);
 		this.background.width = session.width;
 		this.background.height = session.height;
+		this.background.id = "bg"
+
 
 	 	this.stage.addChild(this.background);
 
@@ -353,11 +355,13 @@
 		//console.log("Round.getNextTrial stim:")
 		//console.log(stim);
 		//console.log(this.stimuli.pop()); // this does get the next one
+		console.log("sodhfoshdffsklkjfhskjfkjskjfhsjh")
+		console.log(this.stimuli.pop())
+
 	 	this.trial = new this._trial(this.stimuli.pop());
 
-	  	if(this.trial.init != undefined){
-
-				this.trial.init();
+	  if(this.trial.init != undefined){
+			this.trial.init();
 		}
 	}
 
@@ -731,7 +735,6 @@
 			}else {
 				return false
 			}
-
 	};
 
 	gameScore.prototype.addScoreUI = function(){
