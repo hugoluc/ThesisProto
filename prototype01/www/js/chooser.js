@@ -1,5 +1,6 @@
 var MainMenu = function() {
   clickStart('container-exp','container-chooser');
+  logTime('menu');
 };
 
 function Start(){
@@ -73,8 +74,14 @@ function Start(){
 
       {
         name: "Snake",
-        available: true,
+        available: false,
         callFunction: Snake
+      },
+
+      {
+        name: "Dashboard",
+        available: true,
+        callFunction: Dashboard
       }
   ];
 
@@ -97,7 +104,7 @@ function Start(){
 
         document.getElementById("container-exp").style.height = window.innerHeight
         session.setRenderer();
-
+        //logTime(Games[this.id].name); // better than doing in each file?
         clickStart('container-chooser','container-exp');
         currentview = new Games[this.id].callFunction();
 

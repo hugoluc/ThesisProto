@@ -8,11 +8,11 @@
 
 function memory(){
   var self = this;
+  logTime("memory");
   //var clock = new ClockTimer();
   var scoreIncrease = 1; // increase scoreIncrease by 1 every 5 correct trials
   var game_loaded = true;
-  //queuesToUpdate['alphabetstim'] = true;
-  //var stimQ = stimQueues['alphabetstim'];
+
   var stimSize = 95;
   var renderer;
   var first_tile;
@@ -413,7 +413,8 @@ function memory(){
       function update() {
 
           if(finishGame){
-              console.log("ending memory game");
+              logTime("memory-end");
+              round.storeSession(stimQ, "alphabetstim")
               session.stats.domElement.style.display = "none";
               round.destroy(); // error here gameDefinitions:316
               assets.destroy();

@@ -12,8 +12,7 @@ function proto03(){
   var scoreIncrease = 1; // increase scoreIncrease by 1 every 5 correct trials
   var maxOptions = 4;
   var number_of_only_addition_problems = 10; // only addition problems (set 30 for kids, 10 for testing)
-  //queuesToUpdate['mathstim'] = true;
-  //var stimuli = stimQueues['mathstim'];
+
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
   proto3loaded = true;
@@ -1815,7 +1814,7 @@ function proto03(){
 //-------------------------------------------
 // Global functions andd variables
 //-------------------------------------------
-
+  logTime("addsub");
     // create the root of the scene graph and main classes
     var stage = new PIXI.Container();
     var round = new Round();
@@ -1861,7 +1860,7 @@ function proto03(){
                 console.log("starting the game!")
                 session.show()
                 update();
-                
+
             });
         };
 
@@ -1882,8 +1881,9 @@ function proto03(){
 
             if(finishGame){
 
-                console.log("finishing Game");
-
+                //console.log("finishing addsub");
+                logTime("addsub-end");
+                round.storeSession(stimuli, 'numberstim');
                 session.stats.domElement.style.display = "none";
                 round.destroy();
                 assets.destroy();

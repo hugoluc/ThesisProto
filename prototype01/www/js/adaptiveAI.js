@@ -43,7 +43,7 @@ var stimQueues = {
 
 // used for both initial loading of stimuli and pulling from storage into PriorityQueues
 function loadStimulusQueue(stimuli, chunkSize) {
-
+  console.log(stimuli);
   var pq = new BinaryHeap(function(x){return x.priority;})
   var priority = 0;
 
@@ -61,40 +61,65 @@ function loadStimulusQueue(stimuli, chunkSize) {
 
 }
 
+// update timestamped list of activities (high-level)
+// -- might want to log exit timestamps, so we know when they quit vs. turn off
+function logTime(activityType) {
+  var timestamp = Date.now();
+  var activityLog = store.get("activityLog");
+  activityLog.push({'time': timestamp, 'activity': activityType});
+  console.log({'time': timestamp, 'activity': activityType});
+  store.set("activityLog", activityLog);
+}
+
 function initStorage() {
 
   if (!store.enabled) {
-
     console.log('Local storage is not supported: disable "Private Mode" or upgrade to a modern browser.');
-
     return(null);
-
   }
 
-  //store.clear(); // for testing with a clean slate
   user = store.get('user');
-  user = null; // for testing defaults
+  //user = null; // for testing defaults
 
   if(user==null) {
 
     user = getRandomInt(1,999999999);
     console.log('first time! assigned userID: ' + user);
     store.set('user', user);
-    store.set('sessionDates', []);
+    store.set('activityLog', []);
     stimQueues['alphabetstim'] = loadStimulusQueue(letters, chunkSize); // we could just initialize PQs with all stimuli...
     stimQueues['numberstim'] = loadStimulusQueue(numbers, chunkSize);
     stimQueues['wordstim'] = loadStimulusQueue(words, chunkSize);
     stimQueues['objectstim'] = loadStimulusQueue(objects, chunkSize); // things we have images for..
-    stimQueues['mathstim'] = loadStimulusQueue(addition, chunkSize);
     // shapes don't need their own...not enough of them
   } else {
 
-    console.log('welcome back: loading queues')
-    stimQueues['alphabetstim'] = loadStimulusQueue(store.get('alphabetstim'), chunkSize);
-    stimQueues['numberstim'] = loadStimulusQueue(store.get('numberstim'), chunkSize);
-    stimQueues['wordstim'] = loadStimulusQueue(store.get('wordstim'), chunkSize);
-    stimQueues['objectstim'] = loadStimulusQueue(store.get('objectstim'), chunkSize);
-    stimQueues['mathstim'] = loadStimulusQueue(store.get('mathstim'), chunkSize);
+    console.log('welcome back user '+user+': loading queues')
+    try {
+      stimQueues['alphabetstim'] = loadStimulusQueue(store.get('alphabetstim'), chunkSize);
+    } catch(err) {
+      stimQueues['alphabetstim'] = loadStimulusQueue(letters, chunkSize);
+      console.log("alphabetstim missing: resetting queue");
+    }
+    try {
+      stimQueues['numberstim'] = loadStimulusQueue(store.get('numberstim'), chunkSize);
+    } catch(err) {
+      stimQueues['numberstim'] = loadStimulusQueue(numbers, chunkSize);
+      console.log("numberstim missing: resetting queue");
+    }
+    try {
+      stimQueues['wordstim'] = loadStimulusQueue(store.get('wordstim'), chunkSize);
+    } catch(err) {
+      stimQueues['wordstim'] = loadStimulusQueue(words, chunkSize);
+      console.log("wordstim missing: resetting queue");
+    }
+    try {
+      stimQueues['objectstim'] = loadStimulusQueue(store.get('objectstim'), chunkSize);
+    } catch(err) {
+      stimQueues['objectstim'] = loadStimulusQueue(objects, chunkSize);
+      console.log("objectstim missing: resetting queue");
+    }
+    //stimQueues['mathstim'] = loadStimulusQueue(store.get('mathstim'), chunkSize);
 
     // other game-specific state variables (e.g., dropSpeed, numFoils, etc) ?
     // maybe load some overall session stats...(duration, total correct/incorrect, games played)
@@ -107,7 +132,7 @@ function initStorage() {
 // any time they press the back button, store the current queues
 function storeSession() {
   for(var key in queuesToUpdate) {
-    if(queuesToUpdate[key]) {
+    if(queuesToUpdate[key]) { // only update modified queues
       var stimuli = [];
       while(stimQueues[key].size() > 0) {
         stimuli.push(stimQueues[key].pop());
@@ -115,7 +140,7 @@ function storeSession() {
 
       store.set(key, stimuli);
       console.log("stored "+key+" in local storage:");
-      console.log(stimuli)
+      console.log(stimuli);
 
     }
     //store.set('alphabetstim',stimQueues['alphabetstim']); // must convert PQ objects to list..

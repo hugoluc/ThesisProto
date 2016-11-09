@@ -17,8 +17,11 @@ var WordFind = function() {
   }
 
   var words = ['cat','bat','fat','but','gut','the'];
+  // need to know when all words are found, then start a new round with new words
+
   // start a word find game
   var gamePuzzle = wordfindgame.create(words, '#puzzle', '#words');
+  // modify wordfindgame to say each word as it's found
 
   // $('#solve').click( function() {
   //   wordfindgame.solve(gamePuzzle, words);

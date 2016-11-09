@@ -305,8 +305,10 @@
 	}
 
 	Round.prototype.storeSession = function(stim, queue_name) {
-		//storeSession();
-		// push queue back to localstorage each time they quit a game
+		//console.log("Round.prototype.storeSession: " + queue_name);
+		//console.log(stim);
+		storeSession(); // push queue back to localstorage when a game is quit
+		queuesToUpdate[queue_name] = false;
 	}
 
 	Round.prototype.destroy = function(){

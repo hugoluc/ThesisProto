@@ -3,6 +3,7 @@
     var LOGTHIS =  false;
 
 function proto02(){
+  logTime("counting");
   var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
   // modify game dynamics if scoreDifferential reaches +3 or -3
   var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
@@ -1253,10 +1254,9 @@ function proto02(){
         function update() {
 
             if(finishGame){
-
-                console.log('finishGame - storing session!');
+                logTime("counting-end");
+                //console.log('counting game over - storing');
                 round.storeSession(stimuli, 'numberstim');
-
                 session.stats.domElement.style.display = "none";
                 round.destroy();
                 assets.destroy();
