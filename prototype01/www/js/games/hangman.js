@@ -1,17 +1,17 @@
 function Hangman() {
   var screend3;
+  score.stage = screend3; // ? doesn't work..
+  var scoreIncrease = 1;
   queuesToUpdate['objectstim'] = true;
   logTime('hangman');
+
   var stimQ = stimQueues['objectstim'];
   var nextTrial = false; // ready to go on
   var current_stim = null;
   // stage 1. pop up a word, play the word, and then show the object
   // stage 2. pop up a word and show a few objects; let them click. (if wrong, play the word)
-  try {
-    var max_guesses = store.get("max_hangman_guesses");
-  } catch(err) {
-    var max_guesses = 10;
-  }
+  var max_guesses = store.get("max_hangman_guesses");
+  if(!max_guesses) max_guesses = 10;
 
   var imageSize = 240;
   var stim_diam = 80
@@ -86,6 +86,15 @@ function Hangman() {
         if(max_guesses>3) {
           max_guesses -= 1; // adjust difficulty: one fewer guess allowed
         }
+
+        // help, Hugo! can't get score to work..what should score.stage be?
+        // var pos = [];
+        // for (var i=0; i<scoreIncrease; i++) {
+        //   pos.push([300,300]); // GK ToDo: set to letter positions of word
+        // }
+        // score.addScore(pos, scoreIncrease, 1000, true);
+        // score.setExplosion([300,300], 100,1000);
+
       } else {
         self.origstim.priority -= .5 + randAdjust;
         max_guesses += 1;

@@ -82,7 +82,9 @@ function initStorage() {
   if(user==null) {
     user = getRandomInt(1,999999999);
     console.log('first time! assigned userID: ' + user);
+    store.clear() // clear all keys
     store.set('user', user);
+    store.set('score', 0);
     store.set('activityLog', []);
     //store.set('trialLog', []); // if we do a list it must be read back to add to
     store.set('LAST_TRIAL_KEY', 0);
@@ -128,6 +130,7 @@ function initStorage() {
 function logTrial(trial_data) {
   var key = store.get('LAST_TRIAL_KEY') + 1;
   store.set('tr'+key, trial_data);
+  store.set('LAST_TRIAL_KEY', key);
 }
 
 // extracts all of the stored trial data (for visualization or upload to server)
@@ -160,7 +163,6 @@ function storeSession() {
 }
 
 // store.remove('username')
-// store.clear() // Clear all keys
 //
 // // Store an object literal - store.js uses JSON.stringify under the hood
 // store.set('user', { name: 'marcus', likes: 'javascript' })

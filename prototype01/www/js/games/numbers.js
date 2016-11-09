@@ -1,17 +1,13 @@
-    var proto2loaded = false;
+var proto2loaded = false;
 
-    var LOGTHIS =  false;
+var LOGTHIS =  false;
 
 function proto02(){
   logTime("counting");
   var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
   // modify game dynamics if scoreDifferential reaches +3 or -3
-  // try {
-  //   var walkSpeed = store.get("walkSpeed");
-  //   console.log("walkSpeed: "+walkSpeed);
-  // } catch(err) {
-  //   var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
-  // }
+  var walkSpeed = store.get("walkSpeed");
+  if(!walkSpeed) walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
   var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
   var numFoils = 3; // +2 if 3x correct, -1 if 3x incorrect
   var scoreIncrease = 1; // initially 1, but goes higher as they progress
@@ -302,7 +298,8 @@ function proto02(){
         LadyBug.prototype.click = function(_event){
 
             round.trial.clickPos = _event.data.global
-            console.log(round.trial.clickPos)
+            //console.log(round.trial.clickPos)
+            round.trial.total_clicks += 1;
 
             if(round.trial.state == "nextTrial"){
                 return
@@ -312,10 +309,7 @@ function proto02(){
 
             // check if its correct
             if(this.startNumber == round.trial.origstim.id){
-
-
-                console.log(">>CLICK<<")
-
+                //console.log(">>CLICK<<")
                 if(this.number.text != 0){
 
                     if(this.number.text - round.trial.bugType < 0){
@@ -355,7 +349,7 @@ function proto02(){
 
                 // kills if it click one more time
                 } else if(this.number.text < 0) {
-                    this.wrongClicks += 1;
+                    round.trial.wrongClicks += 1;
                     round.trial.answer(false)
                     round.changeDifficulty(false)
                     round.trial.getFeedback(false,true)
@@ -372,18 +366,15 @@ function proto02(){
 
                 // regular click
                 }else if (this.number.text > 0){
-
-                    round.trial.getFeedback(true,false)
-
+                    round.trial.getFeedback(true,false);
                 };
 
             }else {
                 if(!this.correctImput){
-                    this.wrongClicks += 1;
-                    round.trial.answer(false)
-                    round.changeDifficulty(false)
-                    round.trial.getFeedback(false,false)
-
+                    round.trial.wrongClicks += 1;
+                    round.trial.answer(false);
+                    round.changeDifficulty(false);
+                    round.trial.getFeedback(false,false);
                 };
             };
         };
@@ -391,9 +382,8 @@ function proto02(){
         LadyBug.prototype.resetFeedback = function(){
 
             if(this.offscreen){
-
                 this.offscreen = false;
-                return true
+                return true;
             }
         };
 
@@ -406,6 +396,7 @@ function proto02(){
         function Trial(_stimuli){
 
             //_stimuli.id = 10
+            this.starttime = Date.now()
             this.ladyBugs = [];
             this.origstim = _stimuli;
             this.correct = _stimuli.id;
@@ -422,8 +413,9 @@ function proto02(){
             this.audioQueuePlay = false;
             this.playing = [];
             this.audioTimer = new ClockTimer();
-            this.wrongClicks = 0;
+            this.wrongClicks = 0; // # clicks on wrong ladybugs (or too many clicks)
             this.stimPlayed = false;
+            this.total_clicks = 0; // total ladybug touches (good and bad)
         };
 
         Trial.prototype.intro = function(){
@@ -657,11 +649,12 @@ function proto02(){
         };
 
         Trial.prototype.storeStim = function(){
+            logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'count', "stim":this.origstim.id, "total_clicks":this.total_clicks, "incorrect_clicks":this.wrongClicks});
             var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
             if(this.wrongClicks===0) {
               var newpriority = this.origstim.priority + .5;
             } else {
-              var newpriority = this.origstim.priority - Math.log(this.wrongClicks);
+              var newpriority = this.origstim.priority - .25; //*Math.log(this.wrongClicks);
             }
             this.origstim.priority = newpriority + rand_adjust;
             return(this.origstim);
@@ -895,27 +888,26 @@ function proto02(){
 
                 if(!_feedback){
 
+                  incorrect_sound.play();
+                  this.playAudioQueue("stop");
 
-                    assets.sounds.wrong[0].play()
-                    this.playAudioQueue("stop")
+                  if(!this.redDone){
 
-                    if(!this.redDone){
+                      this.feedbackState = "red";
 
-                        this.feedbackState = "red"
+                      this.setBlink(false);
+                      this.bgRed.renderable = true;
+                      this.blinks = 0;
 
-                        this.setBlink(false)
-                        this.bgRed.renderable = true;
-                        this.blinks = 0
+                      this.feedback = false;
+                      this.redDone = false;
 
-                        this.feedback = false;
-                        this.redDone = false;
-
-                    }
+                  }
 
                 }
 
-                this.goldCount = 0
-                this.coundCount = 0
+                this.goldCount = 0;
+                this.coundCount = 0;
 
             } else if(_feedback){
 
@@ -964,8 +956,7 @@ function proto02(){
 
             }else{
 
-
-                assets.sounds.wrong[0].play()
+              incorrect_sound.play();
 
                 if(!this.redDone){
 
@@ -1225,7 +1216,7 @@ function proto02(){
                 };
             };
 
-            assets.addSound("wrong",'wrong.mp3');
+            //assets.addSound("wrong",'wrong.mp3');
             assets.load(onAssetsLoaded)
 
         //---------------------------------------LOOP
@@ -1255,12 +1246,14 @@ function proto02(){
             walkSpeed -= 1;
 
           }
+
         };
 
         function update() {
 
             if(finishGame){
                 logTime("counting-end");
+                store.set('walkSpeed', walkSpeed);
                 //console.log('counting game over - storing');
                 round.storeSession(stimuli, 'numberstim');
                 session.stats.domElement.style.display = "none";

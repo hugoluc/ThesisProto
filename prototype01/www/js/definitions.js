@@ -3,13 +3,19 @@
 var screen_width = window.innerWidth, // (1200)
     screen_height = window.innerHeight; // (768)
 
-// // try: <audio preload="auto"> <source="" /></audio>
-var correct_sound = new Audio('audio/correct.wav');
-var incorrect_sound = new Audio('audio/birdcry.mp3');
+// Howlers cache, play and replay faster
+var incorrect_sound = new Howl({
+  src: ['audio/wrong/wrong.mp3'],
+  autoplay: false
+});
+
+var correct_sound = new Howl({
+  src: ['audio/correct.wav'],
+  autoplay: false
+});
 
 // var nextTrial = null; // for setTimeout so we can clearTimeout
-
-var score = 0; // get from summarydata for each game type (or one for all?)
+var score;
 
 var background_image_files = ["farmbackground.jpg","plains1.png","plains2.png"];
 //,"sky0_1024x600.jpg","sky1_1024x600.jpg","sky2_1024x600.jpg","sky3_1024x600.jpg","sky4_1024x600.jpg"]

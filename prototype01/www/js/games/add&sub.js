@@ -1,11 +1,11 @@
 var proto3loaded = false;
 
 function proto03(){
-  try {
-    var stimCount = store.get("ant_problems_solved");
-  } catch(err) {
-    var stimCount = -1;
-  }
+  var minAddends = 2; // store.get and store.set, and write adjustDifficulty !!
+  var maxAddends = 3;
+  var stimCount = store.get("ant_problems_solved");
+  if(!stimCount) stimCount = 0;
+
   // difficulty phases:
   // increase maxOptions every 5 correct trials (decrease after 2 incorrect?)
   // increase maxAddends along with maxOptions
@@ -480,7 +480,7 @@ function proto03(){
 
     Ant.prototype.setTrajectory = function(_trajectory,_length,_offset){
 
-        console.log(_trajectory,_length,_offset)
+        //console.log(_trajectory,_length,_offset)
 
         this.length = 100
         this.trajectory = _trajectory || []
@@ -521,14 +521,14 @@ function proto03(){
 
             if(this.animation.run()){ // if ant reached a step in the trajectory:
 
-                console.log("Ant State: ", this.state)
-                this.state++
+                //console.log("Ant State: ", this.state);
+                this.state++;
 
                 if(this.state != this.trajectory.length){
 
                     if(this.state == 1){
 
-                        round.trial.antMoveDone("subtract")
+                        round.trial.antMoveDone("subtract");
 
                     }else if(this.state == 2){
 
@@ -545,7 +545,7 @@ function proto03(){
 
         }else{
 
-            console.log(">>>>>>>>> ANTS ANIMATION DONE")
+            //console.log(">>>>>>>>> ANTS ANIMATION DONE");
             round.trial.leavesToFade++;
             this.animationDone = true;
             return true;
@@ -575,7 +575,7 @@ function proto03(){
 
     function Trial(_stim){
         this.starttime = Date.now();
-        console.log(_stim)
+        //console.log(_stim)
         stimCount++;
         store.set('ant_problems_solved', stimCount);
         // check if _stim.options is undefined, in which case generate random trial
@@ -593,12 +593,12 @@ function proto03(){
 
         this.stimuli = this.createAdditionProblem(_stim, this.subtract);
 
-        console.log(this.stimuli);
+        //console.log(this.stimuli);
 
       	this.correctSum = false; // set true if they finish correctly
         this.clock = new ClockTimer();
       	this.sticks = [];
-
+        this.stimPlayed = false; // first hear target number
       	this.trialState = "intro";
         this.introState = "playSound";
         this.specs = this.getSpecs();
@@ -635,13 +635,11 @@ function proto03(){
       // given a single number (desired sum), want to generate a set of addends
       // and potentially add another value that is too large
 
-        console.log(">>>>>>>>>>> GENERATING ANTS MATH PROBLEM!")
+        //console.log(">>>>>>>>>>> GENERATING ANTS MATH PROBLEM!")
 
         var total = parseInt(stim.id);
         console.log("Total Value: ", total);
 
-        var minAddends = 2;
-        var maxAddends = 3;
         var Naddends = getRandomInt(minAddends, maxAddends); // get number of addends. Ex.: (2+3+4 = 9) addends = 3
         console.log("Number of addends: ", Naddends)
 
@@ -686,7 +684,7 @@ function proto03(){
 
           values.push(total - cumSum);
 
-          console.log("original stim: ", values)
+          //console.log("original stim: ", values)
 
           if(_sub){
             values[1] = values[1] + (2*values[0]);
@@ -1536,8 +1534,8 @@ function proto03(){
 
         };
 
-        obj.width = session.canvas.width-(2*obj.canvasMargin)-(obj.bigLillypadWidth*1.2)-obj.lillyWidth/2;
-		obj.height = session.canvas.height-(2*obj.canvasMargin);
+      obj.width = session.canvas.width-(2*obj.canvasMargin)-(obj.bigLillypadWidth*1.2)-obj.lillyWidth/2;
+		  obj.height = session.canvas.height-(2*obj.canvasMargin);
 
     	obj.moduleSize = obj.lillyWidth+(obj.margin*2);
 
@@ -1699,7 +1697,8 @@ function proto03(){
 
                     } else {
                         this.lillyFinal.sinkThis();
-                        assets.sounds.wrong[0].play();
+                        // could play bad sound the number of ants they were wrong by...
+                        incorrect_sound.play();
                         this.fadeStick = true;
                         this.finishedState = "lose";
                     }
@@ -1750,7 +1749,10 @@ function proto03(){
         switch(this.trialState){
 
             case "intro":
-
+                if(!this.stimPlayed) {
+                  assets.sounds.numbers[this.origstim.id].play();
+                  this.stimPlayed = true;
+                }
                 if(this.fadeStick){ this.removeStick()}
 
                 if(this.intro()){
@@ -1846,7 +1848,13 @@ function proto03(){
             assets.addTexture("ants","sprites/lillypad/ant.png")
             assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
 
-            assets.addSound("wrong",'wrong.mp3');
+            for (var i = 0; i < numbers.length; i++) {
+              //assets.sounds.numbers
+              assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
+
+            };
+
+            //assets.addSound("wrong",'wrong.mp3');
             assets.load(onAssetsLoaded)
 
         }else{

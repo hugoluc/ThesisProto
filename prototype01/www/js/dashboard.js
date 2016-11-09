@@ -23,7 +23,7 @@ var Dashboard = function() {
 
   // store.js: Loop over all stored values
   store.forEach(function(key, val) {
-      output += (key+': '+val)+'\n';
+      output += (key+': '+JSON.stringify(val))+'\n';
       //console.log(key, '==', val);
   })
 
@@ -37,6 +37,8 @@ var Dashboard = function() {
       complete: callback
     });
   }
+
+  
 
   $('#sessions').html(output);
 }
