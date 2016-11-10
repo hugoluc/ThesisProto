@@ -13,7 +13,7 @@ function Multiplication(){
 -------------------------------------------------------------------------------------------------------------
 */
 
-  var numbers = [stimuli.content[2]]
+  var numbers = [stimuli.content[1]]
 
 	function Trial(_stimuli,_correct){
 
@@ -343,9 +343,10 @@ function Multiplication(){
 
 		case "Win":
 
-      score.displayStar();
-      score.displayExplosion();
       var done = true;
+
+      if(!score.displayStar())  done = false;
+      if(!score.displayExplosion()) done = false;
 
       for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
 
@@ -1775,46 +1776,38 @@ function Multiplication(){
 
 	Trial.prototype.destroy = function(_stage){
 
-    for(var i = 0; i < stage.children.length; i++) {
+    var bg;
 
-      console.log(i)
+    function deleteChildren(_child,_parent){
 
-      if(stage.children[0].id != "bg"){
-        stage.removeChild(stage.children[0])
-        stage.children[0].destroy(true,true)
-      }
-
-    }
-
-    function remove(_child){
+      console.log(_child.children.length)
 
       if(_child.children.length > 0){
-
-        for(var i = 0; i < _child.children.length; i++){
-          remove(_child.children[i])
-        }
-
+          while(_child.children.length > 0){
+            console.log("--" + _child.children.length)
+            deleteChildren(_child.children[0],_child)
+          }
+          console.log("all children deleted")
       }
 
       if(_child.id == "bg"){
-        return;
+        bg = _parent.removeChild(_child)
+        console.log("==================================", bg)
+      }else{
+        _parent.removeChild(_child)
+        _child.destroy()
       }
-
-      stage.removeChild(_child)
-      _child.destroy();
 
     }
 
+    while(stage.children.length > 0){
 
-		for (var i = 0; i < stage.children.length; i++){
+      console.log(">>>>>>>>>>>>>>>>> " + stage.children.length)
+      deleteChildren(stage.children[0],stage)
 
-      remove(stage.children[i])
+    }
 
-		}
-
-
-
-
+    stage.addChild(bg)
 		console.log(stage.children.length)
 		console.log(stage)
 		console.log("Destruction DONE!")
