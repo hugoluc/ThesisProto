@@ -18,6 +18,9 @@ var user;
 var LAST_TRIAL_KEY; // incremented each time a trial is logged
 var chunkSize = 7; // number of stimuli to be put in at each priority (i.e., put in one 'round')
 // which queues have been modified and need to be re-stored: set true when a game uses the stack
+
+var localDB = new PouchDB('egoteach_tz1');
+
 var queuesToUpdate = {
   'alphabetstim':false,
   'numberstim':false,
@@ -120,7 +123,6 @@ function initStorage() {
   // other game-specific state variables (e.g., dropSpeed, numFoils, etc) ?
   // maybe load some overall session stats...(duration, total correct/incorrect, games played)
 
-
   // I think we need a correct and incorrect, so we can draw an incorrect (targ) + correct foil...
   return(user);
 }
@@ -128,14 +130,23 @@ function initStorage() {
 // store low-level data:
 // {"starttime":, "endtime":, "stimtype":, "stim":, "correct_clicks":, "incorrect_clicks":}
 function logTrial(trial_data) {
+  if (!store.enabled) {
+    return(false);
+  }
+
   var key = store.get('LAST_TRIAL_KEY') + 1;
   store.set('tr'+key, trial_data);
   store.set('LAST_TRIAL_KEY', key);
+  return(true);
 }
 
 // extracts all of the stored trial data (for visualization or upload to server)
 function enumerateLoggedTrials() {
-  var trials = []
+  if (!store.enabled) {
+    return(null);
+  }
+
+  var trials = [];
   for (var i = 1; i < LAST_TRIAL_KEY; i++) {
     var trdat = store.get('tr'+i);
     trdat.user = user;
@@ -147,11 +158,20 @@ function enumerateLoggedTrials() {
 }
 
 function storeQueue(queue_name) {
+  if (!store.enabled) {
+    return(false);
+  }
   store.set(queue_name, stimQueues[queue_name].content);
+  return(true);
 }
+
 
 // any time they press the back button, store the updated queues -- but don't destroy!
 function storeSession() {
+  if (!store.enabled) {
+    return(false);
+  }
+
   for(var key in queuesToUpdate) {
     if(queuesToUpdate[key]) { // only update modified queues
       store.set(key, stimQueues[key].content);
@@ -160,6 +180,7 @@ function storeSession() {
     }
   }
   store.set('lastSession', Date.now());
+  return(true);
 }
 
 // store.remove('username')
