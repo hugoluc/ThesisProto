@@ -296,7 +296,6 @@ function proto02(){
       this.setFly()
   };
 
-
   LadyBug.prototype.click = function(_event){
 
       round.trial.clickPos = _event.data.global

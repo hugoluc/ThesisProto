@@ -1877,7 +1877,7 @@ function proto03(){
             session.stats.domElement.style.display = "block"
         };
 
-        var finishGame = true
+        var finishGame = false
         var previousTime = Date.now();
         var MS_PER_UPDATE = 16.66667;
         var lag = 0
@@ -1886,7 +1886,7 @@ function proto03(){
 
             if(finishGame){
 
-                //console.log("finishing addsub");
+                console.log("finishing addsub");
                 logTime("addsub-end");
                 round.storeSession(stimuli, 'numberstim');
                 session.stats.domElement.style.display = "none";
