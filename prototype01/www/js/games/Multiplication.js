@@ -978,8 +978,11 @@ function Multiplication(){
 
 	Trial.prototype.clickStart = function(_event){
 
+    this.clickPlaystate = this.playState
+
 		if(this.playState == "drawingNest" && !this.singleClick){
 
+      this.clickPlaystate = this.playState
 			this.nestCreated = false;
 			this.firstClickTile = _event.target.id
 			this.lastTarget = this.boardMatrix[_event.target.id].tile
@@ -1250,7 +1253,7 @@ function Multiplication(){
 
 	Trial.prototype.clickEnd = function(_this){
 
-    console.log("clickend")
+    if(this.clickPlaystate != this.playState) return
 
 		if(!this.nestCreated && this.playState == "drawingNest"){
     // ensure that only one tile will trigger the response
