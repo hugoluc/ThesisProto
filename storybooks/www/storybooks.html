@@ -45,7 +45,8 @@
 
 <script>
     //loadBook(books.english[0]);
-    loadBook(books.swahili[0]);
+    var language = "swahili"; // "english"
+    loadBook(books.swahili[0]["id"]);
 
     var sound = new Howl({
       src: ['sound.webm', 'sound.mp3', 'sound.wav'],

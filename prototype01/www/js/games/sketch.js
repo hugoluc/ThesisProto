@@ -205,7 +205,7 @@ var __slice = Array.prototype.slice;
 
 var Sketch = function() {
   //document.body.select
-
+  logTime("sketch");
   var canvas = document.createElement('canvas');
   canvas.id = "sketch"
   canvas.width = screen_width;
@@ -234,7 +234,7 @@ var Sketch = function() {
   $.each([3, 5, 10, 15], function() {
     $('#container-exp .tools').append("<a href='#sketch' data-size='" + this + "' style='margin: 2px; background: #ccc'>" + this + "</a> ");
   });
-  
+
   $('#sketch').sketch();
 
 };

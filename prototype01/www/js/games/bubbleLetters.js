@@ -15,12 +15,17 @@ var coolColors = ['#355dff', '#1037b7', '#00186b', '#6f2fc4', '#ffffff'] // non-
 */
 
 function bubbleLetters(){
+  bubblegameloaded = true;
   queuesToUpdate['alphabetstim'] = true;
+  logTime('alphabet');
   var stimQ = stimQueues['alphabetstim'];
   var dragonfly_start_pos = {'x':250, 'y':250};
-  var stimCount = -1;
-  bubblegameloaded = true;
-  var Nfoils = 2;
+
+  var stimCount = store.get('bee_problems_solved');
+  if(!stimCount) stimCount = 0;
+
+  var Nfoils = store.get('num_bee_foils');
+  if(!Nfoils) Nfoils = 1;
   var minFoils = 1;
   var maxFoils = 9;
   var dragonflyFramesUntilArrival = 200; // lower is faster
@@ -93,15 +98,16 @@ function bubbleLetters(){
 
     bubble.prototype.click = function(){ //_this,_event
       this.clicked = true;
+      this.trial.total_clicks += 1;
       var correct_click = (this.value===this.trial.target);
       // if correct, play correct sound, stop the dragonfly, and move on
       if(correct_click) {
         correct_sound.play();
-        console.log(this);
+        //console.log(this);
       }
       if(!correct_click) { // incorrect: play bad sound and wait
-        //this.fade = true; // pop bubble? but that's what happens for good clicks
-        assets.sounds.wrong[0].play();
+        //assets.sounds.wrong[0].play();
+        incorrect_sound.play();
       }
       return correct_click;
     };
@@ -173,6 +179,8 @@ function bubbleLetters(){
 
     function Trial(_stim){
         stimCount++;
+        this.starttime = Date.now();
+        this.total_clicks = 0;
         this.target = _stim.text; // the target letter the dragonfly approaches
         this.targetAudio = _stim.audio;
         this.lowercase = false;
@@ -207,7 +215,7 @@ function bubbleLetters(){
         var tmp = shl.pop();
         if(tmp.text!=target) foils.push(tmp.text);
       }
-      console.log(foils);
+      //console.log(foils);
       return foils;
     };
 
@@ -373,7 +381,8 @@ function bubbleLetters(){
 
         return false;
       } else { // dragonfly won!
-        assets.sounds.wrong[0].play();
+        //assets.sounds.wrong[0].play();
+        incorrect_sound.play();
         dragonfly_start_pos = this.dragonfly.position;
         this.bubble[0].grow = true;
         this.finishedState = "endanimation";
@@ -407,6 +416,8 @@ function bubbleLetters(){
         switch(this.finishedState){
             case "endanimation":
                 this.adjustDifficulty(this.trialWon);
+                store.set('num_bee_foils', Nfoils);
+                store.set('bee_problems_solved', stimCount);
                 if(this.trialWon){
                     this.clock.start(1500);
                     this.finishedState = "win";
@@ -415,10 +426,11 @@ function bubbleLetters(){
                     this.clock.start(1500);
                     this.finishedState = "lose";
                 }
+                logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'bee', "stim":this.target, "num_foils":this.foils.length, "total_clicks":this.total_clicks, "correct":this.finishedState, "lowercase":this.lowercase});
                 break;
 
             case "lose":
-                console.log("dragonfly won!"); // make it swell?
+                //console.log("dragonfly won!"); // make it swell?
                 if(this.clock.timeOut()) this.finishedState = "callNext";
                 break;
 
@@ -439,8 +451,8 @@ function bubbleLetters(){
             case "intro":
                 if(this.intro()){
                     assets.sounds.letters[this.target].play();
-                    console.log("playing: "+this.target);
-                    console.log(assets.sounds.letters[this.target]);
+                    //console.log("playing: "+this.target);
+                    //console.log(assets.sounds.letters[this.target]);
                     this.trialState = "play";
                 }
                 break;
@@ -504,11 +516,11 @@ function bubbleLetters(){
             assets.addTexture("bg","sprites/backGrounds/flower_background.png");
 
             for (var i = 0; i < letters.length; i++) {
-              console.log("text: "+letters[i].text +" audiofile: "+letters[i].audio);
+              //console.log("text: "+letters[i].text +" audiofile: "+letters[i].audio);
               assets.addSound(letters[i].text,letters[i].audio + '.mp3', "letters");
             };
-            assets.addSound("wrong",'wrong.mp3');
-            assets.addSound("correct1",correctSounds[0][0].audio + '.mp3');
+            //assets.addSound("wrong",'wrong.mp3');
+            //assets.addSound("correct1",correctSounds[0][0].audio + '.mp3');
             assets.load(onAssetsLoaded);
         } else {
             onAssetsLoaded();
@@ -517,7 +529,7 @@ function bubbleLetters(){
         function onAssetsLoaded(){
           round.init(Trial,stage, stimQ);
           setTimeout(function(){
-              console.log("starting bubbleLetters!");
+              //console.log("starting bubbleLetters!");
               session.show();
               update();
           });
@@ -537,8 +549,10 @@ function bubbleLetters(){
         function update() {
 
             if(finishGame){
-                console.log("ending bubbleLetters")
-                session.stats.domElement.style.display = "none"
+                //console.log("ending bubbleLetters");
+                logTime("alphabet-end");
+                round.storeSession(stimQ, 'alphabetstim');
+                session.stats.domElement.style.display = "none";
                 round.destroy();
                 assets.destroy();
                 finishGame = false;

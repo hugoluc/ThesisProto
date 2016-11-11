@@ -2,7 +2,7 @@
 
 var Shapes = function() {
   //document.body.select
-
+  logTime("shapes");
   //document.body.appendChild(canvas);
   document.getElementById("shapes-container").style.display = 'block';
 

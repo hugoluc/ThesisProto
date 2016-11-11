@@ -680,19 +680,10 @@
 				animationDone = false
 
 			};
-
-
-
-
 		};
 
-
-
-
 		if(animationDone){
-
 			return true;
-
 		}
 
 		return false;
@@ -706,16 +697,13 @@
 
 				if(!this.explosion[i][2].runFeature()){
 					animationDone = false
-
 				}
 
 				if(!this.explosion[i][3].runFeature()){
-
 					animationDone = false
 				}
 
 				if(this.explosion[i][1].run()){
-
 					this.stage.removeChild(this.explosion[i][0])
 					this.explosion[i][0].destroy()
 					this.explosion[i][0] = []
@@ -723,9 +711,7 @@
 					this.explosion.splice(i,1);
 
 				}else{
-
 					animationDone = false
-
 				};
 
 			};

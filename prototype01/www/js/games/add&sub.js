@@ -1,7 +1,10 @@
 var proto3loaded = false;
-var stimCount = -1;
 
 function proto03(){
+  var minAddends = 2; // store.get and store.set, and write adjustDifficulty !!
+  var maxAddends = 3;
+  var stimCount = store.get("ant_problems_solved");
+  if(!stimCount) stimCount = 0;
 
   // difficulty phases:
   // increase maxOptions every 5 correct trials (decrease after 2 incorrect?)
@@ -12,8 +15,7 @@ function proto03(){
   var scoreIncrease = 1; // increase scoreIncrease by 1 every 5 correct trials
   var maxOptions = 4;
   var number_of_only_addition_problems = 10; // only addition problems (set 30 for kids, 10 for testing)
-  //queuesToUpdate['mathstim'] = true;
-  //var stimuli = stimQueues['mathstim'];
+
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
   proto3loaded = true;
@@ -478,7 +480,7 @@ function proto03(){
 
     Ant.prototype.setTrajectory = function(_trajectory,_length,_offset){
 
-        console.log(_trajectory,_length,_offset)
+        //console.log(_trajectory,_length,_offset)
 
         this.length = 100
         this.trajectory = _trajectory || []
@@ -519,14 +521,14 @@ function proto03(){
 
             if(this.animation.run()){ // if ant reached a step in the trajectory:
 
-                console.log("Ant State: ", this.state)
-                this.state++
+                //console.log("Ant State: ", this.state);
+                this.state++;
 
                 if(this.state != this.trajectory.length){
 
                     if(this.state == 1){
 
-                        round.trial.antMoveDone("subtract")
+                        round.trial.antMoveDone("subtract");
 
                     }else if(this.state == 2){
 
@@ -543,7 +545,7 @@ function proto03(){
 
         }else{
 
-            console.log(">>>>>>>>> ANTS ANIMATION DONE")
+            //console.log(">>>>>>>>> ANTS ANIMATION DONE");
             round.trial.leavesToFade++;
             this.animationDone = true;
             return true;
@@ -572,9 +574,10 @@ function proto03(){
 */
 
     function Trial(_stim){
-
-        console.log(_stim)
+        this.starttime = Date.now();
+        //console.log(_stim)
         stimCount++;
+        store.set('ant_problems_solved', stimCount);
         // check if _stim.options is undefined, in which case generate random trial
         // let's make sure we don't generate the answer as an extra (too easy!)
 
@@ -582,20 +585,20 @@ function proto03(){
         // so the user has at least one way to solve the problem
         this.origstim = _stim; // e.g. {id:"1", audio:"1", text:"one", priority: 2}
 
-        var subtract = false;
+        this.subtract = false;
         if(stimCount > number_of_only_addition_problems) {
           // could make greater likelihood of subtraction problems as stimCount increases
-          if(Math.random() < .5) subtract = true;
+          if(Math.random() < .5) this.subtract = true;
         }
 
-        this.stimuli = this.createAdditionProblem(_stim, subtract);
+        this.stimuli = this.createAdditionProblem(_stim, this.subtract);
 
-        console.log(this.stimuli);
+        //console.log(this.stimuli);
 
       	this.correctSum = false; // set true if they finish correctly
         this.clock = new ClockTimer();
       	this.sticks = [];
-
+        this.stimPlayed = false; // first hear target number
       	this.trialState = "intro";
         this.introState = "playSound";
         this.specs = this.getSpecs();
@@ -632,13 +635,11 @@ function proto03(){
       // given a single number (desired sum), want to generate a set of addends
       // and potentially add another value that is too large
 
-        console.log(">>>>>>>>>>> GENERATING ANTS MATH PROBLEM!")
+        //console.log(">>>>>>>>>>> GENERATING ANTS MATH PROBLEM!")
 
         var total = parseInt(stim.id);
         console.log("Total Value: ", total);
 
-        var minAddends = 2;
-        var maxAddends = 3;
         var Naddends = getRandomInt(minAddends, maxAddends); // get number of addends. Ex.: (2+3+4 = 9) addends = 3
         console.log("Number of addends: ", Naddends)
 
@@ -683,7 +684,7 @@ function proto03(){
 
           values.push(total - cumSum);
 
-          console.log("original stim: ", values)
+          //console.log("original stim: ", values)
 
           if(_sub){
             values[1] = values[1] + (2*values[0]);
@@ -1534,8 +1535,7 @@ function proto03(){
       };
 
       obj.width = session.canvas.width-(2*obj.canvasMargin)-(obj.bigLillypadWidth*1.2)-obj.lillyWidth/2;
-      obj.height = session.canvas.height-(2*obj.canvasMargin);
-
+		  obj.height = session.canvas.height-(2*obj.canvasMargin);
       obj.moduleSize = obj.lillyWidth+(obj.margin*2);
 
       obj.moduleWidthCount = Math.floor(obj.width/obj.moduleSize);
@@ -1553,33 +1553,32 @@ function proto03(){
 
     Trial.prototype.getMatrixPosition = function(){
 
-      var allPos = [];
+    	var allPos = [];
 
-      for(var i=0;i<this.specs.moduleWidthCount;i++){
-
-      	for(var j=0;j<this.specs.moduleHeightCount;j++){
-      		offset = j%2;
+    	for(var i=0;i<this.specs.moduleWidthCount;i++){
+    		for(var j=0;j<this.specs.moduleHeightCount;j++){
+    			offset = j%2;
 
       		allPos.push({
                     id: i,
                     pos:{
                         x:(this.specs.widthInter*i)+this.specs.margingW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
-                        y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin+getRandomInt(-20,20),
+                        y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin+getRandomInt(-20,20)
                     }
       		});
-        }
+  		}
 
 
-      }
+    	}
 
-      for(var i=0; i<allPos.length; i++){
-      	this.matrixAvailable.push(i)
-      }
+    	for(var i=0; i<allPos.length; i++){
+    		this.matrixAvailable.push(i);
+    	}
 
-        return allPos
-      };
+        return allPos;
+    };
 
-      Trial.prototype.getPos = function(_i){
+    Trial.prototype.getPos = function(_i){
 
       var aPos = getRandomInt(0,this.matrixAvailable.length)
       var i = this.matrixAvailable[aPos]
@@ -1655,15 +1654,16 @@ function proto03(){
     };
 
     Trial.prototype.storeStim = function(){
-      //console.log(this);
-      var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
-      if(this.correctSum) {
-        var newpriority = this.origstim.priority + .5;
-      } else {
-        var newpriority = this.origstim.priority;  // same? or - Math.log(this.wrongClicks);
-      }
-      this.origstim.priority = newpriority + rand_adjust;
-      return(this.origstim);
+        //console.log(this);
+        logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'ant', "stim":this.origstim.id, "correct":this.correctSum, "subtraction":this.subtract});
+        var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
+        if(this.correctSum) {
+          var newpriority = this.origstim.priority + .5;
+        } else {
+          var newpriority = this.origstim.priority;  // same? or - Math.log(this.wrongClicks);
+        }
+        this.origstim.priority = newpriority + rand_adjust;
+        return(this.origstim);
     };
 
     Trial.prototype.finished = function(){
@@ -1696,7 +1696,8 @@ function proto03(){
 
                   } else {
                       this.lillyFinal.sinkThis();
-                      assets.sounds.wrong[0].play();
+                      // could play bad sound the number of ants they were wrong by...
+                      incorrect_sound.play();
                       this.fadeStick = true;
                       this.finishedState = "lose";
                   }
@@ -1740,7 +1741,7 @@ function proto03(){
       }
 
       return false;
-    };
+  };
 
     Trial.prototype.play = function(_updateTime){
 
@@ -1748,12 +1749,15 @@ function proto03(){
 
           case "intro":
 
+              if(!this.stimPlayed) {
+                assets.sounds.numbers[this.origstim.id].play();
+                this.stimPlayed = true;
+              }
+
               if(this.fadeStick){ this.removeStick()}
 
               if(this.intro()){
-
                   this.trialState = "play"
-
               };
 
               break;
@@ -1809,7 +1813,7 @@ function proto03(){
 //-------------------------------------------
 // Global functions andd variables
 //-------------------------------------------
-
+  logTime("addsub");
     // create the root of the scene graph and main classes
     var stage = new PIXI.Container();
     var round = new Round();
@@ -1836,7 +1840,13 @@ function proto03(){
             assets.addTexture("ants","sprites/lillypad/ant.png")
             assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
 
-            assets.addSound("wrong",'wrong.mp3');
+            for (var i = 0; i < numbers.length; i++) {
+              //assets.sounds.numbers
+              assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
+
+            };
+
+            //assets.addSound("wrong",'wrong.mp3');
             assets.load(onAssetsLoaded)
 
         }else{
@@ -1876,8 +1886,9 @@ function proto03(){
 
             if(finishGame){
 
-                console.log("finishing Game");
-
+                //console.log("finishing addsub");
+                logTime("addsub-end");
+                round.storeSession(stimuli, 'numberstim');
                 session.stats.domElement.style.display = "none";
                 round.destroy();
                 assets.destroy();

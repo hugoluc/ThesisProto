@@ -98,8 +98,9 @@ var shapes = [
 
 // need to record: tembo (elephant)
 var animals = [
+  {id:"warthog", text:"gwasi", audio:"gwasi"}, // pig? hog? warthog?
   {id:"elephant", text:"tembo", audio:"tembo", image:"elephant"},
-  {id:"baboon", text:"nyani", audio:"nyani"},
+  {id:"baboon", text:"nyani", audio:"nyani", image:"baboon"},
   {id:"cheetah", text:"duma", audio:"duma", image:"cheetah"},
   {id:"buffalo", text:"nyati", audio:"nyati", image:"buffalo"},
   {id:"bird", text:"ndege", audio:"ndege", image:"bird"},
@@ -115,7 +116,7 @@ var animals = [
   {id:"leopard", text:"chui", audio:"chui", image:"leopard"},
   {id:"octopus", text:"pwesa", audio:"pwesa", image:"octopus"},
   {id:"shark", text:"papa", audio:"papa", image:"shark"},
-  {id:"anchovy", text:"kombo", audio:"kombo"},
+  {id:"anchovy", text:"kombo", audio:"kombo", image:"fish"},
   {id:"squid", text:"mzia", audio:"mzia"},
   {id:"fish", text:"samaki", audio:"samaki", image:"fish"},
   {id:"monkey", text:"kima", audio:"kima", image:"monkey"},
@@ -132,7 +133,6 @@ var animals = [
   {id:"frog", text:"chura", audio:"chura", image:"frog"},
   {id:"bear", text:"dubu", audio:"dubu", image:"bear"},
   {id:"emu", text:"emu", audio:"emu", image:"emu"},
-  {id:"warthog", text:"gwasi", audio:"gwasi", image:"gwasi"}, // pig? hog? warthog?
   {id:"flamingo", text:"heroe", audio:"heroe", image:"flamingo"}, // heron??
   {id:"fly", text:"inzi", audio:"inzi", image:"fly"},
   {id:"chameleon", text:"lumbwi", audio:"lumbwi", image:"chameleon"}, // lizard?

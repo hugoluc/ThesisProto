@@ -1,10 +1,14 @@
-    var proto2loaded = false;
+var proto2loaded = false;
 
-    var LOGTHIS =  false;
+var LOGTHIS =  false;
 
 function proto02(){
+
+  logTime("counting");
   var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
   // modify game dynamics if scoreDifferential reaches +3 or -3
+  var walkSpeed = store.get("walkSpeed");
+  if(!walkSpeed) walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
   var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
   var numFoils = 3; // +2 if 3x correct, -1 if 3x incorrect
   var scoreIncrease = 1; // initially 1, but goes higher as they progress
@@ -292,10 +296,11 @@ function proto02(){
       this.setFly()
   };
 
+
   LadyBug.prototype.click = function(_event){
 
       round.trial.clickPos = _event.data.global
-      console.log(round.trial.clickPos)
+      round.trial.total_clicks += 1;
 
       if(round.trial.state == "nextTrial"){
           return
@@ -304,26 +309,19 @@ function proto02(){
       var _this = this;
 
       // check if its correct
-      if(this.startNumber == round.trial.stimuli.id){
-
+      if(this.startNumber == round.trial.origstim.id){
 
           console.log(">>CLICK<<")
 
           if(this.number.text != 0){
 
-              if(this.number.text - round.trial.bugType < 0){
-
-                 this.number.text = 0
-
-              }else{
-
-                 this.number.text = (this.number.text - round.trial.bugType)
-
-              }
-
+            if(this.number.text - round.trial.bugType < 0){
+              this.number.text = 0
+            }else{
+              this.number.text = (this.number.text - round.trial.bugType)
+            }
 
           }else if(this.number.text == 0){
-
               this.number.text = -1
           }
 
@@ -348,6 +346,7 @@ function proto02(){
 
           // kills if it click one more time
           } else if(this.number.text < 0) {
+
               this.wrongClicks += 1;
               round.trial.answer(false)
               round.changeDifficulty(false)
@@ -363,28 +362,24 @@ function proto02(){
 
               return
 
-          // regular click
-          }else if (this.number.text > 0){
+              // regular click
+              }else if (this.number.text > 0){
+                  round.trial.getFeedback(true,false);
+              };
 
-              round.trial.getFeedback(true,false)
-
-          };
-
-      }else {
-          if(!this.correctImput){
-              this.wrongClicks += 1;
-              round.trial.answer(false)
-              round.changeDifficulty(false)
-              round.trial.getFeedback(false,false)
-
-          };
-      };
-  };
+            }else {
+                if(!this.correctImput){
+                    round.trial.wrongClicks += 1;
+                    round.trial.answer(false);
+                    round.changeDifficulty(false);
+                    round.trial.getFeedback(false,false);
+                };
+            };
+        };
 
   LadyBug.prototype.resetFeedback = function(){
 
       if(this.offscreen){
-
           this.offscreen = false;
           return true
       }
@@ -398,25 +393,28 @@ function proto02(){
 
   function Trial(_stimuli){
 
-      //_stimuli.id = 10
-      this.ladyBugs = [];
-      this.stimuli = _stimuli;
-      this.correct = _stimuli.id;
-      this.correctImput = false;
-      this.answerGiven = false;
-      this.correctSet = false;
-      this.introState = "displaySound";
-      this.nextTrialState = "flyAll";
-      this.availableSpots = [];
-      this.instructionWidth = session.canvas.height/8;  // size of the ciurcle for instruction
-      this.goldCount = 0;
-      this.coundCount = 0;
-      this.audioQueue = [];
-      this.audioQueuePlay = false;
-      this.playing = [];
-      this.audioTimer = new ClockTimer();
-      this.wrongClicks = 0;
-      this.stimPlayed = false;
+    //_stimuli.id = 10
+  this.starttime = Date.now()
+  this.ladyBugs = [];
+  this.origstim = _stimuli;
+  this.correct = _stimuli.id;
+  this.correctImput = false;
+  this.answerGiven = false;
+  this.correctSet = false;
+  this.introState = "displaySound";
+  this.nextTrialState = "flyAll";
+  this.availableSpots = [];
+  this.instructionWidth = session.canvas.height/8;  // size of the ciurcle for instruction
+  this.goldCount = 0;
+  this.coundCount = 0;
+  this.audioQueue = [];
+  this.audioQueuePlay = false;
+  this.playing = [];
+  this.audioTimer = new ClockTimer();
+  this.wrongClicks = 0; // # clicks on wrong ladybugs (or too many clicks)
+  this.stimPlayed = false;
+  this.total_clicks = 0; // total ladybug touches (good and bad)
+
   };
 
   Trial.prototype.intro = function(){
@@ -647,19 +645,15 @@ function proto02(){
 
   Trial.prototype.storeStim = function(){
 
+      logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'count', "stim":this.origstim.id, "total_clicks":this.total_clicks, "incorrect_clicks":this.wrongClicks});
       var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
-
       if(this.wrongClicks===0) {
-        var newpriority = this.stimuli.priority + .5;
+        var newpriority = this.origstim.priority + .5;
       } else {
-        var newpriority = this.stimuli.priority - Math.log(this.wrongClicks);
+        var newpriority = this.origstim.priority - .25; //*Math.log(this.wrongClicks);
       }
-
-      this.stimuli.priority = newpriority + rand_adjust;
-
-      console.log(this.stimuli)
-      return(this.stimuli);
-
+      this.origstim.priority = newpriority + rand_adjust;
+      return(this.origstim);
   };
 
   Trial.prototype.createInstructions = function(){
@@ -860,122 +854,112 @@ function proto02(){
     var foils = [];
 
     for (var i = 0; i < numFoils; i++) {
-
-       var thisFoil = getRandomInt(min, corNum + 3);
-
-       while (thisFoil == this.correct || thisFoil < 1){
-          thisFoil = getRandomInt(min, corNum + 3);
-       }
-
+      var thisFoil = getRandomInt(min, corNum + 3);
+      while (thisFoil == this.correct || thisFoil < 1){
+         thisFoil = getRandomInt(min, corNum + 3);
+      }
       foils.push(thisFoil);
-
     }
 
-
-      //  foils = [1,2,3]
-
     return(foils);
-  };
+    };
 
-  Trial.prototype.getFeedback = function(_feedback,_reset){
+    Trial.prototype.getFeedback = function(_feedback,_reset){
 
-      if(_reset){
+    if(_reset){
 
-          for(var i=0; i < this.counter.gold.length; i++){
+      for(var i=0; i < this.counter.gold.length; i++){
 
-              this.counter.gold[i].renderable = false
-              this.counter.gold[i].alpha = 0
-              this.counter.blue[i].renderable = true
-          }
-
-          if(!_feedback){
-
-
-              assets.sounds.wrong[0].play()
-              this.playAudioQueue("stop")
-
-              if(!this.redDone){
-
-                  this.feedbackState = "red"
-
-                  this.setBlink(false)
-                  this.bgRed.renderable = true;
-                  this.blinks = 0
-
-                  this.feedback = false;
-                  this.redDone = false;
-
-              }
-
-          }
-
-          this.goldCount = 0
-          this.coundCount = 0
-
-      } else if(_feedback){
-
-          // set up audio queue for feedback
-          if(this.bugType == 1){
-
-              this.playAudioQueue("add", [assets.sounds.correct2[this.coundCount]])
-              this.coundCount++
-
-          }else{
-
-              this.playAudioQueue("add", [assets.sounds.correct2[this.coundCount]])
-              this.coundCount++
-
-              // var sounds = []
-              // for(var i = 0; i<this.bugType; i++){
-
-              //     sounds.push(assets.sounds.correct1[i])
-
-              // };
-
-              // this.playAudioQueue("add", sounds)
-
-          };
-
-          var lightUp = 0
-
-          if(this.goldCount + this.bugType > this.correct){
-
-              lightUp = this.correct - this.goldCount + this.goldCount
-
-          }else{
-
-              lightUp = this.bugType + this.goldCount
-
-          }
-
-          for(var i = this.goldCount; i < lightUp; i++){
-
-              this.counter.gold[i].renderable = true
-              this.counter.gold[i].alpha = 1
-              this.counter.blue[i].renderable = false
-              this.goldCount++
-
-          }
-
-      }else{
-
-
-          assets.sounds.wrong[0].play()
-
-          if(!this.redDone){
-
-              this.feedbackState = "red"
-
-              this.setBlink(false)
-              this.bgRed.renderable = true;
-              this.blinks = 0
-
-              this.feedback = false;
-              this.redDone = false;
-
-          }
-
+         this.counter.gold[i].renderable = false
+         this.counter.gold[i].alpha = 0
+         this.counter.blue[i].renderable = true
       }
+
+      if(!_feedback){
+
+       incorrect_sound.play();
+       this.playAudioQueue("stop");
+
+       if(!this.redDone){
+
+           this.feedbackState = "red";
+
+           this.setBlink(false);
+           this.bgRed.renderable = true;
+           this.blinks = 0;
+
+           this.feedback = false;
+           this.redDone = false;
+
+       }
+
+       }
+
+       this.goldCount = 0;
+       this.coundCount = 0;
+
+    } else if(_feedback){
+
+       // set up audio queue for feedback
+       if(this.bugType == 1){
+
+           this.playAudioQueue("add", [assets.sounds.correct2[this.coundCount]])
+           this.coundCount++
+
+       }else{
+
+           this.playAudioQueue("add", [assets.sounds.correct2[this.coundCount]])
+           this.coundCount++
+
+           // var sounds = []
+           // for(var i = 0; i<this.bugType; i++){
+
+           //     sounds.push(assets.sounds.correct1[i])
+
+           // };
+
+           // this.playAudioQueue("add", sounds)
+
+       };
+
+       var lightUp = 0
+
+       if(this.goldCount + this.bugType > this.correct){
+
+           lightUp = this.correct - this.goldCount + this.goldCount
+
+       }else{
+
+           lightUp = this.bugType + this.goldCount
+
+       }
+
+       for(var i = this.goldCount; i < lightUp; i++){
+
+           this.counter.gold[i].renderable = true
+           this.counter.gold[i].alpha = 1
+           this.counter.blue[i].renderable = false
+           this.goldCount++
+
+       }
+
+    }else{
+
+     incorrect_sound.play();
+
+       if(!this.redDone){
+
+           this.feedbackState = "red"
+
+           this.setBlink(false)
+           this.bgRed.renderable = true;
+           this.blinks = 0
+
+           this.feedback = false;
+           this.redDone = false;
+
+       }
+    }
   };
 
   Trial.prototype.setBlink = function(_back){
@@ -1219,15 +1203,15 @@ function proto02(){
           };
       };
 
-      assets.addSound("wrong",'wrong.mp3');
+      //assets.addSound("wrong",'wrong.mp3');
       assets.load(onAssetsLoaded)
 
   //---------------------------------------LOOP
 
+
   var statsBol = true;
 
   if(statsBol){
-
       session.stats.domElement.style.display = "block"
   };
 
@@ -1253,46 +1237,46 @@ function proto02(){
 
   function update() {
 
-      if(finishGame){
+    if(finishGame){
+        logTime("counting-end");
+        store.set('walkSpeed', walkSpeed);
+        //console.log('counting game over - storing');
+        round.storeSession(stimuli, 'numberstim');
+        session.stats.domElement.style.display = "none";
+        round.destroy();
+        assets.destroy();
+        finishGame = false;
+        session.render(stage);
+        //console.log(">>>>>>>>",stimQueues['numberstim'])
 
-          console.log('finishGame - storing session!');
-          round.storeSession(stimuli, 'numberstim');
+        currentview = new MainMenu();
+        return
+    }
 
-          session.stats.domElement.style.display = "none";
-          round.destroy();
-          assets.destroy();
-          finishGame = false;
-          session.render(stage);
-          //console.log(">>>>>>>>",stimQueues['numberstim'])
+    if(statsBol)session.stats.begin();
 
-          currentview = new MainMenu();
-          return
-      }
+        //update position based on espectaed frame rate
+        var current = Date.now();
+        var elapsed = current - previousTime;
+        previousTime = current;
+        lag = lag + elapsed;
 
-      if(statsBol)session.stats.begin();
+        while (lag >= MS_PER_UPDATE){
 
-          //update position based on espectaed frame rate
-          var current = Date.now();
-          var elapsed = current - previousTime;
-          previousTime = current;
-          lag = lag + elapsed;
+            // update the canvas with new parameters
+            round.play(lag/MS_PER_UPDATE);
+            //adjustGameDynamics();
 
-          while (lag >= MS_PER_UPDATE){
+            lag = lag - MS_PER_UPDATE;
 
-              // update the canvas with new parameters
-              round.play(lag/MS_PER_UPDATE);
-              //adjustGameDynamics();
+        }
 
-              lag = lag - MS_PER_UPDATE;
+        //---------------->> Thing that renders the whole stage
+        session.render(stage)
 
-          }
+        requestAnimationFrame(update);
 
-          //---------------->> Thing that renders the whole stage
-          session.render(stage)
-
-          requestAnimationFrame(update);
-
-      if(statsBol) session.stats.end()
+    if(statsBol) session.stats.end()
   }
 
 };
