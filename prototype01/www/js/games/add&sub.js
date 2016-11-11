@@ -64,6 +64,7 @@ function proto03(){
     });
 
     lillyFinal.prototype.init = function(_value){
+
             this.container = new PIXI.Container();
 
             this.value = _value;
@@ -85,10 +86,6 @@ function proto03(){
             this.lillySink.height = this.specs.size*2.5;
             this.lillySink.animationSpeed = 0.1;
             this.lillySink.renderable = false;
-            // var blur = new PIXI.filters.BlurFilter()x
-            // blur.blur = 2
-            // this.lillySink.filters = [blur]
-
             this.container.addChild(this.lillySink);
 
 
@@ -574,64 +571,66 @@ function proto03(){
 */
 
     function Trial(_stim){
-        this.starttime = Date.now();
-        //console.log(_stim)
-        stimCount++;
-        store.set('ant_problems_solved', stimCount);
-        // check if _stim.options is undefined, in which case generate random trial
-        // let's make sure we don't generate the answer as an extra (too easy!)
 
-  		  // origstim is the final desired sum. It is used to draw smaller lillypad
-        // so the user has at least one way to solve the problem
-        this.origstim = _stim; // e.g. {id:"1", audio:"1", text:"one", priority: 2}
+      this.starttime = Date.now();
+      //console.log(_stim)
+      stimCount++;
+      store.set('ant_problems_solved', stimCount);
+      // check if _stim.options is undefined, in which case generate random trial
+      // let's make sure we don't generate the answer as an extra (too easy!)
 
-        this.subtract = false;
-        if(stimCount > number_of_only_addition_problems) {
-          // could make greater likelihood of subtraction problems as stimCount increases
-          if(Math.random() < .5) this.subtract = true;
-        }
+		  // origstim is the final desired sum. It is used to draw smaller lillypad
+      // so the user has at least one way to solve the problem
+      this.origstim = _stim; // e.g. {id:"1", audio:"1", text:"one", priority: 2}
 
-        this.stimuli = this.createAdditionProblem(_stim, this.subtract);
+      this.subtract = false;
+      if(stimCount > number_of_only_addition_problems) {
+        // could make greater likelihood of subtraction problems as stimCount increases
+        if(Math.random() < .5) this.subtract = true;
+      }
 
-        //console.log(this.stimuli);
+      this.stimuli = this.createAdditionProblem(_stim, this.subtract);
 
-      	this.correctSum = false; // set true if they finish correctly
-        this.clock = new ClockTimer();
-      	this.sticks = [];
-        this.stimPlayed = false; // first hear target number
-      	this.trialState = "intro";
-        this.introState = "playSound";
-        this.specs = this.getSpecs();
-        this.lillySmall = [];
-        this.ripples = [];
-        this.matrixAvailable = [];
-        this.posMatrix = this.getMatrixPosition();
-        this.operation = 0;
+      //console.log(this.stimuli);
 
-        this.animationDone = true;
-        this.fadeStick = false;
-        this.performOperation = false;
-        this.countDone = false;
+    	this.correctSum = false; // set true if they finish correctly
+      this.clock = new ClockTimer();
+    	this.sticks = [];
+      this.stimPlayed = false; // first hear target number
+    	this.trialState = "intro";
+      this.introState = "playSound";
+      this.specs = this.getSpecs();
+      this.lillySmall = [];
+      this.ripples = [];
+      this.matrixAvailable = [];
+      this.posMatrix = this.getMatrixPosition();
+      this.operation = 0;
 
-        this.ants = {
-            size : {
-                width : 9,
-                height : 14,
-            },
-            sprites : [],
-        };
+      this.animationDone = true;
+      this.fadeStick = false;
+      this.performOperation = false;
+      this.countDone = false;
 
-        this.antsToAnimate = {
-            origin : [],
-            target : []
-        };
+      this.ants = {
+          size : {
+              width : 9,
+              height : 14,
+          },
+          sprites : [],
+      };
 
-        this.antsSub = 0;
-        this.antsAdd = 0;
-        this.leavesToFade = 0;
+      this.antsToAnimate = {
+          origin : [],
+          target : []
+      };
+
+      this.antsSub = 0;
+      this.antsAdd = 0;
+      this.leavesToFade = 0;
     };
 
     Trial.prototype.createAdditionProblem = function(stim,_sub) {
+
       // given a single number (desired sum), want to generate a set of addends
       // and potentially add another value that is too large
 

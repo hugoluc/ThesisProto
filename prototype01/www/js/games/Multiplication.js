@@ -13,7 +13,13 @@ function Multiplication(){
 -------------------------------------------------------------------------------------------------------------
 */
 
-  var numbers = [stimuli.content[1]]
+  var stimCounter = 0;
+
+  while(stimuli.content[stimCounter].id < 2){
+    stimCounter++
+  }
+
+  var numbers = [stimuli.content[stimCounter]]
 
 	function Trial(_stimuli,_correct){
 
@@ -22,10 +28,9 @@ function Multiplication(){
 
       specs.push({
         stimuli : {
-          values : numbers[i].id
+          values : _stimuli.id
         }
       })
-
     }
 
     this.counter = 0
@@ -129,7 +134,14 @@ function Multiplication(){
 
           var _this = this;
 
+
           function eggsclicked(){
+
+            if(_this.playState != "Win" && _this.playState != "placingEggs"){
+              return;
+            }
+
+            console.log(_this.playState)
 
             if(_this.answearGiven == this.id){ // correct answear given || orrect nest size
 
@@ -308,35 +320,76 @@ function Multiplication(){
 
 		case "placingEggs": //Allow user to place eggs
 
-    if(this.eggsClicked){
+      if(this.eggsClicked){
 
-      var done = true
+        var done = true
 
-      for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+        for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
 
-        if (!this.eggs[this.answearGiven].children[i].animation.run()) done = false
-        if (!this.eggs[this.answearGiven].children[i].animation.runScale()) done = false
-
-      }
-
-      if(done) {
-
-        this.eggsClicked = false;
-        if(this.aswear.length == this.stimuli.values.length){
-
-  				this.playState = "Win"
-          this.eggsClicked = false;
-
-  				console.log("YOU WIN!")
-
-  			}else{
-
-          this.playState = "drawingNest"
+          if (!this.eggs[this.answearGiven].children[i].animation.run()) done = false
+          if (!this.eggs[this.answearGiven].children[i].animation.runScale()) done = false
 
         }
-      }
 
-    }
+        if(done) {
+
+          this.eggsClicked = false;
+
+          if(!this.aswear){
+
+            for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+
+              console.log(this.eggs[this.answearGiven].children[i].animation.initScale(
+
+                {x : 0, y : 0}, //Final value of animation
+        				1000, // Time of animation
+        				(100 * i), // Delay
+        				[0,0] //Bezier animation handles
+
+              ))
+
+              this.eggs[this.answearGiven].children[i].fadeAnimation.initFeature(
+
+                "rotation", // features to animate
+                Math.PI * 4, // final position
+                1000, // time value
+                0, // delay
+                [0,1] // bezier courve
+
+              );
+            }
+
+            for(var i = 0; i < this.nests.length; i++){
+              for(var j = 0; j < this.nests[i].tiles.length;j++){
+
+                this.nests[i].tiles[j].sprite.animation = new animation(this.nests[i].tiles[j].sprite)
+                this.nests[i].tiles[j].sprite.animation.initFeature(
+
+                  "alpha", // features to animate
+                  0, // final position
+                  500, // time value
+                  0, // delay
+                  [0,1] // bezier courve
+                )
+              }
+            }
+
+            this.playState = "Lose"
+
+          } else if(this.aswear.length == this.stimuli.values.length){
+
+    				this.playState = "Win"
+            this.eggsClicked = false;
+
+    				console.log("YOU WIN!")
+
+    			}else
+
+            this.playState = "drawingNest"
+
+          }
+
+      }
 
 
 			break;
@@ -370,7 +423,24 @@ function Multiplication(){
 
 		case "Lose":
 
+      var done = true;
 
+      for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+
+        if(!this.eggs[this.answearGiven].children[i].fadeAnimation.runFeature()) done = false;
+        if(!this.eggs[this.answearGiven].children[i].animation.runScale()) done = false;
+
+      }
+
+      for(var i = 0; i < this.nests.length; i++){
+        for(var j = 0; j < this.nests[i].tiles.length;j++){
+          if(!this.nests[i].tiles[j].sprite.animation.runFeature()) done = false;
+        }
+      }
+
+      if(done){
+        return true;
+      }
 
 			break;
 
@@ -1176,15 +1246,11 @@ function Multiplication(){
 
 			};
 		};
-
   };
 
 	Trial.prototype.clickEnd = function(_this){
 
-		console.log("---------------------click end!")
-    console.log(this.boardMatrix[this.firstClickTile].tile)
-    console.log(this.boardMatrix[_this.id].tile)
-    console.log(_this.id)
+    console.log("clickend")
 
 		if(!this.nestCreated && this.playState == "drawingNest"){
     // ensure that only one tile will trigger the response
@@ -1221,6 +1287,9 @@ function Multiplication(){
 			this.boardMatrix[this.firstClickTile].graphic.dragging = false;
 
 		};
+
+    console.log(">>");
+
 	};
 
 	Trial.prototype.checkAnswer = function(){
