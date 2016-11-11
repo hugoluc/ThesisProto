@@ -1776,6 +1776,8 @@ function Multiplication(){
 
 	Trial.prototype.destroy = function(_stage){
 
+    console.log("<><><><>destroy")
+
     var bg;
 
     function deleteChildren(_child,_parent){
@@ -1797,7 +1799,6 @@ function Multiplication(){
         _parent.removeChild(_child)
         _child.destroy()
       }
-
     }
 
     while(stage.children.length > 0){
@@ -1807,7 +1808,7 @@ function Multiplication(){
 
     }
 
-    stage.addChild(bg)
+    if(bg) stage.addChild(bg)
 		console.log(stage.children.length)
 		console.log(stage)
 		console.log("Destruction DONE!")
@@ -1935,6 +1936,7 @@ function Multiplication(){
 
                 session.stats.domElement.style.display = "none"
                 round.destroy()
+                console.log("--")
                 assets.destroy()
                 finishGame = false
                 currentview = new MainMenu(assets)
