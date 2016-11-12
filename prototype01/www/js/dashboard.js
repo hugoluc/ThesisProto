@@ -4,26 +4,18 @@ var Dashboard = function() {
 
   // also attempts to upload data (or has a button to do so)
 
-  // Set the configuration for your app
-  // TODO: Replace with your project's config object
- //  var config = {
- //   apiKey: '<your-api-key>',
- //   authDomain: '<your-auth-domain>',
- //   databaseURL: 'https://egoteach.firebaseio.com/',
- //   storageBucket: 'gs://firebase-egoteach.appspot.com'
- //  };
- //  firebase.initializeApp(config);
- //
- // // Get a reference to the storage service, which is used to create references in your storage bucket
- // var storage = firebase.storage();
-
+  // Couch/PouchDB's put and get methods are super-easy to store JSON docs
+  // the only involved thing is updating, where you need to first retrieve
+  // the whole object (with random _rev number), update fields, then put back
   var remoteCouch = 'http://egoteach:selfdirection@egoteach.cloudant.com/egoteach_tz1';
 
   //var remoteDB = new PouchDB('http://127.0.0.1:5984/egoteach_tz1');
   var remoteDB = new PouchDB('http://egoteach:selfdirection@sever.psych.nyu.edu:5984/egoteach_tz1');
 
+  // primary key (_id) will be user+"tr"+trial_index
+
   var doc = {
-    "_id": "mittens",
+    "_id": "mittens", // primary key
     "name": "Mittens",
     "occupation": "kitten",
     "age": 3,
@@ -72,6 +64,7 @@ var Dashboard = function() {
   }
 
   this.sync = function() {
+    // one-way: localDB.replicate.to(remoteDB);
     localDB.sync(remoteDB).on('complete', function () {
       console.log("DBs are Nsync!");
     }).on('error', function (err) {

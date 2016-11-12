@@ -20,6 +20,7 @@ var chunkSize = 7; // number of stimuli to be put in at each priority (i.e., put
 // which queues have been modified and need to be re-stored: set true when a game uses the stack
 
 var localDB = new PouchDB('egoteach_tz1');
+localDB.info().then(console.log.bind(console)); // sqlite or indexedDB/webSQL?
 
 var queuesToUpdate = {
   'alphabetstim':false,
