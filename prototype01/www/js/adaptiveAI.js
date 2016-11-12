@@ -67,6 +67,10 @@ function loadStimulusQueue(stimuli, chunkSize) {
 // -- might want to log exit timestamps, so we know when they quit vs. turn off
 function logTime(activityType) {
   var timestamp = Date.now();
+
+  if(!store.get("activityLog")){
+    store.set("activityLog", []);
+  }
   var activityLog = store.get("activityLog");
   activityLog.push({'time': timestamp, 'activity': activityType});
   console.log({'time': timestamp, 'activity': activityType});
