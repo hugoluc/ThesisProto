@@ -180,6 +180,7 @@ function Multiplication(){
             allEggAssests.id = this.stimuli.values[i]
             allEggAssests.interactive = true;
             allEggAssests.on("mousedown", eggsclicked)
+            allEggAssests.on("touchstart", eggsclicked)
             allEggAssests.clicked = false;
 
             var shadow = new PIXI.Sprite(assets.textures["eggShadow"])
@@ -950,8 +951,8 @@ function Multiplication(){
       var coll = allDivisors[allDivisors.length-random-1]
 
 
-			this.boardSpecs.rows = row + getRandomInt(1 ,2) //Math.ceil(Math.sqrt(this.stimuli.values))// + getRandomInt(0,3)
-      this.boardSpecs.columns = coll + getRandomInt(0,1)
+			this.boardSpecs.rows = row + getRandomInt(0,2)
+      this.boardSpecs.columns = coll + getRandomInt(0,2)
 
       console.log(this.boardSpecs.rows,this.boardSpecs.columns)
 
@@ -974,7 +975,8 @@ function Multiplication(){
     //set corerct x and y position
     this.boardSpecs.x = this.boardSpecs.instructionWidth + this.boardSpecs.boardMargin + (this.boardSpecs.maxWidth-(this.boardSpecs.columns * this.tileSize))/2
     this.boardSpecs.y = this.boardSpecs.boardMargin + ((session.height-(2*this.boardSpecs.boardMargin))-(this.boardSpecs.rows * this.tileSize))/2
-	};
+
+  };
 
 	Trial.prototype.clickStart = function(_event){
 
@@ -987,8 +989,8 @@ function Multiplication(){
 			this.firstClickTile = _event.target.id
 			this.lastTarget = this.boardMatrix[_event.target.id].tile
 			_event.target.dragging = true;
-
 		}
+
 	};
 
 	Trial.prototype.deleteNest = function(_index){ // delete nest on _index
@@ -1260,6 +1262,8 @@ function Multiplication(){
 
       if(this.singleClick){
 
+        return //***********FIXME
+
         this.selection = this.calculateSelection( // calculate new selection
           this.boardMatrix[this.firstClickTile].tile,
           this.boardMatrix[_this.id].tile
@@ -1269,6 +1273,7 @@ function Multiplication(){
 
       } else if(this.selection.tiles.length == 0){
 
+        return //***********FIXME
         this.singleClick = true;
 
       }
@@ -1630,8 +1635,6 @@ function Multiplication(){
         sprite.alpha = 0
 
         _this.fullNests[_asset].push(sprite)
-
-
 
         stage.addChildAt(sprite,stage.children.length-1)
 
@@ -1997,7 +2000,7 @@ function Multiplication(){
 
         var finishGame = false
         var previousTime = Date.now();
-        var MS_PER_UPDATE = 16.66667;
+        var MS_PER_UPDATE = 33.333333//16.66667;
         var lag = 0
 
         function update() {
