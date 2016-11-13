@@ -4,7 +4,7 @@ var LOGTHIS =  false;
 
 function proto02(){
 
-  logTime("counting");
+  logTime("counting",'start');
   var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
   // modify game dynamics if scoreDifferential reaches +3 or -3
   var walkSpeed = store.get("walkSpeed");
@@ -1237,7 +1237,7 @@ function proto02(){
   function update() {
 
     if(finishGame){
-        logTime("counting-end");
+        logTime("counting",'stop');
         store.set('walkSpeed', walkSpeed);
         //console.log('counting game over - storing');
         round.storeSession(stimuli, 'numberstim');

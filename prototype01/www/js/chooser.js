@@ -1,6 +1,6 @@
 var MainMenu = function() {
   clickStart('container-exp','container-chooser');
-  logTime('menu');
+  logTime('menu','start');
 };
 
 function Start(){
@@ -101,7 +101,7 @@ function Start(){
       }
 
       var gameClick = function(){
-
+        logTime('menu','stop');
         document.getElementById("container-exp").style.height = window.innerHeight
         session.setRenderer();
         //logTime(Games[this.id].name); // better than doing in each file?

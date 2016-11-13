@@ -1,7 +1,7 @@
 var multiplicationLoaded = false;
 
 function Multiplication(){
-
+  logTime('multiplication','start');
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
   console.log("----------------------------------", stimuli)
@@ -2004,14 +2004,14 @@ function Multiplication(){
 
             if(finishGame){
 
-                console.log("finishing Game")
+                logTime("multiplication",'stop');
 
-                session.stats.domElement.style.display = "none"
-                round.destroy()
-                console.log("--")
-                assets.destroy()
-                finishGame = false
-                currentview = new MainMenu(assets)
+                session.stats.domElement.style.display = "none";
+                round.destroy();
+                console.log("--");
+                assets.destroy();
+                finishGame = false;
+                currentview = new MainMenu(assets);
 
                 return
             };

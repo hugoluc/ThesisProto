@@ -1,10 +1,14 @@
 var proto3loaded = false;
 
 function proto03(){
-  var minAddends = 2; // store.get and store.set, and write adjustDifficulty !!
-  var maxAddends = 3;
+  var minAddends = store.get("minAddends");
+  if(!minAddends) minAddends = 2; // store.get and store.set, and write adjustDifficulty !!
+  var maxAddends = store.get("maxAddends");
+  if(!maxAddends) maxAddends = 3;
   var stimCount = store.get("ant_problems_solved");
   if(!stimCount) stimCount = 0;
+
+  var scoreDifferential = 0;
 
   // difficulty phases:
   // increase maxOptions every 5 correct trials (decrease after 2 incorrect?)
@@ -701,6 +705,17 @@ function proto03(){
 
         return values;
     };
+
+    Trial.prototype.adjustDifficulty = function() {
+      if(scoreDifferential>3) {
+        minAddends ++; // raise min, and max (if not too high)
+        store.set("minAddends",minAddends);
+        if(maxAddends<5) maxAddends++;
+      } else if(scoreDifferential<0) {
+        if(maxAddends>minAddends) maxAddends--;
+      }
+      store.set("maxAddends",maxAddends);
+    }
 
     Trial.prototype.init = function(){
         var lilipadValues = this.stimuli; // need to deep copy?
@@ -1690,7 +1705,7 @@ function proto03(){
                       this.fadeStick = true;
                       this.clock.start(1000);
                       this.finishedState = "win";
-
+                      scoreDifferential ++;
                       //round.changeDifficulty(true);
 
                   } else {
@@ -1699,8 +1714,9 @@ function proto03(){
                       incorrect_sound.play();
                       this.fadeStick = true;
                       this.finishedState = "lose";
+                      scoreDifferential --;
                   }
-
+                  this.adjustDifficulty();
               }
 
               break;
@@ -1812,7 +1828,7 @@ function proto03(){
 //-------------------------------------------
 // Global functions andd variables
 //-------------------------------------------
-  logTime("addsub");
+  logTime("addsub",'start');
     // create the root of the scene graph and main classes
     var stage = new PIXI.Container();
     var round = new Round();
@@ -1886,7 +1902,7 @@ function proto03(){
             if(finishGame){
 
                 console.log("finishing addsub");
-                logTime("addsub-end");
+                logTime("addsub",'stop');
                 round.storeSession(stimuli, 'numberstim');
                 session.stats.domElement.style.display = "none";
                 round.destroy();

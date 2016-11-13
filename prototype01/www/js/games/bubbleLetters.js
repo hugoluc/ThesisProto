@@ -17,7 +17,7 @@ var coolColors = ['#355dff', '#1037b7', '#00186b', '#6f2fc4', '#ffffff'] // non-
 function bubbleLetters(){
   bubblegameloaded = true;
   queuesToUpdate['alphabetstim'] = true;
-  logTime('alphabet');
+  logTime('alphabet','start');
   var stimQ = stimQueues['alphabetstim'];
   var dragonfly_start_pos = {'x':250, 'y':250};
 
@@ -550,7 +550,7 @@ function bubbleLetters(){
 
             if(finishGame){
                 //console.log("ending bubbleLetters");
-                logTime("alphabet-end");
+                logTime("alphabet",'stop');
                 round.storeSession(stimQ, 'alphabetstim');
                 session.stats.domElement.style.display = "none";
                 round.destroy();
