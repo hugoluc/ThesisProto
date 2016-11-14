@@ -26,7 +26,7 @@ function proto02(){
 
       var _this = this;
 
-      this.startNumber = value;
+      this.startNumber = value; //getRandomInt(1,7);
       this.container = new PIXI.Container();
       this.container.interactive = true;
       this.container.buttonMode = true;
@@ -74,7 +74,7 @@ function proto02(){
       this.container.addChild(this.sprite.nBg);
 
       //number variables
-      this.number =  new PIXI.Text("12", {font:"30px Arial", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 0});
+      this.number =  new PIXI.Text("12", {font:"30px BalooBhai", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 0});
       this.number.anchor.x = 0.5
       this.number.anchor.y = 0.5
       this.number.x = this.sprite.walk.x + (this.sprite.walk.width*0.5)// - (this.number.textWidth/2)
@@ -96,19 +96,30 @@ function proto02(){
       //determine this bugType
 
       if(this.startNumber < 6){
+
           this.bugType = 1
+
       }else if(this.startNumber < 11){
 
-        if(this.startNumber == 9){
-            this.bugType = 3
-        }else{
+          if(this.startNumber == 9){
+
+              this.bugType = 3
+
+          }else{
+
           this.bugType = 2
-        }
+
+          }
 
       }else if(this.startNumber < 16) {
-        this.bugType = 3
+
+          this.bugType = 3
+
+
       }else{
-        this.bugType = 4
+
+          this.bugType = 4
+
       }
   };
 
