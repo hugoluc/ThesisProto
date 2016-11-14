@@ -1,5 +1,7 @@
 var proto3loaded = false;
 
+console.log("-")
+
 function proto03(){
   var minAddends = store.get("minAddends");
   if(!minAddends) minAddends = 2; // store.get and store.set, and write adjustDifficulty !!
