@@ -743,6 +743,9 @@ function proto03(){
   };
 
   Trial.prototype.init = function(){
+
+    	console.log("------------")
+
       var lilipadValues = this.stimuli; // need to deep copy?
 
       if(lilipadValues.length > this.posMatrix.length){
@@ -927,7 +930,7 @@ function proto03(){
 
         this.subtracting = "origin"
 
-      }else if (parseInt(this.singleClickOrigin.cNumber.text) < 0){// check if the TARGET lillipad has a negative number
+      }else if (parseInt(this.singleClickDest.cNumber.text) < 0){// check if the TARGET lillipad has a negative number
 
         this.subtracting = "target"
 
@@ -935,17 +938,14 @@ function proto03(){
           this.subtracting = false
       }
 
-      console.log(">>>>>>", this.singleClickOrigin.circle.position)
-      console.log(">>>>>>", this.singleClickDest.circle)
+      console.log(">>>>>>", this.singleClickOrigin)
+      console.log(">>>>>>", this.singleClickDest)
 
       this.createStick(this.singleClickOrigin.circle.position);
       this.moveStick(this.singleClickDest.circle.position) // adjust final stick size
       this.moveStick(true,this.singleClickDest.id) // adjust final stick size
       this.updateOperation(this.singleClickOrigin.id,this.singleClickDest.id) // update lllypad value
       this.setAnimateAnts(this.singleClickOrigin.id,this.singleClickDest.id); //get new location for ants
-
-      this.singleClickDest = undefined
-      this.singleClickOrigin = undefined
 
       return;
 
@@ -1013,9 +1013,6 @@ function proto03(){
             this.lillySmall[_origin].value = 0;
 
         };
-
-        this.singleClickDest = undefined
-        this.singleClickOrigin = undefined
 
     };
 
@@ -1236,6 +1233,8 @@ function proto03(){
 
             };
 
+            this.singleClickDest = undefined
+            this.singleClickOrigin = undefined
             console.log("ants position set!");
 
         };

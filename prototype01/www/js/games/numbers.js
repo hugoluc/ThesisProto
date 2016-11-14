@@ -97,18 +97,19 @@ function proto02(){
 
       if(this.startNumber < 6){
           this.bugType = 1
+
       }else if(this.startNumber < 11){
 
         if(this.startNumber == 9){
-            this.bugType = 3
+            this.bugType = 1
         }else{
-          this.bugType = 2
+          this.bugType = 1
         }
 
       }else if(this.startNumber < 16) {
-        this.bugType = 3
+        this.bugType = 1
       }else{
-        this.bugType = 4
+        this.bugType = 1
       }
   };
 
@@ -350,12 +351,13 @@ function proto02(){
 
               return
 
-              // regular click
+              // get feedback regular correct click
               }else if (this.number.text > 0){
                   round.trial.getFeedback(true,false);
               };
 
-            }else {
+            }else{ // wrong click
+
                 if(!this.correctImput){
                     round.trial.wrongClicks += 1;
                     round.trial.answer(false);
@@ -568,7 +570,6 @@ function proto02(){
   Trial.prototype.init = function(){
 
       this.foils = this.getFoils();
-      // this.foils.push(parseInt(this.correct)); // make sure we have the correct answer
       this.foils = shuffle(this.foils);
 
       for (var i=0; i<this.foils.length; i++){
@@ -865,28 +866,27 @@ function proto02(){
 
       if(!_feedback){
 
-       incorrect_sound.play();
-       this.playAudioQueue("stop");
+        incorrect_sound.play();
+        this.playAudioQueue("stop");
 
-       if(!this.redDone){
+        if(!this.redDone){
 
-           this.feedbackState = "red";
+          this.feedbackState = "red";
 
-           this.setBlink(false);
-           this.bgRed.renderable = true;
-           this.blinks = 0;
+          this.setBlink(false);
+          this.bgRed.renderable = true;
+          this.blinks = 0;
 
-           this.feedback = false;
-           this.redDone = false;
-
-       }
+          this.feedback = false;
+          this.redDone = false;
+        }
 
        }
 
        this.goldCount = 0;
        this.coundCount = 0;
 
-    } else if(_feedback){
+    } else if(_feedback){ // provide feedback
 
        // set up audio queue for feedback
        if(this.bugType == 1){
@@ -898,15 +898,6 @@ function proto02(){
 
            this.playAudioQueue("add", [assets.sounds.correct2[this.coundCount]])
            this.coundCount++
-
-           // var sounds = []
-           // for(var i = 0; i<this.bugType; i++){
-
-           //     sounds.push(assets.sounds.correct1[i])
-
-           // };
-
-           // this.playAudioQueue("add", sounds)
 
        };
 

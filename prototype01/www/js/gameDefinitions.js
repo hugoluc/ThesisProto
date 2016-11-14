@@ -351,11 +351,7 @@
 
 	Round.prototype.getNextTrial = function(){
 
-		//var stim = this.stimuli.pop();
-		//console.log("Round.getNextTrial stim:")
-		//console.log(stim);
-		//console.log(this.stimuli.pop()); // this does get the next one
-		console.log("sodhfoshdffsklkjfhskjfkjskjfhsjh")
+
 		console.log(this.stimuli.pop())
 
 	 	this.trial = new this._trial(this.stimuli.pop());
@@ -371,7 +367,6 @@
 	}
 
 	Round.prototype.destroy = function(){
-
 
 		this.stage.removeChild(this.background)
 		this.background.destroy(true,true)
