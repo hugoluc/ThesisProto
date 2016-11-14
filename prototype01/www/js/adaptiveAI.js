@@ -69,6 +69,10 @@ function loadStimulusQueue(stimuli, chunkSize) {
 // e.g., activity:bubble, action:'start' or 'stop'
 function logTime(activityType, action) {
   var timestamp = Date.now();
+
+  if(!store.get("activityLog")){
+    store.set("activityLog", []);
+  }
   var activityLog = store.get("activityLog");
   activityLog.push({'time': timestamp, 'activity': activityType, 'action': action});
   console.log({'time': timestamp, 'activity': activityType, 'action': action});
