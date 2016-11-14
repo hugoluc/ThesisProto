@@ -8,7 +8,9 @@
 
 function memory(){
   var self = this;
-  logTime("memory");
+  logTime("memory",'start');
+  var stimCount = store.get("memory_rounds_solved");
+  if(!stimCount) stimCount = 0; // use to switch from letters...
   //var clock = new ClockTimer();
   var scoreIncrease = 1; // increase scoreIncrease by 1 every 5 correct trials
   var game_loaded = true;
@@ -145,7 +147,6 @@ function memory(){
   };
 
   function Trial(_stim){
-    stimCount++;
     console.log(_stim)
     this.stim = _stim; // although we need (ncol*nrow) / 2 stimuli -- not just one
     this.trialState = "play";
@@ -413,7 +414,7 @@ function memory(){
       function update() {
 
           if(finishGame){
-              logTime("memory-end");
+              logTime("memory",'stop');
               round.storeSession(stimQ, "alphabetstim")
               session.stats.domElement.style.display = "none";
               round.destroy(); // error here gameDefinitions:316

@@ -2,11 +2,12 @@
 
 var Shapes = function() {
   //document.body.select
-  logTime("shapes");
+  logTime("shapes",'start');
   //document.body.appendChild(canvas);
   document.getElementById("shapes-container").style.display = 'block';
 
   this.destroy = function() {
+    logTime("shapes",'stop');
     mp.stop();
     clickStart('shapes-container','container-chooser');
     currentview = new MainMenu(assets);

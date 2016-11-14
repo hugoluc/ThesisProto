@@ -28,7 +28,24 @@ var numbers = [
   {id:"9", audio:"9_tisa", text:"tisa", seq:[]},
   {id:"10", audio:"10_kumi", text:"kumi", seq:[]},
   {id:"11", audio:"11_kumi-na-moja", text:"kumi na moja", seq:[]},
+  {id:"12", audio:"12", text:"kumi na mbili", seq:[]},
+  {id:"13", audio:"13", text:"kumi na tatu", seq:[]},
+  {id:"14", audio:"14", text:"kumi na nne", seq:[]},
+  {id:"15", audio:"15", text:"kumi na tano", seq:[]},
+  {id:"16", audio:"16", text:"kumi na sita", seq:[]},
+  {id:"17", audio:"17", text:"kumi na saba", seq:[]},
+  {id:"18", audio:"18", text:"kumi na nane", seq:[]},
+  {id:"19", audio:"19", text:"kumi na tisa", seq:[]},
   {id:"20", audio:"ishirini", text:"ishirini", seq:[]},
+  {id:"21", audio:"21", text:"ishirini na moja", seq:[]},
+  {id:"22", audio:"22", text:"ishirini na mbili", seq:[]},
+  {id:"23", audio:"23", text:"ishirini na tatu", seq:[]},
+  {id:"24", audio:"24", text:"ishirini na nne", seq:[]},
+  {id:"25", audio:"25", text:"ishirini na tano", seq:[]},
+  {id:"26", audio:"26", text:"ishirini na sita", seq:[]},
+  {id:"27", audio:"27", text:"ishirini na saba", seq:[]},
+  {id:"28", audio:"28", text:"ishirini na nane", seq:[]},
+  {id:"29", audio:"29", text:"ishirini na tisa", seq:[]}, // let's just go up to 30 for add/sub for now
   {id:"30", audio:"thelathini", text:"thelathini", seq:[]}, // some places sound: 'selasini'
   {id:"40", audio:"arobaini", text:"arobaini", seq:[]},
   {id:"50", audio:"hamsini", text:"hamsini", seq:[]},
@@ -47,6 +64,39 @@ var numbers = [
 // 201 - mia mbili na moja
 // 1,000,000 milloni moja
 
+function generate_number_audio() {
+
+}
+
+// demo of how to make a howler playlist
+var playlist = function(e) {
+        // initialisation:
+          pCount = 0;
+          playlistUrls = [
+            "./audio/a.mp3",
+            "./audio/b.mp3"
+            ], // audio list
+          howlerBank = [],
+          loop = true;
+
+        // playing i+1 audio (= chaining audio files)
+        var onEnd = function(e) {
+          if (loop === true ) { pCount = (pCount + 1 !== howlerBank.length)? pCount + 1 : 0; }
+          else { pCount = pCount + 1; }
+          howlerBank[pCount].play();
+        };
+
+        // build up howlerBank:
+        playlistUrls.forEach(function(current, i) {
+          howlerBank.push(new Howl({ urls: [playlistUrls[i]], onend: onEnd, buffer: true }))
+        });
+
+        // initiate the whole :
+        howlerBank[0].play();
+}
+
+
+
 // words for each letter and syllable: https://www.youtube.com/watch?v=IUjpXWPaWE0
   /*
   {id:"", text:"", audio:"", seq:[]},
@@ -60,7 +110,7 @@ var numbers = [
 var letters = [
   {id:1, text:"A", audio:"A", seq:[]},
   {id:2, text:"B", audio:"B", seq:[]},
-  {id:3, text:"Ch", audio:"C", seq:[]},
+  {id:3, text:"C", audio:"C", seq:[]}, // use 'Ch' or 'C' ?
   {id:4, text:"D", audio:"D", seq:[]},
   {id:5, text:"E", audio:"E", seq:[]},
   {id:6, text:"F", audio:"F", seq:[]},
@@ -96,28 +146,26 @@ var shapes = [
   {id:"semicircle", text:"nusuduara", image:"semicircle", audio:"nusuduara"}
   ];
 
-// need to record: tembo (elephant)
+
 var animals = [
-  {id:"warthog", text:"gwasi", audio:"gwasi"}, // pig? hog? warthog?
+  {id:"leopard", text:"chui", audio:"chui", image:"leopard"},
+  {id:"chicken", text:"kuku", audio:"kuku", image:"chicken"}, // jogoo? (rooster?)
+  {id:"cheetah", text:"duma", audio:"duma", image:"cheetah"},
+  {id:"cat", text:"paka", audio:"paka", image:"cat"},
+  {id:"lion", text:"simba", audio:"simba", image:"lion"},
   {id:"elephant", text:"tembo", audio:"tembo", image:"elephant"},
   {id:"baboon", text:"nyani", audio:"nyani", image:"baboon"},
-  {id:"cheetah", text:"duma", audio:"duma", image:"cheetah"},
   {id:"buffalo", text:"nyati", audio:"nyati", image:"buffalo"},
   {id:"bird", text:"ndege", audio:"ndege", image:"bird"},
-  {id:"cat", text:"paka", audio:"paka", image:"cat"},
   {id:"dog", text:"mbwa", audio:"mbwa", image:"dog"},
-  {id:"lion", text:"simba", audio:"simba", image:"lion"},
   {id:"pig", text:"nguruwe", audio:"nguruwe", image:"pig"},
   {id:"sheep", text:"kondoo", audio:"kondoo", image:"sheep"},
   {id:"zebra", text:"punda-milia", audio:"punda-milia", image:"zebra"},
   {id:"snake", text:"nyoka", audio:"nyoka", image:"snake"},
-  {id:"chicken", text:"kuku", audio:"kuku", image:"chicken"}, // jogoo? (rooster?)
   {id:"cow", text:"ng'ombe", audio:"ngombe", image:"cow"},
-  {id:"leopard", text:"chui", audio:"chui", image:"leopard"},
   {id:"octopus", text:"pwesa", audio:"pwesa", image:"octopus"},
   {id:"shark", text:"papa", audio:"papa", image:"shark"},
   {id:"anchovy", text:"kombo", audio:"kombo", image:"fish"},
-  {id:"squid", text:"mzia", audio:"mzia"},
   {id:"fish", text:"samaki", audio:"samaki", image:"fish"},
   {id:"monkey", text:"kima", audio:"kima", image:"monkey"},
   {id:"rhinoceros", text:"kifaru", audio:"kifaru", image:"rhinoceros"},
@@ -141,7 +189,9 @@ var animals = [
  {id:"giraffe", text:"twiga", audio:"twiga", image:"giraffe"},
  {id:"lobster", text:"uduvi", audio:"uduvi", image:"lobster"},
  {id:"bee", text:"wembembe", audio:"wembembe", image:"bee"},
- {id:"jellyfish", text:"yavuyavu", audio:"yavuyavu", image:"jellyfish"}
+ {id:"jellyfish", text:"yavuyavu", audio:"yavuyavu", image:"jellyfish"},
+ {id:"warthog", text:"gwasi", audio:"gwasi"}, // pig? hog? warthog?
+ {id:"squid", text:"mzia", audio:"mzia"}
 // praying mantis = vunjajungu ? (or insect?)
 // robin = robini , swallow?? = zawaridi
   ];

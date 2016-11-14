@@ -62,21 +62,25 @@ function loadStimulusQueue(stimuli, chunkSize) {
   return(pq)
 }
 
+// could increase initial priorities based on features like length of word..
+
 
 // update timestamped list of activities (high-level)
-// -- might want to log exit timestamps, so we know when they quit vs. turn off
-function logTime(activityType) {
+// e.g., activity:bubble, action:'start' or 'stop'
+function logTime(activityType, action) {
   var timestamp = Date.now();
 
   if(!store.get("activityLog")){
     store.set("activityLog", []);
   }
   var activityLog = store.get("activityLog");
-  activityLog.push({'time': timestamp, 'activity': activityType});
-  console.log({'time': timestamp, 'activity': activityType});
+  activityLog.push({'time': timestamp, 'activity': activityType, 'action': action});
+  console.log({'time': timestamp, 'activity': activityType, 'action': action});
   store.set("activityLog", activityLog);
 }
 
+// for now we're still using store.js for stimulus queues, but may want to
+// consider switching everything PouchDB
 function initStorage() {
 
   if (!store.enabled) {
@@ -132,13 +136,30 @@ function initStorage() {
   return(user);
 }
 
-// store low-level data:
-// {"starttime":, "endtime":, "stimtype":, "stim":, "correct_clicks":, "incorrect_clicks":}
+// PouchDB version
 function logTrial(trial_data) {
+  var time = new Date().toISOString();
+  var tr = {
+    _id: user + '-' + time,
+    data: trial_data
+  };
+  localDB.put(tr, function callback(err, result) {
+    if (!err) {
+      console.log('localDB logged trial:');
+      console.log(trial_data);
+    } else {
+      console.log('pouchDB fail: logging trial with store.js');
+      logTrialLS(trial_data);
+    }
+  });
+}
+
+// store.js version (deprecated)
+// {"starttime":, "endtime":, "stimtype":, "stim":, "correct_clicks":, "incorrect_clicks":}
+function logTrialLS(trial_data) {
   if (!store.enabled) {
     return(false);
   }
-
   var key = store.get('LAST_TRIAL_KEY') + 1;
   store.set('tr'+key, trial_data);
   store.set('LAST_TRIAL_KEY', key);

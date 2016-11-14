@@ -3,7 +3,7 @@ function Hangman() {
   score.stage = screend3; // ? doesn't work..
   var scoreIncrease = 1;
   queuesToUpdate['objectstim'] = true;
-  logTime('hangman');
+  logTime('hangman','start');
 
   var stimQ = stimQueues['objectstim'];
   var nextTrial = false; // ready to go on
@@ -306,7 +306,7 @@ function Hangman() {
 
 
   init_screen();
-  setup_screen(true); // draw background (but without img)
+  setup_screen(true); // draw background (with/without image)
   document.getElementById("header-exp").style.display = 'block';
   //queuesToUpdate['objectstim'] = true;
 
@@ -317,7 +317,7 @@ function Hangman() {
   var trial_index = 1;
 
   this.destroy = function() {
-    logTime("hangman-end");
+    logTime("hangman",'stop');
     //storeSession();
     //queuesToUpdate["objectstim"] = false;
     console.log(self);
@@ -372,6 +372,7 @@ function Hangman() {
       console.log("feedback? (kazi_nzuri.mp3) fun animation?");
       next();
     } else {
+      setup_screen(true);
       current_stim = stimQ.pop();
       var tr = new HangmanTrial(current_stim);
       trial_index += 1;
