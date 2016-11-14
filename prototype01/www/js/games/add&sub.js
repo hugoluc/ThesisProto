@@ -749,6 +749,7 @@ function proto03(){
   };
 
   Trial.prototype.adjustDifficulty = function() {
+
     if(scoreDifferential>3) {
       minAddends ++; // raise min, and max (if not too high)
       store.set("minAddends",minAddends);
@@ -757,6 +758,7 @@ function proto03(){
       if(maxAddends>minAddends) maxAddends--;
     }
     store.set("maxAddends",maxAddends);
+
   }
 
   Trial.prototype.init = function(){
