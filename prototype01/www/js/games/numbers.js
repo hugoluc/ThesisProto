@@ -3,13 +3,14 @@ var proto2loaded = false;
 var LOGTHIS =  false;
 
 function proto02(){
-
+  var stimCount = store.get('numbers_problems_solved');
+  if(!stimCount) stimCount = 0;
   logTime("counting",'start');
   var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
   // modify game dynamics if scoreDifferential reaches +3 or -3
   var walkSpeed = store.get("walkSpeed");
-  if(!walkSpeed) walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
-  var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
+  if(!walkSpeed) walkSpeed = 5; // +1 if 3x correct; -1 if 3x incorrect
+  // +1 if 3x correct; -1 if 3x incorrect
   var numFoils = 3; // +2 if 3x correct, -1 if 3x incorrect
   var scoreIncrease = 1; // initially 1, but goes higher as they progress
 
@@ -74,7 +75,7 @@ function proto02(){
       this.container.addChild(this.sprite.nBg);
 
       //number variables
-      this.number =  new PIXI.Text("12", {font:"30px BalooBhai", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 0});
+      this.number =  new PIXI.Text("12", {font:"32px BalooBhai", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 0});
       this.number.anchor.x = 0.5
       this.number.anchor.y = 0.5
       this.number.x = this.sprite.walk.x + (this.sprite.walk.width*0.5)// - (this.number.textWidth/2)
@@ -422,7 +423,8 @@ function proto02(){
 
           case "displaySound":
               if(!this.stimPlayed) {
-                assets.sounds.numbers[this.correct].play();
+                //assets.sounds.numbers[this.correct].play();
+                this.origstim.howl.play();
                 this.stimPlayed = true;
               }
 
@@ -514,7 +516,8 @@ function proto02(){
           var nextTrialDone = true;
 
           this.displayFeedbacks()
-
+          stimCount ++;
+          store.set('numbers_problems_solved', stimCount);
           if(!score.displayStar()) nextTrialDone = false;
           if(!score.displayExplosion()) nextTrialDone = false ;
           if(!this.nextTrial()) nextTrialDone = false;

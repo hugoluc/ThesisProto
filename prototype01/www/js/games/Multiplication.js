@@ -34,7 +34,7 @@ function Multiplication(){
     }
 
     this.counter = 0
-
+    this.played = false;
 		this.stimuli = specs[0].stimuli;
     this._stimuli = numbers
 		this.aswear = []
@@ -464,7 +464,11 @@ function Multiplication(){
 
 							done = false;
 						};
-
+            
+            if(!this.played) {
+              this.played = true;
+              this._stimuli[0].howl.play();
+            }
 					};
 
 					if(done){
