@@ -1,10 +1,14 @@
 var multiplicationLoaded = false;
 
 function Multiplication(){
+
   logTime('multiplication','start');
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
   console.log("----------------------------------", stimuli)
+
+  var stimCount = store.get("multi_problems_solved")
+  if(!stimCount) stimCount = 0
 
 
 /*
@@ -13,15 +17,13 @@ function Multiplication(){
 -------------------------------------------------------------------------------------------------------------
 */
 
-  var stimCounter = 0;
-
-  while(stimuli.content[stimCounter].id < 2){
-    stimCounter++
-  }
-
-  var numbers = [stimuli.content[stimCounter]]
-
 	function Trial(_stimuli,_correct){
+
+    this.stimOne = false
+
+    if(_stimuli.id == 1){
+      this.stimOne = true
+    }
 
     var specs = []
     for(var i = 0; i < numbers.length; i++){
@@ -180,6 +182,7 @@ function Multiplication(){
             allEggAssests.id = this.stimuli.values[i]
             allEggAssests.interactive = true;
             allEggAssests.on("mousedown", eggsclicked)
+            allEggAssests.on("touchstart", eggsclicked)
             allEggAssests.clicked = false;
 
             var shadow = new PIXI.Sprite(assets.textures["eggShadow"])
@@ -226,6 +229,7 @@ function Multiplication(){
             allEggAssests.addChild(richText)
 
             container.addChildAt(allEggAssests,container.children.length)
+
           }
 
           //setting egg size
@@ -304,6 +308,10 @@ function Multiplication(){
 		switch(this.playState){
 
 		case "intro": // Display Introduction and instructions
+
+      if(this.stimOne){
+        return true;
+      }
 
 			if(this.intro()){
 
@@ -950,8 +958,8 @@ function Multiplication(){
       var coll = allDivisors[allDivisors.length-random-1]
 
 
-			this.boardSpecs.rows = row + getRandomInt(1 ,2) //Math.ceil(Math.sqrt(this.stimuli.values))// + getRandomInt(0,3)
-      this.boardSpecs.columns = coll + getRandomInt(0,1)
+			this.boardSpecs.rows = row + getRandomInt(0 ,3) //Math.ceil(Math.sqrt(this.stimuli.values))// + getRandomInt(0,3)
+      this.boardSpecs.columns = coll + getRandomInt(0,3)
 
       console.log(this.boardSpecs.rows,this.boardSpecs.columns)
 
@@ -980,7 +988,7 @@ function Multiplication(){
 
     this.clickPlaystate = this.playState
 
-		if(this.playState == "drawingNest" && !this.singleClick){
+		if(this.playState == "drawingNest"){
 
       this.clickPlaystate = this.playState
 			this.nestCreated = false;
@@ -989,6 +997,7 @@ function Multiplication(){
 			_event.target.dragging = true;
 
 		}
+
 	};
 
 	Trial.prototype.deleteNest = function(_index){ // delete nest on _index
@@ -1260,12 +1269,12 @@ function Multiplication(){
 
       if(this.singleClick){
 
-        this.selection = this.calculateSelection( // calculate new selection
-          this.boardMatrix[this.firstClickTile].tile,
-          this.boardMatrix[_this.id].tile
-        )
+        // this.selection = this.calculateSelection( // calculate new selection
+        //   this.boardMatrix[this.firstClickTile].tile,
+        //   this.boardMatrix[_this.id].tile
+        // )
 
-        this.showNest(this.selection)
+      //  this.showNest(this.selection)
 
       } else if(this.selection.tiles.length == 0){
 
@@ -1997,23 +2006,24 @@ function Multiplication(){
 
         var finishGame = false
         var previousTime = Date.now();
-        var MS_PER_UPDATE = 16.66667;
+        var MS_PER_UPDATE = 33.3333333;
         var lag = 0
 
         function update() {
 
             if(finishGame){
 
-                logTime("multiplication",'stop');
+              logTime("multiplication",'stop');
 
-                session.stats.domElement.style.display = "none";
-                round.destroy();
-                console.log("--");
-                assets.destroy();
-                finishGame = false;
-                currentview = new MainMenu(assets);
+              session.stats.domElement.style.display = "none";
+              round.destroy();
+              console.log("--");
+              assets.destroy();
+              finishGame = false;
+              currentview = new MainMenu(assets);
 
-                return
+              return
+
             };
 
             if(statsBol) session.stats.begin()
@@ -2026,8 +2036,8 @@ function Multiplication(){
 
         	 while (lag >= MS_PER_UPDATE){
 
-	              round.play(lag/MS_PER_UPDATE);
-	              lag = lag - MS_PER_UPDATE;
+              round.play(lag/MS_PER_UPDATE);
+              lag = lag - MS_PER_UPDATE;
 
   	        };
 

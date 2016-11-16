@@ -1206,7 +1206,7 @@ function proto02(){
 
   var finishGame = false
   var previousTime = Date.now();
-  var MS_PER_UPDATE = 16.66667;
+  var MS_PER_UPDATE = 33.3333;
   var lag = 0
 
   function adjustGameDynamics() { //move inside game

@@ -1,4 +1,5 @@
 function Hangman() {
+
   var screend3;
   score.stage = screend3; // ? doesn't work..
   var scoreIncrease = 1;
@@ -38,6 +39,7 @@ function Hangman() {
   };
 
   var setup_screen = function(drawBGimage) {
+
     var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
     screend3.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
     var background = screend3.append("g")
@@ -47,22 +49,33 @@ function Hangman() {
       })
       .attr("id", "background");
     console.log(screen_width)
+
     if(drawBGimage) {
       background.append("svg:image")
-        .attr("xlink:href", "img/"+bg_image_fname)
+        .attr("xlink:href", "sprites/hangman/background_hangman.png")
         .attr({
           x: 0,
           y: 0,
-          width: screen_width,
-          height: screen_height
+          width: window.innerWidth,
+          height: window.innerHeight
         })
-        .attr("id", "background");
+        .attr("id", "background")
+        background.append("svg:image")
+          .attr("xlink:href", "sprites/hangman/paper.png")
+          .attr({
+            x: window.innerWidth - 400,
+            y: window.innerHeight - 650,
+            width: 500,
+            height: 700
+          })
+          .attr("id", "paper");
       }
 
       return background;
   };
 
   var HangmanTrial = function(pars) {
+
     var self = this;
     self.starttime = Date.now();
     self.origstim = pars;
@@ -79,10 +92,15 @@ function Hangman() {
 
     // end trial (read word)
     self.finish = function(won, callback) {
+
       verbal_audio_feedback(won);
+
       var randAdjust = Math.random() * .1 - .05;
+
       if(won) {
+
         self.origstim.priority += .5 + randAdjust;
+
         if(max_guesses>3) {
           max_guesses -= 1; // adjust difficulty: one fewer guess allowed
         }
@@ -96,11 +114,15 @@ function Hangman() {
         // score.setExplosion([300,300], 100,1000);
 
       } else {
+
         self.origstim.priority -= .5 + randAdjust;
         max_guesses += 1;
       }
+
       var final_view_time = 3500; // how long they see the word and picture at the end
+
       self.audio.play()
+
       self.blanks.transition()
         .style("opacity", 0.0)
         .delay(final_view_time)
@@ -121,9 +143,11 @@ function Hangman() {
       // log trial and return the orig stim with modified priority
       logTrial({"starttime":self.starttime, "endtime":Date.now(), "stimtype":'word', "stim":self.answer, "total_clicks":self.guesses_made, "incorrect_clicks":self.wrong_guesses});
       setTimeout(function(){ callback(self.origstim) }, final_view_time); // pass data
-    }
+
+      }
 
     self.handleGuess = function(guess, callback) {
+
       //console.log("unique remaining letters: " + self.unique_letters_remaining);
       if(guess.clicked==1) {
         self.guesses_made += 1;
@@ -143,6 +167,16 @@ function Hangman() {
           setTimeout(function(){incorrect_sound.play()}, 900);
         } else { // they got a letter!
           self.unique_letters_remaining -= 1;
+
+          console.log("-------------------")
+          score.addScore(
+            [{x:300,y:300}],// _starsPos : (array) [{x:,y:}]
+            1,// _value : (int) value to be added to score for each star;
+            1000,// _duration : length of animation
+            true,// _svg : (bool) false for canvas
+            100// _index : z-index of sprite
+          )
+
           setTimeout(function(){correct_sound.play()}, 900);
           self.veil.transition()
             .attr("fill", getRandomColor())
@@ -160,10 +194,11 @@ function Hangman() {
     }
 
     self.drawAlphabet = function(letters, callback) {
+
       for (var i = 0; i < letters.length; i++) {
         letters[i].clicked = 0;
       }
-      var nrows = Math.floor(Math.sqrt(letters.length)) - 1;
+      var nrows = 4//Math.floor(Math.sqrt(letters.length)) - 1;
       var ncols = Math.ceil(letters.length/nrows);
       console.log("nrows: "+nrows+" ncols: "+ncols);
       var keys = screend3.append("svg")
@@ -176,16 +211,20 @@ function Hangman() {
         .append("g") // Add one g for each data node
         .attr("transform", function(d, i) {
          // i = x + ncols*y
-         d.x = (i%ncols)*(button_width+20) + 18,
-         d.y = Math.floor(i/ncols)*(button_height+20) + 18;
+         d.x = (i%ncols)*(button_width + 25 + getRandomInt(-2,2)) + 30,
+         d.y = Math.floor(i/ncols)*(button_height + 25 + getRandomInt(-2,2)) + 18;
          return "translate(" + d.x + "," + d.y + ")";
         });
 
-      self.alphabet.append("circle") // add circle
-        .attr("r", button_width/2)
-        .attr("fill", "#00BFFF")
-        .style("opacity", .8);
-
+      self.alphabet.append("svg:image")
+        .attr("xlink:href", "sprites/hangman/rock.png")
+        .attr({
+          x: -50,
+          y: -40,
+          width: 100,
+          height: 100
+        })
+        .attr("id", "background");
 
       self.alphabet.append("text") // add text to the g element
         .attr("text-anchor", "middle")
@@ -216,16 +255,19 @@ function Hangman() {
         });
     }
 
-    self.drawBlanks = function() {
-      var chars = self.answer.split("");
-      var chdict = [];
-      for (var i = 0; i < chars.length; i++) {
-        chdict.push({"letter": chars[i]});
-      }
+      self.drawBlanks = function() {
+
+        var chars = self.answer.split("");
+        var chdict = [];
+
+        for (var i = 0; i < chars.length; i++) {
+          chdict.push({"letter": chars[i]});
+        }
+
       //console.log(chdict)
       self.blanks = screend3.append("g")
         .attr("class", "blanks")
-        .selectAll("circle")
+        .selectAll("circle") //FIXME
         .data(chdict)
         .enter()
         .append("g") // Add one g for each data node
@@ -247,7 +289,7 @@ function Hangman() {
          return d.letter;
         });
 
-      self.blanks.append("circle")
+      self.blanks.append("circle") // start FIXME
         .attr("class", "blank")
         .attr("r", 40)
         .attr("fill", "green")
@@ -258,6 +300,7 @@ function Hangman() {
     }
 
     self.drawStimulus = function() {
+
       var ypos = screen_height*.25;
       var xpos = .95*screen_width-imageSize;
       // GK: replace veil with N leaves that disappear as wrong guesses are made
@@ -271,21 +314,13 @@ function Hangman() {
           .attr("height",imageSize)
           .style("opacity",1);
 
-        self.veil = screend3.append("rect")
+        self.veil = screend3.append("svg:image")
+          .attr("xlink:href", "sprites/hangman/vail.png") // .svg
           .attr("x", xpos)
           .attr("y", ypos)
-          .attr("width", imageSize)
-          .attr("height", imageSize)
-          .attr("fill", getRandomColor());
+          .attr("width", imageSize*1.2)
+          .attr("height", imageSize*1.2)
       //}
-
-      screend3.append("svg:image")
-         .attr('x',xpos)
-         .attr('y',ypos)
-         .attr('width', 50)
-         .attr('height', 50)
-         .attr("xlink:href","sprites/stick/leave.png");
-         //.attr("transform", "rotate("+getRandomInt(0,180)+")");
 
       var myLabel = screend3.append("g").append("text")
         .attr("x", screen_width+50)
@@ -317,6 +352,7 @@ function Hangman() {
   var trial_index = 1;
 
   this.destroy = function() {
+
     logTime("hangman",'stop');
     //storeSession();
     //queuesToUpdate["objectstim"] = false;
@@ -355,6 +391,7 @@ function Hangman() {
   };
 
   var next = function() {
+
     if(stimQ.length===0) {
       if(trial_index<20) {
         trial_index += 1;
