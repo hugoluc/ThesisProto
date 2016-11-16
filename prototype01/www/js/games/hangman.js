@@ -42,6 +42,7 @@ function Hangman() {
 
     var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
     screend3.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
+
     var background = screend3.append("g")
       .attr({
         width: screen_width,
@@ -51,24 +52,30 @@ function Hangman() {
     console.log(screen_width)
 
     if(drawBGimage) {
+
       background.append("svg:image")
         .attr("xlink:href", "sprites/hangman/background_hangman.png")
         .attr({
           x: 0,
           y: 0,
           width: window.innerWidth,
-          height: window.innerHeight
+          height: window.innerHeight,
+          preserveAspectRatio : "none"
         })
         .attr("id", "background")
+
+        var paperWidth = window.innerWidth * 0.4
+
         background.append("svg:image")
           .attr("xlink:href", "sprites/hangman/paper.png")
           .attr({
-            x: window.innerWidth - 400,
+            x: window.innerWidth - paperWidth,
             y: window.innerHeight - 650,
-            width: 500,
+            width: paperWidth,
             height: 700
           })
-          .attr("id", "paper");
+          .attr("id", "paper")
+          .attr( "preserveAspectRatio" , "none")
       }
 
       return background;
@@ -168,7 +175,6 @@ function Hangman() {
         } else { // they got a letter!
           self.unique_letters_remaining -= 1;
 
-          console.log("-------------------")
           score.addScore(
             [{x:300,y:300}],// _starsPos : (array) [{x:,y:}]
             1,// _value : (int) value to be added to score for each star;
@@ -211,8 +217,8 @@ function Hangman() {
         .append("g") // Add one g for each data node
         .attr("transform", function(d, i) {
          // i = x + ncols*y
-         d.x = (i%ncols)*(button_width + 25 + getRandomInt(-2,2)) + 30,
-         d.y = Math.floor(i/ncols)*(button_height + 25 + getRandomInt(-2,2)) + 18;
+         d.x = (i%ncols)*(button_width + 25) + 30,
+         d.y = Math.floor(i/ncols)*(button_height + 25) + 18;
          return "translate(" + d.x + "," + d.y + ")";
         });
 
@@ -305,22 +311,22 @@ function Hangman() {
       var xpos = .95*screen_width-imageSize;
       // GK: replace veil with N leaves that disappear as wrong guesses are made
       console.log("self.image: "+self.image);
-      //if(self.image) {
-        var myImg = screend3.append("svg:image")
-          .attr("xlink:href", function(d) { return self.image; }) // .svg
-          .attr("x", xpos)
-          .attr("y", ypos)
-          .attr("width",imageSize)
-          .attr("height",imageSize)
-          .style("opacity",1);
 
-        self.veil = screend3.append("svg:image")
-          .attr("xlink:href", "sprites/hangman/vail.png") // .svg
-          .attr("x", xpos)
-          .attr("y", ypos)
-          .attr("width", imageSize*1.2)
-          .attr("height", imageSize*1.2)
-      //}
+      var myImg = screend3.append("svg:image")
+        .attr("xlink:href", function(d) { return self.image; }) // .svg
+        .attr("x", xpos)
+        .attr("y", ypos)
+        .attr("width",imageSize)
+        .attr("height",imageSize)
+        .style("opacity",1);
+
+      self.veil = screend3.append("svg:image")
+        .attr("xlink:href", "sprites/hangman/vail.png")
+        .attr("x", xpos)
+        .attr("y", ypos)
+        .attr("width", imageSize * 1.2)
+        .attr("height", imageSize * 1.2)
+        .attr("preserveAspectRatio","none")
 
       var myLabel = screend3.append("g").append("text")
         .attr("x", screen_width+50)
