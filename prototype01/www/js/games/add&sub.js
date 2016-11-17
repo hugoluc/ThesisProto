@@ -302,10 +302,18 @@ function proto03(){
         this.trial.clickCount++
 
         if(!this.trial.singleClickOrigin){
+
           this.trial.singleClickOrigin = this
+
         }else{
+
           console.log("=======================================")
-          if(this.trial.singleClickDest != this) this.trial.singleClickDest = this;
+          console.log(this,this.trial.singleClickOrigin )
+          if(this.trial.singleClickOrigin !=  this) {
+            this.trial.singleClickDest = this;
+          }else{
+            this.trial.singleClickOrigin = undefined
+          }
         }
 
         console.log(this)
@@ -328,6 +336,7 @@ function proto03(){
     console.log(">> click end")
     console.log("dest :", this.trial.singleClickDest)
     console.log("ori :", this.trial.singleClickOrigin)
+
 
       //change lillypad to selected
       if(!this.dragging) return
@@ -427,7 +436,6 @@ function proto03(){
 
 
           for(var i = 0; i < round.trial.ants.sprites.length; i++){
-
 
               if(round.trial.ants.sprites[i].id == this.id )
 
@@ -899,7 +907,7 @@ function proto03(){
       // i = destitination id
       //_id = origin id
 
-      if(this.lillySmall[i].circle.containsPoint(_dropPoint)){
+      if(this.lillySmall[i].circle.containsPoint(_dropPoint) && !this.lillySmall[i].destroyed){
 
           if(i == _id){ // return if its was dropped over itself
             this.stick.alpha = 0 // fade stick correctyl *************************************FIXME*****
@@ -1598,7 +1606,6 @@ function proto03(){
     }else{
 
       var angle = getAngle(this.stick.startX, this.stick.startY, _data.x, _data.y)
-      console.log(_data)
 
       this.stick.rotation = angle + Math.PI*1.5
 
