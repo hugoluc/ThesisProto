@@ -460,7 +460,14 @@
 
 	function gameScore(_round){
 
-		this.score = 0;
+		var storedScore = store.get("score");
+		if(storedScore) {
+			this.score = storedScore;
+		} else {
+			this.score = 0;
+			store.set("score", 0);
+		}
+
 		this.stars = [];
 		this.svgIds = 0;
 		this.starLength = 0;
@@ -488,9 +495,10 @@
 		// _svg : (bool) false for canvas
 		// _index : z-index of sprite
 
-		console.log("start set!")
-
+		var storedScore = store.get("score")
+		if(storedScore) this.score = storedScore;
 		this.score = this.score + (_starsPos.length * _value);
+		store.set("score", this.score);
 		this.valuePerStar = _value;
 		var initDelay = 300;
 		var delay = 0;

@@ -15,7 +15,7 @@ function Hangman() {
   if(!max_guesses) max_guesses = 10;
 
   var imageSize = 240;
-  var stim_diam;
+  var stim_diam = 80;
   var button_width = 60;
   var button_height = 60;
 
@@ -45,6 +45,7 @@ function Hangman() {
 
     console.log(self.image); // undefined the second time!
     self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split("")); // unique letters to guess--decrement when each is clicked
+
 
     self.init_screen = function() {
 
@@ -107,11 +108,10 @@ function Hangman() {
     self.init_screen();
     self.setup_screen();
 
+
     // end trial (read word)
     self.finish = function(won, callback) {
-
-      verbal_audio_feedback(won);
-
+      setTimeout(function(){ verbal_audio_feedback(won) }, 1000); // needs to be delayed (to be after )
       var randAdjust = Math.random() * .1 - .05;
 
       if(won) {
@@ -151,7 +151,7 @@ function Hangman() {
       nextTrial = true;
       self.alphabet.transition()
         .style("opacity", 0.0)
-        .duration(final_view_time/3)
+        .duration(final_view_time/2)
         .remove();
       screend3.selectAll("image")
         .transition()
@@ -211,13 +211,13 @@ function Hangman() {
 
           if(self.unique_letters_remaining === 0) {
             console.log("got all the letters!")
-            setTimeout(function(){self.finish(true, callback)}, 1000); // won!
+            setTimeout(function(){self.finish(true, callback)}, 1500); // won!
           }
 
 
         }
         if(self.wrong_guesses===max_guesses) { // lost..
-          setTimeout(function(){self.finish(false, callback)}, 1000);
+          setTimeout(function(){self.finish(false, callback)}, 1500);
         }
       }
     }

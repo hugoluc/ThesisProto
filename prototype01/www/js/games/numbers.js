@@ -3,13 +3,14 @@ var proto2loaded = false;
 var LOGTHIS =  false;
 
 function proto02(){
-
+  var stimCount = store.get('numbers_problems_solved');
+  if(!stimCount) stimCount = 0;
   logTime("counting",'start');
   var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
   // modify game dynamics if scoreDifferential reaches +3 or -3
   var walkSpeed = store.get("walkSpeed");
-  if(!walkSpeed) walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
-  var walkSpeed = 8; // +1 if 3x correct; -1 if 3x incorrect
+  if(!walkSpeed) walkSpeed = 5; // +1 if 3x correct; -1 if 3x incorrect
+  // +1 if 3x correct; -1 if 3x incorrect
   var numFoils = 3; // +2 if 3x correct, -1 if 3x incorrect
   var scoreIncrease = 1; // initially 1, but goes higher as they progress
 
@@ -74,7 +75,7 @@ function proto02(){
       this.container.addChild(this.sprite.nBg);
 
       //number variables
-      this.number =  new PIXI.Text("12", {font:"30px BalooBhai", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 0});
+      this.number =  new PIXI.Text("12", {font:"32px BalooBhai", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 0});
       this.number.anchor.x = 0.5
       this.number.anchor.y = 0.5
       this.number.x = this.sprite.walk.x + (this.sprite.walk.width*0.5)// - (this.number.textWidth/2)
@@ -94,33 +95,19 @@ function proto02(){
 
 
       //determine this bugType
-
-      if(this.startNumber < 6){
-
-          this.bugType = 1
-
-      }else if(this.startNumber < 11){
-
-          if(this.startNumber == 9){
-
-              this.bugType = 3
-
-          }else{
-
-          this.bugType = 2
-
-          }
-
-      }else if(this.startNumber < 16) {
-
-          this.bugType = 3
-
-
-      }else{
-
-          this.bugType = 4
-
-      }
+      // if(this.startNumber < 6){
+      //     this.bugType = 1
+      // }else if(this.startNumber < 11){
+      //     if(this.startNumber == 9){
+      //         this.bugType = 3
+      //     }else{
+      //     this.bugType = 2
+      //     }
+      // }else if(this.startNumber < 16) {
+      //     this.bugType = 3
+      // }else{
+      //     this.bugType = 4
+      // }
   };
 
   LadyBug.prototype.setFly = function(){
@@ -162,7 +149,7 @@ function proto02(){
 
       this.state = "walk";
       this.number.text = this.startNumber;
-      this.sprite.walk.animationSpeed = .05*walkSpeed/Math.log(this.number.text+4);
+      this.sprite.walk.animationSpeed = .05*walkSpeed/Math.log(2*this.number.text+2);
 
       this.start.x = _pos;
       this.start.y = window.innerHeight
@@ -310,7 +297,7 @@ function proto02(){
       // check if its correct
       if(this.startNumber == round.trial.origstim.id){
 
-          console.log(">>CLICK<<")
+          //console.log(">>CLICK<<")
 
           if(this.number.text != 0){
 
@@ -407,6 +394,7 @@ function proto02(){
   this.instructionWidth = session.canvas.height/8;  // size of the ciurcle for instruction
   this.goldCount = 0;
   this.coundCount = 0;
+  this.goingUp = true;
   this.audioQueue = [];
   this.audioQueuePlay = false;
   this.playing = [];
@@ -423,7 +411,8 @@ function proto02(){
 
           case "displaySound":
               if(!this.stimPlayed) {
-                assets.sounds.numbers[this.correct].play();
+                //assets.sounds.numbers[this.correct].play();
+                this.origstim.howl.play();
                 this.stimPlayed = true;
               }
 
@@ -436,7 +425,7 @@ function proto02(){
                   this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[0.25,0.00]);
                   this.introState = "moveToCorner";
 
-                  console.log("-----------------------------------------------------------")
+                  //console.log("-----------------------------------------------------------")
 
               }
 
@@ -515,12 +504,13 @@ function proto02(){
           var nextTrialDone = true;
 
           this.displayFeedbacks()
-
           if(!score.displayStar()) nextTrialDone = false;
           if(!score.displayExplosion()) nextTrialDone = false ;
           if(!this.nextTrial()) nextTrialDone = false;
 
           if(nextTrialDone){
+            stimCount ++;
+            store.set('numbers_problems_solved', stimCount);
             return true;
           }
 
@@ -655,27 +645,55 @@ function proto02(){
       return(this.origstim);
   };
 
-  Trial.prototype.createInstructions = function(){
-
-      if(this.correct < 6){
-          this.bugType = 1;
-      }else if(this.correct < 11){
-          if(this.correct == 9){
-            this.bugType = 3;
-          }else{
-            this.bugType = 2;
-          }
-
-      }else if(this.correct < 16) {
-          this.bugType = 3;
-      }else{
-          this.bugType = 4;
+  Trial.prototype.chooseCountBy = function(goalNum, maxCountBy) {
+    if(maxCountBy==1) {
+      return 1;
+    } else if(goalNum % maxCountBy == 0) {
+      // it's divisible! choose this with > prob the larger the number
+      if(goalNum > 20) var factor = .1;
+      if((Math.random() + .02*goalNum) > .6) { // GK
+        return maxCountBy;
       }
+    }
+    // try counting by 1 less
+    return this.chooseCountBy(goalNum, maxCountBy-1);
+  }
 
+  Trial.prototype.createInstructions = function(){
+    // if divisible by 10, do that with some probability
+    // else: if divisible by 9, do that with some prob
+    // else: if divisible by 8, do that with some probability
+    if(this.correct==1) {
+      this.bugType = 1;
+    } else {
+      this.bugType = this.chooseCountBy(this.correct, this.correct-1);
+    }
+
+      // if(this.correct < 10){
+      //     this.bugType = 1;
+      //     if(this.correct == 9){
+      //       this.bugType = 3;
+      //     }
+      // } else if(this.correct < 21){
+      //     if(this.correct == 15){
+      //       this.bugType = 3;
+      //     } else {
+      //       this.bugType = 2;
+      //     }
+      // }else if(this.correct < 30) {
+      //     this.bugType = 3;
+      // } else{
+      //     this.bugType = 4;
+      // }
+      // OLD:
       // Single bug: from 1 to 5
       // Double bug: form 6,7_,8,10,
       // Triple bugs: 9,11_,12,13_,14,15
       // 4bug: 16,_17,18,_19,20
+
+      // NEW:
+      // single: 1 to 9
+      // by 2: 10 to 20
 
       //get Instruction available size
 
@@ -810,7 +828,7 @@ function proto02(){
       var treshold = 20 + round.difficulty*4;
       var value = getRandomInt(0,100);
 
-      console.log(value,treshold);
+      //console.log(value,treshold);
       if( value <= treshold && this.correct > 2 ){
           this.rNumber.alpha = 0;
           this.bNumber.alpha = 0;
@@ -899,17 +917,18 @@ function proto02(){
     } else if(_feedback){ // provide feedback
 
        // set up audio queue for feedback
-       if(this.bugType == 1){
+       this.playAudioQueue("add", [noteScale[this.coundCount]])
 
-           this.playAudioQueue("add", [assets.sounds.correct2[this.coundCount]])
-           this.coundCount++
-
-       }else{
-
-           this.playAudioQueue("add", [assets.sounds.correct2[this.coundCount]])
-           this.coundCount++
-
-       };
+       if(this.goingUp) {
+         this.coundCount++;
+       } else {
+         this.coundCount--;
+       }
+       if(this.coundCount==0) {
+         this.goingUp = true;
+       } else if(this.coundCount==4) {
+         this.goingUp = false;
+       }
 
        var lightUp = 0
 
@@ -1051,6 +1070,7 @@ function proto02(){
           if(!this.audioQueuePlay){
 
               for(var i =0; i<this.audioQueue[0].length; i++){
+                  // this goes too high GK
                   this.playing.push(this.audioQueue[0][i])
                   this.audioQueue[0][i].play()
               }
@@ -1169,28 +1189,28 @@ function proto02(){
           assets.addTexture("bg",'sprites/backGrounds/BackGround-01_2x.png');
       }
 
-      for (var i = 0; i < numbers.length; i++) {
-        //assets.sounds.numbers
-        assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
+      // for (var i = 0; i < numbers.length; i++) {
+      //   //assets.sounds.numbers
+      //   assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
+      //
+      // };
 
-      };
-
-      for (var i = 0; i < correctSounds.length; i++) {
-
-          for (var j = 0; j < correctSounds[i].length; j++) {
-
-              if(i == 0){
-
-                  assets.addSound("correct1",correctSounds[i][j].audio + '.mp3');
-
-              }else{
-
-                  assets.addSound("correct2",correctSounds[i][j].audio + '.mp3');
-
-              }
-
-          };
-      };
+      // for (var i = 0; i < correctSounds.length; i++) {
+      //
+      //     for (var j = 0; j < correctSounds[i].length; j++) {
+      //
+      //         if(i == 0){
+      //
+      //             assets.addSound("correct1",correctSounds[i][j].audio + '.mp3');
+      //
+      //         }else{
+      //
+      //             assets.addSound("correct2",correctSounds[i][j].audio + '.mp3');
+      //
+      //         }
+      //
+      //     };
+      // };
 
       //assets.addSound("wrong",'wrong.mp3');
       assets.load(onAssetsLoaded)
@@ -1206,7 +1226,7 @@ function proto02(){
 
   var finishGame = false
   var previousTime = Date.now();
-  var MS_PER_UPDATE = 33.3333;
+  var MS_PER_UPDATE = 33.333;
   var lag = 0
 
   function adjustGameDynamics() { //move inside game
@@ -1230,6 +1250,7 @@ function proto02(){
         logTime("counting",'stop');
         store.set('walkSpeed', walkSpeed);
         //console.log('counting game over - storing');
+        //stimuli.push(this.trial.origstim); // GK: save current trial too
         round.storeSession(stimuli, 'numberstim');
         session.stats.domElement.style.display = "none";
         round.destroy();
