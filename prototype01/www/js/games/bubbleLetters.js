@@ -543,7 +543,7 @@ function bubbleLetters(){
 
         var finishGame = false;
         var previousTime = Date.now();
-        var MS_PER_UPDATE = 16.66667;
+        var MS_PER_UPDATE = 33.3333333;
         var lag = 0;
 
         function update() {

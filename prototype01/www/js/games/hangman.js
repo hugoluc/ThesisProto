@@ -1,4 +1,5 @@
 function Hangman() {
+
   var screend3;
   score.stage = screend3; // ? doesn't work..
   var scoreIncrease = 1;
@@ -26,43 +27,11 @@ function Hangman() {
     var click_type = 'click';
   }
 
-  var init_screen = function() {
-    screend3 = d3.select("#container-exp").append("svg")
-      .attr({
-        width: screen_width,
-        height: screen_height,
-        x: 0,
-        y: 0
-      })
-      .attr("id", "screen");
-  };
+  function HangmanTrial (pars) {
 
-  var setup_screen = function(drawBGimage) {
-    var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
-    screend3.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
-    var background = screend3.append("g")
-      .attr({
-        width: screen_width,
-        height: screen_height
-      })
-      .attr("id", "background");
-    console.log(screen_width)
-    if(drawBGimage) {
-      background.append("svg:image")
-        .attr("xlink:href", "img/"+bg_image_fname)
-        .attr({
-          x: 0,
-          y: 0,
-          width: screen_width,
-          height: screen_height
-        })
-        .attr("id", "background");
-      }
+    document.getElementById("header-exp").style.display = 'block';
 
-      return background;
-  };
-
-  var HangmanTrial = function(pars) {
+    stim_diam = window.innerWidth;
     var self = this;
     self.starttime = Date.now();
     self.origstim = pars;
@@ -77,16 +46,78 @@ function Hangman() {
     console.log(self.image); // undefined the second time!
     self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split("")); // unique letters to guess--decrement when each is clicked
 
-    self.adjustDifficulty = function() {
 
-    }
+    self.init_screen = function() {
+
+      screend3 = d3.select("#container-exp").append("svg")
+      .attr({
+        width: screen_width,
+        height: screen_height,
+        x: 0,
+        y: 0
+      })
+      .attr("id", "screen");
+
+    };
+
+    self.setup_screen = function(drawBGimage) {
+
+        var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
+        screend3.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
+
+        var background = screend3.append("g")
+          .attr({
+            width: screen_width,
+            height: screen_height
+          })
+          .attr("id", "background");
+
+        console.log(screen_width)
+
+        if(drawBGimage) {
+
+          background.append("svg:image")
+            .attr("xlink:href", "sprites/hangman/background_hangman.png")
+            .attr({
+              x: 0,
+              y: 0,
+              width: window.innerWidth,
+              height: window.innerHeight,
+              preserveAspectRatio : "none"
+            })
+            .attr("id", "background")
+
+            var paperWidth = window.innerWidth * 0.5
+
+            background.append("svg:image")
+              .attr("xlink:href", "sprites/hangman/paper.png")
+              .attr({
+                x: window.innerWidth - paperWidth,
+                y: window.innerHeight - 650,
+                width: paperWidth,
+                height: 700
+              })
+              .attr("id", "paper")
+              .attr( "preserveAspectRatio" , "none")
+        }
+
+        return background;
+
+      };
+
+    self.init_screen();
+    self.setup_screen();
+
 
     // end trial (read word)
     self.finish = function(won, callback) {
       setTimeout(function(){ verbal_audio_feedback(won) }, 1000); // needs to be delayed (to be after )
       var randAdjust = Math.random() * .1 - .05;
+
       if(won) {
+
         self.origstim.priority += .5 + randAdjust;
+
         if(max_guesses>3) {
           max_guesses -= 1; // adjust difficulty: one fewer guess allowed
         }
@@ -100,11 +131,15 @@ function Hangman() {
         // score.setExplosion([300,300], 100,1000);
 
       } else {
-        self.origstim.priority -= .5 + randAdjust;
+
+        self.origstim.priority -= .1 + randAdjust;
         max_guesses += 1;
       }
-      var final_view_time = 4000; // how long they see the word and picture at the end
+
+      var final_view_time = 3500; // how long they see the word and picture at the end
+
       self.audio.play()
+
       self.blanks.transition()
         .style("opacity", 0.0)
         .delay(final_view_time)
@@ -125,9 +160,11 @@ function Hangman() {
       // log trial and return the orig stim with modified priority
       logTrial({"starttime":self.starttime, "endtime":Date.now(), "stimtype":'word', "stim":self.answer, "total_clicks":self.guesses_made, "incorrect_clicks":self.wrong_guesses});
       setTimeout(function(){ callback(self.origstim) }, final_view_time); // pass data
-    }
+
+      }
 
     self.handleGuess = function(guess, callback) {
+
       //console.log("unique remaining letters: " + self.unique_letters_remaining);
       if(guess.clicked==1) {
         self.guesses_made += 1;
@@ -139,23 +176,45 @@ function Hangman() {
           .style("opacity", 0.0);
 
         if(hits[0].length<1) {
+
           self.wrong_guesses += 1;
           var img_vert_shift = self.wrong_guesses * imageSize / max_guesses;
           self.veil.transition()
             .attr("transform", "translate(0,-"+img_vert_shift+")")
             .delay(1000);
           setTimeout(function(){incorrect_sound.play()}, 900);
+
         } else { // they got a letter!
+
           self.unique_letters_remaining -= 1;
-          setTimeout(function(){correct_sound.play()}, 900);
+
+          for(var i = 0; i < hits[0].length/2; i++){
+
+            var xpos = hits[0][i*2].getBoundingClientRect().left + ( hits[0][i*2].getBoundingClientRect().width/2 )
+            var ypos = hits[0][i*2].getBoundingClientRect().bottom - ( hits[0][i*2].getBoundingClientRect().width/2 )
+
+            score.addScore(
+              [{x:xpos,y:ypos}],// _starsPos : (array) [{x:,y:}]
+              1,// _value : (int) value to be added to score for each star;
+              1000,// _duration : length of animation
+              true,// _svg : (bool) false for canvas
+              100// _index : z-index of sprite
+            )
+
+          }
+
+          setTimeout(function(){correct_sound.play()}, 200);
           self.veil.transition()
             .attr("fill", getRandomColor())
             .duration(1000);
           // did they finish the round?
-          if(self.unique_letters_remaining===0) {
+
+          if(self.unique_letters_remaining === 0) {
             console.log("got all the letters!")
             setTimeout(function(){self.finish(true, callback)}, 1500); // won!
           }
+
+
         }
         if(self.wrong_guesses===max_guesses) { // lost..
           setTimeout(function(){self.finish(false, callback)}, 1500);
@@ -164,13 +223,15 @@ function Hangman() {
     }
 
     self.drawAlphabet = function(letters, callback) {
+
       for (var i = 0; i < letters.length; i++) {
         letters[i].clicked = 0;
       }
-      var nrows = Math.floor(Math.sqrt(letters.length)) - 1;
+      var nrows = 4
       var ncols = Math.ceil(letters.length/nrows);
       console.log("nrows: "+nrows+" ncols: "+ncols);
       var keys = screend3.append("svg")
+        .attr("id", "trialCanvas")
         .append("g")
         .attr("transform", "translate("+ screen_width*.08 +","+ screen_height*.2 +")"); // 135,90
 
@@ -180,22 +241,27 @@ function Hangman() {
         .append("g") // Add one g for each data node
         .attr("transform", function(d, i) {
          // i = x + ncols*y
-         d.x = (i%ncols)*(button_width+20) + 18,
-         d.y = Math.floor(i/ncols)*(button_height+20) + 18;
+         d.x = (i%ncols)*(button_width + 25) + 30,
+         d.y = Math.floor(i/ncols)*(button_height + 25) + 18;
          return "translate(" + d.x + "," + d.y + ")";
         });
 
-      self.alphabet.append("circle") // add circle
-        .attr("r", button_width/2)
-        .attr("fill", "#00BFFF")
-        .style("opacity", .8);
-
+      self.alphabet.append("svg:image")
+        .attr("xlink:href", "sprites/hangman/rock.png")
+        .attr({
+          x: -50,
+          y: -40,
+          width: 100,
+          height: 100
+        })
+        .attr("id", "background");
 
       self.alphabet.append("text") // add text to the g element
         .attr("text-anchor", "middle")
         .attr("style", "font-size: 38; font-family: Helvetica, sans-serif")
         .attr("y", 12)
         .style("opacity", 1.0)
+        .attr("fill", "#2d2420")
         .text(function(d) {
          return d.text;
         });
@@ -205,7 +271,7 @@ function Hangman() {
         .attr("r", button_width/2)
         .style("opacity", 0.0);
 
-      d3.selectAll(".button")
+        d3.selectAll(".button")
         .on(click_type, function(d) {
           d3.select(this)
             .transition()
@@ -218,18 +284,22 @@ function Hangman() {
           audio.play();
           self.handleGuess(d, callback);
         });
-    }
+      }
 
     self.drawBlanks = function() {
-      var chars = self.answer.split("");
-      var chdict = [];
-      for (var i = 0; i < chars.length; i++) {
-        chdict.push({"letter": chars[i]});
-      }
+
+        var chars = self.answer.split("");
+        var chdict = [];
+
+        for (var i = 0; i < chars.length; i++) {
+          chdict.push({"letter": chars[i], "leaf" : getRandomInt(1,4) });
+          stim_diam -= 80
+        }
+
       //console.log(chdict)
       self.blanks = screend3.append("g")
         .attr("class", "blanks")
-        .selectAll("circle")
+        .selectAll("circle") //FIXME
         .data(chdict)
         .enter()
         .append("g") // Add one g for each data node
@@ -237,10 +307,16 @@ function Hangman() {
         .attr("transform", function(d, i) {
          // Set d.x and d.y here so that other elements can use it. d is
          // expected to be an object here.
-         d.x = i*100 + stim_diam,
+         d.x = i*80 + stim_diam,
          d.y = .88*screen_height;
          return "translate(" + d.x + "," + d.y + ")";
         });
+
+      self.blanks.append("circle") // start FIXME
+        .attr("class", "blank")
+        .attr("r", 40)
+        .attr("fill", "green")
+        .style("opacity", 0.0);
 
       self.blanks.append("text") // add text to the g element
         .attr("text-anchor", "middle")
@@ -251,9 +327,17 @@ function Hangman() {
          return d.letter;
         });
 
-      self.blanks.append("circle")
+      var radius = 90
+
+      self.blanks.append("svg:image")
+        .attr("xlink:href", function(d){ return "sprites/hangman/leaf-0" + d.leaf + ".png"})
         .attr("class", "blank")
-        .attr("r", 40)
+        .attr({
+          "x" : -radius/2,
+          "y" : -radius/2,
+          "width" : radius,
+          "height" : radius
+        })
         .attr("fill", "green")
         .style("opacity", 1.0);
 
@@ -262,34 +346,36 @@ function Hangman() {
     }
 
     self.drawStimulus = function() {
+
       var ypos = screen_height*.25;
       var xpos = .95*screen_width-imageSize;
       // GK: replace veil with N leaves that disappear as wrong guesses are made
       console.log("self.image: "+self.image);
-      //if(self.image) {
-        var myImg = screend3.append("svg:image")
-          .attr("xlink:href", function(d) { return self.image; }) // .svg
-          .attr("x", xpos)
-          .attr("y", ypos)
-          .attr("width",imageSize)
-          .attr("height",imageSize)
-          .style("opacity",1);
 
-        self.veil = screend3.append("rect")
-          .attr("x", xpos)
-          .attr("y", ypos)
-          .attr("width", imageSize)
-          .attr("height", imageSize)
-          .attr("fill", getRandomColor());
-      //}
+       var defs = screend3.append("defs")
+       var mask = defs.append("mask").append("rect")
+         .attr("x", xpos)
+         .attr("y", ypos)
+         .attr("width", imageSize * 1.2)
+         .attr("height", imageSize * 1.2)
+         .attr("id", "mask")
 
-      screend3.append("svg:image")
-         .attr('x',xpos)
-         .attr('y',ypos)
-         .attr('width', 50)
-         .attr('height', 50)
-         .attr("xlink:href","sprites/stick/leave.png");
-         //.attr("transform", "rotate("+getRandomInt(0,180)+")");
+      var myImg = screend3.append("svg:image")
+        .attr("xlink:href", function(d) { return self.image; }) // .svg
+        .attr("x", xpos)
+        .attr("y", ypos)
+        .attr("width",imageSize)
+        .attr("height",imageSize)
+        .style("opacity",1);
+
+      self.veil = screend3.append("svg:image")
+        .attr("xlink:href", "sprites/hangman/vail.png")
+        .attr("x", xpos)
+        .attr("y", ypos)
+        .attr("width", imageSize * 1.2)
+        .attr("height", imageSize * 1.2)
+        .attr("preserveAspectRatio","none")
+        // .attr("mask", "url(#mask)" )
 
       var myLabel = screend3.append("g").append("text")
         .attr("x", screen_width+50)
@@ -300,17 +386,19 @@ function Hangman() {
     };
 
     self.doTrial = function(callback) {
+
       var xpos = screen_width*.75;
       self.drawStimulus();
       self.drawBlanks();
       self.drawAlphabet(letters, callback);
       //return callback(tr_data);
+
     };
-  };
 
 
-  init_screen();
-  setup_screen(true); // draw background (with/without image)
+};
+
+
   document.getElementById("header-exp").style.display = 'block';
   //queuesToUpdate['objectstim'] = true;
 
@@ -321,6 +409,7 @@ function Hangman() {
   var trial_index = 1;
 
   this.destroy = function() {
+
     logTime("hangman",'stop');
     //storeSession();
     //queuesToUpdate["objectstim"] = false;
@@ -329,22 +418,28 @@ function Hangman() {
     stimQueues['objectstim'].push(current_stim);
     storeQueue('objectstim');
     //clearTimeout();
-    screend3.selectAll("*")
+    d3.select("#screen").selectAll("*")
       .transition() // d3.select("#background")
       .each("end",function() {
+
+        if(this.id == "header-exp") return
+
         d3.select(this)
           .transition()
           .style("opacity",0)
           .delay(0)
           .duration(0)
           .remove();
-       });
-    // selectAll and remove "g", "svg", "circle", "rect" ...?
-    screend3.select("#header-exp").transition().style("display : none");
+       })
+
+    console.log("--------------------------------------")
+    document.getElementById("container-exp").removeChild(document.getElementById("screen"))
+
     //screend3.select("#background").remove(); // #background
     finishGame = true;
 	  session.hide();
     currentview = new MainMenu(assets);
+
   }
 
   var storeData = function(tr_dat) {
@@ -358,30 +453,36 @@ function Hangman() {
     }
   };
 
+  var _that = this;
+
   var next = function() {
-    if(stimQ.length===0) {
-      if(trial_index<20) {
-        trial_index += 1;
-        //trials = animals; // GK: feed in queue
-        next();
-      } else {
-        // either here (or in finish) store summary data of this game
-        self.destroy();
-        currentview = new MainMenu();
-      }
-      //finish(); // save data?
-    } else if(trial_index%5===0) {
-      // score recent trials, add more trials?
-      trial_index += 1;
-      console.log("feedback? (kazi_nzuri.mp3) fun animation?");
-      next();
-    } else {
-      setup_screen(true);
+
+    if(d3.select("#screen")[0][0]){
+      d3.select("#screen").selectAll("*")
+        .transition() // d3.select("#background")
+        .each("end",function() {
+
+          if(this.id == "header-exp") return
+
+          d3.select(this)
+            .transition()
+            .style("opacity",0)
+            .delay(0)
+            .duration(0)
+            .remove();
+          })
+
+      console.log("--------------------------------------")
+      document.getElementById("container-exp").removeChild(document.getElementById("screen"))
+    }
+
       current_stim = stimQ.pop();
       var tr = new HangmanTrial(current_stim);
+      tr.setup_screen(true);
       trial_index += 1;
       tr.doTrial(storeData);
-    }
+
+
   };
 
   next();

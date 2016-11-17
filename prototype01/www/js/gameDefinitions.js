@@ -351,11 +351,7 @@
 
 	Round.prototype.getNextTrial = function(){
 
-		//var stim = this.stimuli.pop();
-		//console.log("Round.getNextTrial stim:")
-		//console.log(stim);
-		//console.log(this.stimuli.pop()); // this does get the next one
-		console.log("sodhfoshdffsklkjfhskjfkjskjfhsjh")
+
 		console.log(this.stimuli.pop())
 
 	 	this.trial = new this._trial(this.stimuli.pop());
@@ -371,7 +367,6 @@
 	}
 
 	Round.prototype.destroy = function(){
-
 
 		this.stage.removeChild(this.background)
 		this.background.destroy(true,true)
@@ -479,6 +474,16 @@
 		this.explosion = [];
 		this.stage = {};
 
+		this.starGroup = d3.select("body")
+		.append("svg")
+		.attr("id", "starGroup")
+		.attr({
+			x: 0,
+			y: 0,
+			width : window.innerWidth,
+			height : window.innerHeight,
+		})
+		this.starGroup[0][0].style.display = "none"
 	};
 
 	//called once to set up position of score and adding to score varaible
@@ -502,27 +507,24 @@
 
 		if(_svg){ // draw svg star
 
-			this.svg = true;
-			var starGroup = d3.select("#scoreContainer")
-			.append("svg")
-			.attr("id", "starGroup")
-			.attr({
-			  x: 0,
-			  y: 0,
-			  width : window.innerWidth,
-			  height : window.innerHeight,
+			console.log(_svg)
 
-			})
+			this.svg = true;
+
+		 	this.starGroup[0][0].style.display = "block"
+			var _this = this;
+			var starSize = 100
 
 			for(var i = 0; i < _starsPos.length; i++){
 
-				var starSvg = starGroup.append("svg:image")
+				var starSvg = this.starGroup.append("svg:image")
 				.attr("xlink:href", "svgs/starScore.svg")
 				.attr({
 				  x: _starsPos[i].x,
 				  y: _starsPos[i].y,
-				  width : 100,
-				  height : 100,
+				  width : starSize ,
+				  height : starSize ,
+					transform : "translate(" + -(starSize/2) + "," +  -(starSize/2) + ")"
 				})
 				.attr("id", "star-" + (this.starLength + 1))
 				.transition()
@@ -531,12 +533,18 @@
 				.attr({
 					x: window.innerWidth - 50,
 					y: -50,
+				//	transform : "rotate(180)"
 				})
 				.each("end", function(){
 				// Animation callback
+					console.log("callback")
 					var id = this.id
-					var _this = d3.select("#" + id).remove()
+					d3.select("#" + id).remove()
+					_this.starGroup[0][0].style.display = "none"
+
 				});
+
+				console.log(starSvg)
 
 				this.starLength = this.starLength + 1;
 				delay = delay + initDelay
