@@ -916,7 +916,9 @@ function proto02(){
 
     } else if(_feedback){ // provide feedback
 
+       // set up audio queue for feedback
        this.playAudioQueue("add", [noteScale[this.coundCount]])
+
        if(this.goingUp) {
          this.coundCount++;
        } else {
