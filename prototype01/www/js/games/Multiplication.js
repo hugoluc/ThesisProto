@@ -146,6 +146,7 @@ function Multiplication(){
             if(_this.answearGiven == this.id){ // correct answear given || orrect nest size
 
               if(_this.playState == "Win" && !this.clicked){
+                correct_sound.play();
                 this.clicked = true
 
                 var pos = {
@@ -373,15 +374,15 @@ function Multiplication(){
                 )
               }
             }
-
-            this.playState = "Lose"
+            incorrect_sound.play();
+            this.playState = "Lose";
 
           } else if(this.aswear.length == this.stimuli.values.length){
 
-    				this.playState = "Win"
+    				this.playState = "Win";
             this.eggsClicked = false;
 
-    				console.log("YOU WIN!")
+    				console.log("YOU WIN!");
 
     			}else
 
@@ -464,7 +465,7 @@ function Multiplication(){
 
 							done = false;
 						};
-            
+
             if(!this.played) {
               this.played = true;
               this._stimuli[0].howl.play();

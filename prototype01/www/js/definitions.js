@@ -29,10 +29,21 @@ var feedback_audio_files = ["welcome", "addition_instruct", "ant_instruct", "bee
 
 var feedback_sounds = []; // a bunch of Howls
 
+var noteScale = [];
+
 var loadAudioFiles = function() {
   for (var i = 0; i < numbers.length; i++) {
     numbers[i].howl = new Howl({
       src: ['audio/'+language+'/'+numbers[i].audio+'.mp3'],
+      autoplay: false,
+      buffer: true
+    });
+  }
+
+  // 'correct2' notes for counting
+  for (var i = 1; i < 5; i++) {
+    noteScale[i-1] = new Howl({
+      src: ['audio/correct2/'+i+'.mp3'],
       autoplay: false,
       buffer: true
     });
