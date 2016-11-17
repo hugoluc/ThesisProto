@@ -14,7 +14,7 @@ function Hangman() {
   if(!max_guesses) max_guesses = 10;
 
   var imageSize = 240;
-  var stim_diam = 80
+  var stim_diam = 80;
   var button_width = 60;
   var button_height = 60;
 
@@ -77,9 +77,13 @@ function Hangman() {
     console.log(self.image); // undefined the second time!
     self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split("")); // unique letters to guess--decrement when each is clicked
 
+    self.adjustDifficulty = function() {
+
+    }
+
     // end trial (read word)
     self.finish = function(won, callback) {
-      verbal_audio_feedback(won);
+      setTimeout(function(){ verbal_audio_feedback(won) }, 1000); // needs to be delayed (to be after )
       var randAdjust = Math.random() * .1 - .05;
       if(won) {
         self.origstim.priority += .5 + randAdjust;
@@ -99,7 +103,7 @@ function Hangman() {
         self.origstim.priority -= .5 + randAdjust;
         max_guesses += 1;
       }
-      var final_view_time = 3500; // how long they see the word and picture at the end
+      var final_view_time = 4000; // how long they see the word and picture at the end
       self.audio.play()
       self.blanks.transition()
         .style("opacity", 0.0)
@@ -112,7 +116,7 @@ function Hangman() {
       nextTrial = true;
       self.alphabet.transition()
         .style("opacity", 0.0)
-        .duration(final_view_time/3)
+        .duration(final_view_time/2)
         .remove();
       screend3.selectAll("image")
         .transition()
@@ -150,11 +154,11 @@ function Hangman() {
           // did they finish the round?
           if(self.unique_letters_remaining===0) {
             console.log("got all the letters!")
-            setTimeout(function(){self.finish(true, callback)}, 1000); // won!
+            setTimeout(function(){self.finish(true, callback)}, 1500); // won!
           }
         }
         if(self.wrong_guesses===max_guesses) { // lost..
-          setTimeout(function(){self.finish(false, callback)}, 1000);
+          setTimeout(function(){self.finish(false, callback)}, 1500);
         }
       }
     }

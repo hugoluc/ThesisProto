@@ -46,17 +46,17 @@ var numbers = [
   {id:"27", audio:"27", text:"ishirini na saba", seq:[]},
   {id:"28", audio:"28", text:"ishirini na nane", seq:[]},
   {id:"29", audio:"29", text:"ishirini na tisa", seq:[]}, // let's just go up to 30 for add/sub for now
-  {id:"30", audio:"thelathini", text:"thelathini", seq:[]}, // some places sound: 'selasini'
-  {id:"40", audio:"arobaini", text:"arobaini", seq:[]},
-  {id:"50", audio:"hamsini", text:"hamsini", seq:[]},
-  {id:"60", audio:"sitini", text:"sitini", seq:[]},
-  {id:"70", audio:"sabini", text:"sabini", seq:[]},
-  {id:"80", audio:"themanini", text:"themanini", seq:[]},
-  {id:"90", audio:"tisini", text:"tisini", seq:[]},
-  {id:"100", audio:"mia", text:"mia", seq:[]}, // 500 - mia tano
-  {id:"1000", audio:"elfu", text:"elfu", seq:[]},
-  {id:"100000", audio:"laki", text:"laki", seq:[]},
-  {id:"1000000", audio:"milloni", text:"milloni", seq:[]}
+  {id:"30", audio:"thelathini", text:"thelathini", seq:[]} // some places sound: 'selasini'
+  // {id:"40", audio:"arobaini", text:"arobaini", seq:[]},
+  // {id:"50", audio:"hamsini", text:"hamsini", seq:[]},
+  // {id:"60", audio:"sitini", text:"sitini", seq:[]},
+  // {id:"70", audio:"sabini", text:"sabini", seq:[]},
+  // {id:"80", audio:"themanini", text:"themanini", seq:[]},
+  // {id:"90", audio:"tisini", text:"tisini", seq:[]}
+  // {id:"100", audio:"mia", text:"mia", seq:[]}, // 500 - mia tano
+  // {id:"1000", audio:"elfu", text:"elfu", seq:[]},
+  // {id:"100000", audio:"laki", text:"laki", seq:[]},
+  // {id:"1000000", audio:"milloni", text:"milloni", seq:[]}
   ];
 
 //generate_number_name(45)
@@ -163,7 +163,7 @@ var animals = [
   {id:"zebra", text:"punda-milia", audio:"punda-milia", image:"zebra"},
   {id:"snake", text:"nyoka", audio:"nyoka", image:"snake"},
   {id:"cow", text:"ng'ombe", audio:"ngombe", image:"cow"},
-  {id:"octopus", text:"pwesa", audio:"pwesa", image:"octopus"},
+  {id:"octopus", text:"pweza", audio:"pwesa", image:"octopus"}, // pwesa sometimes
   {id:"shark", text:"papa", audio:"papa", image:"shark"},
   {id:"anchovy", text:"kombo", audio:"kombo", image:"fish"},
   {id:"fish", text:"samaki", audio:"samaki", image:"fish"},
@@ -181,16 +181,16 @@ var animals = [
   {id:"frog", text:"chura", audio:"chura", image:"frog"},
   {id:"bear", text:"dubu", audio:"dubu", image:"bear"},
   {id:"emu", text:"emu", audio:"emu", image:"emu"},
-  {id:"flamingo", text:"heroe", audio:"heroe", image:"flamingo"}, // heron??
-  {id:"fly", text:"inzi", audio:"inzi", image:"fly"},
+///  {id:"flamingo", text:"heroe", audio:"heroe", image:"flamingo"}, // heron??
+  {id:"fly", text:"nzi", audio:"inzi", image:"fly"}, // should be nzi -- re-record
   {id:"chameleon", text:"lumbwi", audio:"lumbwi", image:"chameleon"}, // lizard?
  {id:"pigeon", text:"ninga", audio:"ninga", image:"pigeon"}, // ..bird?
- {id:"orangutan", text:"orangutangu", audio:"orangutangu", image:"orangutan"},
+ //{id:"orangutan", text:"orangutangu", audio:"orangutangu", image:"orangutan"},
  {id:"giraffe", text:"twiga", audio:"twiga", image:"giraffe"},
  {id:"lobster", text:"uduvi", audio:"uduvi", image:"lobster"},
- {id:"bee", text:"wembembe", audio:"wembembe", image:"bee"},
+// {id:"bee", text:"wembembe", audio:"wembembe", image:"bee"}, // dondola ?
  {id:"jellyfish", text:"yavuyavu", audio:"yavuyavu", image:"jellyfish"},
- {id:"warthog", text:"gwasi", audio:"gwasi"}, // pig? hog? warthog?
+ //{id:"warthog", text:"gwasi", audio:"gwasi"}, // pig? hog? warthog?
  {id:"squid", text:"mzia", audio:"mzia"}
 // praying mantis = vunjajungu ? (or insect?)
 // robin = robini , swallow?? = zawaridi
@@ -217,7 +217,7 @@ var objects = animals.concat([
   {id:"chest", text:"kifua", audio:"kifua"},
   {id:"coconut", text:"nazi", audio:"nazi", image:"coconut"},
   {id:"grape", text:"zabibu", audio:"zabibu", image:"grape"},
-  {id:"cheese", text:"chizi", audio:"chizi", image:"cheese"},
+//  {id:"cheese", text:"chizi", audio:"chizi", image:"cheese"}, // crazy person
   {id:"beard", text:"ndevu", audio:"ndevu"},
   {id:"bush", text:"nyika", audio:"nyika"},
   {id:"vegetable", text:"mboga", audio:"mboga"},
@@ -271,7 +271,7 @@ var words = [
   {id:"good", text:"nzuri", audio:"nzuri"},
   {id:"friend", text:"rafiki", audio:"rafiki"},
   {id:"goodbye", text:"kwaheri", audio:"kwaheri"},
-  {id:"hot", text:"moto", audio:"moto"},
+  {id:"hot", text:"moto", audio:"moto"}, // fire/spicy -- joto = feeling hot
   {id:"food", text:"chakula", audio:"chakula"},
   {id:"here", text:"hapa", audio:"hapa"},
   {id:"how", text:"vipi", audio:"vipi"},
@@ -288,7 +288,7 @@ var words = [
   {id:"what", text:"nini", audio:"nini"},
   {id:"which", text:"ipi", audio:"ipi"},
   {id:"where", text:"wapi", audio:"wapi"},
-  {id:"when", text:"wakati gani", audio:"wakati_gani"},
+  {id:"when", text:"wakati gani", audio:"wakati_gani"}, // lini
   {id:"Saturday", text:"jumamosi", audio:"jumamosi"},
   {id:"Sunday", text:"jumapili", audio:"jumapili"},
   {id:"Monday", text:"jumatatu", audio:"jumatatu"},
@@ -333,7 +333,7 @@ var words = [
   {id:"seed", text:"mbegu", audio:"mbegu"},
   {id:"quiet", text:"kimya", audio:"kimya"},
   {id:"hunger", text:"njaa", audio:"njaa"},
-  {id:"dream", text:"njozi", audio:"njozi"},
+  {id:"dream", text:"njozi", audio:"njozi"}, //ndoto
   {id:"true", text:"kweli", audio:"kweli"},
   {id:"coastal", text:"pwani", audio:"pwani"},
   {id:"of", text:"ya", audio:"ya"},
