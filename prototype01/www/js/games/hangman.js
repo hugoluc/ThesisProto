@@ -15,7 +15,7 @@ function Hangman() {
   if(!max_guesses) max_guesses = 10;
 
   var imageSize = 240;
-  var stim_diam = 80
+  var stim_diam;
   var button_width = 60;
   var button_height = 60;
 
@@ -27,62 +27,11 @@ function Hangman() {
     var click_type = 'click';
   }
 
-  var init_screen = function() {
-    screend3 = d3.select("#container-exp").append("svg")
-      .attr({
-        width: screen_width,
-        height: screen_height,
-        x: 0,
-        y: 0
-      })
-      .attr("id", "screen");
-  };
+  function HangmanTrial (pars) {
 
-  var setup_screen = function(drawBGimage) {
+    document.getElementById("header-exp").style.display = 'block';
 
-    var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
-    screend3.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
-
-    var background = screend3.append("g")
-      .attr({
-        width: screen_width,
-        height: screen_height
-      })
-      .attr("id", "background");
-    console.log(screen_width)
-
-    if(drawBGimage) {
-
-      background.append("svg:image")
-        .attr("xlink:href", "sprites/hangman/background_hangman.png")
-        .attr({
-          x: 0,
-          y: 0,
-          width: window.innerWidth,
-          height: window.innerHeight,
-          preserveAspectRatio : "none"
-        })
-        .attr("id", "background")
-
-        var paperWidth = window.innerWidth * 0.4
-
-        background.append("svg:image")
-          .attr("xlink:href", "sprites/hangman/paper.png")
-          .attr({
-            x: window.innerWidth - paperWidth,
-            y: window.innerHeight - 650,
-            width: paperWidth,
-            height: 700
-          })
-          .attr("id", "paper")
-          .attr( "preserveAspectRatio" , "none")
-      }
-
-      return background;
-  };
-
-  var HangmanTrial = function(pars) {
-
+    stim_diam = window.innerWidth;
     var self = this;
     self.starttime = Date.now();
     self.origstim = pars;
@@ -96,6 +45,67 @@ function Hangman() {
 
     console.log(self.image); // undefined the second time!
     self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split("")); // unique letters to guess--decrement when each is clicked
+
+    self.init_screen = function() {
+
+      screend3 = d3.select("#container-exp").append("svg")
+      .attr({
+        width: screen_width,
+        height: screen_height,
+        x: 0,
+        y: 0
+      })
+      .attr("id", "screen");
+
+    };
+
+    self.setup_screen = function(drawBGimage) {
+
+        var bg_image_fname = background_image_files[getRandomInt(0,background_image_files.length-1)];
+        screend3.selectAll("*").remove(); // clear remnants of previous round...(not sure why they stick around)
+
+        var background = screend3.append("g")
+          .attr({
+            width: screen_width,
+            height: screen_height
+          })
+          .attr("id", "background");
+
+        console.log(screen_width)
+
+        if(drawBGimage) {
+
+          background.append("svg:image")
+            .attr("xlink:href", "sprites/hangman/background_hangman.png")
+            .attr({
+              x: 0,
+              y: 0,
+              width: window.innerWidth,
+              height: window.innerHeight,
+              preserveAspectRatio : "none"
+            })
+            .attr("id", "background")
+
+            var paperWidth = window.innerWidth * 0.5
+
+            background.append("svg:image")
+              .attr("xlink:href", "sprites/hangman/paper.png")
+              .attr({
+                x: window.innerWidth - paperWidth,
+                y: window.innerHeight - 650,
+                width: paperWidth,
+                height: 700
+              })
+              .attr("id", "paper")
+              .attr( "preserveAspectRatio" , "none")
+        }
+
+        return background;
+
+      };
+
+    self.init_screen();
+    self.setup_screen();
 
     // end trial (read word)
     self.finish = function(won, callback) {
@@ -122,7 +132,7 @@ function Hangman() {
 
       } else {
 
-        self.origstim.priority -= .5 + randAdjust;
+        self.origstim.priority -= .1 + randAdjust;
         max_guesses += 1;
       }
 
@@ -166,32 +176,45 @@ function Hangman() {
           .style("opacity", 0.0);
 
         if(hits[0].length<1) {
+
           self.wrong_guesses += 1;
           var img_vert_shift = self.wrong_guesses * imageSize / max_guesses;
           self.veil.transition()
             .attr("transform", "translate(0,-"+img_vert_shift+")")
             .delay(1000);
           setTimeout(function(){incorrect_sound.play()}, 900);
+
         } else { // they got a letter!
+
           self.unique_letters_remaining -= 1;
 
-          score.addScore(
-            [{x:300,y:300}],// _starsPos : (array) [{x:,y:}]
-            1,// _value : (int) value to be added to score for each star;
-            1000,// _duration : length of animation
-            true,// _svg : (bool) false for canvas
-            100// _index : z-index of sprite
-          )
+          for(var i = 0; i < hits[0].length/2; i++){
 
-          setTimeout(function(){correct_sound.play()}, 900);
+            var xpos = hits[0][i*2].getBoundingClientRect().left + ( hits[0][i*2].getBoundingClientRect().width/2 )
+            var ypos = hits[0][i*2].getBoundingClientRect().bottom - ( hits[0][i*2].getBoundingClientRect().width/2 )
+
+            score.addScore(
+              [{x:xpos,y:ypos}],// _starsPos : (array) [{x:,y:}]
+              1,// _value : (int) value to be added to score for each star;
+              1000,// _duration : length of animation
+              true,// _svg : (bool) false for canvas
+              100// _index : z-index of sprite
+            )
+
+          }
+
+          setTimeout(function(){correct_sound.play()}, 200);
           self.veil.transition()
             .attr("fill", getRandomColor())
             .duration(1000);
           // did they finish the round?
-          if(self.unique_letters_remaining===0) {
+
+          if(self.unique_letters_remaining === 0) {
             console.log("got all the letters!")
             setTimeout(function(){self.finish(true, callback)}, 1000); // won!
           }
+
+
         }
         if(self.wrong_guesses===max_guesses) { // lost..
           setTimeout(function(){self.finish(false, callback)}, 1000);
@@ -204,10 +227,11 @@ function Hangman() {
       for (var i = 0; i < letters.length; i++) {
         letters[i].clicked = 0;
       }
-      var nrows = 4//Math.floor(Math.sqrt(letters.length)) - 1;
+      var nrows = 4
       var ncols = Math.ceil(letters.length/nrows);
       console.log("nrows: "+nrows+" ncols: "+ncols);
       var keys = screend3.append("svg")
+        .attr("id", "trialCanvas")
         .append("g")
         .attr("transform", "translate("+ screen_width*.08 +","+ screen_height*.2 +")"); // 135,90
 
@@ -237,6 +261,7 @@ function Hangman() {
         .attr("style", "font-size: 38; font-family: Helvetica, sans-serif")
         .attr("y", 12)
         .style("opacity", 1.0)
+        .attr("fill", "#2d2420")
         .text(function(d) {
          return d.text;
         });
@@ -246,7 +271,7 @@ function Hangman() {
         .attr("r", button_width/2)
         .style("opacity", 0.0);
 
-      d3.selectAll(".button")
+        d3.selectAll(".button")
         .on(click_type, function(d) {
           d3.select(this)
             .transition()
@@ -259,15 +284,16 @@ function Hangman() {
           audio.play();
           self.handleGuess(d, callback);
         });
-    }
+      }
 
-      self.drawBlanks = function() {
+    self.drawBlanks = function() {
 
         var chars = self.answer.split("");
         var chdict = [];
 
         for (var i = 0; i < chars.length; i++) {
-          chdict.push({"letter": chars[i]});
+          chdict.push({"letter": chars[i], "leaf" : getRandomInt(1,4) });
+          stim_diam -= 80
         }
 
       //console.log(chdict)
@@ -281,10 +307,16 @@ function Hangman() {
         .attr("transform", function(d, i) {
          // Set d.x and d.y here so that other elements can use it. d is
          // expected to be an object here.
-         d.x = i*100 + stim_diam,
+         d.x = i*80 + stim_diam,
          d.y = .88*screen_height;
          return "translate(" + d.x + "," + d.y + ")";
         });
+
+      self.blanks.append("circle") // start FIXME
+        .attr("class", "blank")
+        .attr("r", 40)
+        .attr("fill", "green")
+        .style("opacity", 0.0);
 
       self.blanks.append("text") // add text to the g element
         .attr("text-anchor", "middle")
@@ -295,9 +327,17 @@ function Hangman() {
          return d.letter;
         });
 
-      self.blanks.append("circle") // start FIXME
+      var radius = 90
+
+      self.blanks.append("svg:image")
+        .attr("xlink:href", function(d){ return "sprites/hangman/leaf-0" + d.leaf + ".png"})
         .attr("class", "blank")
-        .attr("r", 40)
+        .attr({
+          "x" : -radius/2,
+          "y" : -radius/2,
+          "width" : radius,
+          "height" : radius
+        })
         .attr("fill", "green")
         .style("opacity", 1.0);
 
@@ -311,6 +351,14 @@ function Hangman() {
       var xpos = .95*screen_width-imageSize;
       // GK: replace veil with N leaves that disappear as wrong guesses are made
       console.log("self.image: "+self.image);
+
+       var defs = screend3.append("defs")
+       var mask = defs.append("mask").append("rect")
+         .attr("x", xpos)
+         .attr("y", ypos)
+         .attr("width", imageSize * 1.2)
+         .attr("height", imageSize * 1.2)
+         .attr("id", "mask")
 
       var myImg = screend3.append("svg:image")
         .attr("xlink:href", function(d) { return self.image; }) // .svg
@@ -327,6 +375,7 @@ function Hangman() {
         .attr("width", imageSize * 1.2)
         .attr("height", imageSize * 1.2)
         .attr("preserveAspectRatio","none")
+        // .attr("mask", "url(#mask)" )
 
       var myLabel = screend3.append("g").append("text")
         .attr("x", screen_width+50)
@@ -337,17 +386,19 @@ function Hangman() {
     };
 
     self.doTrial = function(callback) {
+
       var xpos = screen_width*.75;
       self.drawStimulus();
       self.drawBlanks();
       self.drawAlphabet(letters, callback);
       //return callback(tr_data);
+
     };
-  };
 
 
-  init_screen();
-  setup_screen(true); // draw background (with/without image)
+};
+
+
   document.getElementById("header-exp").style.display = 'block';
   //queuesToUpdate['objectstim'] = true;
 
@@ -367,22 +418,28 @@ function Hangman() {
     stimQueues['objectstim'].push(current_stim);
     storeQueue('objectstim');
     //clearTimeout();
-    screend3.selectAll("*")
+    d3.select("#screen").selectAll("*")
       .transition() // d3.select("#background")
       .each("end",function() {
+
+        if(this.id == "header-exp") return
+
         d3.select(this)
           .transition()
           .style("opacity",0)
           .delay(0)
           .duration(0)
           .remove();
-       });
-    // selectAll and remove "g", "svg", "circle", "rect" ...?
-    screend3.select("#header-exp").transition().style("display : none");
+       })
+
+    console.log("--------------------------------------")
+    document.getElementById("container-exp").removeChild(document.getElementById("screen"))
+
     //screend3.select("#background").remove(); // #background
     finishGame = true;
 	  session.hide();
     currentview = new MainMenu(assets);
+
   }
 
   var storeData = function(tr_dat) {
@@ -396,31 +453,38 @@ function Hangman() {
     }
   };
 
+  var _that = this;
+
   var next = function() {
 
-    if(stimQ.length===0) {
-      if(trial_index<20) {
-        trial_index += 1;
-        //trials = animals; // GK: feed in queue
-        next();
-      } else {
-        // either here (or in finish) store summary data of this game
-        self.destroy();
-        currentview = new MainMenu();
-      }
-      //finish(); // save data?
-    } else if(trial_index%5===0) {
-      // score recent trials, add more trials?
-      trial_index += 1;
-      console.log("feedback? (kazi_nzuri.mp3) fun animation?");
-      next();
-    } else {
-      setup_screen(true);
+    console.log(d3.select("#screen"))
+
+    if(d3.select("#screen")[0][0]){
+      d3.select("#screen").selectAll("*")
+        .transition() // d3.select("#background")
+        .each("end",function() {
+
+          if(this.id == "header-exp") return
+
+          d3.select(this)
+            .transition()
+            .style("opacity",0)
+            .delay(0)
+            .duration(0)
+            .remove();
+         })
+
+      console.log("--------------------------------------")
+      document.getElementById("container-exp").removeChild(document.getElementById("screen"))
+    }
+
       current_stim = stimQ.pop();
       var tr = new HangmanTrial(current_stim);
+      tr.setup_screen(true);
       trial_index += 1;
       tr.doTrial(storeData);
-    }
+
+
   };
 
   next();

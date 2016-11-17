@@ -26,8 +26,8 @@ function Multiplication(){
     }
 
     var specs = []
-    for(var i = 0; i < numbers.length; i++){
 
+    for(var i = 0; i < numbers.length; i++){
       specs.push({
         stimuli : {
           values : _stimuli.id
@@ -35,10 +35,10 @@ function Multiplication(){
       })
     }
 
-    this.counter = 0
 
+    this.counter = 0
 		this.stimuli = specs[0].stimuli;
-    this._stimuli = numbers
+    this._stimuli = _stimuli
 		this.aswear = []
 		this.boardMatrix = {}
 		this.lastTarget = ""
@@ -1867,15 +1867,12 @@ function Multiplication(){
 
       if(_child.children.length > 0){
           while(_child.children.length > 0){
-            console.log("--" + _child.children.length)
             deleteChildren(_child.children[0],_child)
           }
-          console.log("all children deleted")
       }
 
       if(_child.id == "bg"){
         bg = _parent.removeChild(_child)
-        console.log("==================================", bg)
       }else{
         _parent.removeChild(_child)
         _child.destroy()
@@ -1884,7 +1881,6 @@ function Multiplication(){
 
     while(stage.children.length > 0){
 
-      console.log(">>>>>>>>>>>>>>>>> " + stage.children.length)
       deleteChildren(stage.children[0],stage)
 
     }
@@ -1898,12 +1894,12 @@ function Multiplication(){
   Trial.prototype.storeStim = function(){
 
       var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
-      var newpriority = this._stimuli[0].priority
+      var newpriority = this._stimuli.priority
 
-      this._stimuli[0].priority = newpriority + rand_adjust;
+      this._stimuli.priority = newpriority + rand_adjust;
 
-      console.log(this._stimuli[0])
-      return(this._stimuli[0]);
+      console.log(this._stimuli)
+      return(this._stimuli);
 
   };
 

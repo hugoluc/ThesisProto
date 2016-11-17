@@ -476,11 +476,7 @@
 			width : window.innerWidth,
 			height : window.innerHeight,
 		})
-
-		console.log(this.starGroup[0][0])
 		this.starGroup[0][0].style.display = "none"
-
-
 	};
 
 	//called once to set up position of score and adding to score varaible
@@ -509,6 +505,7 @@
 
 		 	this.starGroup[0][0].style.display = "block"
 			var _this = this;
+			var starSize = 100
 
 			for(var i = 0; i < _starsPos.length; i++){
 
@@ -517,9 +514,9 @@
 				.attr({
 				  x: _starsPos[i].x,
 				  y: _starsPos[i].y,
-				  width : 100,
-				  height : 100,
-					transform : "rotate(0)"
+				  width : starSize ,
+				  height : starSize ,
+					transform : "translate(" + -(starSize/2) + "," +  -(starSize/2) + ")"
 				})
 				.attr("id", "star-" + (this.starLength + 1))
 				.transition()
