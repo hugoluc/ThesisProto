@@ -457,8 +457,6 @@ function Hangman() {
 
   var next = function() {
 
-    console.log(d3.select("#screen"))
-
     if(d3.select("#screen")[0][0]){
       d3.select("#screen").selectAll("*")
         .transition() // d3.select("#background")
@@ -472,7 +470,7 @@ function Hangman() {
             .delay(0)
             .duration(0)
             .remove();
-         })
+          })
 
       console.log("--------------------------------------")
       document.getElementById("container-exp").removeChild(document.getElementById("screen"))
