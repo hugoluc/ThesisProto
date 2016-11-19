@@ -27,7 +27,8 @@ var feedback_audio_files = ["welcome", "addition_instruct", "ant_instruct", "bee
 // very good = bora asana
 // welcome = karibu
 
-var feedback_sounds = []; // a bunch of Howls
+var feedback_sounds = {}; // a bunch of Howls
+var instructions = {};
 
 var noteScale = [];
 
@@ -41,13 +42,23 @@ var loadAudioFiles = function() {
   }
 
   // 'correct2' notes for counting
-  for (var i = 1; i < 5; i++) {
+  for (var i = 1; i < 6; i++) {
     noteScale[i-1] = new Howl({
       src: ['audio/correct2/'+i+'.mp3'],
       autoplay: false,
       buffer: true
     });
   }
+
+  for (var i = 0; i < feedback_audio_files.length; i++) {
+    feedback_sounds[ feedback_audio_files[i] ] = new Howl({
+      src: ['audio/'+language+'/feedback/'+feedback_audio_files[i]+'.mp3'],
+      autoplay: false,
+      buffer: true
+    });
+  }
+
+  //console.log(feedback_sounds);
 }
 
 // var nextTrial = null; // for setTimeout so we can clearTimeout
