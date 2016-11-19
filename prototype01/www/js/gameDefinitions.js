@@ -459,7 +459,7 @@
 */
 
 	function gameScore(_round){
-
+		console.log('init score');
 		var storedScore = store.get("score");
 		if(storedScore) {
 			this.score = storedScore;
@@ -495,8 +495,8 @@
 		// _svg : (bool) false for canvas
 		// _index : z-index of sprite
 
-		var storedScore = store.get("score")
-		if(storedScore) this.score = storedScore;
+		//var storedScore = store.get("score")
+		//if(storedScore) this.score = storedScore;
 		this.score = this.score + (_starsPos.length * _value);
 		store.set("score", this.score);
 		this.valuePerStar = _value;

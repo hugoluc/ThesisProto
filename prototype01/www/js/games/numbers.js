@@ -15,7 +15,9 @@ function proto02(){
   var baseProbNoTargetNumber = 50; // increases with stimCount (less likely to show target number)
   logTime("counting",'start');
   var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
-  // modify game dynamics if scoreDifferential reaches +2 or -2
+  // modify game dynamics if scoreDifferential reaches +1 or -1
+
+  var instructionsGiven = 10000; // give after 10 seconds, then set to -1 (given)
 
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
@@ -369,27 +371,27 @@ function proto02(){
   function Trial(_stimuli){
 
     //_stimuli.id = 10
-  this.starttime = Date.now()
-  this.ladyBugs = [];
-  this.origstim = _stimuli;
-  this.correct = _stimuli.id;
-  this.correctInput = false;
-  this.answerGiven = false;
-  this.correctSet = false;
-  this.introState = "displaySound";
-  this.nextTrialState = "flyAll";
-  this.availableSpots = [];
-  this.instructionWidth = session.canvas.height/8;  // size of the ciurcle for instruction
-  this.goldCount = 0;
-  this.soundCount = 0;
-  this.goingUp = true;
-  this.audioQueue = [];
-  this.audioQueuePlay = false;
-  this.playing = [];
-  this.audioTimer = new ClockTimer();
-  this.wrongClicks = 0; // # clicks on wrong ladybugs (or too many clicks)
-  this.stimPlayed = false;
-  this.total_clicks = 0; // total ladybug touches (good and bad)
+    this.starttime = Date.now();
+    this.ladyBugs = [];
+    this.origstim = _stimuli;
+    this.correct = _stimuli.id;
+    this.correctInput = false;
+    this.answerGiven = false;
+    this.correctSet = false;
+    this.introState = "displaySound";
+    this.nextTrialState = "flyAll";
+    this.availableSpots = [];
+    this.instructionWidth = session.canvas.height/8;  // size of the ciurcle for instruction
+    this.goldCount = 0;
+    this.soundCount = 0;
+    this.goingUp = true;
+    this.audioQueue = [];
+    this.audioQueuePlay = false;
+    this.playing = [];
+    this.audioTimer = new ClockTimer();
+    this.wrongClicks = 0; // # clicks on wrong ladybugs (or too many clicks)
+    this.stimPlayed = false;
+    this.total_clicks = 0; // total ladybug touches (good and bad)
 
   };
 
