@@ -477,7 +477,7 @@ function Multiplication(){
 
             if(!this.played) {
               this.played = true;
-              this._stimuli[0].howl.play();
+              this._stimuli.howl.play();
             }
 					};
 
