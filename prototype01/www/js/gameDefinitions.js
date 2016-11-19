@@ -396,27 +396,27 @@
 
 	Round.prototype.changeDifficulty = function(_correct,_value){
 
-		console.log(this.difficulty,this.scoreDifferential,this.scoreTrashhold[0])
+		console.log(this.difficulty,this.scoreDifferential,this.scoreThreshold[0])
 
 		//if the input was a correct one
 		if(_correct){
 
-			this.scoreDifferential = this.scoreDifferential + 1
+			this.scoreDifferential = this.scoreDifferential + 1;
 
 		// if the input was wrong
 		}else{
 
-			this.scoreDifferential =  this.scoreDifferential - 1
+			this.scoreDifferential =  this.scoreDifferential - 1;
 		}
 
-		if(this.scoreDifferential >= this.scoreTrashhold[1]){
+		if(this.scoreDifferential >= this.scoreThreshold[1]){
 
 			console.log("increasing difficulty");
 			this.difficulty++;
 			this.scoreDifferential = 0;
 		}
 
-		if(this.scoreDifferential <= this.scoreTrashhold[0]){
+		if(this.scoreDifferential <= this.scoreThreshold[0]){
 
 			console.log("decreasing difficulty");
 			this.difficulty--;
@@ -446,7 +446,7 @@
 	Round.prototype.setDifficultyParams = function(_trashhold,_range,_start){
 
 		this.diffRange = _range;
-		this.scoreTrashhold = _trashhold;
+		this.scoreThreshold = _trashhold;
 		this.difficulty = _start || this.diffRange[0]
 
 	};

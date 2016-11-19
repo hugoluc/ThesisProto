@@ -5,14 +5,17 @@ var LOGTHIS =  false;
 function proto02(){
   var stimCount = store.get('numbers_problems_solved');
   if(!stimCount) stimCount = 0;
+  var numFoils = store.get('numbers_ladybug_foils');
+  if(!numFoils) numFoils = 1; // +1 if 2x correct; -1 if 2x incorrect
+  var minFoils = 1;
+  var maxFoils = 7;
+  var walkSpeed = store.get("walkSpeed");
+  if(!walkSpeed) walkSpeed = 3; // +1 if 1x correct; -1 if 1x incorrect
+  var scoreIncrease = 1; // +1 every 10 trials
+  var baseProbNoTargetNumber = 50; // increases with stimCount (less likely to show target number)
   logTime("counting",'start');
   var scoreDifferential = 0; // add 1 if correct, -1 if incorrect;
-  // modify game dynamics if scoreDifferential reaches +3 or -3
-  var walkSpeed = store.get("walkSpeed");
-  if(!walkSpeed) walkSpeed = 5; // +1 if 3x correct; -1 if 3x incorrect
-  // +1 if 3x correct; -1 if 3x incorrect
-  var numFoils = 3; // +2 if 3x correct, -1 if 3x incorrect
-  var scoreIncrease = 1; // initially 1, but goes higher as they progress
+  // modify game dynamics if scoreDifferential reaches +2 or -2
 
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
@@ -27,7 +30,7 @@ function proto02(){
 
       var _this = this;
 
-      this.startNumber = value; //getRandomInt(1,7);
+      this.startNumber = value;
       this.container = new PIXI.Container();
       this.container.interactive = true;
       this.container.buttonMode = true;
@@ -75,7 +78,7 @@ function proto02(){
       this.container.addChild(this.sprite.nBg);
 
       //number variables
-      this.number =  new PIXI.Text("12", {font:"32px BalooBhai", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 0});
+      this.number =  new PIXI.Text("12", {font:"32px Arial", fill:"#6defcc", stroke:"#6defcc", strokeThickness: 0});
       this.number.anchor.x = 0.5
       this.number.anchor.y = 0.5
       this.number.x = this.sprite.walk.x + (this.sprite.walk.width*0.5)// - (this.number.textWidth/2)
@@ -93,21 +96,6 @@ function proto02(){
       this.playQueue = [];
       this.customAnimation = new animation(this.container)
 
-
-      //determine this bugType
-      // if(this.startNumber < 6){
-      //     this.bugType = 1
-      // }else if(this.startNumber < 11){
-      //     if(this.startNumber == 9){
-      //         this.bugType = 3
-      //     }else{
-      //     this.bugType = 2
-      //     }
-      // }else if(this.startNumber < 16) {
-      //     this.bugType = 3
-      // }else{
-      //     this.bugType = 4
-      // }
   };
 
   LadyBug.prototype.setFly = function(){
@@ -149,7 +137,8 @@ function proto02(){
 
       this.state = "walk";
       this.number.text = this.startNumber;
-      this.sprite.walk.animationSpeed = .05*walkSpeed/Math.log(2*this.number.text+2);
+
+      this.sprite.walk.animationSpeed = 1 / (2*walkSpeed+2); //.05*walkSpeed; // /Math.log(this.number.text+3);
 
       this.start.x = _pos;
       this.start.y = window.innerHeight
@@ -165,21 +154,23 @@ function proto02(){
           this.end.x = 200;
       };
 
-      this.container.rotation = getAngle(this.start.x,this.start.y,this.end.x,this.end.y)
+      this.container.rotation = getAngle(this.start.x,this.start.y,this.end.x,this.end.y);
 
-      this.customAnimation.setPos(this.start)
+      this.customAnimation.setPos(this.start);
 
-      var distance = getDistance(this.start.x,this.start.y,this.end.x,this.end.y)
+      var distance = getDistance(this.start.x,this.start.y,this.end.x,this.end.y);
 
-      var clickCount = Math.ceil(this.startNumber/this.bugType)
-      var diff = round.difficulty
-      var score = (5 + diff - clickCount)
-
-      var speedOut = (score*0.3/19) + 0.13
-
-      var length = distance / speedOut
-
-      _offset = _offset + getRandomInt(0,2000)
+      var clickCount = Math.ceil(this.startNumber/this.bugType);
+      //var diff = round.difficulty
+      //var score = (5 + diff - clickCount)
+      //var speedOut = (score*0.3/19) + 0.13
+      // distance*10 = very slow, distance*3 is very fast
+      if(clickCount > 10) { // super slow for large click counts
+        var length = distance * clickCount;
+      } else {
+        var length = distance * (12 - walkSpeed);
+      }
+      _offset = _offset + getRandomInt(0,1800)
 
       this.customAnimation.init(this.end,length,_offset)
   };
@@ -214,16 +205,13 @@ function proto02(){
               if(this.timer.timeOut()){
 
                   if(!this.Playsound){
-
-                      correct_sound.play();
-                      this.Playsound = true;
+                    correct_sound.play();
+                    this.Playsound = true;
                   }
 
                   if(this.customAnimation.run()){
-
-                      round.trial.correctImput = true
-                      round.trial.answer(true)
-
+                      round.trial.correctInput = true;
+                      round.trial.answer(true);
                   }
 
               };
@@ -232,24 +220,23 @@ function proto02(){
 
           case "dead":
 
-              if(this.timer.getElapsed() > 1200){
+            if(this.timer.getElapsed() > 1200){
 
-                  this.sprite.dead.alpha =  this.sprite.dead.alpha - 0.05;
+              this.sprite.dead.alpha =  this.sprite.dead.alpha - 0.05;
 
-                  if(this.timer.timeOut()){
-
-                      this.state = "walk";
-                      var i = getRandomInt(0,round.trial.availableSpots.length)
-                      var xpos = round.trial.getSpotPos(i)
-                      this.setUp(xpos);
-                      this.sprite.dead.alpha = 1
-                      this.sprite.nBg.renderable = true
-                      this.lastS = true
-                  }
-
+              if(this.timer.timeOut()){
+                this.state = "walk";
+                var i = getRandomInt(0,round.trial.availableSpots.length)
+                var xpos = round.trial.getSpotPos(i)
+                this.setUp(xpos);
+                this.sprite.dead.alpha = 1;
+                this.sprite.nBg.renderable = true;
+                this.lastS = true;
               }
 
-              break;
+            }
+
+            break;
 
           case "noReset":
 
@@ -334,9 +321,9 @@ function proto02(){
           } else if(this.number.text < 0) {
 
               this.wrongClicks += 1;
-              round.trial.answer(false)
-              round.changeDifficulty(false)
-              round.trial.getFeedback(false,true)
+              round.trial.answer(false);
+              //round.changeDifficulty(false)
+              round.trial.getFeedback(false,true);
 
               this.sprite.fly.stop();
               this.sprite.fly.renderable = false;
@@ -355,10 +342,11 @@ function proto02(){
 
             }else{ // wrong click
 
-                if(!this.correctImput){
+                if(!this.correctInput){
                     round.trial.wrongClicks += 1;
                     round.trial.answer(false);
-                    round.changeDifficulty(false);
+                    //round.changeDifficulty(false);
+                    if(walkSpeed > 2) walkSpeed -= 1;
                     round.trial.getFeedback(false,false);
                 };
             };
@@ -385,7 +373,7 @@ function proto02(){
   this.ladyBugs = [];
   this.origstim = _stimuli;
   this.correct = _stimuli.id;
-  this.correctImput = false;
+  this.correctInput = false;
   this.answerGiven = false;
   this.correctSet = false;
   this.introState = "displaySound";
@@ -393,7 +381,7 @@ function proto02(){
   this.availableSpots = [];
   this.instructionWidth = session.canvas.height/8;  // size of the ciurcle for instruction
   this.goldCount = 0;
-  this.coundCount = 0;
+  this.soundCount = 0;
   this.goingUp = true;
   this.audioQueue = [];
   this.audioQueuePlay = false;
@@ -461,7 +449,7 @@ function proto02(){
 
         case "play":
 
-
+            // the last in array is always the target bug
             if(this.ladyBugs[this.ladyBugs.length-1].resetFeedback()){
               this.getFeedback(true,true);
             };
@@ -471,13 +459,13 @@ function proto02(){
             };
 
 
-            if(this.correctImput){
+            if(this.correctInput){
 
                 for (var i=0; i<this.ladyBugs.length; i++){ this.ladyBugs[i].forceFly() };
 
                 if(this.correctAnswer){
 
-                    round.changeDifficulty(true);
+                    //round.changeDifficulty(true);
                     var pos = [];
                     for (var i=0; i<scoreIncrease; i++) {
                       pos.push({ x: this.clickPos.x, y: this.clickPos.y});
@@ -623,26 +611,26 @@ function proto02(){
   };
 
   Trial.prototype.failTask = function(){
-
-      this.fail = true
+    this.fail = true;
   };
 
   Trial.prototype.getSpotPos = function(_i){
-
-      return (this.availableSpots[_i] * this.ladyBugs[0].container.width) + this.instructionWidth*4;
+    return (this.availableSpots[_i] * this.ladyBugs[0].container.width) + this.instructionWidth*4;
   };
 
   Trial.prototype.storeStim = function(){
-
-      logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'count', "stim":this.origstim.id, "total_clicks":this.total_clicks, "incorrect_clicks":this.wrongClicks});
-      var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
-      if(this.wrongClicks===0) {
-        var newpriority = this.origstim.priority + .5;
-      } else {
-        var newpriority = this.origstim.priority - .25; //*Math.log(this.wrongClicks);
-      }
-      this.origstim.priority = newpriority + rand_adjust;
-      return(this.origstim);
+    logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'count', "stim":this.origstim.id, "countBy":this.bugType, "total_clicks":this.total_clicks, "incorrect_clicks":this.wrongClicks});
+    var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
+    adjustGameDynamics(this.wrongClicks);
+    if(this.wrongClicks < 2) {
+      var newpriority = this.origstim.priority + .5;
+    } else if(this.wrongClicks < 5) {
+      var newpriority = this.origstim.priority - .1; //*Math.log(this.wrongClicks);
+    } else {
+      var newpriority = this.origstim.priority - .2;
+    }
+    this.origstim.priority = newpriority + rand_adjust;
+    return(this.origstim);
   };
 
   Trial.prototype.chooseCountBy = function(goalNum, maxCountBy) {
@@ -824,12 +812,11 @@ function proto02(){
       stage.addChild(this.instruction);
 
       // 0 -- 15
-
-      var treshold = 20 + round.difficulty*4;
+      // decrease probability of showing target number with > stimCount
+      var threshold = baseProbNoTargetNumber + stimCount*2;
       var value = getRandomInt(0,100);
 
-      //console.log(value,treshold);
-      if( value <= treshold && this.correct > 2 ){
+      if( value <= threshold ) { // && this.correct > 2
           this.rNumber.alpha = 0;
           this.bNumber.alpha = 0;
           this.nunBgBlue.alpha = 0;
@@ -867,13 +854,14 @@ function proto02(){
 
     // get numFoils foils that are within +/-3 of the target number
     var corNum = parseInt(this.correct);
-    var min = corNum - 3;
+    var min = corNum - 6;
+    if(min < 0) min = 0;
     var foils = [];
 
     for (var i = 0; i < numFoils; i++) {
-      var thisFoil = getRandomInt(min, corNum + 3);
+      var thisFoil = getRandomInt(min, corNum + 6);
       while (thisFoil == this.correct || thisFoil < 1){
-         thisFoil = getRandomInt(min, corNum + 3);
+         thisFoil = getRandomInt(min, corNum + 6);
       }
       foils.push(thisFoil);
     }
@@ -912,21 +900,22 @@ function proto02(){
        }
 
        this.goldCount = 0;
-       this.coundCount = 0;
+       this.soundCount = 0;
+       this.goingUp = true;
 
     } else if(_feedback){ // provide feedback
 
        // set up audio queue for feedback
-       this.playAudioQueue("add", [noteScale[this.coundCount]])
+       this.playAudioQueue("add", [noteScale[this.soundCount]])
 
        if(this.goingUp) {
-         this.coundCount++;
+         this.soundCount++;
        } else {
-         this.coundCount--;
+         this.soundCount--;
        }
-       if(this.coundCount==0) {
+       if(this.soundCount==0) {
          this.goingUp = true;
-       } else if(this.coundCount==4) {
+       } else if(this.soundCount==4) {
          this.goingUp = false;
        }
 
@@ -1066,7 +1055,7 @@ function proto02(){
 
 
       }else if (this.audioQueue.length > 0){
-
+        // >1 clicked-but-not-yet-played sound in the Q
           if(!this.audioQueuePlay){
 
               for(var i =0; i<this.audioQueue[0].length; i++){
@@ -1226,31 +1215,39 @@ function proto02(){
 
   var finishGame = false
   var previousTime = Date.now();
-  var MS_PER_UPDATE = 33.333;
+  var MS_PER_UPDATE = 16.66;
   var lag = 0
 
-  function adjustGameDynamics() { //move inside game
-
-    if(scoreDifferential >= 3) {
-
-      scoreDifferential = 0;
-      walkSpeed += 1;
-
-    } else if(scoreDifferential <=- 3 & walkSpeed>2) {
-
-      scoreDifferential = 0;
-      walkSpeed -= 1;
-
+  function adjustGameDynamics(wrongClicks) {
+    scoreIncrease = Math.ceil(stimCount / 10);
+    if(wrongClicks < 2) {
+      scoreDifferential += 1;
+    } else {
+      scoreDifferential -= 1;
     }
+    if(scoreDifferential >= 1) {
+      console.log("adjusting dynamics: harder");
+      scoreDifferential = 0;
+      if(walkSpeed < 9) walkSpeed += 1;
+      if(numFoils < maxFoils) numFoils += 1;
+    } else if(scoreDifferential <= 0) {
+      console.log("adjusting dynamics: easier");
+      scoreDifferential = 0;
+      if(walkSpeed>2) walkSpeed -= 1;
+      if(numFoils > minFoils) numFoils -= 1;
+    }
+    store.set('numbers_ladybug_foils', numFoils);
+    store.set('walkSpeed', walkSpeed);
   };
 
   function update() {
 
     if(finishGame){
         logTime("counting",'stop');
-        store.set('walkSpeed', walkSpeed);
         //console.log('counting game over - storing');
         //stimuli.push(this.trial.origstim); // GK: save current trial too
+        console.log(round.trial.origstim);
+        stimuli.push(round.trial.origstim);
         round.storeSession(stimuli, 'numberstim');
         session.stats.domElement.style.display = "none";
         round.destroy();
@@ -1275,7 +1272,6 @@ function proto02(){
 
             // update the canvas with new parameters
             round.play(lag/MS_PER_UPDATE);
-            //adjustGameDynamics();
 
             lag = lag - MS_PER_UPDATE;
 

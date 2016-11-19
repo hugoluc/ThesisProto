@@ -41,7 +41,7 @@ var loadAudioFiles = function() {
   }
 
   // 'correct2' notes for counting
-  for (var i = 1; i < 5; i++) {
+  for (var i = 1; i < 6; i++) {
     noteScale[i-1] = new Howl({
       src: ['audio/correct2/'+i+'.mp3'],
       autoplay: false,
