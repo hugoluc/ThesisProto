@@ -2118,40 +2118,40 @@ function proto03(){
 
         function update() {
 
-            if(finishGame){
+          if(finishGame){
 
-                logTime("addsub",'stop');
-                round.storeSession(stimuli, 'numberstim');
-                session.stats.domElement.style.display = "none";
-                round.destroy();
-                assets.destroy();
-                finishGame = false;
-                currentview = new MainMenu(assets);
+            logTime("addsub",'stop');
+            round.storeSession(stimuli, 'numberstim');
+            session.stats.domElement.style.display = "none";
+            round.destroy();
+            assets.destroy();
+            finishGame = false;
+            currentview = new MainMenu(assets);
 
-                return
-            }
+            return
+          }
 
-            if(statsBol) session.stats.begin()
+          if(statsBol) session.stats.begin()
 
-          	//update position based on espectaed frame rate
-  	        var current = Date.now();
-  	        var elapsed = current - previousTime;
-  	        previousTime = current;
-  	        lag = lag + elapsed;
+        	//update position based on espectaed frame rate
+	        var current = Date.now();
+	        var elapsed = current - previousTime;
+	        previousTime = current;
+	        lag = lag + elapsed;
 
 
-        	  while (lag >= MS_PER_UPDATE){
-              round.play(lag/MS_PER_UPDATE);
-              lag = lag - MS_PER_UPDATE;
+      	  while (lag >= MS_PER_UPDATE){
+            round.play(lag/MS_PER_UPDATE);
+            lag = lag - MS_PER_UPDATE;
 
-  	        }
+	        }
 
-        	        //---------------->> Thing that renders the whole stage
-        	        session.render(stage)
+  	        //---------------->> Thing that renders the whole stage
+  	        session.render(stage)
 
-        	        requestAnimationFrame(update);
+  	        requestAnimationFrame(update);
 
-                if(statsBol)session.stats.end()
+          if(statsBol)session.stats.end()
 
         }
 

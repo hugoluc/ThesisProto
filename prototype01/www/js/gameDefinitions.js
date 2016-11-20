@@ -81,7 +81,6 @@
 		this.sprites = {};
 		this.textures = {};
 
-
 		this.loader = PIXI.loader;
 		this.pixiLoaderQueue = [];
 		this.textureQueue = [];

@@ -46,130 +46,134 @@ function bubbleLetters(){
     this.ang = getRandomInt(-11,11)/5;
   };
 
-    bubble.prototype.init = function(_value,_position,_size,_id){
+  bubble.prototype.init = function(_value,_position,_size,_id){
 
-        var _this = this;
+      var _this = this;
 
-        this.value = _value;
-        this.id = _id;
-        this.clicked = false;
-        this.posdId = _position.id;
-        this.pos = _position.pos;
-        this.size = _size;
-        this.grow = false;
-        this.container = new PIXI.Container();
-        this.trialTimer = new ClockTimer();
+      this.value = _value;
+      this.id = _id;
+      this.clicked = false;
+      this.posdId = _position.id;
+      this.pos = _position.pos;
+      this.size = _size;
+      this.grow = false;
+      this.container = new PIXI.Container();
+      this.trialTimer = new ClockTimer();
 
-        if(Math.random()>.5) {
-          this.circle = new PIXI.Sprite(assets.textures.flower1); // .bubble
-        } else {
-          this.circle = new PIXI.Sprite(assets.textures.flower2);
-        }
-        this.circle.width = this.size;
-        this.circle.height = this.size;
-        this.circle.anchor.x = 0.5;
-        this.circle.anchor.y = 0.5;
-        this.container.interactive = true;
-        this.container.buttonMode = true;
-        this.container.mousedown = this.container.touchstart = function(){ click(); }
-
-        function click() {
-          _this.click();
-        }
-
-        this.container.addChild(this.circle);
-        this.circle.x = this.pos.x+this.size/2;
-        this.circle.y = this.pos.y+this.size/2;
-        this.center = {x: this.circle.x, y: this.circle.y};
-        // fill:"#427010", stroke:"#098478" getRandomColor
-        var randColor = coolColors[getRandomInt(0,coolColors.length-1)];
-        this.cStim =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"red", fill: randColor, stroke:"#098478", strokeThickness: 1, });
-        this.cStim.anchor.x = 0.5
-        this.cStim.anchor.y = 0.5
-        this.cStim.x = this.pos.x + this.size*0.5;
-        this.cStim.y = this.pos.y + this.size*0.5;
-
-        this.circle.rotation = 0.1;
-        this.container.addChild(this.cStim);
-        stage.addChild(this.container);
-        this.display(false);
-    };
-
-
-    bubble.prototype.click = function(){ //_this,_event
-      this.clicked = true;
-      this.trial.total_clicks += 1;
-      var correct_click = (this.value===this.trial.target);
-      // if correct, play correct sound, stop the dragonfly, and move on
-      if(correct_click) {
-        correct_sound.play();
-        //console.log(this);
+      if(Math.random()>.5) {
+        this.circle = new PIXI.Sprite(assets.textures.flower1); // .bubble
+      } else {
+        this.circle = new PIXI.Sprite(assets.textures.flower2);
       }
-      if(!correct_click) { // incorrect: play bad sound and wait
-        //assets.sounds.wrong[0].play();
-        incorrect_sound.play();
+      this.circle.width = this.size;
+      this.circle.height = this.size;
+      this.circle.anchor.x = 0.5;
+      this.circle.anchor.y = 0.5;
+      this.container.interactive = true;
+      this.container.buttonMode = true;
+      this.container.mousedown = this.container.touchstart = function(){ click(); }
+
+      function click() {
+        _this.click();
       }
-      return correct_click;
-    };
 
+      this.container.addChild(this.circle);
+      this.circle.x = this.pos.x+this.size/2;
+      this.circle.y = this.pos.y+this.size/2;
+      this.center = {x: this.circle.x, y: this.circle.y};
+      // fill:"#427010", stroke:"#098478" getRandomColor
+      var randColor = coolColors[getRandomInt(0,coolColors.length-1)];
+      this.cStim =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"red", fill: randColor, stroke:"#098478", strokeThickness: 1, });
+      this.cStim.anchor.x = 0.5
+      this.cStim.anchor.y = 0.5
+      this.cStim.x = this.pos.x + this.size*0.5;
+      this.cStim.y = this.pos.y + this.size*0.5;
 
-    bubble.prototype.destroy = function(){
-        this.container.removeChild(this.circle);
-        this.circle.destroy();
-        this.circle = [];
+      this.circle.rotation = 0.1;
+      this.container.addChild(this.cStim);
+      stage.addChild(this.container);
+      this.display(false);
+  };
 
-        this.container.removeChild(this.cStim);
-        this.cStim.destroy();
-        this.cStim = [];
+  bubble.prototype.click = function(){ //_this,_event
 
-        stage.removeChild(this.container);
-        this.container.destroy(true);
-        this.container = [];
+    this.clicked = true;
+    this.trial.total_clicks += 1;
+    var correct_click = (this.value===this.trial.target);
+    // if correct, play correct sound, stop the dragonfly, and move on
+    if(correct_click) {
+      correct_sound.play();
+      //console.log(this);
+    }
+    if(!correct_click) { // incorrect: play bad sound and wait
+      //assets.sounds.wrong[0].play();
+      incorrect_sound.play();
+    }
+    return correct_click;
+  };
 
-        this.destroyed = true;
-    };
+  bubble.prototype.destroy = function(){
+      this.container.removeChild(this.circle);
+      this.circle.destroy();
+      this.circle = [];
 
-    bubble.prototype.display = function(_show){
-        if(!_show){
-            this.circle.interactive = false;
-            this.circle.renderable = false;
-            this.container.renderable = false;
-            this.destroyed = true;
-        }else{
-            this.circle.interactive = true;
-            this.circle.renderable = true;
-            this.container.renderable = true;
-            this.destroyed = false;
-        }
-    };
+      this.container.removeChild(this.cStim);
+      this.cStim.destroy();
+      this.cStim = [];
 
-    bubble.prototype.animate = function(tick){
-        if(this.destroyed){
-            return;
-        };
-        if(this.grow) { // target reached
-            this.circle.scale.x += .004;
-            this.circle.scale.y += .004;
-            this.cStim.scale.x += .01;
-            this.cStim.scale.y += .01;
-        }
-        if(this.fade){
-            this.circle.alpha -= 0.1;
-            this.cStim.alpha -= 0.1;
-            this.circle.scale.x += .03;
-            this.circle.scale.y += .03;
-            if(this.circle.alpha <= 0){
-                this.display(false)
-            };
-        } else{
-            this.ang = (this.ang + 0.05) % (Math.PI*2);
-            //this.circle.width = this.size + Math.sin(this.ang) * 2;
-            //this.circle.height = this.size + Math.sin(this.ang) * 2;
-            //this.circle.rotation = Math.sin(this.ang) * 0.02;
-            this.container.position.x += .2*Math.cos(this.ang);
-            this.container.position.y += .2*Math.sin(this.ang); //* .3; // move bubbles a bit?
-        }
-    };
+      stage.removeChild(this.container);
+      this.container.destroy(true);
+      this.container = [];
+
+      this.destroyed = true;
+  };
+
+  bubble.prototype.display = function(_show){
+
+      if(!_show){
+          this.circle.interactive = false;
+          this.circle.renderable = false;
+          this.container.renderable = false;
+          this.destroyed = true;
+      }else{
+          this.circle.interactive = true;
+          this.circle.renderable = true;
+          this.container.renderable = true;
+          this.destroyed = false;
+      }
+  };
+
+  bubble.prototype.animate = function(tick){
+
+      if(this.destroyed){
+          return;
+      };
+
+      if(this.grow) { // target reached
+          this.circle.scale.x += .004;
+          this.circle.scale.y += .004;
+          this.cStim.scale.x += .01;
+          this.cStim.scale.y += .01;
+      }
+
+      if(this.fade){
+          this.circle.alpha -= 0.1;
+          this.cStim.alpha -= 0.1;
+          this.circle.scale.x += .03;
+          this.circle.scale.y += .03;
+          if(this.circle.alpha <= 0){
+              this.display(false)
+          };
+
+      } else{
+          this.ang = (this.ang + 0.05) % (Math.PI*2);
+          //this.circle.width = this.size + Math.sin(this.ang) * 2;
+          //this.circle.height = this.size + Math.sin(this.ang) * 2;
+          //this.circle.rotation = Math.sin(this.ang) * 0.02;
+          this.container.position.x += .2*Math.cos(this.ang);
+          this.container.position.y += .2*Math.sin(this.ang); //* .3; // move bubbles a bit?
+      }
+  };
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -177,278 +181,280 @@ function bubbleLetters(){
 -------------------------------------------------------------------------------------------------------------
 */
 
-    function Trial(_stim){
-        stimCount++;
-        this.starttime = Date.now();
-        this.total_clicks = 0;
-        this.target = _stim.text; // the target letter the dragonfly approaches
-        this.targetAudio = _stim.audio;
-        this.lowercase = false;
-        // eventually mix in some lower case letters
-        if(stimCount>10 & Math.random()<.5) this.lowercase = true;
+  function Trial(_stim){
+      stimCount++;
+      this.starttime = Date.now();
+      this.total_clicks = 0;
+      this.target = _stim.text; // the target letter the dragonfly approaches
+      this.targetAudio = _stim.audio;
+      this.lowercase = false;
+      // eventually mix in some lower case letters
+      if(stimCount>10 & Math.random()<.5) this.lowercase = true;
 
-        this.foils = this.generateFoils(this.target);
-        this.origstim = _stim; // in original form to push back on stimulus queue
-        this.clock = new ClockTimer();
+      this.foils = this.generateFoils(this.target);
+      this.origstim = _stim; // in original form to push back on stimulus queue
+      this.clock = new ClockTimer();
 
-        this.trialState = "intro";
-        this.introState = "playSound";
+      this.trialState = "intro";
+      this.introState = "playSound";
 
-        this.bubble = [];
-        this.matrixAvailable = [];
-        this.specs = this.getSpecs();
-        this.posMatrix = this.getMatrixPosition();
-        this.operation = 0;
+      this.bubble = [];
+      this.matrixAvailable = [];
+      this.specs = this.getSpecs();
+      this.posMatrix = this.getMatrixPosition();
+      this.operation = 0;
 
-        this.AnimationDone = true;
-        this.performOperation = false;
-        this.countDone = false;
+      this.AnimationDone = true;
+      this.performOperation = false;
+      this.countDone = false;
 
-    };
+  };
 
-    Trial.prototype.generateFoils = function(target) {
-      // sample Nfoils that are NOT the target
-      //return ['B','C','D'];
-      var foils = [];
-      var shl = shuffle(letters.slice());
-      while(foils.length<Nfoils) {
-        var tmp = shl.pop();
-        if(tmp.text!=target) foils.push(tmp.text);
+  Trial.prototype.generateFoils = function(target) {
+    // sample Nfoils that are NOT the target
+    //return ['B','C','D'];
+    var foils = [];
+    var shl = shuffle(letters.slice());
+    while(foils.length<Nfoils) {
+      var tmp = shl.pop();
+      if(tmp.text!=target) foils.push(tmp.text);
+    }
+    //console.log(foils);
+    return foils;
+  };
+
+  Trial.prototype.init = function(){
+    // need to track the target's location so the dragonfly can go to it
+    var bubbleValues = [this.target];
+    for (var i=0; i<this.foils.length; i++){
+        bubbleValues.push(this.foils[i]);
+    }
+
+    if(bubbleValues.length > this.posMatrix.length){
+        throw "SCREEN TOO SMALL!";
+    }
+
+    for (var i=0; i<bubbleValues.length; i++){
+        //var pos = getRandomInt(0,this.posMatrix.length);
+        this.bubble.push(new bubble(this));
+    }
+
+    // create bubble graphics
+    for (var i=0; i<bubbleValues.length; i++){
+        var bubval = bubbleValues[i];
+        if(this.lowercase) bubval = bubval.toLowerCase();
+        this.bubble[i].init(bubval, this.getPos(i), this.specs.stimWidth, i)
+    }
+
+    // first bubble is target
+    this.targetx = this.bubble[0].circle.x;
+    this.targety = this.bubble[0].circle.y + 25;
+
+    // create dragonfly
+    this.dragonfly = new PIXI.extras.MovieClip(assets.sprites.bee);
+    this.dragonfly.animationSpeed = 0.16;
+    this.dragonfly.play();
+    this.dragonfly.width = 250;
+    this.dragonfly.height = 200;
+    this.dragonfly.position.x = dragonfly_start_pos.x;
+    this.dragonfly.position.y = dragonfly_start_pos.y;
+    this.dragonfly.anchor.y = 0.5;
+    this.dragonfly.anchor.x = 0.5;
+    stage.addChild(this.dragonfly);
+
+    this.deltax = Math.abs(this.targetx - this.dragonfly.position.x) / dragonflyFramesUntilArrival;
+    this.deltay = Math.abs(this.targety - this.dragonfly.position.y) / dragonflyFramesUntilArrival;
+
+    this.clock.start(1000);
+  };
+
+  Trial.prototype.destroy = function(){
+
+      for(var i = 0; i<this.bubble.length; i++){
+          this.bubble[i].destroy()
       }
-      //console.log(foils);
-      return foils;
-    };
 
-    Trial.prototype.init = function(){
-        // need to track the target's location so the dragonfly can go to it
-        var bubbleValues = [this.target];
-        for (var i=0; i<this.foils.length; i++){
-            bubbleValues.push(this.foils[i]);
-        }
-
-        if(bubbleValues.length > this.posMatrix.length){
-            throw "SCREEN TOO SMALL!";
-        }
-
-        for (var i=0; i<bubbleValues.length; i++){
-            //var pos = getRandomInt(0,this.posMatrix.length);
-            this.bubble.push(new bubble(this));
-        }
-
-        // create bubble graphics
-        for (var i=0; i<bubbleValues.length; i++){
-            var bubval = bubbleValues[i];
-            if(this.lowercase) bubval = bubval.toLowerCase();
-            this.bubble[i].init(bubval, this.getPos(i), this.specs.stimWidth, i)
-        }
-
-        // first bubble is target
-        this.targetx = this.bubble[0].circle.x;
-        this.targety = this.bubble[0].circle.y + 25;
-
-        // create dragonfly
-        this.dragonfly = new PIXI.extras.MovieClip(assets.sprites.bee);
-        this.dragonfly.animationSpeed = 0.16;
-        this.dragonfly.play();
-        this.dragonfly.width = 250;
-        this.dragonfly.height = 200;
-        this.dragonfly.position.x = dragonfly_start_pos.x;
-        this.dragonfly.position.y = dragonfly_start_pos.y;
-        this.dragonfly.anchor.y = 0.5;
-        this.dragonfly.anchor.x = 0.5;
-        stage.addChild(this.dragonfly);
-
-        this.deltax = Math.abs(this.targetx - this.dragonfly.position.x) / dragonflyFramesUntilArrival;
-        this.deltay = Math.abs(this.targety - this.dragonfly.position.y) / dragonflyFramesUntilArrival;
-
-        this.clock.start(1000);
-    };
-
-    Trial.prototype.destroy = function(){
-
-        for(var i = 0; i<this.bubble.length; i++){
-            this.bubble[i].destroy()
-        }
-
-        stage.removeChild(this.dragonfly);
-        this.dragonfly.destroy();
-    };
+      stage.removeChild(this.dragonfly);
+      this.dragonfly.destroy();
+  };
 
 
-    Trial.prototype.getSpecs = function(){
-        var obj = {};
-        obj.canvasMargin = 50; // was 30
-        obj.stimWidth = 150;
-        obj.margin = 30; // was 15
+  Trial.prototype.getSpecs = function(){
+      var obj = {};
+      obj.canvasMargin = 50; // was 30
+      obj.stimWidth = 150;
+      obj.margin = 30; // was 15
 
-        obj.width = session.canvas.width-(2*obj.canvasMargin)-obj.stimWidth/2;
-        obj.height = session.canvas.height-(2*obj.canvasMargin);
+      obj.width = session.canvas.width-(2*obj.canvasMargin)-obj.stimWidth/2;
+      obj.height = session.canvas.height-(2*obj.canvasMargin);
 
-        obj.moduleSize = obj.stimWidth+(obj.margin*2);
+      obj.moduleSize = obj.stimWidth+(obj.margin*2);
 
-        obj.moduleWidthCount = Math.floor(obj.width/obj.moduleSize);
-        obj.moduleHeightCount = Math.floor(obj.height/obj.moduleSize);
+      obj.moduleWidthCount = Math.floor(obj.width/obj.moduleSize);
+      obj.moduleHeightCount = Math.floor(obj.height/obj.moduleSize);
 
-        obj.widthInter = obj.width/obj.moduleWidthCount;
-        obj.heightInter = obj.height/obj.moduleHeightCount;
+      obj.widthInter = obj.width/obj.moduleWidthCount;
+      obj.heightInter = obj.height/obj.moduleHeightCount;
 
-        obj.marginW = (obj.widthInter - obj.stimWidth)/2;
-        obj.marginH = (obj.heightInter - obj.stimWidth)/2;
+      obj.marginW = (obj.widthInter - obj.stimWidth)/2;
+      obj.marginH = (obj.heightInter - obj.stimWidth)/2;
 
-        return obj;
-    };
+      return obj;
+  };
 
-    Trial.prototype.getMatrixPosition = function(){
-        var allPos = []
-        for(var i=0;i<this.specs.moduleWidthCount;i++){
-            for(var j=0;j<this.specs.moduleHeightCount;j++){
-                offset = j%2;
-                allPos.push({
-                    id: i,
-                    pos:{
-                        x:(this.specs.widthInter*i)+this.specs.marginW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
-                        y:(this.specs.heightInter*j)+this.specs.marginH+this.specs.canvasMargin+getRandomInt(-20,20),
-                    }
-                  });
+  Trial.prototype.getMatrixPosition = function(){
+      var allPos = []
+      for(var i=0;i<this.specs.moduleWidthCount;i++){
+          for(var j=0;j<this.specs.moduleHeightCount;j++){
+              offset = j%2;
+              allPos.push({
+                  id: i,
+                  pos:{
+                      x:(this.specs.widthInter*i)+this.specs.marginW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
+                      y:(this.specs.heightInter*j)+this.specs.marginH+this.specs.canvasMargin+getRandomInt(-20,20),
+                  }
+                });
+            }
+      }
+
+      for(var i=0; i<allPos.length; i++){
+          this.matrixAvailable.push(i)
+      }
+
+    return allPos
+  };
+
+  Trial.prototype.getPos = function(_i){
+      var aPos = getRandomInt(0,this.matrixAvailable.length)
+      var i = this.matrixAvailable[aPos]
+      this.matrixAvailable.splice(aPos,1)
+      return this.posMatrix[i]
+  };
+
+  Trial.prototype.intro = function(){
+      switch(this.introState){
+          case "playSound":
+              if(this.clock.timeOut()){
+                  var dest = {};
+                  dest.x = session.canvas.width / 2;
+                  dest.y = (session.canvas.height/2);
+                  this.introState = "spawnBubbles";
               }
-        }
+              break;
 
-        for(var i=0; i<allPos.length; i++){
-            this.matrixAvailable.push(i)
-        }
+          case "spawnBubbles":
+              for(var i = 0; i < this.bubble.length; i++){
+                  this.bubble[i].display(true);
+              }
+              return true;
+              break;
 
-      return allPos
-    };
-
-    Trial.prototype.getPos = function(_i){
-        var aPos = getRandomInt(0,this.matrixAvailable.length)
-        var i = this.matrixAvailable[aPos]
-        this.matrixAvailable.splice(aPos,1)
-        return this.posMatrix[i]
-    };
-
-    Trial.prototype.intro = function(){
-        switch(this.introState){
-            case "playSound":
-                if(this.clock.timeOut()){
-                    var dest = {};
-                    dest.x = session.canvas.width / 2;
-                    dest.y = (session.canvas.height/2);
-                    this.introState = "spawnBubbles";
-                }
-                break;
-
-            case "spawnBubbles":
-                for(var i = 0; i < this.bubble.length; i++){
-                    this.bubble[i].display(true);
-                }
-                return true;
-                break;
-
-        }
-        return false;
-    };
-
-    Trial.prototype.moveDragonfly = function() {
-      // if they have clicked the target, they won
-      if(this.bubble[0].clicked) {
-        this.finishedState = "endanimation"; // "win"
-        this.trialWon = true;
-        this.bubble[0].grow = true;
-        dragonfly_start_pos = this.dragonfly.position;
-        var pos = [];
-        for (var i=0; i<scoreIncrease; i++) {
-          pos.push(this.bubble[0].center);
-        }
-        score.addScore(pos, scoreIncrease);
-        score.setExplosion(this.bubble[0].center, 100,1000);
-        return true;
       }
-      //if distance from target is <10, person loses
-      var dist = distance(this.dragonfly.position.x, this.dragonfly.position.y, this.targetx, this.targety);
-      if(dist>=10) {
-        if(this.targetx > this.dragonfly.position.x) {
-          this.dragonfly.position.x += this.deltax;
-        } else {
-          this.dragonfly.position.x -= this.deltax;
-        }
+      return false;
+  };
 
-        if(this.targety > this.dragonfly.position.y) {
-          this.dragonfly.position.y += this.deltay;
-        } else {
-          this.dragonfly.position.y -= this.deltay;
-        }
-
-        return false;
-      } else { // dragonfly won!
-        //assets.sounds.wrong[0].play();
-        incorrect_sound.play();
-        dragonfly_start_pos = this.dragonfly.position;
-        this.bubble[0].grow = true;
-        this.finishedState = "endanimation";
-        this.trialWon = false;
-        return true;
+  Trial.prototype.moveDragonfly = function() {
+    // if they have clicked the target, they won
+    if(this.bubble[0].clicked) {
+      this.finishedState = "endanimation"; // "win"
+      this.trialWon = true;
+      this.bubble[0].grow = true;
+      dragonfly_start_pos = this.dragonfly.position;
+      var pos = [];
+      for (var i=0; i<scoreIncrease; i++) {
+        pos.push(this.bubble[0].center);
       }
+      score.addScore(pos, scoreIncrease);
+      score.setExplosion(this.bubble[0].center, 100,1000);
+      return true;
     }
 
-    Trial.prototype.storeStim = function() {
-        if(this.trialWon) {
-          var newpriority = this.origstim.priority + .5;
-        } else {
-          var newpriority = this.origstim.priority; // Math.log(this.wrongClicks+1) or -.1
-        }
-        this.origstim.priority = newpriority;
-        return this.origstim;
-    };
-
-    Trial.prototype.adjustDifficulty = function(won) {
-      if(won) {
-        if(Nfoils<maxFoils) Nfoils++;
-        if(dragonflyFramesUntilArrival>minDragonflyFrames) dragonflyFramesUntilArrival -= 10;
+    //if distance from target is <10, person loses
+    var dist = distance(this.dragonfly.position.x, this.dragonfly.position.y, this.targetx, this.targety);
+    if(dist>=10) {
+      if(this.targetx > this.dragonfly.position.x) {
+        this.dragonfly.position.x += this.deltax;
       } else {
-        if(Nfoils>minFoils) Nfoils--;
-        if(dragonflyFramesUntilArrival<maxDragonflyFrames) dragonflyFramesUntilArrival += 10;
+        this.dragonfly.position.x -= this.deltax;
       }
-      store.set('num_bee_foils', Nfoils);
-      scoreIncrease = Math.ceil(stimCount / 10);
+
+      if(this.targety > this.dragonfly.position.y) {
+        this.dragonfly.position.y += this.deltay;
+      } else {
+        this.dragonfly.position.y -= this.deltay;
+      }
+
+      return false;
+    } else { // dragonfly won!
+      //assets.sounds.wrong[0].play();
+      incorrect_sound.play();
+      dragonfly_start_pos = this.dragonfly.position;
+      this.bubble[0].grow = true;
+      this.finishedState = "endanimation";
+      this.trialWon = false;
+      return true;
     }
+  }
 
-    Trial.prototype.finished = function() {
+  Trial.prototype.storeStim = function() {
+      if(this.trialWon) {
+        var newpriority = this.origstim.priority + .5;
+      } else {
+        var newpriority = this.origstim.priority; // Math.log(this.wrongClicks+1) or -.1
+      }
+      this.origstim.priority = newpriority;
+      return this.origstim;
+  };
 
-        switch(this.finishedState){
-            case "endanimation":
-                this.adjustDifficulty(this.trialWon);
-                store.set('num_bee_foils', Nfoils);
-                store.set('bee_problems_solved', stimCount);
-                if(this.trialWon){
-                    this.clock.start(1500);
-                    this.finishedState = "win";
+  Trial.prototype.adjustDifficulty = function(won) {
+    if(won) {
+      if(Nfoils<maxFoils) Nfoils++;
+      if(dragonflyFramesUntilArrival>minDragonflyFrames) dragonflyFramesUntilArrival -= 10;
+    } else {
+      if(Nfoils>minFoils) Nfoils--;
+      if(dragonflyFramesUntilArrival<maxDragonflyFrames) dragonflyFramesUntilArrival += 10;
+    }
+    store.set('num_bee_foils', Nfoils);
+    scoreIncrease = Math.ceil(stimCount / 10);
+  }
 
-                }else{
-                    this.clock.start(1500);
-                    this.finishedState = "lose";
-                }
-                logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'bee', "stim":this.target, "num_foils":this.foils.length, "total_clicks":this.total_clicks, "correct":this.finishedState, "lowercase":this.lowercase});
-                break;
+  Trial.prototype.finished = function() {
 
-            case "lose":
-                //console.log("dragonfly won!"); // make it swell?
-                if(this.clock.timeOut()) this.finishedState = "callNext";
-                break;
+    switch(this.finishedState){
+      case "endanimation":
+        this.adjustDifficulty(this.trialWon);
+        store.set('num_bee_foils', Nfoils);
+        store.set('bee_problems_solved', stimCount);
+        if(this.trialWon){
+          this.clock.start(1500);
+          this.finishedState = "win";
 
-            case "win":
-                if(this.clock.timeOut()) this.finishedState = "callNext";
-                break;
-
-            case "callNext":
-                return true;
-                break;
+        }else{
+          this.clock.start(1500);
+          this.finishedState = "lose";
         }
+        logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'bee', "stim":this.target, "num_foils":this.foils.length, "total_clicks":this.total_clicks, "correct":this.finishedState, "lowercase":this.lowercase});
+        break;
 
-        return false;
-    };
+      case "lose":
+        //console.log("dragonfly won!"); // make it swell?
+        if(this.clock.timeOut()) this.finishedState = "callNext";
+        break;
 
-    Trial.prototype.play = function(_updateTime){
+      case "win":
+        if(this.clock.timeOut()) this.finishedState = "callNext";
+        break;
+
+      case "callNext":
+        return true;
+        break;
+      }
+
+      return false;
+  };
+
+  Trial.prototype.play = function(_updateTime){
+
         switch(this.trialState){
             case "intro":
                 if(this.intro()){

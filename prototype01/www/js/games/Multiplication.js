@@ -1912,7 +1912,7 @@ function Multiplication(){
 
   Trial.prototype.storeStim = function(){
 
-    if(stimOne){
+    if(this.stimOne){
 
       this._stimuli.priority = this._stimuli.priority + 1;
 

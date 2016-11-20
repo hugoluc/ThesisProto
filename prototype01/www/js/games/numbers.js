@@ -415,8 +415,6 @@ function proto02(){
                   this.instruction.customAnimation.init({x:dest.x,y:dest.y},1000,0,[0.25,0.00]);
                   this.introState = "moveToCorner";
 
-                  //console.log("-----------------------------------------------------------")
-
               }
 
               break;
