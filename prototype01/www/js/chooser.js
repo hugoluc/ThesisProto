@@ -37,7 +37,7 @@ function Start(){
 
       {
         name: "Memory",
-        available: true,
+        available: false,
         callFunction: memory
       },
 
@@ -49,19 +49,19 @@ function Start(){
 
       {
         name: "Word Find",
-        available: true,
+        available: false,
         callFunction: WordFind
       },
 
       {
         name: "Drawing",
-        available: true,
+        available: false,
         callFunction: Sketch
       },
 
       {
         name: "Shapes",
-        available: true,
+        available: false,
         callFunction: Shapes,
         icon: "img/Menu/shapes_icon.png"
       },
@@ -80,7 +80,7 @@ function Start(){
 
       {
         name: "Dashboard",
-        available: true,
+        available: false,
         callFunction: Dashboard
       }
   ];

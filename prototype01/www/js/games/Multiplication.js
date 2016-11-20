@@ -8,8 +8,10 @@ function Multiplication(){
   console.log("----------------------------------", stimuli)
 
   var stimCount = store.get("multi_problems_solved")
-  if(!stimCount) stimCount = 0
+  if(!stimCount) stimCount = 0;
 
+  // if they pass 10s on a trial, give verbal instructions
+  var instructionsGiven = 10000; // give after 10 seconds, then set to -1 (given)
 
 /*
 -------------------------------------------------------------------------------------------------------------
@@ -21,13 +23,14 @@ function Multiplication(){
 
     this.stimOne = false
 
-    if(_stimuli.id == 1){
+    if(_stimuli.id === "1"){
       this.stimOne = true
     }
 
     var specs = []
+    var stim = [_stimuli]
 
-    for(var i = 0; i < numbers.length; i++){
+    for(var i = 0; i < stim.length; i++){
       specs.push({
         stimuli : {
           values : _stimuli.id
@@ -35,28 +38,28 @@ function Multiplication(){
       })
     }
 
-
-    this.counter = 0
+    this.starttime = Date.now();
+    this.counter = 0;
     this.played = false;
 		this.stimuli = specs[0].stimuli;
-    this._stimuli = _stimuli
-		this.aswear = []
-		this.boardMatrix = {}
-		this.lastTarget = ""
-		this.nestCreated = false
-		this.nests = []
-		this.nestCount = 0
+    this._stimuli = _stimuli;
+		this.aswear = [];
+		this.boardMatrix = {};
+		this.lastTarget = "";
+		this.nestCreated = false;
+		this.nests = [];
+		this.nestCount = 0;
 		this.selection = {
 			tiles : [],
-		}
+		};
 
-		this.playState = "intro"
-		this.introState = "intruction"
+		this.playState = "intro";
+		this.introState = "instruction";
 
 		this.eggs = {}
 
-		this.setBoardSpecs() // set board variables and sizes
-    this.setBoardMatrix()
+		this.setBoardSpecs(); // set board variables and sizes
+    this.setBoardMatrix();
 
     this.fullNests = {
       "CBL" : [],
@@ -72,38 +75,38 @@ function Multiplication(){
       "LT" : [],
       "LM" : [],
       "intro" : [],
-      "intruction" : []
+      "instruction" : []
     }
 
     var start = {
       x : 0,
       y : 0
-    }
+    };
 
     var end = {
       x : this.boardSpecs.columns-1,
       y : this.boardSpecs.rows-1
-    }
+    };
 
     var hEnd = {
       x : this.boardSpecs.columns-1,
       y : 0
-    }
+    };
 
     var vEnd = {
       x : 0,
       y : this.boardSpecs.rows-1
-    }
+    };
 
-    var fullNestSelection = this.calculateSelection(start,end)
-    var HlineSelection = this.calculateSelection(start,hEnd)
-    var VlineSelection = this.calculateSelection(start,vEnd)
+    var fullNestSelection = this.calculateSelection(start,end);
+    var HlineSelection = this.calculateSelection(start,hEnd);
+    var VlineSelection = this.calculateSelection(start,vEnd);
 
     for(var i = 0; i< this.stimuli.values.length; i++){
 
-     this.createFullNests(fullNestSelection)
-     this.createFullNests(HlineSelection)
-     this.createFullNests(VlineSelection)
+      this.createFullNests(fullNestSelection);
+      this.createFullNests(HlineSelection);
+      this.createFullNests(VlineSelection);
 
     };
 
@@ -349,14 +352,14 @@ function Multiplication(){
 
             for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
 
-              console.log(this.eggs[this.answearGiven].children[i].animation.initScale(
+              this.eggs[this.answearGiven].children[i].animation.initScale(
 
                 {x : 0, y : 0}, //Final value of animation
         				1000, // Time of animation
         				(100 * i), // Delay
         				[0,0] //Bezier animation handles
 
-              ))
+              )
 
               this.eggs[this.answearGiven].children[i].fadeAnimation.initFeature(
 
@@ -462,7 +465,7 @@ function Multiplication(){
 
 		switch(this.introState){
 
-			case "intruction":
+			case "instruction":
 
 				if(this.timer.timeOut()){
 
@@ -1898,14 +1901,14 @@ function Multiplication(){
 	};
 
   Trial.prototype.storeStim = function(){
+    //logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'mult', "stim":this._stimuli.id, "length":, "width":, });
+    var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
+    var newpriority = this._stimuli.priority
 
-      var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
-      var newpriority = this._stimuli.priority
+    this._stimuli.priority = newpriority + rand_adjust;
 
-      this._stimuli.priority = newpriority + rand_adjust;
-
-      console.log(this._stimuli)
-      return(this._stimuli);
+    console.log(this._stimuli)
+    return(this._stimuli);
 
   };
 

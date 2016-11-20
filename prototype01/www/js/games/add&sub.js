@@ -326,62 +326,75 @@ function proto03(){
       return
     }
 
-      if(this.trial.clickCount > 0){
-        return
+    console.log("clickstart");
+    this.trial.clickCount++
+    console.log(this.trial.clickCount)
+
+    if(this.trial.clickCount > 1){
+      console.log("no multiclick", this.trial.clickCount)
+      return
+    }else{
+
+      this.trial.clickedLilly = this
+      console.log("--",this.trial.clickCount)
+
+      if(!this.trial.singleClickOrigin){
+
+        this.trial.singleClickOrigin = this
+        this.toggleSelection()
+
       }else{
 
-        this.trial.clickCount++
-        this.trial.clickedLilly = this
-
-        if(!this.trial.singleClickOrigin){
-
-          this.trial.singleClickOrigin = this
-          this.toggleSelection()
-
+        if(this.trial.singleClickOrigin !=  this) {
+          this.trial.singleClickDest = this;
         }else{
-
-          if(this.trial.singleClickOrigin !=  this) {
-            this.trial.singleClickDest = this;
-          }else{
-            this.toggleSelection()
-            this.trial.singleClickOrigin = undefined
-          }
+          this.toggleSelection()
+          this.trial.singleClickOrigin = undefined
         }
-
       }
+    }
 
-  	   //change lillypad to selected
-      _this.data = _event.data;
-      _this.dragging = true;
+     //change lillypad to selected
+    _this.data = _event.data;
+    _this.dragging = true;
+
+    console.log("end of clickstart" , this.trial.clickCount)
 
   };
 
   lillySmall.prototype.clickEnd = function(_this){
 
-    if(this.trial.clickCount > 0) this.trial.clickCount--
+    this.trial.clickCount--
 
-      //change lillypad to selected
-      if(!this.dragging) return
+    //change lillypad to selected
+    if(!this.dragging) return
+    if(this.trial.clickedLilly != this) return
 
-      _this.dragging = false;
-      this.dragging = false;
+    console.log("clickend", this.trial.clickCount)
+    if(this.trial.clickCount > 0){
+      console.log("no multiclick")
+      return
+    }
 
-      //if both target and destination was cicked (not using drag):
-      if(this.trial.singleClickDest && this.trial.singleClickOrigin){
+    _this.dragging = false;
+    this.dragging = false;
 
-        //if clicked on the same lilly toogle:
-        if(this.trial.singleClickDest == this.trial.singleClickOrigin){
-          this.trial.singleClickDest.toggleSelection()
-          this.trial.singleClickDest = undefined;
-          this.fadeStick = true;
-        }else{
-          this.trial.CheckLinkClick(_this.data.getLocalPosition(_this.parent),this.id);
-        }
+    //if both target and destination was cicked (not using drag):
+    if(this.trial.singleClickDest && this.trial.singleClickOrigin){
 
+      //if clicked on the same lilly toogle:
+      if(this.trial.singleClickDest == this.trial.singleClickOrigin){
+        this.trial.singleClickDest.toggleSelection()
+        this.trial.singleClickDest = undefined;
+        this.fadeStick = true;
       }else{
-        // check link for dragging
-        this.trial.CheckLink(_this.data.getLocalPosition(_this.parent),this.id);
+        this.trial.CheckLinkClick(_this.data.getLocalPosition(_this.parent),this.id);
       }
+
+    }else{
+      // check link for dragging
+      this.trial.CheckLink(_this.data.getLocalPosition(_this.parent),this.id);
+    }
   };
 
   lillySmall.prototype.drag = function(_this){
