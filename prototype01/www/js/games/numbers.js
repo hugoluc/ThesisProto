@@ -1209,7 +1209,7 @@ function proto02(){
   //---------------------------------------LOOP
 
 
-  var statsBol = true;
+  var statsBol = false;
 
   if(statsBol){
       session.stats.domElement.style.display = "block"

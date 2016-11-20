@@ -80,7 +80,7 @@ function Start(){
 
       {
         name: "Dashboard",
-        available: false,
+        available: true,
         callFunction: Dashboard
       }
   ];
