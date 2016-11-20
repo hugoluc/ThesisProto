@@ -43,7 +43,7 @@ function Multiplication(){
     this.played = false;
 		this.stimuli = specs[0].stimuli;
     this._stimuli = _stimuli;
-		this.aswear = [];
+		this.answer = [];
 		this.boardMatrix = {};
 		this.lastTarget = "";
 		this.nestCreated = false;
@@ -149,7 +149,7 @@ function Multiplication(){
 
             console.log(_this.playState)
 
-            if(_this.answearGiven == this.id){ // correct answear given || orrect nest size
+            if(_this.answerGiven == this.id){ // correct answer given || orrect nest size
 
               if(_this.playState == "Win" && !this.clicked){
                 correct_sound.play();
@@ -170,10 +170,10 @@ function Multiplication(){
               }
 
 
-            }else{ //wrong answear given || wrong nest size
+            }else{ //wrong answer given || wrong nest size
               _this.eggsClicked = true;
               _this.EggsClickedValue = this.id
-              _this.answearGiven = this.id
+              _this.answerGiven = this.id
               _this.eggsToNestAnimation()
             }
           }
@@ -220,13 +220,15 @@ function Multiplication(){
             allEggAssests.addChild(circle)
 
             var style = {
-              fontWeight : 'bold',
-              fill : '#AAAAAAA',
-              stroke : '#AAAAAAA',
-              strokeThickness : 1,
-            };
+              font:"60px Arial",
+              align: 'center',
+              weight:"bold",
+              fill:"#555555",
+              stroke:"#555555",
+              strokeThickness: 2,
+            }
 
-            var richText = new PIXI.Text(j+1,style);
+            var richText =  new PIXI.Text(j+1, style );
             nCounter++
             richText.anchor.x = 0.5
             richText.anchor.y = 0.5
@@ -327,7 +329,7 @@ function Multiplication(){
 
 			break;
 
-		case "drawingNest": // Allow user to draw nest and give answear
+		case "drawingNest": // Allow user to draw nest and give answer
 
 			break;
 
@@ -337,10 +339,10 @@ function Multiplication(){
 
         var done = true
 
-        for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+        for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
-          if (!this.eggs[this.answearGiven].children[i].animation.run()) done = false
-          if (!this.eggs[this.answearGiven].children[i].animation.runScale()) done = false
+          if (!this.eggs[this.answerGiven].children[i].animation.run()) done = false
+          if (!this.eggs[this.answerGiven].children[i].animation.runScale()) done = false
 
         }
 
@@ -348,11 +350,11 @@ function Multiplication(){
 
           this.eggsClicked = false;
 
-          if(!this.aswear){
+          if(!this.answer){
 
-            for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+            for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
-              this.eggs[this.answearGiven].children[i].animation.initScale(
+              this.eggs[this.answerGiven].children[i].animation.initScale(
 
                 {x : 0, y : 0}, //Final value of animation
         				1000, // Time of animation
@@ -361,7 +363,7 @@ function Multiplication(){
 
               )
 
-              this.eggs[this.answearGiven].children[i].fadeAnimation.initFeature(
+              this.eggs[this.answerGiven].children[i].fadeAnimation.initFeature(
 
                 "rotation", // features to animate
                 Math.PI * 4, // final position
@@ -389,7 +391,7 @@ function Multiplication(){
             incorrect_sound.play();
             this.playState = "Lose";
 
-          } else if(this.aswear.length == this.stimuli.values.length){
+          } else if(this.answer.length == this.stimuli.values.length){
 
     				this.playState = "Win";
             this.eggsClicked = false;
@@ -414,10 +416,10 @@ function Multiplication(){
       if(!score.displayStar())  done = false;
       if(!score.displayExplosion()) done = false;
 
-      for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+      for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
-        if(this.eggs[this.answearGiven].children[i].clicked){
-          if(!this.eggs[this.answearGiven].children[i].fadeAnimation.runFeature()){
+        if(this.eggs[this.answerGiven].children[i].clicked){
+          if(!this.eggs[this.answerGiven].children[i].fadeAnimation.runFeature()){
             done = false
           }
         }else{
@@ -438,10 +440,10 @@ function Multiplication(){
 
       var done = true;
 
-      for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+      for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
-        if(!this.eggs[this.answearGiven].children[i].fadeAnimation.runFeature()) done = false;
-        if(!this.eggs[this.answearGiven].children[i].animation.runScale()) done = false;
+        if(!this.eggs[this.answerGiven].children[i].fadeAnimation.runFeature()) done = false;
+        if(!this.eggs[this.answerGiven].children[i].animation.runScale()) done = false;
 
       }
 
@@ -975,7 +977,7 @@ function Multiplication(){
 			if((this.boardSpecs.maxWidth/this.boardSpecs.columns) * this.boardSpecs.rows < this.boardSpecs.maxHeight){
 			// check if board is going to be big enough to fit the grid if tileSize is based on the coll
 
-				//set rows and sizes to have enouth area to draw the answear
+				//set rows and sizes to have enouth area to draw the answer
 				this.boardSpecs.tileSize = this.boardSpecs.maxWidth / this.boardSpecs.columns
         this.tileSize = this.boardSpecs.tileSize
 
@@ -1337,13 +1339,13 @@ function Multiplication(){
 
 		if(correct){
 
-			this.aswear.push(true);
-			this.answearGiven = this.stimuli.values[id+""]
+			this.answer.push(true);
+			this.answerGiven = this.stimuli.values[id+""]
       this.playState = "placingEggs"
 
 			}else{
 
-				this.aswear = false;
+				this.answer = false;
 				this.playState = "placingEggs"
 				console.log("YOU LOSE!")
 			}
@@ -1596,19 +1598,26 @@ function Multiplication(){
           y : (this.tileSize*scale/2)
         }
 
-        //offset animation position based on position over the nestCount
-        if(this.selection.tiles[index].x - firstNestTile.x  == 0){ // left side
-          offset.x =offset.x + (this.tileSize*scale/4)
-        }else if(this.selection.tiles[index].x - firstNestTile.x == this.selection.columns-1){ // right side
-          offset.x = offset.x - (this.tileSize*scale/4)
+        if(true){//FIXME adjust position for line eggs
+
+          //offset animation position based on position over the nestCount
+          if(this.selection.tiles[index].x - firstNestTile.x  == 0){ // left side
+            offset.x =offset.x + (this.tileSize*scale/4)
+          }else if(this.selection.tiles[index].x - firstNestTile.x == this.selection.columns-1){ // right side
+            offset.x = offset.x - (this.tileSize*scale/4)
+          }
+
+          //offset animation position based on position over the nestCount
+          if(this.selection.tiles[index].y - firstNestTile.y == 0){ // top side
+            offset.y = offset.y - (this.tileSize*scale/4)
+          }else if(this.selection.tiles[index].y - firstNestTile.y == this.selection.rows-1){ // top side
+            offset.y = offset.y + (this.tileSize*scale/4)
+          }
+
+        }else{
+
         }
 
-        //offset animation position based on position over the nestCount
-        if(this.selection.tiles[index].y - firstNestTile.y == 0){ // top side
-          offset.y = offset.y - (this.tileSize*scale/4)
-        }else if(this.selection.tiles[index].y - firstNestTile.y == this.selection.rows-1){ // top side
-          offset.y = offset.y + (this.tileSize*scale/4)
-        }
 
         var pos = {
           x : ( offset.x + (this.boardMatrix[this.selection.tiles[index].id].pos.x - this.eggs[eggIndex].x) * scale),
@@ -1901,13 +1910,27 @@ function Multiplication(){
 	};
 
   Trial.prototype.storeStim = function(){
-    //logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'mult', "stim":this._stimuli.id, "length":, "width":, });
-    var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
-    var newpriority = this._stimuli.priority
 
-    this._stimuli.priority = newpriority + rand_adjust;
+    if(stimOne){
 
-    console.log(this._stimuli)
+      this._stimuli.priority = this._stimuli.priority + 1;
+
+    }else{
+
+      logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'mult', "stim":this._stimuli.id, "length":this.nests[0].rows, "width":this.nests[0].columns});
+      var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
+
+      if(this.answer){
+        this._stimuli.priority = this._stimuli.priority + .5 + rand_adjust;
+      }else{
+        this._stimuli.priority = this._stimuli.priority - .1 + rand_adjust;
+      }
+
+      var newpriority = this._stimuli.priority
+      this._stimuli.priority = newpriority + rand_adjust;
+
+    }
+
     return(this._stimuli);
 
   };
