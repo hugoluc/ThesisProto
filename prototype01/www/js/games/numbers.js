@@ -140,7 +140,7 @@ function proto02(){
       this.state = "walk";
       this.number.text = this.startNumber;
 
-      this.sprite.walk.animationSpeed = 1 / (2*walkSpeed+2); //.05*walkSpeed; // /Math.log(this.number.text+3);
+      this.sprite.walk.animationSpeed = .01*walkSpeed + .05; // 1 / (2*(walkSpeed+1)) // /Math.log(this.number.text+3);
 
       this.start.x = _pos;
       this.start.y = window.innerHeight
@@ -874,7 +874,7 @@ function proto02(){
     Trial.prototype.getFeedback = function(_feedback,_reset){
 
     if(_reset){
-
+      if(walkSpeed>1) walkSpeed -= 1; // unable to finish; slow down
       for(var i=0; i < this.counter.gold.length; i++){
 
          this.counter.gold[i].renderable = false
@@ -1235,7 +1235,7 @@ function proto02(){
     } else if(scoreDifferential <= 0) {
       console.log("adjusting dynamics: easier");
       scoreDifferential = 0;
-      if(walkSpeed>2) walkSpeed -= 1;
+      if(walkSpeed>1) walkSpeed -= 1;
       if(numFoils > minFoils) numFoils -= 1;
     }
     store.set('numbers_ladybug_foils', numFoils);

@@ -18,7 +18,7 @@ var correct_sound = new Howl({
 
 // audio/swahili/feedback
 var feedback_audio_files = ["welcome", "addition_instruct", "ant_instruct", "bee_instruct",
-  "bomba_kifungo_tap_button", "drawing_instruct", "drawing_instruct2",
+  "tap_button", "drawing_instruct", "drawing_instruct2",
   "egg_instruct1", "hangman_instruct","good_job", "ladybug_instruct",
   "memory_instruct", "mult_instruct", "try_again", "very_good"];
 // good job = kazi nzuri
@@ -28,7 +28,6 @@ var feedback_audio_files = ["welcome", "addition_instruct", "ant_instruct", "bee
 // welcome = karibu
 
 var feedback_sounds = {}; // a bunch of Howls
-var instructions = {};
 
 var noteScale = [];
 
