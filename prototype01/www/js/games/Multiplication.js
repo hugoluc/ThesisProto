@@ -149,7 +149,11 @@ function Multiplication(){
 
             console.log(_this.playState)
 
+<<<<<<< HEAD
             if(_this.answerGiven == this.id){ // correct answer given || orrect nest size
+=======
+            if(_this.answerGiven == this.id){ // correct answear given || orrect nest size
+>>>>>>> 60982c0c6d1fb3a05ab979e1fd5d3f0e9384869b
 
               if(_this.playState == "Win" && !this.clicked){
                 correct_sound.play();
@@ -354,7 +358,11 @@ function Multiplication(){
 
             for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
+<<<<<<< HEAD
               this.eggs[this.answerGiven].children[i].animation.initScale(
+=======
+              console.log(this.eggs[this.answerGiven].children[i].animation.initScale(
+>>>>>>> 60982c0c6d1fb3a05ab979e1fd5d3f0e9384869b
 
                 {x : 0, y : 0}, //Final value of animation
         				1000, // Time of animation

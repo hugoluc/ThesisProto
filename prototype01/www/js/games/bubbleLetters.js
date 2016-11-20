@@ -27,7 +27,7 @@ function bubbleLetters(){
   var Nfoils = store.get('num_bee_foils');
   if(!Nfoils) Nfoils = 1;
   var minFoils = 1;
-  var maxFoils = 9;
+  var maxFoils = 8;
   var dragonflyFramesUntilArrival = 200; // lower is faster
   var minDragonflyFrames = 100; // and it changes by 10
   var maxDragonflyFrames = 300;
@@ -409,6 +409,8 @@ function bubbleLetters(){
         if(Nfoils>minFoils) Nfoils--;
         if(dragonflyFramesUntilArrival<maxDragonflyFrames) dragonflyFramesUntilArrival += 10;
       }
+      store.set('num_bee_foils', Nfoils);
+      scoreIncrease = Math.ceil(stimCount / 10);
     }
 
     Trial.prototype.finished = function() {

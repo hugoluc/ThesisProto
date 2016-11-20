@@ -28,7 +28,6 @@ var feedback_audio_files = ["welcome", "addition_instruct", "ant_instruct", "bee
 // welcome = karibu
 
 var feedback_sounds = {}; // a bunch of Howls
-var instructions = {};
 
 var noteScale = [];
 
