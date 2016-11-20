@@ -42,7 +42,7 @@ function Multiplication(){
     this.played = false;
 		this.stimuli = specs[0].stimuli;
     this._stimuli = _stimuli;
-		this.aswear = [];
+		this.answer = [];
 		this.boardMatrix = {};
 		this.lastTarget = "";
 		this.nestCreated = false;
@@ -148,7 +148,7 @@ function Multiplication(){
 
             console.log(_this.playState)
 
-            if(_this.answearGiven == this.id){ // correct answear given || orrect nest size
+            if(_this.answerGiven == this.id){ // correct answear given || orrect nest size
 
               if(_this.playState == "Win" && !this.clicked){
                 correct_sound.play();
@@ -172,7 +172,7 @@ function Multiplication(){
             }else{ //wrong answear given || wrong nest size
               _this.eggsClicked = true;
               _this.EggsClickedValue = this.id
-              _this.answearGiven = this.id
+              _this.answerGiven = this.id
               _this.eggsToNestAnimation()
             }
           }
@@ -336,10 +336,10 @@ function Multiplication(){
 
         var done = true
 
-        for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+        for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
-          if (!this.eggs[this.answearGiven].children[i].animation.run()) done = false
-          if (!this.eggs[this.answearGiven].children[i].animation.runScale()) done = false
+          if (!this.eggs[this.answerGiven].children[i].animation.run()) done = false
+          if (!this.eggs[this.answerGiven].children[i].animation.runScale()) done = false
 
         }
 
@@ -347,11 +347,11 @@ function Multiplication(){
 
           this.eggsClicked = false;
 
-          if(!this.aswear){
+          if(!this.answer){
 
-            for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+            for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
-              console.log(this.eggs[this.answearGiven].children[i].animation.initScale(
+              console.log(this.eggs[this.answerGiven].children[i].animation.initScale(
 
                 {x : 0, y : 0}, //Final value of animation
         				1000, // Time of animation
@@ -360,7 +360,7 @@ function Multiplication(){
 
               ))
 
-              this.eggs[this.answearGiven].children[i].fadeAnimation.initFeature(
+              this.eggs[this.answerGiven].children[i].fadeAnimation.initFeature(
 
                 "rotation", // features to animate
                 Math.PI * 4, // final position
@@ -388,7 +388,7 @@ function Multiplication(){
             incorrect_sound.play();
             this.playState = "Lose";
 
-          } else if(this.aswear.length == this.stimuli.values.length){
+          } else if(this.answer.length == this.stimuli.values.length){
 
     				this.playState = "Win";
             this.eggsClicked = false;
@@ -413,10 +413,10 @@ function Multiplication(){
       if(!score.displayStar())  done = false;
       if(!score.displayExplosion()) done = false;
 
-      for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+      for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
-        if(this.eggs[this.answearGiven].children[i].clicked){
-          if(!this.eggs[this.answearGiven].children[i].fadeAnimation.runFeature()){
+        if(this.eggs[this.answerGiven].children[i].clicked){
+          if(!this.eggs[this.answerGiven].children[i].fadeAnimation.runFeature()){
             done = false
           }
         }else{
@@ -437,10 +437,10 @@ function Multiplication(){
 
       var done = true;
 
-      for(var i = 1; i < this.eggs[this.answearGiven].children.length; i++){
+      for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
-        if(!this.eggs[this.answearGiven].children[i].fadeAnimation.runFeature()) done = false;
-        if(!this.eggs[this.answearGiven].children[i].animation.runScale()) done = false;
+        if(!this.eggs[this.answerGiven].children[i].fadeAnimation.runFeature()) done = false;
+        if(!this.eggs[this.answerGiven].children[i].animation.runScale()) done = false;
 
       }
 
@@ -1336,13 +1336,13 @@ function Multiplication(){
 
 		if(correct){
 
-			this.aswear.push(true);
-			this.answearGiven = this.stimuli.values[id+""]
+			this.answer.push(true);
+			this.answerGiven = this.stimuli.values[id+""]
       this.playState = "placingEggs"
 
 			}else{
 
-				this.aswear = false;
+				this.answer = false;
 				this.playState = "placingEggs"
 				console.log("YOU LOSE!")
 			}
@@ -1900,9 +1900,9 @@ function Multiplication(){
 	};
 
   Trial.prototype.storeStim = function(){
-    //logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'mult', "stim":this._stimuli.id, "length":, "width":, });
+    logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'mult', "stim":this._stimuli.id, "length":this.nests[0].rows, "width":this.nests[0].columns});
     var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
-    var newpriority = this._stimuli.priority
+    var newpriority = this._stimuli.priority;
 
     this._stimuli.priority = newpriority + rand_adjust;
 
