@@ -182,6 +182,7 @@ function bubbleLetters(){
 */
 
   function Trial(_stim){
+
       stimCount++;
       this.starttime = Date.now();
       this.total_clicks = 0;
@@ -278,7 +279,6 @@ function bubbleLetters(){
       this.dragonfly.destroy();
   };
 
-
   Trial.prototype.getSpecs = function(){
       var obj = {};
       obj.canvasMargin = 50; // was 30
@@ -303,7 +303,9 @@ function bubbleLetters(){
   };
 
   Trial.prototype.getMatrixPosition = function(){
+
       var allPos = []
+
       for(var i=0;i<this.specs.moduleWidthCount;i++){
           for(var j=0;j<this.specs.moduleHeightCount;j++){
               offset = j%2;

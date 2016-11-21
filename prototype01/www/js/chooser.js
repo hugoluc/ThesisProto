@@ -12,27 +12,28 @@ function Start(){
         name: "Counting",
         available: true,
         callFunction: proto02,
-        icon: "img/Menu/ladybug_icon.png"
+        icon: "img/Menu/ladybug.png"
       },
 
       {
         name: "Addition",
         available: true,
         callFunction: proto03,
-        icon: "img/Menu/ants_icon.png"
+        icon: "img/Menu/lilly.png"
       },
 
       {
         name: "Multiply",
         available: true,
-        callFunction: Multiplication
+        callFunction: Multiplication,
+        icon : "img/Menu/Egg.png"
       },
 
       {
         name: "Alphabet",
         available: true,
         callFunction: bubbleLetters,
-        icon: "img/Menu/bee_icon.png"
+        icon: "img/Menu/flower.png"
       },
 
       {
@@ -44,7 +45,8 @@ function Start(){
       {
         name: "Spelling",
         available: true,
-        callFunction: Hangman
+        callFunction: Hangman,
+        icon : "img/Menu/rock.png"
       },
 
       {
@@ -80,27 +82,72 @@ function Start(){
 
       {
         name: "Dashboard",
-        available: true,
+        available: false,
         callFunction: Dashboard
       }
   ];
 
-  // hide experiment and show chooser
-  var containerMainMenu = document.getElementById("container-chooser")
+  var finished = 0;
+  for(var i = Games.length-1; i >= 0; i--){
+    if(Games[i].available && Games[i].icon){
+      finished++
+    }
+  }
 
-  for(var i =0; i<Games.length; i++){
+
+  // hide experiment and show chooser
+  var containerMainMenu = document.getElementById("icons")
+  var totalWidth = 0;
+  var allAvailable = [];
+  var biggest = 0;
+  var counter = 0;
+
+  for(var i = Games.length-1; i >= 0; i--){
+
+    console.log("------------", Games[i])
+
     // only add it if they have made enough progress to get to it!
     if(Games[i].available) {
-      game = document.createElement("div");
-      game.id = i;
-      game.className = "MenuButton";
+
       if(Games[i].icon) {
-        game.innerHTML = "<img src='"+Games[i].icon+"' width=170 height=170 />"
+
+        var game = new Image();
+        game.src = Games[i].icon
+        game.id = i;
+        game.style.display = "none"
+
+        game.onload = function(){
+          counter++
+
+          console.log( "loaded", this)
+          console.log("finished:", finished,counter )
+
+          totalWidth = totalWidth + this.naturalWidth
+          console.log(this.naturalHeight)
+
+          if(biggest < this.naturalHeight ){
+            biggest = this.naturalHeight
+          }
+
+          if(finished == counter){
+             arrangeSize()
+          }
+
+        }
+
       } else {
+
+        var game = document.createElement("div");
+        game.id = i;
         game.innerHTML = "<p>"+Games[i].name+"</p>";
+
       }
 
+      game.className = "MenuButton";
+
+
       var gameClick = function(){
+
         logTime('menu','stop');
         document.getElementById("container-exp").style.height = window.innerHeight
         session.setRenderer();
@@ -111,8 +158,32 @@ function Start(){
       }
 
       game.onclick = gameClick;
-      containerMainMenu.appendChild(game);
+      containerMainMenu.insertBefore(game, containerMainMenu.children[0]);
+      allAvailable.push(game)
+
     }
+  }
+
+  function arrangeSize(){
+
+    console.log("biggest" , biggest)
+
+    var scale = window.innerWidth/(totalWidth+200)
+    biggest = biggest*scale
+    var left = (window.innerWidth - (totalWidth*scale))/2
+
+    for(var i = allAvailable.length-1; i >= 0; i--){
+
+      console.log(biggest - (allAvailable[i].naturalHeight*scale))
+
+      allAvailable[i].style.display = "block"
+      allAvailable[i].style.width = allAvailable[i].naturalWidth * scale
+      allAvailable[i].style.left = left
+      allAvailable[i].style.top = ((window.innerHeight - biggest)/2) + (biggest - (allAvailable[i].naturalHeight*scale))/2
+      left = left + (allAvailable[i].naturalHeight * scale)
+
+  }
+
   }
 
   if(!PIXIInitialized){
