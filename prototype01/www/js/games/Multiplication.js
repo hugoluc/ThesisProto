@@ -22,21 +22,19 @@ function Multiplication(){
 	function Trial(_stimuli,_correct){
 
     this.stimOne = false
+    this.animationDone = true;
 
     if(_stimuli.id === "1"){
       this.stimOne = true
     }
 
     var specs = []
-    var stim = [_stimuli]
 
-    for(var i = 0; i < stim.length; i++){
-      specs.push({
-        stimuli : {
-          values : _stimuli.id
-        }
-      })
-    }
+    specs.push({
+      stimuli : {
+        values : _stimuli.id
+      }
+    })
 
     this.starttime = Date.now();
     this.counter = 0;
@@ -143,11 +141,13 @@ function Multiplication(){
 
           function eggsclicked(){
 
-            if(_this.playState != "Win" && _this.playState != "placingEggs"){
+            console.log(_this.playState,_this.animationDone)
+
+            if(_this.playState != "Win" && _this.playState != "placingEggs" || !_this.animationDone){
               return;
             }
 
-            console.log(_this.playState)
+            console.log("-------", _this.playState)
 
             if(_this.answerGiven == this.id){ // correct answer given || orrect nest size
 
@@ -337,16 +337,16 @@ function Multiplication(){
 
       if(this.eggsClicked){
 
-        var done = true
+        this.animationDone = true
 
         for(var i = 1; i < this.eggs[this.answerGiven].children.length; i++){
 
-          if (!this.eggs[this.answerGiven].children[i].animation.run()) done = false
-          if (!this.eggs[this.answerGiven].children[i].animation.runScale()) done = false
+          if (!this.eggs[this.answerGiven].children[i].animation.run()) this.animationDone = false
+          if (!this.eggs[this.answerGiven].children[i].animation.runScale()) this.animationDone = false
 
         }
 
-        if(done) {
+        if(this.animationDone) {
 
           this.eggsClicked = false;
 

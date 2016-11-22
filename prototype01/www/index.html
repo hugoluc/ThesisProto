@@ -74,7 +74,6 @@
             loadAudioFiles();
 
             window.addEventListener("load", function(){
-              console.log("first hight")
               document.getElementsByTagName("body")[0].innerHeight
             })
 
@@ -95,7 +94,19 @@
         <div id="scoreContainer"></div>
 
         <!-- Home Page with button to choose games -->
-        <div id="container-chooser"></div>
+        <div id="container-chooser">
+
+          <image src="img/Menu/leaves/tl.png" class="top left">
+          <image src="img/Menu/leaves/tr.png" class="top right">
+          <image src="img/Menu/leaves/bl.png" class="bottom left">
+          <image src="img/Menu/leaves/br.png" class="bottom right">
+
+          <div id="icons"></div>
+          <image src="img/Menu/bg.png" id="Menu_bg">
+          <image src="img/Menu/shadow.png" id="Menu_shadow">
+
+
+        </div>
 
         <!--  Game Container to be filled based on the chooser options  -->
         <div id="container-exp">

@@ -685,7 +685,6 @@ function proto03(){
     }
 
     this.stimuli = this.createAdditionProblem(_stim, this.subtract);
-
     this.clickCount = 0
     this.singleClickDest;
     this.singleClickOrigin;
@@ -746,10 +745,10 @@ function proto03(){
 
     if(total < 4){
 
-      if(total==1) { // special simple cases
+      if(total == 1) { // special simple cases
 
           if(Math.random() > 0.5) return [1,0,0];
-          values= [1,1,0];
+          values= [1,0,0];
 
       } else if(total==2) {
 
@@ -934,8 +933,8 @@ function proto03(){
       }
 
       this.moveStick(true,"final");// adjust final stick size
-      this.updateOperation(_id,"final");// update lllypad value
       this.setAnimateAnts(_id,"final")//get new location for ants
+      this.updateOperation(_id,"final");// update lllypad value
 
       return
     }
@@ -997,7 +996,7 @@ function proto03(){
       this.leavesToFade = 0;
       this.finishedState = "countdown";
       this.animationDone = false;
-      this.subtracting = false
+      this.subtracting = false;
 
       if(this.lillySmall[_id].value == this.origstim.id){ // correct answear
 
@@ -1013,13 +1012,8 @@ function proto03(){
       this.createStick(this.singleClickOrigin.circle.position);
       this.moveStick(this.lillyFinal.container.position) // adjust final stick size
       this.moveStick(true , "final") // adjust final stick size
-      this.updateOperation(this.singleClickOrigin.id , "final") // update lllypad value
       this.setAnimateAnts(this.singleClickOrigin.id , "final"); //get new location for ants
-
-
-      // this.moveStick(true,"final");// adjust final stick size
-      // this.updateOperation(_id,"final");// update lllypad value
-      // this.setAnimateAnts(_id,"final")//get new location for ants
+      this.updateOperation(this.singleClickOrigin.id , "final") // update lllypad value
 
       return
     }
@@ -1056,53 +1050,54 @@ function proto03(){
 
     if(_target == "final"){
 
-        this.performOperation = true;
-        this.countDone = false;
-
-        this.countDownTargets = [_origin,_target]
+      this.lillyFinal.value = this.origstim.id - this.lillySmall[_origin].value
+      this.lillySmall[_origin].value = 0
+      this.performOperation = true;
+      this.countDone = false;
+      this.countDownTargets = [_origin,_target]
 
     }else{
 
-        this.performOperation = true;
-        this.countDone = false;
+      this.performOperation = true;
+      this.countDone = false;
 
-        // set countdown
-        this.countDownTargets = [_origin,_target];
+      // set countdown
+      this.countDownTargets = [_origin,_target];
 
-        //SUBTRACTION
-        if(this.subtracting == "target"){
+      //SUBTRACTION
+      if(this.subtracting == "target"){
 
-            if(Math.abs(this.lillySmall[_target].value) > this.lillySmall[_origin].value){
+        if(Math.abs(this.lillySmall[_target].value) > this.lillySmall[_origin].value){
 
-                //inverting values
-                _origin = _target ^ _origin
-                _target = _origin ^ _target
-                _origin = _target ^ _origin
+          //inverting values
+          _origin = _target ^ _origin
+          _target = _origin ^ _target
+          _origin = _target ^ _origin
 
-            }
+        }
 
-            this.lillySmall[_origin].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
-            this.lillySmall[_target].value = 0;
+        this.lillySmall[_origin].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
+        this.lillySmall[_target].value = 0;
 
         }else if (this.subtracting == "origin"){
 
-            if(Math.abs(this.lillySmall[_origin].value) > this.lillySmall[_target].value){
+          if(Math.abs(this.lillySmall[_origin].value) > this.lillySmall[_target].value){
 
-                //inverting values
-                _origin = _target ^ _origin
-                _target = _origin ^ _target
-                _origin = _target ^ _origin
+            //inverting values
+            _origin = _target ^ _origin
+            _target = _origin ^ _target
+            _origin = _target ^ _origin
 
-            }
+          }
 
-            this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
-            this.lillySmall[_origin].value = 0;
+          this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
+          this.lillySmall[_origin].value = 0;
 
         //ADITION
         }else{
 
-            this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
-            this.lillySmall[_origin].value = 0;
+          this.lillySmall[_target].value = parseInt(this.lillySmall[_target].value) + parseInt(this.lillySmall[_origin].value)
+          this.lillySmall[_origin].value = 0;
 
         };
 
@@ -1117,24 +1112,27 @@ function proto03(){
     var posCount = 0;
 
     var offset = {//offset start time for animations
-        val : 100,
-        tar : 0,
-        ori : 0,
+      val : 300,
+      tar : 0,
+      ori : 0,
     };
 
-    var destValue;
     var originValue = parseInt(this.lillySmall[_origin].cNumber.text)
     var firstBaseSpeed = 500;
     var stickBaseSpeed = 800;
     var lastBaseSpeed = 500;
     var singleSpeed = 300;
-    var speed = 0.25  // pixels per mili
+
+
+    var speed = 0.2  // pixels per mili
 
     function getLength(_t1,_t2,_speedUp){
 
       console.log(_t2,_t2,_speedUp)
-      var newSpeed = (speed + (0.05 * Math.abs(_speedUp)))
-      if(newSpeed > 0.35) newSpeed = 0.35
+      var newSpeed = (speed + (0.005 * Math.abs(_speedUp)))
+
+      if(newSpeed > 0.35) newSpeed = 0.25
+
       return getDistance(_t1.x,_t1.y,_t2.x,_t2.y) / newSpeed
 
     }
@@ -1146,16 +1144,18 @@ function proto03(){
     if(_target == "final"){ // if the user drops the stick over the final circle:
 
         var t0 = { //start of the stick
-            x: this.stick.x,
-            y: this.stick.y,
+          x: this.stick.x,
+          y: this.stick.y,
         };
 
         var t1 = { // end of the stick
-            x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
-            y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width),
+          x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
+          y : this.stick.y - (Math.cos(this.stick.angle) * this.stick.width),
         };
 
         var extraAnts = this.lillySmall[_origin].value - this.lillyFinal.value
+        var totalAntsSlow = this.lillySmall[_origin].value * 10
+        if(totalAntsSlow > 300) totalAntsSlow == 300;
 
         if(extraAnts < 0) {extraAnts = 0};
 
@@ -1172,12 +1172,12 @@ function proto03(){
             var start = this.ants.sprites[i].sprite.position
             var trajectory = [t0,t1,t2];
             var antSpeeds = [
-              700, //from start postiion to beggining of sticl
-              1200, //along the stick
-              700  // from end of stick to final position
+              250 - totalAntsSlow/2, //from start postiion to beggining of sticl
+              1000 - totalAntsSlow, //along the stick
+              500 - totalAntsSlow  // from end of stick to final position
             ]
             console.log(antSpeeds)
-            this.ants.sprites[i].setTrajectory(trajectory,antSpeeds,(offset.val * offset.ori));
+            this.ants.sprites[i].setTrajectory(trajectory,antSpeeds,(offset.val * offset.ori)-(totalAntsSlow*2));
             this.antsToAnimate.origin.push(i);
             offset.ori++;
             posCount++;
@@ -1303,7 +1303,7 @@ function proto03(){
             };
 
             // Create trajectory and add ant to be animated
-            this.ants.sprites[i].setTrajectory(trajectory,antSpeeds,(offset.val * offset.ori));
+            this.ants.sprites[i].setTrajectory(trajectory,antSpeeds, 100 * offset.ori++);//(offset.val * offset.ori));
             this.antsToAnimate.origin.push(i);
             this.ants.sprites[i].subtracted = antSubtracted
             offset.ori++;
@@ -1371,7 +1371,7 @@ function proto03(){
             };
 
             console.log("legth will be:", antSpeeds)
-            this.ants.sprites[i].setTrajectory(trajectory,antSpeeds,(offset.val * offset.tar));
+            this.ants.sprites[i].setTrajectory(trajectory,antSpeeds,100 * offset.ori++)//(offset.val * offset.tar));
             this.antsToAnimate.target.push(i);
             this.ants.sprites[i].subtracted = antSubtracted
             offset.tar++;
@@ -1396,6 +1396,7 @@ function proto03(){
     var oriDone = false;
     var targDone = false;
     var tar = {};
+
 
     //REGULAR MOVE: TARGET
     if(this.countDownTargets[1] != "final"){
@@ -1424,6 +1425,7 @@ function proto03(){
     // FINAL LILLYPAD COUNT
     }else{
 
+
         tar = this.lillyFinal;
         if(tar.cNumber.text > tar.value - this.lillySmall[this.countDownTargets[0]].value){
 
@@ -1435,11 +1437,11 @@ function proto03(){
             targDone = true;
 
         };
-
     }
 
     //REGULAR MOVE: ORIGIN <<when ant reach beggining of stick>>
-    if(this.lillySmall[this.countDownTargets[0]].cNumber.text != this.lillySmall[this.countDownTargets[0]].value){ // chanye to equal the number it should be in the end
+    if(this.lillySmall[this.countDownTargets[0]].cNumber.text != this.lillySmall[this.countDownTargets[0]].value){
+    // change to equal the number it should be in the end
 
         if(this.subtracting == "origin"){
 
@@ -1773,11 +1775,10 @@ function proto03(){
   Trial.prototype.getSpecs = function(){
 
     var obj = {
-    canvasMargin: 30,
-    bigLillypadWidth: 280,
-    lillyWidth: 130,
-    margin: 15
-
+      canvasMargin : 30,
+      bigLillypadWidth : 280,
+      lillyWidth : 130,
+      margin : 15
     };
 
     obj.width = session.canvas.width-(2*obj.canvasMargin)-(obj.bigLillypadWidth*1.2)-obj.lillyWidth/2;
@@ -1788,12 +1789,13 @@ function proto03(){
     obj.moduleHeightCount = Math.floor(obj.height/obj.moduleSize);
 
     obj.widthInter = obj.width/obj.moduleWidthCount;
-    obj.heightInter = obj.height/obj.moduleHeightCount;
+    obj.heightInter = (obj.height/obj.moduleHeightCount) -  60;
 
-    obj.margingW = (obj.widthInter - obj.lillyWidth)/2;
-    obj.margingH = (obj.heightInter - obj.lillyWidth)/2;
+    obj.margingW = ((obj.widthInter - obj.lillyWidth)/2);
+    obj.margingH = 60 + (obj.heightInter - obj.lillyWidth)/2;
 
     this.lillywith = obj.lillyWidth;
+
     return obj;
   };
 
@@ -1806,11 +1808,11 @@ function proto03(){
   			offset = j%2;
 
     		allPos.push({
-                  id: i,
-                  pos:{
-                      x:(this.specs.widthInter*i)+this.specs.margingW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
-                      y:(this.specs.heightInter*j)+this.specs.margingH+this.specs.canvasMargin+getRandomInt(-20,20)
-                  }
+          id: i,
+          pos:{
+            x:(this.specs.widthInter * i) + this.specs.margingW + this.specs.canvasMargin + ((this.specs.widthInter/2)*offset) + getRandomInt(-20,20),
+            y:(this.specs.heightInter*j) + this.specs.margingH + this.specs.canvasMargin + getRandomInt(-20,20) + 30
+          }
     		});
 		}
 
@@ -1892,6 +1894,7 @@ function proto03(){
   Trial.prototype.storeStim = function(){
 
       logTrial({"starttime":this.starttime, "endtime":Date.now(), "stimtype":'ant', "stim":this.origstim.id, "correct":this.correctSum, "subtraction":this.subtract});
+
       var rand_adjust = Math.random() * .1 - .05; // slight randomization to shuffle stim
       if(this.correctSum) {
         var newpriority = this.origstim.priority + .5;
@@ -2035,9 +2038,8 @@ function proto03(){
             score.displayExplosion();
             this.fadeLeaves();
 
-            if(this.fadeStick){this.removeStick()}
-
-            if(this.finished()){ return true; }
+            if(this.fadeStick) this.removeStick()
+            if(this.finished()) return true;
 
             break;
 

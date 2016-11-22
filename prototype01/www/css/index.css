@@ -1,39 +1,77 @@
 body{
 
-    width : 100%;
-    height : 100%;
-    background: #4d1f48
+  width : 100%;
+  height : 100%;
+  background: #4d1f48
 
+}
+
+.MenuButton {
+  position: absolute;
+}
+
+.top{
+  z-index: 4;
+  position: absolute;
+  top : 0;
+  width : 15%
+}
+
+.bottom{
+  z-index: 4;
+  position: absolute;
+  bottom : 0;
+  width:  15%
+}
+
+.left{
+  left : 0;
+}
+
+.right{
+  right : 0;
+}
+
+
+#Menu_Bg{
+  position: absolute;
+  width : 100%;
+  height : 100%;
+  z-index: 0;
+}
+
+#Menu_shadow{
+  position: absolute;
+  width : 100%;
+  height : 100%;
+  z-index : 5;
+  pointer-events:none;
+}
+
+
+#icons{
+  position: absolute;
+  z-index: 2;
+  display: flex;
 }
 
 #scoreContainer{
 
-    position: absolute;
-    z-index: 10;
+  position: absolute;
+  z-index: 10;
 
 }
 
 #container-chooser{
 
-    position: absolute;
-
-}
-
-.MenuButton {
-
-    display: inline-block;
-    background: blue;
-    width: 170px;
-    height: 170px;
-    margin: 15px;
-    font-family: "Times New Roman";
+  position: absolute;
+  width : 100%;
+  height : 100%;
 
 }
 
 #starGroup {
-
-        position: absolute;
-
+  position: absolute;
 }
 
 #container-exp{
@@ -51,7 +89,6 @@ body{
 
 }
 
-
 #back{
     width : 120;
 }
@@ -59,75 +96,63 @@ body{
 
 #score{
 
-    height: 120;
-    right: -5;
-    top: -10;
-    position: absolute;
-
+  height: 120;
+  right: -5;
+  top: -10;
+  position: absolute;
 }
-
 
 #scoreContainer{
 
-    height: 100px;
-    width: 100px;
-    right: 0;
-    top: 0;
-    position: absolute;
-    z-index: 10;
-
+  height: 100px;
+  width: 100px;
+  right: 0;
+  top: 0;
+  position: absolute;
+  z-index: 10;
 
 }
 
 #scoreNumber{
 
-    display: table-cell;
-    position: absolute;
+  display: table-cell;
+  position: absolute;
 
-    left: 20px;
-    top: 4px;
-    font-size: 26pt;
-    font-weight: bold;
-    color:#a07800;
-    -webkit-text-stroke: 1px white;
-    font-family : "BalooBhai" !important;
+  left: 20px;
+  top: 4px;
+  font-size: 26pt;
+  font-weight: bold;
+  color:#a07800;
+  -webkit-text-stroke: 1px white;
 
 }
 
 #bar {
-    height: 120%;
-    width: 100%;
-    position : absolute;
-    margin-left: 0;
-    z-index: -1;
+  height: 120%;
+  width: 100%;
+  position : absolute;
+  margin-left: 0;
+  z-index: -1;
 }
 
 #menu {
 
-    height:  100%;
-    width : 100%;
-    position: absolute;
-    margin-left: 0;
-    z-index: 2;
-
+  height:  100%;
+  width : 100%;
+  position: absolute;
+  margin-left: 0;
+  z-index: 2;
 
 }
 
-canvas{
-}
 
 piano-button {
-    margin-top : 0%;
+  margin-top : 0%;
 }
 
 #sketch {
-    position: absolute;
-    left:0;
-    top:100;
-    margin-top : 0%;
-}
-
-@font-face {
-    font-family: "BalooBhai";
-    src: url("../fonts/BalooBhai-Regular.ttf");
+  position: absolute;
+  left:0;
+  top:100;
+  margin-top : 0%;
 }
