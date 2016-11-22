@@ -29,12 +29,22 @@ var feedback_audio_files = ["welcome", "addition_instruct", "ant_instruct", "bee
 
 var feedback_sounds = {}; // a bunch of Howls
 
+var letter_sounds = {};
+
 var noteScale = [];
 
 var loadAudioFiles = function() {
   for (var i = 0; i < numbers.length; i++) {
     numbers[i].howl = new Howl({
       src: ['audio/'+language+'/'+numbers[i].audio+'.mp3'],
+      autoplay: false,
+      buffer: true
+    });
+  }
+
+  for (var i = 0; i < letters.length; i++) {
+    letter_sounds[letters[i].audio] = new Howl({
+      src: ['audio/'+language+'/alphabet/'+letters[i].audio+'.mp3'],
       autoplay: false,
       buffer: true
     });

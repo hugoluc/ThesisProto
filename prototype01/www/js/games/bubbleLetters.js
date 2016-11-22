@@ -53,7 +53,7 @@ function bubbleLetters(){
       this.value = _value;
       this.id = _id;
       this.clicked = false;
-      this.posdId = _position.id;
+      //this.posdId = _position.id;
       this.pos = _position.pos;
       this.size = _size;
       this.grow = false;
@@ -99,14 +99,12 @@ function bubbleLetters(){
 
     this.clicked = true;
     this.trial.total_clicks += 1;
-    var correct_click = (this.value===this.trial.target);
+    var correct_click = (this.value.toLowerCase()===this.trial.target.toLowerCase());
     // if correct, play correct sound, stop the dragonfly, and move on
     if(correct_click) {
       correct_sound.play();
-      //console.log(this);
     }
     if(!correct_click) { // incorrect: play bad sound and wait
-      //assets.sounds.wrong[0].play();
       incorrect_sound.play();
     }
     return correct_click;
@@ -194,7 +192,7 @@ function bubbleLetters(){
       this.foils = this.generateFoils(this.target);
       this.origstim = _stim; // in original form to push back on stimulus queue
       this.clock = new ClockTimer();
-
+      this.trialWon = -1;
       this.trialState = "intro";
       this.introState = "playSound";
 
@@ -227,11 +225,11 @@ function bubbleLetters(){
     // need to track the target's location so the dragonfly can go to it
     var bubbleValues = [this.target];
     for (var i=0; i<this.foils.length; i++){
+      if(i < this.posMatrix.length){
         bubbleValues.push(this.foils[i]);
-    }
-
-    if(bubbleValues.length > this.posMatrix.length){
-        throw "SCREEN TOO SMALL!";
+      } else {
+        console.log("more foils than can fit on screen..skipping 1");
+      }
     }
 
     for (var i=0; i<bubbleValues.length; i++){
@@ -303,32 +301,29 @@ function bubbleLetters(){
   };
 
   Trial.prototype.getMatrixPosition = function(){
-      var allPos = []
-      for(var i=0;i<this.specs.moduleWidthCount;i++){
-          for(var j=0;j<this.specs.moduleHeightCount;j++){
-              offset = j%2;
-              allPos.push({
-                  id: i,
-                  pos:{
-                      x:(this.specs.widthInter*i)+this.specs.marginW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20),
-                      y:(this.specs.heightInter*j)+this.specs.marginH+this.specs.canvasMargin+getRandomInt(-20,20),
-                  }
-                });
-            }
-      }
+    var allPos = [];
+    for(var i=0;i<this.specs.moduleWidthCount;i++){
+        for(var j=0;j<this.specs.moduleHeightCount;j++){
+            offset = j%2;
+            var newx = (this.specs.widthInter*i)+this.specs.marginW+this.specs.canvasMargin+((this.specs.widthInter/2)*offset)+getRandomInt(-20,20);
+            var newy = (this.specs.heightInter*j)+this.specs.marginH+this.specs.canvasMargin+getRandomInt(-20,20);
+            //if(distance(dragonfly_start_pos.x, dragonfly_start_pos.y, newx, newy) > 200) {
+              allPos.push({id: i, pos:{ x: newx, y: newy} });
+            //}
+          }
+    }
 
-      for(var i=0; i<allPos.length; i++){
-          this.matrixAvailable.push(i)
-      }
-
-    return allPos
+    for(var i=0; i<allPos.length; i++){
+      this.matrixAvailable.push(i);
+    }
+    return allPos;
   };
 
   Trial.prototype.getPos = function(_i){
-      var aPos = getRandomInt(0,this.matrixAvailable.length)
-      var i = this.matrixAvailable[aPos]
-      this.matrixAvailable.splice(aPos,1)
-      return this.posMatrix[i]
+    var aPos = getRandomInt(0,this.matrixAvailable.length);
+    var i = this.matrixAvailable[aPos];
+    this.matrixAvailable.splice(aPos,1);
+    return this.posMatrix[i];
   };
 
   Trial.prototype.intro = function(){
@@ -386,7 +381,7 @@ function bubbleLetters(){
 
       return false;
     } else { // dragonfly won!
-      //assets.sounds.wrong[0].play();
+
       incorrect_sound.play();
       dragonfly_start_pos = this.dragonfly.position;
       this.bubble[0].grow = true;
@@ -397,13 +392,18 @@ function bubbleLetters(){
   }
 
   Trial.prototype.storeStim = function() {
-      if(this.trialWon) {
+    var randAdjust = Math.random() * .1 - .05;
+    if(this.trialWon) {
+      if(this.wrongClicks < 2) {
         var newpriority = this.origstim.priority + .5;
       } else {
-        var newpriority = this.origstim.priority; // Math.log(this.wrongClicks+1) or -.1
+        var newpriority = this.origstim.priority + .2;
       }
-      this.origstim.priority = newpriority;
-      return this.origstim;
+    } else {
+      var newpriority = this.origstim.priority - .1; // Math.log(this.wrongClicks+1) or -.1
+    }
+    this.origstim.priority = newpriority + randAdjust;
+    return this.origstim;
   };
 
   Trial.prototype.adjustDifficulty = function(won) {
@@ -458,9 +458,8 @@ function bubbleLetters(){
         switch(this.trialState){
             case "intro":
                 if(this.intro()){
-                    assets.sounds.letters[this.target].play();
+                    letter_sounds[this.target].play();
                     //console.log("playing: "+this.target);
-                    //console.log(assets.sounds.letters[this.target]);
                     this.trialState = "play";
                 }
                 break;

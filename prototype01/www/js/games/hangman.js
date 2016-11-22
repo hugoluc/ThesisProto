@@ -122,14 +122,6 @@ function Hangman() {
           max_guesses -= 1; // adjust difficulty: one fewer guess allowed
         }
 
-        // help, Hugo! can't get score to work..what should score.stage be?
-        // var pos = [];
-        // for (var i=0; i<scoreIncrease; i++) {
-        //   pos.push([300,300]); // GK ToDo: set to letter positions of word
-        // }
-        // score.addScore(pos, scoreIncrease, 1000, true);
-        // score.setExplosion([300,300], 100,1000);
-
       } else {
 
         self.origstim.priority -= .1 + randAdjust;
