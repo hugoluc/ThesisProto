@@ -134,16 +134,16 @@ var Dashboard = function() {
   //   });
   // }
 
+  var _this = this
+
   this.sync = function() {
     console.log("syncing.......")
     // one-way: localDB.replicate.to(remoteDB);
     localDB.sync(remoteDB).on('complete', function () {
       alert("DBs are Nsync!");
     }).on('error', function (err) {
-       this.destroy()
-      // console.log("<<<<<<<<<<<<<<<<")
-  //    alert("DBs failed to sync.." + err);
-
+     alert("DBs failed to sync.." + err.message);
+     _this.destroy()
     });
   }
 
