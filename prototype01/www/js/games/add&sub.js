@@ -929,7 +929,9 @@ function proto03(){
 
   Trial.prototype.destroy = function(){
 
+      stage.removeChild(this.equation)
       this.equation.destroy()
+
       this.lillyFinal.destroy()
 
       for(var i=0;i<this.ants.sprites.length;i++){
@@ -2129,6 +2131,10 @@ function proto03(){
 
         return false;
   };
+
+  Trial.prototype.getStage = function(){
+    return stage;
+  }
 
 //-------------------------------------------
 // Global functions andd variables

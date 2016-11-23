@@ -73,7 +73,8 @@ function Multiplication(){
       "LT" : [],
       "LM" : [],
       "intro" : [],
-      "instruction" : []
+      "instruction" : [],
+      "single" : []
     }
 
     var start = {
@@ -99,12 +100,14 @@ function Multiplication(){
     var fullNestSelection = this.calculateSelection(start,end);
     var HlineSelection = this.calculateSelection(start,hEnd);
     var VlineSelection = this.calculateSelection(start,vEnd);
+    var singleSelection = this.calculateSelection(start,start)
 
     for(var i = 0; i< this.stimuli.values.length; i++){
 
       this.createFullNests(fullNestSelection);
       this.createFullNests(HlineSelection);
       this.createFullNests(VlineSelection);
+      this.createFullNests(singleSelection)
 
     };
 
@@ -1008,11 +1011,24 @@ function Multiplication(){
 			this.lastTarget = this.boardMatrix[_event.target.id].tile
 			_event.target.dragging = true;
 
+      if(!this.singleCreated){
+
+        this.selection = this.calculateSelection( // calculate new selection
+          this.boardMatrix[this.firstClickTile].tile,
+          this.boardMatrix[this.firstClickTile].tile
+        )
+
+        this.showNest(this.selection)
+        this.singleCreated = true
+
+      }
 		}
 
 	};
 
 	Trial.prototype.deleteNest = function(_index){ // delete nest on _index
+
+    this.singleCreated = false
 
 		for(var i = 0; i < this.selection.tiles.length; i++){
 
@@ -1079,7 +1095,6 @@ function Multiplication(){
 								return
 
 							}
-
 						};
 
 						this.showNest(this.selection)
@@ -1102,6 +1117,7 @@ function Multiplication(){
 		function showNestTile(_arrayPos,_asset,_this,_flip){
 
       var sprite = _this.fullNests[_asset].splice(0,1)[0]
+      console.log(_this.fullNests[_asset])
 
       if(_flip){
         sprite.rotation = -Math.PI / 2;
@@ -1132,6 +1148,9 @@ function Multiplication(){
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 		if(selection.rows * selection.columns  <= 1){// Draw nest in the shape of a single saquare
+
+      showNestTile( 0, "single", this )
+
 
 		}else if(selection.columns > 1 && selection.rows > 1){ // Draw nest in the shape of a rectangle
 
@@ -1403,10 +1422,7 @@ function Multiplication(){
       console.log(">>>>>>>>>> BOTTOM")
       console.log(finalNestTile.y)
 
-
-
-      for(var i = 0;i < finalNestTile.y-1; i++){
-
+      for(var i = 0;i <= finalNestTile.y-1; i++){
         for(var j = 0; j < _this.boardSpecs.columns; j++){
 
           var x = j;
@@ -1651,15 +1667,13 @@ function Multiplication(){
 				var sprite = new PIXI.Sprite(assets.textures[_asset]);
 
 				sprite.height = _this.tileSize * 1.6
-				sprite.x = _this.boardMatrix[selection.tiles[_arrayPos].id].pos.x + _this.tileSize*0.5,
-				sprite.y = _this.boardMatrix[selection.tiles[_arrayPos].id].pos.y + _this.tileSize*0.5,
+				// sprite.x = _this.boardMatrix[selection.tiles[_arrayPos].id].pos.x + _this.tileSize*0.5,
+				// sprite.y = _this.boardMatrix[selection.tiles[_arrayPos].id].pos.y + _this.tileSize*0.5,
 				sprite.anchor.x = 0.5
 				sprite.anchor.y = 0.5
-        sprite.alpha = 0
+        sprite.alpha = 0.001
 
         _this.fullNests[_asset].push(sprite)
-
-
 
         stage.addChildAt(sprite,stage.children.length-1)
 
@@ -1672,6 +1686,8 @@ function Multiplication(){
 			//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 			if(selection.columns * selection.rows <= 1){// Draw nest in the shape of a single saquare
+
+        createNestTile( 0, "single", this )
 
 			}else if(selection.columns > 1 && selection.rows > 1){ // Draw nest in the shape of a rectangle
 
@@ -1811,6 +1827,9 @@ function Multiplication(){
 
 				};
 			};
+
+      console.log(this.fullNests)
+
   };
 
 	Trial.prototype.calculateSelection = function(_start,_end){
@@ -1988,6 +2007,7 @@ function Multiplication(){
       			assets.addTexture("SR","sprites/nest/SR.png")
       			assets.addTexture("ST","sprites/nest/ST.png")
       			assets.addTexture("M","sprites/nest/M.png")
+      			assets.addTexture("single","sprites/nest/single.png")
 
       			//assets for tree background
       			assets.addTexture("boardLeaves","sprites/nest/boardLeaves.png")
