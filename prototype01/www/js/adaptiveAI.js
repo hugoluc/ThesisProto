@@ -68,11 +68,22 @@ function loadStimulusQueue(stimuli, chunkSize) {
 // update timestamped list of activities (high-level)
 // e.g., activity:bubble, action:'start' or 'stop'
 function logTime(activityType, action) {
-  var timestamp = Date.now();
-  var activityLog = store.get("activityLog");
-  activityLog.push({'time': timestamp, 'activity': activityType, 'action': action});
-  console.log({'time': timestamp, 'activity': activityType, 'action': action});
-  store.set("activityLog", activityLog);
+  var time = new Date().toISOString();
+  var tr = {
+    _id: user + '-' + time + '-log',
+    data: {'activity': activityType, 'action': action}
+  };
+  localDB.put(tr, function callback(err, result) {
+    if (!err) {
+      console.log('localDB logged trial:');
+      console.log(trial_data);
+    } else {
+      console.log('pouchDB fail: logging activity with store.js');
+      var activityLog = store.get("activityLog");
+      activityLog.push({'time': time, 'activity': activityType, 'action': action});
+      store.set("activityLog", activityLog);
+    }
+  });
 }
 
 // for now we're still using store.js for stimulus queues, but may want to

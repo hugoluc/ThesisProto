@@ -155,9 +155,12 @@ function Hangman() {
       }
 
     self.handleGuess = function(guess, callback) {
-
       //console.log("unique remaining letters: " + self.unique_letters_remaining);
-      if(guess.clicked==1) {
+      if(guess.clicked>1) {
+        return // already clicked before -- do nothing
+      }
+      if(guess.clicked==1) { // 1st time clicked
+        letter_sounds[guess.audio].play();
         self.guesses_made += 1;
         // select any occurrences of d.text in the blanks
         // if there is one or more, reveal those blanks
@@ -173,7 +176,7 @@ function Hangman() {
           self.veil.transition()
             .attr("transform", "translate(0,-"+img_vert_shift+")")
             .delay(1000);
-          setTimeout(function(){incorrect_sound.play()}, 900);
+          setTimeout(function(){incorrect_sound.play()}, 800);
 
         } else { // they got a letter!
 
@@ -194,7 +197,7 @@ function Hangman() {
 
           }
 
-          setTimeout(function(){correct_sound.play()}, 200);
+          setTimeout(function(){correct_sound.play()}, 800);
           self.veil.transition()
             .attr("fill", getRandomColor())
             .duration(1000);
@@ -240,8 +243,8 @@ function Hangman() {
       self.alphabet.append("svg:image")
         .attr("xlink:href", "sprites/hangman/rock.png")
         .attr({
-          x: -50,
-          y: -40,
+          x: -53,
+          y: -43,
           width: 100,
           height: 100
         })
@@ -268,11 +271,9 @@ function Hangman() {
             .transition()
             .style("opacity",.7)
             .attr("fill", "#222")
-            .duration(400);
-            //.remove();
-          audio = new Audio('audio/'+language+'/alphabet/'+d.audio+'.mp3');
+            .duration(600);
+
           d.clicked += 1;
-          audio.play();
           self.handleGuess(d, callback);
         });
       }
