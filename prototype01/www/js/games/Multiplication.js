@@ -520,7 +520,7 @@ function Multiplication(){
 						};
 
 						console.log("introState = moveLeft")
-						this.timer.start(100);
+						this.timer.start(0);
 						this.introState = "moveLeft"
 						this.drawBoard();
 
