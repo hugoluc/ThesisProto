@@ -2,6 +2,8 @@ var proto3loaded = false;
 
 function proto03(){
 
+  var enableClick = true; 
+
   var minAddends = store.get("minAddends");
   if(!minAddends) minAddends = 2; // store.get and store.set, and write adjustDifficulty !!
 
@@ -224,7 +226,7 @@ function proto03(){
     }
 
     if(this.trial.singleClickOrigin){
-     console.log(this.container.position,this)
+      console.log(this.container.position,this)
       this.trial.CheckLinkClick(this.container.position,this.trial.singleClickOrigin.id);
 
     }
@@ -326,6 +328,10 @@ function proto03(){
       return
     }
 
+    //change lillypad to selected
+   _this.data = _event.data;
+   _this.dragging = true;
+
     console.log("clickstart");
     this.trial.clickCount++
     console.log(this.trial.clickCount)
@@ -336,6 +342,9 @@ function proto03(){
     }else{
 
       this.trial.clickedLilly = this
+      if(enableClick){
+        return;
+      }
       console.log("--",this.trial.clickCount)
 
       if(!this.trial.singleClickOrigin){
@@ -1024,8 +1033,9 @@ function proto03(){
 
   Trial.prototype.CheckLinkClick = function(_dropPoint,_id){
 
-    return;
-
+    if(enableClick){
+      return;
+    }
     console.log("checklinkclick")
     console.log(_dropPoint,_id);
 

@@ -22,10 +22,6 @@ var Dashboard = function() {
   $("#container-exp").css("background-color","green");
 
   this.destroy = function() {
-
-    console.log("-------------------------------")
-
-    //session.hide();
     document.getElementById("header-exp").style.display = "none";
     $("#sessions").remove();
     $("#logdetails").remove();
