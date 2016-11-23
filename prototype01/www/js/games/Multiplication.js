@@ -144,13 +144,9 @@ function Multiplication(){
 
           function eggsclicked(){
 
-            console.log(_this.playState,_this.animationDone)
-
             if(_this.playState != "Win" && _this.playState != "placingEggs" || !_this.animationDone){
               return;
             }
-
-            console.log("-------", _this.playState)
 
             if(_this.answerGiven == this.id){ // correct answer given || orrect nest size
 
@@ -524,7 +520,7 @@ function Multiplication(){
 						};
 
 						console.log("introState = moveLeft")
-						this.timer.start(1000);
+						this.timer.start(100);
 						this.introState = "moveLeft"
 						this.drawBoard();
 
