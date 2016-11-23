@@ -7,12 +7,12 @@ var Dashboard = function() {
   // Couch/PouchDB's put and get methods are super-easy to store JSON docs
   // the only involved thing is updating, where you need to first retrieve
   // the whole object (with random _rev number), update fields, then put back
-  var remoteCouch = 'http://egoteach:selfdirection@egoteach.cloudant.com/egoteach_tz1';
+  //var remoteCouch = 'http://egoteach:selfdirection@egoteach.cloudant.com/egoteach_tz1';
 
   // GK: for testing use local CouchDB server
   //var remoteDB = new PouchDB('http://127.0.0.1:5984/egoteach_tz1');
   // GK: for pilot study use NYU server
-  var remoteDB = new PouchDB('http://egoteach:selfdirection@sever.psych.nyu.edu:5984/egoteach_tz1');
+  var remoteDB = new PouchDB('http://egoteach:selfdirection@sever.psych.nyu.edu:5984/egoteach_tz2');
 
   // primary key (_id) will be user+datetime
 
