@@ -510,7 +510,7 @@ function Multiplication(){
 							this.eggs[i].customAnimation.init(
 
 								pos,
-								1500,
+								1000,
 								100*counter,
 								[0.75,0.25]
 							)
