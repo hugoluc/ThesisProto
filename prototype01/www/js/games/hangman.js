@@ -130,20 +130,16 @@ function Hangman() {
       var final_view_time = 3500; // how long they see the word and picture at the end
 
       self.audio.play()
-
+      // if fail want to reveal whole word?
       self.blanks.transition()
         .style("opacity", 0.0)
-        .delay(final_view_time)
+        .delay(100)
         .remove();
       self.veil.transition()
         .style("opacity", 0.0)
         .duration(300)
         .remove();
       nextTrial = true;
-      self.alphabet.transition()
-        .style("opacity", 0.0)
-        .duration(final_view_time/2)
-        .remove();
       screend3.selectAll("image")
         .transition()
         .delay(final_view_time)
@@ -176,7 +172,7 @@ function Hangman() {
           self.veil.transition()
             .attr("transform", "translate(0,-"+img_vert_shift+")")
             .delay(1000);
-          setTimeout(function(){incorrect_sound.play()}, 800);
+          setTimeout(function(){incorrect_sound.play()}, 700);
 
         } else { // they got a letter!
 
@@ -197,7 +193,7 @@ function Hangman() {
 
           }
 
-          setTimeout(function(){correct_sound.play()}, 800);
+          setTimeout(function(){correct_sound.play()}, 700);
           self.veil.transition()
             .attr("fill", getRandomColor())
             .duration(1000);
@@ -205,12 +201,21 @@ function Hangman() {
 
           if(self.unique_letters_remaining === 0) {
             console.log("got all the letters!")
+            self.alphabet.transition()
+              .style("opacity", 0.0)
+              .duration(500)
+              .remove();
             setTimeout(function(){self.finish(true, callback)}, 1500); // won!
           }
 
 
         }
         if(self.wrong_guesses===max_guesses) { // lost..
+          // immediately get g
+          self.alphabet.transition()
+            .style("opacity", 0.0)
+            .duration(500)
+            .remove();
           setTimeout(function(){self.finish(false, callback)}, 1500);
         }
       }
@@ -341,7 +346,6 @@ function Hangman() {
 
       var ypos = screen_height*.25;
       var xpos = .95*screen_width-imageSize;
-      // GK: replace veil with N leaves that disappear as wrong guesses are made
       console.log("self.image: "+self.image);
 
        var defs = screend3.append("defs")
