@@ -22,6 +22,9 @@ var Dashboard = function() {
   $("#container-exp").css("background-color","green");
 
   this.destroy = function() {
+
+    console.log("-------------------------------")
+
     //session.hide();
     document.getElementById("header-exp").style.display = "none";
     $("#sessions").remove();
@@ -42,6 +45,7 @@ var Dashboard = function() {
   }
 
   this.gameUsageSummary = function() {
+    console.log("getting sumary")
     var activityLog = store.get("activityLog");
     // iterate over activityLog tallying up time (stop-start) for each activity
     var data = [];
@@ -131,11 +135,15 @@ var Dashboard = function() {
   // }
 
   this.sync = function() {
+    console.log("syncing.......")
     // one-way: localDB.replicate.to(remoteDB);
     localDB.sync(remoteDB).on('complete', function () {
-      console.log("DBs are Nsync!");
+      alert("DBs are Nsync!");
     }).on('error', function (err) {
-      console.log("DBs failed to sync..");
+       this.destroy()
+      // console.log("<<<<<<<<<<<<<<<<")
+  //    alert("DBs failed to sync.." + err);
+
     });
   }
 
