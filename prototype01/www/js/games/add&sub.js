@@ -1024,6 +1024,8 @@ function proto03(){
 
   Trial.prototype.CheckLinkClick = function(_dropPoint,_id){
 
+    return;
+
     console.log("checklinkclick")
     console.log(_dropPoint,_id);
 

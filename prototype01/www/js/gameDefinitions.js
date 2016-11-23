@@ -175,8 +175,6 @@
 		this.sounds.letters = {}
 		this.sprites = {}
 		this.textures = {}
-		this.textureLoadCount = 0
-		var _this = this;
 
 		//>>>>>>>>>>>>>>>>>>>>>>>
 		// LOADING -- TEXTURE --
@@ -184,9 +182,6 @@
 
 		for( var i=0; i < this.textureQueue.length; i++){
 			this.textures[this.textureQueue[i][0]] = new PIXI.Texture.fromImage(this.textureQueue[i][1])
-			this.textures[this.textureQueue[i][0]].baseTexture.cource.onload = function(){
-				_this.textureLoadCount++
-			}
 		}
 
 		//>>>>>>>>>>>>>>>>>>>>>
