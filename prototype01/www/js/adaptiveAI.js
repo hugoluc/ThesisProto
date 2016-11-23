@@ -99,9 +99,15 @@ function initStorage() {
   //user = null; // for testing defaults
 
   if(user==null) {
-    user = getRandomInt(1,999999999);
-    console.log('first time! assigned userID: ' + user);
-    store.clear() // clear all keys
+    store.clear(); // clear all keys
+    if(!uuid) {
+      user = getRandomInt(1,999999999);
+      console.log('first time! assigned userID: ' + user);
+    } else {
+      user = uuid;
+      console.log('first time! userID is UUID: ' + user);
+      store.set('serial', uuid.serial);
+    }
     store.set('user', user);
     store.set('score', 0);
     store.set('activityLog', []);

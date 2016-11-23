@@ -3,6 +3,8 @@
 var screen_width = window.innerWidth, // (1200)
     screen_height = window.innerHeight; // (768)
 
+var uuid; // try to get unique device ID to use as user ID
+
 // Howlers cache, play and replay faster
 var incorrect_sound = new Howl({
   src: ['audio/wrong/wrong.mp3'],
@@ -15,6 +17,13 @@ var correct_sound = new Howl({
   autoplay: false,
   buffer: true
 });
+
+// cordova plugin add cordova-plugin-device
+document.addEventListener("deviceready", onDeviceReady, false);
+function onDeviceReady() {
+    console.log(device.uuid);
+    uuid = device.uuid;
+}
 
 // audio/swahili/feedback
 var feedback_audio_files = ["welcome", "addition_instruct", "ant_instruct", "bee_instruct",
