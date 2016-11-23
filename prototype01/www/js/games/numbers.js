@@ -1170,7 +1170,7 @@ function proto02(){
       assets.addTexture("instructions_blue",'sprites/ladyBug/Instructions/instructions_blue.png');
       assets.addTexture("instructions_red",'sprites/ladyBug/Instructions/instructions_red.png');
       assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png');
-      assets.addTexture("bg",'sprites/backGrounds/counting_background-01.png');
+      assets.addTexture("bg",'sprites/backGrounds/counting_background.png');
 
       assets.load(onAssetsLoaded)
 

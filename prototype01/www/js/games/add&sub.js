@@ -2,7 +2,7 @@ var proto3loaded = false;
 
 function proto03(){
 
-  var enableClick = true; 
+  var enableClick = true;
 
   var minAddends = store.get("minAddends");
   if(!minAddends) minAddends = 2; // store.get and store.set, and write adjustDifficulty !!
@@ -276,12 +276,22 @@ function proto03(){
   	  this.circle
     		.on('mousedown', click)
         .on('touchstart', click)
-    		.on('mouseup', function(){_this.clickEnd(this)})
-        .on('mouseupoutside', function(){_this.clickEnd(this)})
-        .on('touchend', function(){_this.clickEnd(this)})
-        .on('touchendoutside', function(){_this.clickEnd(this)})
-        .on('mousemove', function(){_this.drag(this)})
-        .on('touchmove', function(){_this.drag(this)});
+
+    		.on('mouseup', end)
+        .on('mouseupoutside', end)
+        .on('touchend', end)
+        .on('touchendoutside', end)
+
+        .on('mousemove', drag)
+        .on('touchmove', drag);
+
+      function end(_event){
+        _this.clickEnd(this,_event)
+      }
+
+      function drag(_event){
+        _this.drag(this,_event)
+      }
 
       function click(_event){
       	_this.clickStart(this,_event)
@@ -323,37 +333,34 @@ function proto03(){
 
   lillySmall.prototype.clickStart = function(_this,_event){
 
-    if(!this.trial.animationDone){
-      console.log("no clicking while animating")
+    console.log("clickstart")
+
+    if(!this.trial.animationDone || this.trial.dragging){
+      console.log("no clicking while animating or dragging")
       return
     }
 
-    //change lillypad to selected
-   _this.data = _event.data;
-   _this.dragging = true;
+    if(!this.trial.clickedLilly){
 
-    console.log("clickstart");
-    this.trial.clickCount++
-    console.log(this.trial.clickCount)
+      console.log("setting up  new position data!")
 
-    if(this.trial.clickCount > 1){
-      console.log("no multiclick", this.trial.clickCount)
-      return
-    }else{
+      _this.data = _event.data;
+      _this.dragging = true;
 
-      this.trial.clickedLilly = this
-      if(enableClick){
-        return;
+      this.trial.lasPos = {
+        x : _event.data.global.x,
+        y : _event.data.global.y,
       }
-      console.log("--",this.trial.clickCount)
+      this.trial.clickedLilly = this
+      this.trial.clickSprite = _event.target
+    }
+
+    if(!enableClick){
 
       if(!this.trial.singleClickOrigin){
-
         this.trial.singleClickOrigin = this
         this.toggleSelection()
-
       }else{
-
         if(this.trial.singleClickOrigin !=  this) {
           this.trial.singleClickDest = this;
         }else{
@@ -363,33 +370,26 @@ function proto03(){
       }
     }
 
-     //change lillypad to selected
-    _this.data = _event.data;
-    _this.dragging = true;
-
-    console.log("end of clickstart" , this.trial.clickCount)
-
   };
 
-  lillySmall.prototype.clickEnd = function(_this){
+  lillySmall.prototype.clickEnd = function(_this,_event){
 
-    this.trial.clickCount--
+    var currentPos =  _event.data.global
+    var dist = getDistance(this.trial.lasPos.x,this.trial.lasPos.y,currentPos.x,currentPos.y)
 
-    //change lillypad to selected
-    if(!this.dragging) return
-    if(this.trial.clickedLilly != this) return
-
-    console.log("clickend", this.trial.clickCount)
-    if(this.trial.clickCount > 0){
-      console.log("no multiclick")
+    if(dist > 100){
+      console.log("distant click! EXIT")
+      this.dragging = false;
+      this.trial.fadeStick = true;
+      this.trial.dragging = false;
       return
     }
 
-    _this.dragging = false;
-    this.dragging = false;
+    if(!this.dragging) return
+    if(this.trial.clickedLilly != this) return
 
     //if both target and destination was cicked (not using drag):
-    if(this.trial.singleClickDest && this.trial.singleClickOrigin){
+    if(enableClick && this.trial.singleClickDest && this.trial.singleClickOrigin){
 
       //if clicked on the same lilly toogle:
       if(this.trial.singleClickDest == this.trial.singleClickOrigin){
@@ -404,18 +404,40 @@ function proto03(){
       // check link for dragging
       this.trial.CheckLink(_this.data.getLocalPosition(_this.parent),this.id);
     }
+
+    console.log("cleanup")
+    this.trial.clickedLilly = undefined
+    _this.dragging = false;
+    this.dragging = false;
+    _this.data = null
+
   };
 
-  lillySmall.prototype.drag = function(_this){
+  lillySmall.prototype.drag = function(_this,_event){
 
   	if(_this.dragging){
+
+      _this.fadeStick = false;
 
   		if(!this.dragging){
         this.trial.createStick(_this.data.getLocalPosition(_this.parent));
   			this.dragging = true;
       }
 
-  		this.trial.moveStick(_this.data.getLocalPosition(_this.parent));
+      var currentPos =  _event.data.global
+      var dist = getDistance(this.trial.lasPos.x,this.trial.lasPos.y,currentPos.x,currentPos.y)
+      // console.log(_event.data.global,this.trial.lasPos)
+      // console.log(dist)
+
+      this.trial.lasPos = {
+        x : currentPos.x,
+        y : currentPos.y,
+      }
+
+      if(dist < 100 ){
+        this.trial.moveStick(_this.data.getLocalPosition(_this.parent));
+      }
+
   	}
   };
 
@@ -946,6 +968,8 @@ function proto03(){
   //Initializes operation and animation
   Trial.prototype.CheckLink = function(_dropPoint,_id){
 
+    console.log("checking link")
+
     // FINAL MOVE:
     if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
 
@@ -995,40 +1019,39 @@ function proto03(){
 
       if(this.lillySmall[i].circle.containsPoint(_dropPoint) && !this.lillySmall[i].destroyed){
 
-          if(i == _id){ // return if its was dropped over itself
-            this.stick.alpha = 0 // fade stick correctyl *************************************FIXME*****
-            this.fadeStick = true;
-            return
-          }
+        if(i == _id){ // return if its was dropped over itself
+          this.fadeStick = true;
+          return
+        }
 
-          var values = [this.lillySmall[_id].cNumber.text,this.lillySmall[i].cNumber.text]
+        var values = [this.lillySmall[_id].cNumber.text,this.lillySmall[i].cNumber.text]
 
-          if(parseInt(this.lillySmall[_id].cNumber.text) < 0 ){// check if the ORIGIN lillipad has a negative number
+        if(parseInt(this.lillySmall[_id].cNumber.text) < 0 ){// check if the ORIGIN lillipad has a negative number
 
+          this.UpdateEquation(values,false)
+          this.subtracting = "origin"
+
+        }else if (parseInt(this.lillySmall[i].cNumber.text) < 0){// check if the TARGET lillipad has a negative number
+
+          this.UpdateEquation(values,true)
+          this.subtracting = "target"
+
+        }else{
             this.UpdateEquation(values,false)
-            this.subtracting = "origin"
+            this.subtracting = false
+        }
 
-          }else if (parseInt(this.lillySmall[i].cNumber.text) < 0){// check if the TARGET lillipad has a negative number
+        this.moveStick(true,i) // adjust final stick size
+        this.updateOperation(_id,i) // update lllypad value
+        this.setAnimateAnts(_id,i); //get new location for ants
 
-            this.UpdateEquation(values,true)
-            this.subtracting = "target"
-
-          }else{
-              this.UpdateEquation(values,false)
-              this.subtracting = false
-          }
-
-          this.moveStick(true,i) // adjust final stick size
-          this.updateOperation(_id,i) // update lllypad value
-          this.setAnimateAnts(_id,i); //get new location for ants
-
-          return;
+        return;
 
       }
     }
 
 
-        this.fadeStick = true;
+      this.fadeStick = true;
   }
 
   Trial.prototype.CheckLinkClick = function(_dropPoint,_id){
@@ -1702,6 +1725,7 @@ function proto03(){
 
     var lillyOffset = (this.specs.lillyWidth*0.7);
     this.branch.alpha = 1;
+    this.stick.alpha = 1;
 
     // set the final position for the stick
     if(_data == true){
@@ -1814,6 +1838,8 @@ function proto03(){
   };
 
   Trial.prototype.removeStick = function(){
+
+    console.log(this.stick.alpha)
 
     if(this.stick.alpha >= 0){
         //animate alpha with animate function
@@ -2059,15 +2085,17 @@ function proto03(){
 
         case "play":
 
+            console.log(this.fadeStick)
+
             for(var i=0;i<this.lillySmall.length;i++){
                 this.lillySmall[i].animate();
             }
 
-            if(this.fadeStick){
+            if(this.fadeStick) {
+              this.removeStick();
+            }
 
-                this.removeStick();
-
-            }else if(this.performOperation){
+            if(this.performOperation && !this.fadeStick){
 
               var countDone = this.countNumber();
               var antsAnimationDone = this.animateAnts();
