@@ -863,10 +863,42 @@ function proto03(){
           this.ants.sprites[i].init();
       };
 
+      //create equation
+      this.equation = new PIXI.Text("first", {
+        font:"60px Arial",
+        align: 'left',
+        weight:"bold",
+        fill: "#cccccc",
+        stroke:"#cccccc",
+        strokeThickness: 0,
+      });
+      this.equation.x = 150;
+      this.equation.y = 20;
+      this.equation.renderable = false;
+      stage.addChild(this.equation)
+
       this.clock.start(1000);
   };
 
+  Trial.prototype.UpdateEquation = function(_value,_subtracting){
+
+    if(_subtracting){
+      var sign = " "
+    }else{
+      var sign = " + "
+    }
+
+    if(this.equation.text == "first"){
+      this.equation.renderable = true
+    }
+
+    this.equation.text = _value[0] + sign + _value[1] + " = " + (parseInt(_value[0]) + parseInt(_value[1]))
+
+  }
+
   Trial.prototype.destroy = function(){
+
+      this.equation.destroy()
       this.lillyFinal.destroy()
 
       for(var i=0;i<this.ants.sprites.length;i++){
@@ -923,14 +955,21 @@ function proto03(){
 
       if(this.lillySmall[_id].value == this.origstim.id){
 
+        var sign = " = "
         this.trialEnded = true;
         this.correctSum = true;
 
       }else{
 
+        var sign = " ≠ "
         this.trialEnded = false; // GK: trial is still ended, but they got it wrong..
 
       }
+
+      console.log("--------------------------------------------------------------------------")
+      this.equation.renderable = true;
+      var text = this.lillySmall[_id].cNumber.text + sign + this.lillyFinal.cNumber.text
+      this.equation.text = text
 
       this.moveStick(true,"final");// adjust final stick size
       this.setAnimateAnts(_id,"final")//get new location for ants
@@ -938,7 +977,6 @@ function proto03(){
 
       return
     }
-
 
     //check which lillypad the stick was droped over
     for(var i=0; i<this.lillySmall.length; i++){
@@ -954,16 +992,20 @@ function proto03(){
             return
           }
 
+          var values = [this.lillySmall[_id].cNumber.text,this.lillySmall[i].cNumber.text]
 
           if(parseInt(this.lillySmall[_id].cNumber.text) < 0 ){// check if the ORIGIN lillipad has a negative number
 
+            this.UpdateEquation(values,false)
             this.subtracting = "origin"
 
           }else if (parseInt(this.lillySmall[i].cNumber.text) < 0){// check if the TARGET lillipad has a negative number
 
+            this.UpdateEquation(values,true)
             this.subtracting = "target"
 
           }else{
+              this.UpdateEquation(values,false)
               this.subtracting = false
           }
 

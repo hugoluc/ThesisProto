@@ -94,7 +94,6 @@ function Start(){
     }
   }
 
-
   // hide experiment and show chooser
   var containerMainMenu = document.getElementById("icons")
   var totalWidth = 0;
@@ -164,6 +163,20 @@ function Start(){
     }
   }
 
+  var dashboard = document.createElement("dashBoard")
+  var dashClickCount = 0
+  dashBoard.onclick = function(){
+    dashClickCount++
+    if(dashClickCount > 5){
+
+      dashClickCount = 0
+      //logTime('menu','stop');
+      //document.getElementById("container-exp").style.height = window.innerHeight
+      clickStart('container-chooser','container-exp');
+      currentview = new Games[Games.length-1].callFunction()
+    }
+  }
+
   function arrangeSize(){
 
     console.log("biggest" , biggest)
@@ -181,9 +194,7 @@ function Start(){
       allAvailable[i].style.left = left
       allAvailable[i].style.top = ((window.innerHeight - biggest)/2) + (biggest - (allAvailable[i].naturalHeight*scale))/2
       left = left + (allAvailable[i].naturalHeight * scale)
-
-  }
-
+    }
   }
 
   if(!PIXIInitialized){
