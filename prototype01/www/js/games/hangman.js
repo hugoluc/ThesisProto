@@ -46,7 +46,6 @@ function Hangman() {
     console.log(self.image); // undefined the second time!
     self.unique_letters_remaining = count_unique_elements_in_array(self.answer.split("")); // unique letters to guess--decrement when each is clicked
 
-
     self.init_screen = function() {
 
       screend3 = d3.select("#container-exp").append("svg")

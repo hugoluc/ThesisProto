@@ -10,9 +10,9 @@ var Dashboard = function() {
   var remoteCouch = 'http://egoteach:selfdirection@egoteach.cloudant.com/egoteach_tz1';
 
   // GK: for testing use local CouchDB server
-  var remoteDB = new PouchDB('http://127.0.0.1:5984/egoteach_tz1');
+  //var remoteDB = new PouchDB('http://127.0.0.1:5984/egoteach_tz1');
   // GK: for pilot study use NYU server
-  //var remoteDB = new PouchDB('http://egoteach:selfdirection@sever.psych.nyu.edu:5984/egoteach_tz1');
+  var remoteDB = new PouchDB('http://egoteach:selfdirection@sever.psych.nyu.edu:5984/egoteach_tz1');
 
   // primary key (_id) will be user+datetime
 

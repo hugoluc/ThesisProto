@@ -1169,39 +1169,9 @@ function proto02(){
       assets.addTexture("counter_gold",'sprites/ladyBug/Instructions/counter_gold.png');
       assets.addTexture("instructions_blue",'sprites/ladyBug/Instructions/instructions_blue.png');
       assets.addTexture("instructions_red",'sprites/ladyBug/Instructions/instructions_red.png');
-
       assets.addTexture("ladyBug_dead",'sprites/ladyBug/ladyBug_dead.png');
+      assets.addTexture("bg",'sprites/backGrounds/counting_background-01.png');
 
-      if(window.innerWidth < 1200){
-          assets.addTexture("bg",'sprites/backGrounds/BackGround-01.png');
-      }else{
-          assets.addTexture("bg",'sprites/backGrounds/BackGround-01_2x.png');
-      }
-
-      // for (var i = 0; i < numbers.length; i++) {
-      //   //assets.sounds.numbers
-      //   assets.addSound(Number(numbers[i].id),numbers[i].audio + '.mp3');
-      //
-      // };
-
-      // for (var i = 0; i < correctSounds.length; i++) {
-      //
-      //     for (var j = 0; j < correctSounds[i].length; j++) {
-      //
-      //         if(i == 0){
-      //
-      //             assets.addSound("correct1",correctSounds[i][j].audio + '.mp3');
-      //
-      //         }else{
-      //
-      //             assets.addSound("correct2",correctSounds[i][j].audio + '.mp3');
-      //
-      //         }
-      //
-      //     };
-      // };
-
-      //assets.addSound("wrong",'wrong.mp3');
       assets.load(onAssetsLoaded)
 
   //---------------------------------------LOOP
