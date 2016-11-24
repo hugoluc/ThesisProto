@@ -265,7 +265,18 @@ function proto03(){
       this.container = new PIXI.Container()
       this.trialTimer = new ClockTimer();
 
-      this.circle = new PIXI.Sprite(assets.textures.lillySmall)
+
+      var calor;
+
+      if(this.value < 0){
+        color = "#9e642b"
+        this.circle = new PIXI.Sprite(assets.textures.lillySmall_02)
+      }else{
+        color = "#1e7c12"
+
+        this.circle = new PIXI.Sprite(assets.textures.lillySmall_01)
+      }
+
       this.circle.width = this.size
       this.circle.height = this.size
       this.circle.anchor.x = 0.5
@@ -301,7 +312,15 @@ function proto03(){
       this.circle.x = this.pos.x+this.size/2;
       this.circle.y = this.pos.y+this.size/2;
 
-      this.cNumber =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"bold", fill:this.numberColor[0], stroke:"#098478", strokeThickness: 0, });
+      this.cNumber =  new PIXI.Text(this.value, {
+        font:"60px Arial",
+        align: 'center',
+        weight:"bold",
+        fill: color,
+        stroke: color,
+        strokeThickness: 0,
+      });
+
       this.cNumber.anchor.x = 0.5;
       this.cNumber.anchor.y = 0.5;
       this.cNumber.x = this.pos.x + this.size*0.5;
@@ -335,7 +354,7 @@ function proto03(){
 
     console.log("clickstart")
 
-    if(!this.trial.animationDone || this.trial.dragging){
+    if(!this.trial.animationDone || this.trial.dragging || this.trial.trialState != "play"){
       console.log("no clicking while animating or dragging")
       return
     }
@@ -380,8 +399,10 @@ function proto03(){
     if(dist > 100){
       console.log("distant click! EXIT")
       this.dragging = false;
-      this.trial.fadeStick = true;
       this.trial.dragging = false;
+      _this.dragging = false;
+      this.trial.fadeStick = true;
+      this.trial.clickedLilly = undefined
       return
     }
 
@@ -434,9 +455,7 @@ function proto03(){
         y : currentPos.y,
       }
 
-      if(dist < 100 ){
-        this.trial.moveStick(_this.data.getLocalPosition(_this.parent));
-      }
+      this.trial.moveStick(_this.data.getLocalPosition(_this.parent));
 
   	}
   };
@@ -2162,7 +2181,8 @@ function proto03(){
             assets.addTexture("branch","sprites/stick/branch.png")
 
             assets.addTexture("lillyBig","sprites/lillypad/big-01.png")
-            assets.addTexture("lillySmall","sprites/lillypad/small-01.png")
+            assets.addTexture("lillySmall_01","sprites/lillypad/small-01.png")
+            assets.addTexture("lillySmall_02","sprites/lillypad/small-02.png")
             assets.addTexture("ants","sprites/lillypad/ant.png")
             assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
 
