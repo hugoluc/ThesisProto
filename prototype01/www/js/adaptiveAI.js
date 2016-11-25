@@ -75,8 +75,7 @@ function logTime(activityType, action) {
   };
   localDB.put(tr, function callback(err, result) {
     if (!err) {
-      console.log('localDB logged trial:');
-      console.log(trial_data);
+      console.log('localDB logged activity: '+activityType+' '+action);
     } else {
       console.log('pouchDB fail: logging activity with store.js');
       var activityLog = store.get("activityLog");

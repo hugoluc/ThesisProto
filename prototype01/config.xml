@@ -11,6 +11,7 @@
     <content src="index.html" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <plugin platform="android" name="cordova-plugin-autostart" version="2.0.1" source="npm"/>
+    <plugin platform="android" name="cordova-plugin-device" source="npm"/>
     <preference name="DisallowOverscroll" value="true" />
     <preference name="Fullscreen" value="true" />
     <preference name="Orientation" value="landscape" />
