@@ -265,7 +265,18 @@ function proto03(){
       this.container = new PIXI.Container()
       this.trialTimer = new ClockTimer();
 
-      this.circle = new PIXI.Sprite(assets.textures.lillySmall)
+
+      var calor;
+
+      if(this.value < 0){
+        color = "#9e642b"
+        this.circle = new PIXI.Sprite(assets.textures.lillySmall_02)
+      }else{
+        color = "#1e7c12"
+
+        this.circle = new PIXI.Sprite(assets.textures.lillySmall_01)
+      }
+
       this.circle.width = this.size
       this.circle.height = this.size
       this.circle.anchor.x = 0.5
@@ -301,7 +312,15 @@ function proto03(){
       this.circle.x = this.pos.x+this.size/2;
       this.circle.y = this.pos.y+this.size/2;
 
-      this.cNumber =  new PIXI.Text(this.value, {font:"60px Arial",align: 'center', weight:"bold", fill:this.numberColor[0], stroke:"#098478", strokeThickness: 0, });
+      this.cNumber =  new PIXI.Text(this.value, {
+        font:"60px Arial",
+        align: 'center',
+        weight:"bold",
+        fill: color,
+        stroke: color,
+        strokeThickness: 0,
+      });
+
       this.cNumber.anchor.x = 0.5;
       this.cNumber.anchor.y = 0.5;
       this.cNumber.x = this.pos.x + this.size*0.5;
@@ -334,8 +353,9 @@ function proto03(){
   lillySmall.prototype.clickStart = function(_this,_event){
 
     console.log("clickstart")
+    console.log(this.trial.animationDone, this.trial.dragging, this.trial.trialState)
 
-    if(!this.trial.animationDone || this.trial.dragging){
+    if(!this.trial.animationDone || this.trial.dragging || this.trial.trialState != "play" || this.fade){
       console.log("no clicking while animating or dragging")
       return
     }
@@ -374,19 +394,21 @@ function proto03(){
 
   lillySmall.prototype.clickEnd = function(_this,_event){
 
+    if(!this.dragging) return
+    if(this.trial.clickedLilly != this) return
+
     var currentPos =  _event.data.global
     var dist = getDistance(this.trial.lasPos.x,this.trial.lasPos.y,currentPos.x,currentPos.y)
-
+    
     if(dist > 100){
       console.log("distant click! EXIT")
       this.dragging = false;
-      this.trial.fadeStick = true;
       this.trial.dragging = false;
+      _this.dragging = false;
+      this.trial.fadeStick = true;
+      this.trial.clickedLilly = undefined
       return
     }
-
-    if(!this.dragging) return
-    if(this.trial.clickedLilly != this) return
 
     //if both target and destination was cicked (not using drag):
     if(enableClick && this.trial.singleClickDest && this.trial.singleClickOrigin){
@@ -415,6 +437,11 @@ function proto03(){
 
   lillySmall.prototype.drag = function(_this,_event){
 
+    if(!this.trial.animationDone || this.trial.trialState != "play" || this.fade){
+      console.log("no clicking while animating or dragging")
+      return
+    }
+
   	if(_this.dragging){
 
       _this.fadeStick = false;
@@ -434,9 +461,7 @@ function proto03(){
         y : currentPos.y,
       }
 
-      if(dist < 100 ){
-        this.trial.moveStick(_this.data.getLocalPosition(_this.parent));
-      }
+      this.trial.moveStick(_this.data.getLocalPosition(_this.parent));
 
   	}
   };
@@ -1207,7 +1232,6 @@ function proto03(){
 
     function getLength(_t1,_t2,_speedUp){
 
-      console.log(_t2,_t2,_speedUp)
       var newSpeed = (speed + (0.005 * Math.abs(_speedUp)))
 
       if(newSpeed > 0.35) newSpeed = 0.25
@@ -1255,7 +1279,6 @@ function proto03(){
               1000 - totalAntsSlow, //along the stick
               500 - totalAntsSlow  // from end of stick to final position
             ]
-            console.log(antSpeeds)
             this.ants.sprites[i].setTrajectory(trajectory,antSpeeds,(offset.val * offset.ori)-(totalAntsSlow*2));
             this.antsToAnimate.origin.push(i);
             offset.ori++;
@@ -1306,8 +1329,6 @@ function proto03(){
           // Ants on the ORIGIN lillipad
           //*****************************
           if(this.ants.sprites[i].id == _origin){
-
-            console.log("ant on origin")
             // Generate position for animation
 
             var t0 = { //start of the stick
@@ -1325,14 +1346,9 @@ function proto03(){
             //Move ants to negative lillipad!
             if(this.subtracting == "target"){
 
-              console.log("negative target")
-
-              console.log(oCounter,negativeValue)
-
               // Only move enoguth ants to make target zero
               if(oCounter < Math.abs(negativeValue)){
 
-                console.log("move no diferent lilly")
                 //center of lillipad
                 var t2 = {
                   x : this.lillySmall[_target].circle.x,
@@ -1354,7 +1370,6 @@ function proto03(){
               //Move rest of the ants to regular ants division on positive lillipad
               }else{
 
-                console.log("rearrange")
                 this.lillySmall[_origin].setAntsDvision(this.ants.size);
 
                 // trajectory needs to be an array!
@@ -1370,14 +1385,12 @@ function proto03(){
 
               var start = this.ants.sprites[i].sprite.position
               var trajectory = [t0,t1,t2];
-              console.log(trajectory)
               var antSpeeds = [
                 getLength(start,trajectory[0],originValue), //from start postiion to beggining of sticl
                 getLength(trajectory[0],trajectory[1],originValue), //along the stick
                 getLength(trajectory[1],trajectory[2],originValue) // from end of stick to final position
               ]
 
-              console.log(antSpeeds)
 
             };
 
@@ -1397,12 +1410,8 @@ function proto03(){
             // If the origin is negative move "extra" ants from target to origin to make subtraction
             if(this.subtracting === "origin"){
 
-              console.log("subtracting on origin")
-
               // Only move enoguth ants to make origin zero
               if(tCounter <  Math.abs(negativeValue)){
-
-                console.log("seting position to negative lillypad")
 
                 var t0 = { // end of the stick
                   x : this.stick.x + (Math.sin(this.stick.angle) * this.stick.width),
@@ -1433,7 +1442,6 @@ function proto03(){
               // Move rest of the ants to ants devision
               }else{
 
-                console.log("seting position to positive lillypad")
                 this.lillySmall[_target].setAntsDvision(this.ants.size);
 
                 // trajectory needs to be an array!
@@ -1449,7 +1457,6 @@ function proto03(){
 
             };
 
-            console.log("legth will be:", antSpeeds)
             this.ants.sprites[i].setTrajectory(trajectory,antSpeeds,100 * offset.ori++)//(offset.val * offset.tar));
             this.antsToAnimate.target.push(i);
             this.ants.sprites[i].subtracted = antSubtracted
@@ -1722,6 +1729,7 @@ function proto03(){
 
   Trial.prototype.moveStick = function(_data,_lillyId){
 
+
     //_data : if true set the final position for the stick
     // if false set the position from origin lillypad and touchcurrect position
 
@@ -1840,8 +1848,6 @@ function proto03(){
   };
 
   Trial.prototype.removeStick = function(){
-
-    console.log(this.stick.alpha)
 
     if(this.stick.alpha >= 0){
         //animate alpha with animate function
@@ -2087,8 +2093,6 @@ function proto03(){
 
         case "play":
 
-            console.log(this.fadeStick)
-
             for(var i=0;i<this.lillySmall.length;i++){
                 this.lillySmall[i].animate();
             }
@@ -2162,7 +2166,8 @@ function proto03(){
             assets.addTexture("branch","sprites/stick/branch.png")
 
             assets.addTexture("lillyBig","sprites/lillypad/big-01.png")
-            assets.addTexture("lillySmall","sprites/lillypad/small-01.png")
+            assets.addTexture("lillySmall_01","sprites/lillypad/small-01.png")
+            assets.addTexture("lillySmall_02","sprites/lillypad/small-02.png")
             assets.addTexture("ants","sprites/lillypad/ant.png")
             assets.addTexture("bg","sprites/backGrounds/BackGround-05.png")
 
