@@ -5,7 +5,6 @@ function Multiplication(){
   logTime('multiplication','start');
   queuesToUpdate['numberstim'] = true;
   var stimuli = stimQueues['numberstim'];
-  console.log("----------------------------------", stimuli)
 
   var stimCount = store.get("multi_problems_solved")
   if(!stimCount) stimCount = 0;
@@ -322,7 +321,6 @@ function Multiplication(){
 			if(this.intro()){
 
 				this.playState = "drawingNest"
-				console.log("GameState =drawingNest")
 
 			}
 
@@ -396,8 +394,6 @@ function Multiplication(){
     				this.playState = "Win";
             this.eggsClicked = false;
 
-    				console.log("YOU WIN!");
-
     			}else
 
             this.playState = "drawingNest"
@@ -428,8 +424,6 @@ function Multiplication(){
 
       }
 
-      console.log(done)
-
       if(done){
         return true;
       }
@@ -458,7 +452,6 @@ function Multiplication(){
       }
 
 			break;
-
 
 		};
 	};
@@ -499,7 +492,6 @@ function Multiplication(){
                 var eggHeight = this.eggs[this.stimuli.values[0]].getBounds().height
                 var spacing = (this.boardSpecs.maxHeight - (this.stimuli.values.length*eggHeight)) / (this.stimuli.values.length-1)
                 finalYpos = (eggHeight/2) + this.boardSpecs.boardMargin + (eggHeight * counter) + (spacing * counter)
-                console.log(eggHeight,spacing,finalYpos)
               }
 
 							var pos = {
@@ -519,7 +511,6 @@ function Multiplication(){
 
 						};
 
-						console.log("introState = moveLeft")
 						this.timer.start(0);
 						this.introState = "moveLeft"
 						this.drawBoard();
@@ -547,7 +538,6 @@ function Multiplication(){
 					if(done){
 
 						this.timer.start(0);
-						console.log("introState = createBoard")
 						this.introState = "createBoard";
 
 					};
@@ -561,7 +551,6 @@ function Multiplication(){
 
 				if(this.timer.timeOut()){
 
-					console.log("introState = done")
 					return true
 
 				};
@@ -575,8 +564,6 @@ function Multiplication(){
 	};
 
 	Trial.prototype.setBoardMatrix = function(){
-
-		console.log("setting borad matrix!")
 
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		// Creating divisions for board
@@ -671,8 +658,8 @@ function Multiplication(){
 
 		for(object in  this.boardMatrix){
 
-			this.boardMatrix[object].graphic.beginFill(0xFFFFFF, 0.0);
-      this.boardMatrix[object].graphic.lineStyle(2, 0xb9b03f, 0.5);
+			this.boardMatrix[object].graphic.beginFill(0x4fde01, 0.0);
+      this.boardMatrix[object].graphic.lineStyle(3, 0x4fde01, 0.8);
 			this.boardMatrix[object].graphic.drawRect(this.boardMatrix[object].pos.x, this.boardMatrix[object].pos.y, this.boardSpecs.tileSize, this.boardSpecs.tileSize);
 			this.boardMatrix[object].graphic.endFill();
 			this.boardMatrix[object].graphic.id = object
@@ -684,10 +671,10 @@ function Multiplication(){
       .on('touchstart', click)
 
       //touch end
-  		.on('mouseup', function(event){ console.log(event); _this.clickEnd(this)})
-      .on('mouseupoutside', function(event){console.log(event); _this.clickEnd(this)})
-      .on('touchend', function(event){console.log(event); _this.clickEnd(this)})
-      .on('touchendoutside', function(event){console.log(event);_this.clickEnd(this)})
+  		.on('mouseup', function(event){  _this.clickEnd(this)})
+      .on('mouseupoutside', function(event){ _this.clickEnd(this)})
+      .on('touchend', function(event){ _this.clickEnd(this)})
+      .on('touchendoutside', function(event){ _this.clickEnd(this)})
 
       //drag
       .on('mousemove', function(_event){_this.drag(_event,this)})
@@ -964,15 +951,12 @@ function Multiplication(){
 
       var random = getRandomInt(1,allDivisors.length/2)
 
-      console.log(random,divisorsPairs)
       var row = allDivisors[random]
       var coll = allDivisors[allDivisors.length-random-1]
 
 
 			this.boardSpecs.rows = row + getRandomInt(0 ,3) //Math.ceil(Math.sqrt(this.stimuli.values))// + getRandomInt(0,3)
       this.boardSpecs.columns = coll + getRandomInt(0,3)
-
-      console.log(this.boardSpecs.rows,this.boardSpecs.columns)
 
 			if((this.boardSpecs.maxWidth/this.boardSpecs.columns) * this.boardSpecs.rows < this.boardSpecs.maxHeight){
 			// check if board is going to be big enough to fit the grid if tileSize is based on the coll
@@ -1019,7 +1003,6 @@ function Multiplication(){
 
       }
 		}
-
 	};
 
 	Trial.prototype.deleteNest = function(_index){ // delete nest on _index
@@ -1077,7 +1060,6 @@ function Multiplication(){
 							if(this.boardMatrix[this.selection.tiles[i].id].used){
               //if user changes to a tile with a nest already in it
 
-								console.log("overlap!")
 								var id = this.lastTarget.x + "-" + this.lastTarget.y
 
 								this.selection = this.calculateSelection( // calculate new selection
@@ -1113,13 +1095,17 @@ function Multiplication(){
 		function showNestTile(_arrayPos,_asset,_this,_flip){
 
       var sprite = _this.fullNests[_asset].splice(0,1)[0]
-      console.log(_this.fullNests[_asset])
+      var id = _this.selection.tiles[_arrayPos].id
+
+        _this.boardMatrix[id].graphic.clearDirty = true;
+
+      _this.boardMatrix[id].graphic.graphicsData[0].fillAlpha = 1
+      _this.boardMatrix[id].graphic.fillAlpha = 1
 
       if(_flip){
         sprite.rotation = -Math.PI / 2;
         sprite.width = _this.tileSize * 1.6
       }else{
-        console.log(_asset)
         sprite.width = Math.abs(_this.tileSize * 1.6)
         sprite.rotation = 0
       }
@@ -1133,7 +1119,7 @@ function Multiplication(){
 			_this.selection.tiles[_arrayPos].sprite = sprite
       _this.selection.tiles[_arrayPos].sprite.nestAssetsId = _asset
       _this.selection.tiles[_arrayPos].sprite.alpha = 1
-			stage.addChildAt(_this.selection.tiles[_arrayPos].sprite,stage.children.length - 2)
+			stage.addChildAt(_this.selection.tiles[_arrayPos].sprite,stage.children.length -4)
 
 		};
 
@@ -1327,8 +1313,6 @@ function Multiplication(){
 
 		};
 
-    console.log(">>");
-
 	};
 
 	Trial.prototype.checkAnswer = function(){
@@ -1363,7 +1347,7 @@ function Multiplication(){
 
 				this.answer = false;
 				this.playState = "placingEggs"
-				console.log("YOU LOSE!")
+
 			}
 	};
 
@@ -1387,15 +1371,12 @@ function Multiplication(){
     var extraCount = this.eggs[eggIndex].children.length-this.selection.tiles.length-1
     var outsideNestPos = []
 
-    console.log(firstNestTile,finalNestTile)
 
     //fucntion declarations
 
     var _this = this;
 
     function populateRight(){
-
-      console.log(">>>>>>>>>RIGHT")
 
       for(var i = 1;i < _this.boardSpecs.columns - finalNestTile.x; i++){
         for(var j = 0; j < _this.selection.rows; j++){
@@ -1415,17 +1396,11 @@ function Multiplication(){
 
     function populateBottom(){
 
-      console.log(">>>>>>>>>> BOTTOM")
-      console.log(finalNestTile.y)
-
       for(var i = 0;i <= finalNestTile.y-1; i++){
         for(var j = 0; j < _this.boardSpecs.columns; j++){
 
           var x = j;
           var y = finalNestTile.y - _this.selection.rows - i;
-
-          console.log("i:" + i + "  -  " + "j:" + j )
-          console.log(x,y)
 
           var pos = {
             x : ((_this.boardMatrix[x + "-" + y].pos.x - _this.eggs[eggIndex].x) * scale) + (_this.tileSize/2),
@@ -1441,17 +1416,11 @@ function Multiplication(){
 
       if(_eggs == 0) return
 
-      console.log(">>>>>>>>>> LEFT")
-      console.log(_eggs)
-
       //get how many columns to populate based on number of _eggs
       var start = firstNestTile.x - colToPop
       var colToPop = Math.ceil(_eggs/_this.selection.rows)
       var lastColumnReminder = _eggs%_this.selection.rows
       var finalReminder;
-
-      console.log(colToPop)
-      console.log(lastColumnReminder)
 
       if(lastColumnReminder == 0){
 
@@ -1477,16 +1446,11 @@ function Multiplication(){
 
       }
 
-      console.log("-------------------")
-
       for(var i = 0;i < colToPop-1; i++){
         for(var j = 0; j < _this.selection.rows; j++){
 
           var x = firstNestTile.x - colToPop + i + 1;
           var y = finalNestTile.y - j;
-
-          console.log("i:" + i + "  -  " + "j:" + j )
-          console.log(x,y)
 
           var pos = {
             x : ((_this.boardMatrix[x + "-" + y].pos.x - _this.eggs[eggIndex].x) * scale) + (_this.tileSize/2),
@@ -1500,17 +1464,11 @@ function Multiplication(){
 
     function populateTop(_eggs){
 
-      console.log(">>>>>>>>>> TOP")
-      console.log(_eggs)
-
       //get how many columns to populate based on number of _eggs
       var rowToPop = Math.ceil(_eggs/_this.boardSpecs.columns)
       var start = firstNestTile.x - rowToPop
       var lastColumnReminder = _eggs%_this.boardSpecs.columns
       var finalReminder;
-
-      console.log(rowToPop)
-      console.log(lastColumnReminder)
 
       if(lastColumnReminder == 0){
 
@@ -1542,9 +1500,6 @@ function Multiplication(){
           var x = j;
           var y = finalNestTile.y + i;
 
-          console.log("i:" + i + "  -  " + "j:" + j )
-          console.log(x,y)
-
           var pos = {
             x : ((_this.boardMatrix[x + "-" + y].pos.x - _this.eggs[eggIndex].x) * scale) + (_this.tileSize/2),
             y : ((_this.boardMatrix[x + "-" + y].pos.y - _this.eggs[eggIndex].y) * scale) + (_this.tileSize/2)
@@ -1563,23 +1518,16 @@ function Multiplication(){
       bottom  : firstNestTile.y * this.boardSpecs.columns,
     }
 
-    console.log(">>>>>>>>>>>>>>");
-    console.log(areas)
-    console.log(extraCount)
-
     if(areas.right >= extraCount){
       //if you can fit all eggs on the right, only populate the right
-      console.log("1")
       populateRight()
 
     }else if(areas.left >= extraCount - areas.right){
       //if you can fit all remaining on the left and right, only populate the left and right
-      console.log("2")
       populateLeft(extraCount - areas.right)
       populateRight()
 
     }else if( areas.bottom >= extraCount - areas.left - areas.right){
-      console.log("3")
       populateLeft(areas.left)
       populateRight()
       populateBottom()
@@ -1637,7 +1585,6 @@ function Multiplication(){
           y : ( offset.y + (this.boardMatrix[this.selection.tiles[index].id].pos.y - this.eggs[eggIndex].y) * scale)
         }
       }
-      console.log(pos)
 
       //initiation animation
       this.eggs[eggIndex].children[j+1].animation.init(
@@ -1654,9 +1601,6 @@ function Multiplication(){
 	Trial.prototype.createFullNests = function(_selection){
 
       var selection = _selection
-
-      console.log("----------------------", stage.children.length)
-      console.log(stage.children[stage.children.length-1])
 
 			function createNestTile(_arrayPos,_asset,_this,_flip,_){
 
@@ -1824,8 +1768,6 @@ function Multiplication(){
 				};
 			};
 
-      console.log(this.fullNests)
-
   };
 
 	Trial.prototype.calculateSelection = function(_start,_end){
@@ -1891,13 +1833,9 @@ function Multiplication(){
 
 	Trial.prototype.destroy = function(_stage){
 
-    console.log("<><><><>destroy")
-
     var bg;
 
     function deleteChildren(_child,_parent){
-
-      console.log(_child.children.length)
 
       if(_child.children.length > 0){
           while(_child.children.length > 0){
@@ -1920,10 +1858,8 @@ function Multiplication(){
     }
 
     if(bg) stage.addChild(bg)
-		console.log(stage.children.length)
-		console.log(stage)
-		console.log("Destruction DONE!")
-	};
+
+  };
 
   Trial.prototype.storeStim = function(){
 
@@ -2027,13 +1963,10 @@ function Multiplication(){
 
         function onAssetsLoaded(){
 
-        console.log("assetsloaded!")
-
         round.init(Trial, stage, stimuli);
 
         setTimeout(function(){
 
-            console.log("starting the game!")
             session.show()
             update();
 
@@ -2062,7 +1995,6 @@ function Multiplication(){
 
               session.stats.domElement.style.display = "none";
               round.destroy();
-              console.log("--");
               assets.destroy();
               finishGame = false;
               currentview = new MainMenu(assets);

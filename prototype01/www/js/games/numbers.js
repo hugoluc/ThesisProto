@@ -826,27 +826,27 @@ function proto02(){
 
   Trial.prototype.destroy = function(){
 
-      for(var i=0; i<this.ladyBugs.length; i++){
-        this.ladyBugs[i].destroy();
-      };
+    for(var i=0; i<this.ladyBugs.length; i++){
+      this.ladyBugs[i].destroy();
+    };
 
-      this.instruction.removeChildren(0,this.instruction.children.length);
+    this.instruction.removeChildren(0,this.instruction.children.length);
 
-      for (key in this.counter){
-          for(var i = 0; i < this.correct; i++){
-              this.counter[key][i].destroy();
-          }
-      }
+    for (key in this.counter){
+        for(var i = 0; i < this.correct; i++){
+            this.counter[key][i].destroy();
+        }
+    }
 
-      this.countBgBlue.destroy();
-      this.countBgRed.destroy();
-      this.nunBgBlue.destroy();
-      this.nunBgRed.destroy();
+    this.countBgBlue.destroy();
+    this.countBgRed.destroy();
+    this.nunBgBlue.destroy();
+    this.nunBgRed.destroy();
 
-      this.bNumber.destroy(true,true);
-      this.rNumber.destroy(true,true);
+    this.bNumber.destroy(true,true);
+    this.rNumber.destroy(true,true);
 
-      stage.removeChild(this.instruction);
+    stage.removeChild(this.instruction);
       this.instruction.destroy(true,true);
   };
 
