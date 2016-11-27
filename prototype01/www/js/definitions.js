@@ -9,7 +9,7 @@ var theme_song = new Howl({
   src: ['audio/theme.mp3'],
   autoplay: false,
   loop: true,
-  volume: 0.3,
+  volume: 0.15,
   buffer: true
 });
 
