@@ -8,7 +8,7 @@ function proto03(){
   if(!minAddends) minAddends = 2; // store.get and store.set, and write adjustDifficulty !!
 
   var maxAddends = store.get("maxAddends");
-  if(!maxAddends) maxAddends = 3;
+  if(!maxAddends) maxAddends = 2;
 
   console.log("---ADEDNS---")
   console.log(minAddends,maxAddends)
@@ -25,7 +25,7 @@ function proto03(){
   // start doing subtraction problems as well after 50 total correct trials? (randomize add/sub)
   // start showing the equation form of the problem at the end (e.g., 1 + 3 + 2 = 6)
   var scoreIncrease = 1; // increase scoreIncrease by 1 every 5 correct trials
-  var maxOptions = 4;
+  var maxOptions = 1; // Number of foils
   var number_of_only_addition_problems = 10; // only addition problems (set 30 for kids, 10 for testing)
 
   queuesToUpdate['numberstim'] = true;
@@ -399,7 +399,7 @@ function proto03(){
 
     var currentPos =  _event.data.global
     var dist = getDistance(this.trial.lasPos.x,this.trial.lasPos.y,currentPos.x,currentPos.y)
-    
+
     if(dist > 100){
       console.log("distant click! EXIT")
       this.dragging = false;
@@ -831,7 +831,7 @@ function proto03(){
 
       if(_sub){
         values[1] = values[1] + (2*values[0]);
-        values[0] = values[0]*-1;
+        values[0] = values[0] *- 1;
       };
 
       for(var i = 0; i <= (maxOptions-values.length); i++) {
@@ -1000,40 +1000,40 @@ function proto03(){
     // FINAL MOVE:
     if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
 
-      if(parseInt(this.lillySmall[_id].cNumber.text) < 0 ){// check if the ORIGIN lillipad has a negative number
-
-        this.fadeStick = true;
-        return;
-
-      }
-
-      this.trialState = "finished";
-      this.leavesToFade = 0;
-      this.finishedState = "countdown";
-      this.animationDone = false;
-      this.subtracting = false
-
       if(this.lillySmall[_id].value == this.origstim.id){
-
         var sign = " = "
         this.trialEnded = true;
         this.correctSum = true;
-
       }else{
-
         var sign = " ≠ "
         this.trialEnded = false; // GK: trial is still ended, but they got it wrong..
-
       }
 
-      console.log("--------------------------------------------------------------------------")
       this.equation.renderable = true;
       var text = this.lillySmall[_id].cNumber.text + sign + this.lillyFinal.cNumber.text
       this.equation.text = text
 
-      this.moveStick(true,"final");// adjust final stick size
-      this.setAnimateAnts(_id,"final")//get new location for ants
-      this.updateOperation(_id,"final");// update lllypad value
+      if(parseInt(this.lillySmall[_id].cNumber.text) < 0 ){// check if the ORIGIN lillipad has a negative number
+
+        this.fadeStick = true;
+        this.animationDone = true;
+        this.performOperation = true;
+        this.trialState = "finished";
+        this.finishedState = "lose";
+        this.lillyFinal.sinkThis()
+        this.moveStick(true,"final");// adjust final stick size
+
+      }else{
+
+        this.trialState = "finished";
+        this.finishedState = "countdown";
+        this.leavesToFade = 0;
+        this.animationDone = false;
+        this.subtracting = false
+        this.moveStick(true,"final");// adjust final stick size
+        this.setAnimateAnts(_id,"final")//get new location for ants
+        this.updateOperation(_id,"final");// update lllypad value
+      }
 
       return
     }
@@ -1091,10 +1091,7 @@ function proto03(){
 
     if(this.lillyFinal.lillypad.containsPoint(_dropPoint)){
 
-      if(parseInt(this.lillySmall[_id].cNumber.text) < 0 ){// check if the ORIGIN lillipad has a negative number
-        this.fadeStick = true;
-        return;
-      }
+      console.log("final")
 
       this.trialState = "finished";
       this.leavesToFade = 0;
@@ -2008,26 +2005,28 @@ function proto03(){
 
               if(this.trialEnded){
 
-                  var pos = [];
-                  for (var i=0; i<scoreIncrease; i++) {
-                    pos.push({ x: this.stick.x, y: this.stick.y});
-                  }
-                  score.addScore(pos, scoreIncrease);
-                  correct_sound.play();
-                  score.setExplosion({ x: this.stick.x, y: this.stick.y},100,1000);
-                  this.fadeStick = true;
-                  this.clock.start(1000);
-                  this.finishedState = "win";
-                  scoreDifferential ++;
-                  //round.changeDifficulty(true);
+                var pos = [];
+                for (var i=0; i<scoreIncrease; i++) {
+                  pos.push({ x: this.lillyFinal.x, y: this.lillyFinal.y});
+                }
+
+                console.log(pos)
+
+                score.addScore(pos, scoreIncrease);
+                score.setExplosion(pos[0],100,1000);
+                correct_sound.play();
+                this.fadeStick = true;
+                this.clock.start(1000);
+                this.finishedState = "win";
+                scoreDifferential ++;
 
               } else {
-                  this.lillyFinal.sinkThis();
-                  // could play bad sound the number of ants they were wrong by...
-                  incorrect_sound.play();
-                  this.fadeStick = true;
-                  this.finishedState = "lose";
-                  scoreDifferential --;
+                this.lillyFinal.sinkThis();
+                // could play bad sound the number of ants they were wrong by...
+                incorrect_sound.play();
+                this.fadeStick = true;
+                this.finishedState = "lose";
+                scoreDifferential --;
               }
               this.adjustDifficulty();
           }
@@ -2143,6 +2142,7 @@ function proto03(){
 //-------------------------------------------
 // Global functions andd variables
 //-------------------------------------------
+
   logTime("addsub",'start');
     // create the root of the scene graph and main classes
     var stage = new PIXI.Container();
@@ -2150,8 +2150,8 @@ function proto03(){
     score.stage = stage;
 
     this.destroy = function(){
-        finishGame = true;
-        session.hide()
+      finishGame = true;
+      session.hide()
     };
 
     //---------------------------------------loading assets
@@ -2181,9 +2181,7 @@ function proto03(){
             assets.load(onAssetsLoaded)
 
         }else{
-
             onAssetsLoaded();
-
         };
 
         function onAssetsLoaded(){
