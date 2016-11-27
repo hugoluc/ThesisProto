@@ -2010,8 +2010,6 @@ function proto03(){
                   pos.push({ x: this.lillyFinal.x, y: this.lillyFinal.y});
                 }
 
-                console.log(pos)
-
                 score.addScore(pos, scoreIncrease);
                 score.setExplosion(pos[0],100,1000);
                 correct_sound.play();

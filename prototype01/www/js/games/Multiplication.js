@@ -814,7 +814,6 @@ function Multiplication(){
 						allDivisors.push(j)
 
 					};
-
 				};
 
 				if(allDivisors.length%2 != 0){
@@ -955,8 +954,8 @@ function Multiplication(){
       var coll = allDivisors[allDivisors.length-random-1]
 
 
-			this.boardSpecs.rows = row + getRandomInt(0 ,3) //Math.ceil(Math.sqrt(this.stimuli.values))// + getRandomInt(0,3)
-      this.boardSpecs.columns = coll + getRandomInt(0,3)
+			this.boardSpecs.rows = row + getRandomInt(0 ,3)
+      this.boardSpecs.columns = coll + getRandomInt(1,3)
 
 			if((this.boardSpecs.maxWidth/this.boardSpecs.columns) * this.boardSpecs.rows < this.boardSpecs.maxHeight){
 			// check if board is going to be big enough to fit the grid if tileSize is based on the coll
