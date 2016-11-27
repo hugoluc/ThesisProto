@@ -201,6 +201,7 @@ function Hangman() {
 
           if(self.unique_letters_remaining === 0) {
             console.log("got all the letters!")
+            reveal_sound.play();
             self.alphabet.transition()
               .style("opacity", 0.0)
               .duration(500)

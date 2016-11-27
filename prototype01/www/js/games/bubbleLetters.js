@@ -54,6 +54,7 @@ function bubbleLetters(){
       this.id = _id;
       this.clicked = false;
       //this.posdId = _position.id;
+      console.log(_position);
       this.pos = _position.pos;
       this.size = _size;
       this.grow = false;
@@ -97,16 +98,17 @@ function bubbleLetters(){
 
   bubble.prototype.click = function(){ //_this,_event
 
-    this.clicked = true;
-    this.trial.total_clicks += 1;
     var correct_click = (this.value.toLowerCase()===this.trial.target.toLowerCase());
     // if correct, play correct sound, stop the dragonfly, and move on
-    if(correct_click) {
+    if(correct_click & !this.clicked) {
       correct_sound.play();
+      this.trial.total_clicks += 1;
     }
     if(!correct_click) { // incorrect: play bad sound and wait
       incorrect_sound.play();
+      this.trial.total_clicks += 1;
     }
+    this.clicked = true;
     return correct_click;
   };
 
@@ -240,9 +242,9 @@ function bubbleLetters(){
 
     // create bubble graphics
     for (var i=0; i<bubbleValues.length; i++){
-        var bubval = bubbleValues[i];
-        if(this.lowercase) bubval = bubval.toLowerCase();
-        this.bubble[i].init(bubval, this.getPos(i), this.specs.stimWidth, i)
+      var bubval = bubbleValues[i];
+      if(this.lowercase) bubval = bubval.toLowerCase();
+      this.bubble[i].init(bubval, this.getPos(i), this.specs.stimWidth, i)
     }
 
     // first bubble is target
@@ -253,8 +255,8 @@ function bubbleLetters(){
     this.dragonfly = new PIXI.extras.MovieClip(assets.sprites.bee);
     this.dragonfly.animationSpeed = 0.16;
     this.dragonfly.play();
-    this.dragonfly.width = 250;
-    this.dragonfly.height = 200;
+    this.dragonfly.width = screen_width*.15; //250;
+    this.dragonfly.height = this.dragonfly.width*.8; //200;
     this.dragonfly.position.x = dragonfly_start_pos.x;
     this.dragonfly.position.y = dragonfly_start_pos.y;
     this.dragonfly.anchor.y = 0.5;
@@ -279,9 +281,9 @@ function bubbleLetters(){
 
   Trial.prototype.getSpecs = function(){
       var obj = {};
-      obj.canvasMargin = 50; // was 30
-      obj.stimWidth = 150;
-      obj.margin = 30; // was 15
+      obj.canvasMargin = 30;
+      obj.stimWidth = 125;
+      obj.margin = 15; //30; // was 15
 
       obj.width = session.canvas.width-(2*obj.canvasMargin)-obj.stimWidth/2;
       obj.height = session.canvas.height-(2*obj.canvasMargin);
@@ -301,7 +303,6 @@ function bubbleLetters(){
   };
 
   Trial.prototype.getMatrixPosition = function(){
-    
     var allPos = [];
     for(var i=0;i<this.specs.moduleWidthCount;i++){
         for(var j=0;j<this.specs.moduleHeightCount;j++){

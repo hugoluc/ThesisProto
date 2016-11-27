@@ -2019,12 +2019,12 @@ function proto03(){
                 scoreDifferential ++;
 
               } else {
-                this.lillyFinal.sinkThis();
-                // could play bad sound the number of ants they were wrong by...
-                incorrect_sound.play();
-                this.fadeStick = true;
-                this.finishedState = "lose";
-                scoreDifferential --;
+                  this.lillyFinal.sinkThis();
+                  this.fadeStick = true;
+                  incorrect_long_sound.play();
+                  this.finishedState = "lose";
+                  scoreDifferential --;
+
               }
               this.adjustDifficulty();
           }
