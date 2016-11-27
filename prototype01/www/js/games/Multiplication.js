@@ -386,7 +386,7 @@ function Multiplication(){
                 )
               }
             }
-            incorrect_sound.play();
+            incorrect_long_sound.play();
             this.playState = "Lose";
 
           } else if(this.answer.length == this.stimuli.values.length){

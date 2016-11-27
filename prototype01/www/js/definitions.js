@@ -5,15 +5,36 @@ var screen_width = window.innerWidth, // (1200)
 
 var uuid; // try to get unique device ID to use as user ID
 
+var theme_song = new Howl({
+  src: ['audio/theme.mp3'],
+  autoplay: false,
+  loop: true,
+  volume: 0.3,
+  buffer: true
+});
+
 // Howlers cache, play and replay faster
 var incorrect_sound = new Howl({
-  src: ['audio/wrong/wrong.mp3'],
+  src: ['audio/wrong/negative_short.mp3'], // ['audio/wrong/wrong.mp3'],
+  autoplay: false,
+  buffer: true
+});
+
+// mult and add/sub
+var incorrect_long_sound = new Howl({
+  src: ['audio/wrong/negative_long.mp3'], // ['audio/wrong/wrong.mp3'],
   autoplay: false,
   buffer: true
 });
 
 var correct_sound = new Howl({
   src: ['audio/correct.wav'],
+  autoplay: false,
+  buffer: true
+});
+
+var reveal_sound = new Howl({
+  src: ['audio/positive_1s.mp3'],
   autoplay: false,
   buffer: true
 });
