@@ -399,7 +399,7 @@ function proto03(){
 
     var currentPos =  _event.data.global
     var dist = getDistance(this.trial.lasPos.x,this.trial.lasPos.y,currentPos.x,currentPos.y)
-    
+
     if(dist > 100){
       console.log("distant click! EXIT")
       this.dragging = false;
@@ -2023,9 +2023,8 @@ function proto03(){
 
               } else {
                   this.lillyFinal.sinkThis();
-                  // could play bad sound the number of ants they were wrong by...
-                  incorrect_sound.play();
                   this.fadeStick = true;
+                  incorrect_long_sound.play();
                   this.finishedState = "lose";
                   scoreDifferential --;
               }

@@ -1,6 +1,7 @@
 var MainMenu = function() {
   clickStart('container-exp','container-chooser');
   logTime('menu','start');
+  theme_song.play();
 };
 
 function Start(){
@@ -90,12 +91,12 @@ function Start(){
   var finished = 0;
   for(var i = Games.length-1; i >= 0; i--){
     if(Games[i].available && Games[i].icon){
-      finished++
+      finished++;
     }
   }
 
   // hide experiment and show chooser
-  var containerMainMenu = document.getElementById("icons")
+  var containerMainMenu = document.getElementById("icons");
   var totalWidth = 0;
   var allAvailable = [];
   var biggest = 0;
@@ -116,9 +117,9 @@ function Start(){
         game.style.display = "none"
 
         game.onload = function(){
-          counter++
+          counter++;
 
-          console.log( "loaded", this)
+          console.log( "loaded", this);
           console.log("finished:", finished,counter )
 
           totalWidth = totalWidth + this.naturalWidth
@@ -146,7 +147,7 @@ function Start(){
 
 
       var gameClick = function(){
-
+        theme_song.stop();
         logTime('menu','stop');
         document.getElementById("container-exp").style.height = window.innerHeight
         session.setRenderer();
@@ -166,24 +167,24 @@ function Start(){
   var dashboard = document.createElement("dashBoard")
   var dashClickCount = 0
   dashBoard.onclick = function(){
-    dashClickCount++
+    dashClickCount++;
     if(dashClickCount > 5){
 
-      dashClickCount = 0
+      dashClickCount = 0;
       //logTime('menu','stop');
       //document.getElementById("container-exp").style.height = window.innerHeight
       clickStart('container-chooser','container-exp');
-      currentview = new Games[Games.length-1].callFunction()
+      currentview = new Games[Games.length-1].callFunction();
     }
   }
 
   function arrangeSize(){
 
-    console.log("biggest" , biggest)
+    console.log("biggest" , biggest);
 
-    var scale = window.innerWidth/(totalWidth+200)
-    biggest = biggest*scale
-    var left = (window.innerWidth - (totalWidth*scale))/2
+    var scale = window.innerWidth/(totalWidth+200);
+    biggest = biggest*scale;
+    var left = (window.innerWidth - (totalWidth*scale))/2;
 
     for(var i = allAvailable.length-1; i >= 0; i--){
 
