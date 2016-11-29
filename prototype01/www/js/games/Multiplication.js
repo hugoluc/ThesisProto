@@ -1096,11 +1096,6 @@ function Multiplication(){
       var sprite = _this.fullNests[_asset].splice(0,1)[0]
       var id = _this.selection.tiles[_arrayPos].id
 
-        _this.boardMatrix[id].graphic.clearDirty = true;
-
-      _this.boardMatrix[id].graphic.graphicsData[0].fillAlpha = 1
-      _this.boardMatrix[id].graphic.fillAlpha = 1
-
       if(_flip){
         sprite.rotation = -Math.PI / 2;
         sprite.width = _this.tileSize * 1.6
