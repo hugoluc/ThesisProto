@@ -168,13 +168,3 @@ function distance(x1,y1, x2,y2) {
 //     currentview = new MainMenu();
 //   }, 500);
 // };
-
-// function incrScore() {
-//      score += 10;
-//      document.getElementById("score").innerHTML="Score: "+score;
-// }
-
-// function decrScore() {
-//      score -= 10;
-//      document.getElementById("score").innerHTML="Score: "+score;
-// }

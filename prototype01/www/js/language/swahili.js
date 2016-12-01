@@ -153,7 +153,7 @@ var animals = [
   {id:"chicken", text:"kuku", audio:"kuku", image:"chicken"},
   {id:"cheetah", text:"duma", audio:"duma", image:"cheetah"},
   {id:"cat", text:"paka", audio:"paka", image:"cat"},
-  {id:"squid", text:"mzia", audio:"mzia"}
+  {id:"squid", text:"mzia", audio:"mzia"},
   {id:"lion", text:"simba", audio:"simba", image:"lion"},
   {id:"elephant", text:"tembo", audio:"tembo", image:"elephant"},
   {id:"bird", text:"ndege", audio:"ndege", image:"bird"},

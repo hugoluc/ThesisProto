@@ -12,7 +12,10 @@ function Hangman() {
   // stage 1. pop up a word, play the word, and then show the object
   // stage 2. pop up a word and show a few objects; let them click. (if wrong, play the word)
   var max_guesses = store.get("max_hangman_guesses");
-  if(!max_guesses) max_guesses = 10;
+  if(!max_guesses) max_guesses = 4;
+
+  var Nfoils = store.get("hangman_foils");
+  if(!Nfoils) Nfoils = 1; // start simple: 1 extra letter
 
   var imageSize = 240;
   var stim_diam = 80;
@@ -121,11 +124,20 @@ function Hangman() {
           max_guesses -= 1; // adjust difficulty: one fewer guess allowed
         }
 
-      } else {
+        if(Nfoils<letters.length) {
+          Nfoils +=1;
 
+        }
+
+      } else {
         self.origstim.priority -= .1 + randAdjust;
         max_guesses += 1;
+        if(Nfoils>1) {
+          Nfoils -=1;
+        }
       }
+      store.set('hangman_foils', Nfoils);
+      store.set('max_hangman_guesses', max_guesses);
 
       var final_view_time = 3500; // how long they see the word and picture at the end
 
@@ -222,12 +234,38 @@ function Hangman() {
       }
     }
 
+    self.generateChoices = function() {
+      // add Nfoils that are not in the target word
+      var choices = self.answer.split("");
+      var foils = {};
+      for (var i = 0; i < choices.length; i++) {
+        foils[choices[i]] = 1;
+      }
+      var foils_to_choose = Nfoils;
+      var shl = shuffle(letters.slice());
+      while(shl.length>0 && foils_to_choose>0) {
+        var tmp = shl.pop().text.toLowerCase();
+        if(!foils[tmp]) {
+          foils[tmp] = 1;
+          foils_to_choose --;
+        }
+      }
+      return foils;
+    };
+
     self.drawAlphabet = function(letters, callback) {
+      // draw whole alphabet, but disable most letters (fewer as they advance)
+      var enabled_chars = self.generateChoices();
+      //console.log(enabled_chars);
 
       for (var i = 0; i < letters.length; i++) {
-        letters[i].clicked = 0;
+        if(enabled_chars[letters[i].text.toLowerCase()]===1) {
+          letters[i].clicked = 0;
+        } else {
+          letters[i].clicked = -1;
+        }
       }
-      var nrows = 4
+      var nrows = 4;
       var ncols = Math.ceil(letters.length/nrows);
       console.log("nrows: "+nrows+" ncols: "+ncols);
       var keys = screend3.append("svg")
@@ -237,7 +275,7 @@ function Hangman() {
 
       self.alphabet = keys.append("g") // .attr("class", "alphabet")
         .selectAll("circle")
-        .data(letters).enter()
+        .data(letters).enter() // letters
         .append("g") // Add one g for each data node
         .attr("transform", function(d, i) {
          // i = x + ncols*y
@@ -271,7 +309,17 @@ function Hangman() {
         .attr("r", button_width/2)
         .style("opacity", 0.0);
 
-        d3.selectAll(".button")
+      // disable all letters
+      d3.selectAll(".button")
+        .style("opacity", 0.7)
+        .on(click_type, function(d){
+          // disabled - do nothing
+        });
+
+      // enable the target + foil chars
+      d3.selectAll(".button")
+        .filter(function(d) { return d.clicked===0 })
+        .style("opacity", 0.0)
         .on(click_type, function(d) {
           d3.select(this)
             .transition()
@@ -282,6 +330,7 @@ function Hangman() {
           d.clicked += 1;
           self.handleGuess(d, callback);
         });
+
       }
 
     self.drawBlanks = function() {
@@ -290,11 +339,11 @@ function Hangman() {
         var chdict = [];
 
         for (var i = 0; i < chars.length; i++) {
+          // for non-standard characters (e.g. '-'), draw them now GK
           chdict.push({"letter": chars[i], "leaf" : getRandomInt(1,4) });
-          stim_diam -= 80
+          stim_diam -= 80;
         }
 
-      //console.log(chdict)
       self.blanks = screend3.append("g")
         .attr("class", "blanks")
         .selectAll("circle") //FIXME
@@ -325,7 +374,7 @@ function Hangman() {
          return d.letter;
         });
 
-      var radius = 90
+      var radius = 90;
 
       self.blanks.append("svg:image")
         .attr("xlink:href", function(d){ return "sprites/hangman/leaf-0" + d.leaf + ".png"})
@@ -410,6 +459,8 @@ function Hangman() {
     logTime("hangman",'stop');
     //storeSession();
     //queuesToUpdate["objectstim"] = false;
+    store.set('max_hangman_guesses', max_guesses);
+    store.set('hangman_foils', Nfoils);
     console.log(self);
     console.log(this);
     stimQueues['objectstim'].push(current_stim);
