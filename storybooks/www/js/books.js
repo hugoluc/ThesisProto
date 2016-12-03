@@ -31,8 +31,19 @@ books.swahili.push({id:2, title:"Anansi na Hekima", text:"anansi_na_hekima", ima
 books.swahili.push({id:3, title:"Anansi na Kasa", text:"anansi_na_kasa", images:"anansi_and_turtle", audio:"anansi_na_hekima"});
 //books.swahili.push({title:, text:"anansi_na_tai", images:"anansi_and_vulture"});
 books.swahili.push({id:4, title:"Fisi na Kunguru", text:"fisi_na_kunguru", images:"hyena_and_raven"});
+books.swahili.push({id:5, title:"Nozibele", text:"nozibele_sw", images:"nozibele"});
+books.swahili.push({id:6, title:"Mulongo na Fisi", text:"mulongo_sw", images:"mulongo"});
+books.swahili.push({id:7, title:"Kisirusiru", text:"kisirusiru_sw", images:"kisirusiru"});
+//books.swahili.push({id:8, title:"Mwezi na Kofia", text:"mwezi_na_kofia", images:"mwezi_na_kofia"});
+//books.swahili.push({id:9, title:"Ndovu na Vyura", text:"ndovu_na_vyura", images:"ndovu_na_vyura"});
+//books.swahili.push({id:10, title:"Ngombe Wetu", text:"ngombe_wetu", images:"ngombe_wetu"});
+books.swahili.push({id:11, title:"Mfuko Uzungumzao", text:"mfuko_uzungumzao", images:"mfuko"});
+books.swahili.push({id:12, title:"Rafiki Ninaye Mkosa", text:"rafiki_ninaye_mkosa", images:"mfuko"});
+books.swahili.push({id:13, title:"Shati la Hamisi la Kijani Kibichi", text:"shati_la_hamisi_la_kijani_kibichi", images:"shati"});
+
 
 books.english.push({id:0, title:"Adhabu", text:"adhabu", images:"adhabu", audio:"adhabu"});
+
 books.english.push({id:4, title:"Hyena and Raven", text:"hyena_and_raven", images:"hyena_and_raven", audio:"hyena_and_raven"});
 
 function loadBook(book_id) {

@@ -47,9 +47,9 @@
     //loadBook(books.english[0]);
     var language = "swahili"; // "english"
     loadBook(books.swahili[0]["id"]);
-
+    var audiodir = "book_audio/" + books.swahili[0].audio + '/';
     var sound = new Howl({
-      src: ['sound.webm', 'sound.mp3', 'sound.wav'],
+      src: [audiodir + "0.mp3", audiodir + "1.mp3"],
       autoplay: true,
       loop: true,
       volume: 0.9,
