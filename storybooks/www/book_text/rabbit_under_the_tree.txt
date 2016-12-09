@@ -37,16 +37,12 @@ She started running with Rabbit and Chicken.
 6
 
 They met a horse. 
-The horse
-asked the dog, “Why are you
-running?”
-Dog said, “I don’t know. I just
-heard what the chicken said,
-and she doesn’t know. She
-heard what the rabbit said and
-she doesn’t know. She heard
-something falling and a voice
-said, ‘Run rabbit run!’”
+The horse asked the dog, 
+“Why are you running?”
+Dog said, “I don’t know. 
+I just heard what the chicken said, and she doesn’t know. 
+She heard what the rabbit said and she doesn’t know. 
+She heard something falling and a voice said, ‘Run rabbit run!’”
 
 7
 
@@ -75,8 +71,7 @@ I just heard what the horse said, and she doesn’t know.
 She heard what the dog said and he doesn’t know. 
 He heard what the chicken said and she doesn’t know. 
 She heard what the rabbit said and she doesn’t know. 
-She heard something falling and a voice said, ‘Run
-rabbit run!’”
+She heard something falling and a voice said, ‘Run rabbit run!’”
 
 11
 

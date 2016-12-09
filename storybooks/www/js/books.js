@@ -12,6 +12,8 @@
 //     return fileList;
 // }
 
+var slideIndex;
+
 // console.log(getFiles("book_images/hyena_and_raven"));
 
 // directory with flat text (.txt) files, one sentence per line,
@@ -25,43 +27,60 @@ var audiodir = "book_audio/";
 
 var books = {"english":[], "swahili":[]};
 
+
 books.swahili.push({id:0, title:"Adhabu", text:"adhabu", images:"adhabu", audio:"adhabu"})
 books.swahili.push({id:1, title:"Anansi, Kunguru na Mamba", text:"anansi_kunguru", images:"anansi_the_crows", audio:"anansi_kunguru"});
 books.swahili.push({id:2, title:"Anansi na Hekima", text:"anansi_na_hekima", images:"anansi_and_wisdom", audio:"anansi_na_hekima"});
 books.swahili.push({id:3, title:"Anansi na Kasa", text:"anansi_na_kasa", images:"anansi_and_turtle", audio:"anansi_na_hekima"});
 //books.swahili.push({title:, text:"anansi_na_tai", images:"anansi_and_vulture"});
-books.swahili.push({id:4, title:"Fisi na Kunguru", text:"fisi_na_kunguru", images:"hyena_and_raven"});
-books.swahili.push({id:5, title:"Nozibele", text:"nozibele_sw", images:"nozibele"});
-books.swahili.push({id:6, title:"Mulongo na Fisi", text:"mulongo_sw", images:"mulongo"});
-books.swahili.push({id:7, title:"Kisirusiru", text:"kisirusiru_sw", images:"kisirusiru"});
-//books.swahili.push({id:8, title:"Mwezi na Kofia", text:"mwezi_na_kofia", images:"mwezi_na_kofia"});
-//books.swahili.push({id:9, title:"Ndovu na Vyura", text:"ndovu_na_vyura", images:"ndovu_na_vyura"});
-//books.swahili.push({id:10, title:"Ngombe Wetu", text:"ngombe_wetu", images:"ngombe_wetu"});
+books.swahili.push({id:4, title:"Fisi na Kunguru", text:"fisi_na_kunguru", images:"hyena_and_raven"}); // get audio!
+books.swahili.push({id:5, title:"Nozibele", text:"nozibele_sw", images:"nozibele", audio:"nozibele_sw"});
+books.swahili.push({id:6, title:"Mulongo na Fisi", text:"mulongo_sw", images:"mulongo", audio:"mulongo_na_fisi"});
+books.swahili.push({id:7, title:"Kisirusiru", text:"kisirusiru_sw", images:"kisirusiru", audio:"kisirusiru_sw"});
+books.swahili.push({id:8, title:"Mwezi na Kofia", text:"mwezi_na_kofia", images:"mwezi_na_kofia"});
+books.swahili.push({id:9, title:"Ndovu na Vyura", text:"ndovu_na_vyura", images:"ndovu_na_vyura"});
+books.swahili.push({id:10, title:"Ngombe Wetu", text:"ngombe_wetu", images:"ngombe_wetu"});
 books.swahili.push({id:11, title:"Mfuko Uzungumzao", text:"mfuko_uzungumzao", images:"mfuko"});
-books.swahili.push({id:12, title:"Rafiki Ninaye Mkosa", text:"rafiki_ninaye_mkosa", images:"mfuko"});
+books.swahili.push({id:12, title:"Rafiki Ninaye Mkosa", text:"rafiki_ninaye_mkosa", images:"rafiki"});
 books.swahili.push({id:13, title:"Shati la Hamisi la Kijani Kibichi", text:"shati_la_hamisi_la_kijani_kibichi", images:"shati"});
 
-
-books.english.push({id:0, title:"Adhabu", text:"adhabu", images:"adhabu", audio:"adhabu"});
-
+//books.english.push({id:0, title:"Adhabu", text:"adhabu", images:"adhabu", audio:"adhabu"});
+books.english.push({id:0, title:"Anansi and Turtle", text:"anansi_and_turtle", images:"anansi_and_turtle", audio:"anansi_and_turtle"});
+books.english.push({id:1, title:"Anansi and Vulture", text:"anansi_and_vulture", images:"anansi_and_vulture", audio:"anansi_and_vulture"});
+books.english.push({id:2, title:"Anansi and Wisdom", text:"anansi_and_wisdom", images:"anansi_and_wisdom", audio:"anansi_and_wisdom"});
+books.english.push({id:3, title:"Anansi, the Crows, and the Crocodiles", text:"anansi_crows_crocodiles", images:"anansi_the_crows", audio:"anansi_crows_crocodiles"});
 books.english.push({id:4, title:"Hyena and Raven", text:"hyena_and_raven", images:"hyena_and_raven", audio:"hyena_and_raven"});
+books.english.push({id:5, title:"Mulongo and the Hyenas", text:"mulongo_en", images:"mulongo", audio:"mulongo_en"});
+books.english.push({id:6, title:"Nozibele and the Three Hairs", text:"nozibele_en", images:"nozibele", audio:"nozibele_en"});
+
 
 function loadBook(book_id) {
+	slideIndex = 1;
 	$("#menu").hide();
+	// should draw a back button that hides content and shows menu
 	var book = books[language][book_id];
   // get listing of images in imgdir, load the text and split into pages, and show the first page (title?)
 	console.log(imgdir+book.images);
   $.ajax({
   url: imgdir+book.images+'/', //"http://yoursite.com/images/",
     success: function(data){
-      $(data).find("td > a").each(function(){
-        console.log("file: " + $(this).attr("href"));
+      // $(data).find("td > a").each(function(){
+      //   console.log("file: " + $(this).attr("href"));
+      // });
+			$(data).find("a:contains(.jpg)").each(function () {
+            var filename = this.href.replace(window.location.host, "").replace("http://", "");
+            $("book-image").append("<img class='mySlides' src='" + imgdir + book.images + '/' + filename + "' style='width:100%'>");
       });
     }
   });
-
+	// need to append the images and page buttons:
+	// <img class="mySlides" src="book_images/hyena_and_raven/hyena_and_raven-0000.jpg" style="width:100%">
+  // <div class="w3-section" id="page-btns">
+	//		<button class="w3-btn pg-btn" onclick="currentDiv(1)">1</button>
+	console.log("image files logged?")
   $.get(textdir+book.text+".txt", function (raw) {
     pages = LoadFile(raw);
+		console.log(pages);
     showPage(slideIndex);
   });
 }
@@ -100,8 +119,6 @@ function LoadFile(strRawContents) {
     //console.log(pages);
     return(pages);
 }
-
-var slideIndex = 1;
 
 function plusDivs(n) {
   showPage(slideIndex += n);
