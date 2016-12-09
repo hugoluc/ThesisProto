@@ -67,22 +67,31 @@ function loadBook(book_id) {
       // $(data).find("td > a").each(function(){
       //   console.log("file: " + $(this).attr("href"));
       // });
-			$(data).find("a:contains(.jpg)").each(function () {
-            var filename = this.href.replace(window.location.host, "").replace("http://", "");
-            $("book-image").append("<img class='mySlides' src='" + imgdir + book.images + '/' + filename + "' style='width:100%'>");
+			$(data).find("a:contains(.jpg)").each(function (index, value) {
+				var fname = $(this).attr("href");
+				//console.log(fname);
+				if(fname!="0.jpg") {
+					var fileloc = imgdir + book.images + '/' + $(this).attr("href");
+        	$("#book-image").append("<img class='mySlides' src='" + fileloc + "'>");
+					$("#page-btns").append("<button class='w3-btn pg-btn' onclick='currentDiv(" + index + ")'>" + index + "</button>");
+				}
       });
     }
   });
-	// need to append the images and page buttons:
-	// <img class="mySlides" src="book_images/hyena_and_raven/hyena_and_raven-0000.jpg" style="width:100%">
-  // <div class="w3-section" id="page-btns">
-	//		<button class="w3-btn pg-btn" onclick="currentDiv(1)">1</button>
-	console.log("image files logged?")
+
+	// var num_images = $(".mySlides").length;
+	// console.log("images found: " +num_images);
+	// for (var i = 1; i <= num_images; i++) {
+	//
+	// }
+
   $.get(textdir+book.text+".txt", function (raw) {
     pages = LoadFile(raw);
 		console.log(pages);
     showPage(slideIndex);
   });
+
+	$("#content").show();
 }
 
 var pages;

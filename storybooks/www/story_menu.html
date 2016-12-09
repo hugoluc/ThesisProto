@@ -9,7 +9,11 @@
     <link rel="stylesheet" href="css/w3.css">
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <style>
-        .mySlides {display:none}
+        .mySlides {
+          display:none;
+          width:100%;
+        }
+        #content {display:none}
     </style>
 
   </head>
@@ -21,12 +25,10 @@
 
   </div>
 
-  <div class="w3-content" style="max-width:1024px">
+  <div id="content" class="w3-content" style="max-width:1024px">
     <div class="w3-container w3-half" id="book-image">
-      <!-- <img class="mySlides" src="book_images/hyena_and_raven/hyena_and_raven-0000.jpg" style="width:100%"> -->
     </div>
     <div class="w3-container w3-half" id="book-text">
-
     </div>
   </div>
 
@@ -35,15 +37,8 @@
       <button class="w3-btn" onclick="plusDivs(-1)">&#10094;</button>
       <button class="w3-btn" onclick="plusDivs(1)">&#10095;</button>
     </div>
-    <!-- <div class="w3-section" id="page-btns">
-        <button class="w3-btn pg-btn" onclick="currentDiv(1)">1</button>
-        <button class="w3-btn pg-btn" onclick="currentDiv(2)">2</button>
-        <button class="w3-btn pg-btn" onclick="currentDiv(3)">3</button>
-        <button class="w3-btn pg-btn" onclick="currentDiv(4)">4</button>
-        <button class="w3-btn pg-btn" onclick="currentDiv(5)">5</button>
-        <button class="w3-btn pg-btn" onclick="currentDiv(6)">6</button>
-        <button class="w3-btn pg-btn" onclick="currentDiv(7)">7</button>
-    </div> -->
+    <div class="w3-section" id="page-btns">
+    </div>
   </div>
 
   <script>
