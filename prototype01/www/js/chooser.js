@@ -39,8 +39,9 @@ function Start(){
 
       {
         name: "Memory",
-        available: false,
-        callFunction: memory
+        available: true,
+        callFunction: memory,
+        icon: "img/Menu/Memory.png"
       },
 
       {
@@ -58,8 +59,9 @@ function Start(){
 
       {
         name: "Drawing",
-        available: false,
-        callFunction: Sketch
+        available: true,
+        callFunction: Sketch,
+        icon: "img/Menu/Drawing.png"
       },
 
       {
@@ -104,8 +106,6 @@ function Start(){
 
   for(var i = Games.length-1; i >= 0; i--){
 
-    console.log("------------", Games[i])
-
     // only add it if they have made enough progress to get to it!
     if(Games[i].available) {
 
@@ -123,8 +123,6 @@ function Start(){
           console.log("finished:", finished,counter )
 
           totalWidth = totalWidth + this.naturalWidth
-          console.log(this.naturalHeight)
-
           if(biggest < this.naturalHeight ){
             biggest = this.naturalHeight
           }
@@ -180,15 +178,11 @@ function Start(){
 
   function arrangeSize(){
 
-    console.log("biggest" , biggest);
-
     var scale = window.innerWidth/(totalWidth+200);
     biggest = biggest*scale;
     var left = (window.innerWidth - (totalWidth*scale))/2;
 
     for(var i = allAvailable.length-1; i >= 0; i--){
-
-      console.log(biggest - (allAvailable[i].naturalHeight*scale))
 
       allAvailable[i].style.display = "block"
       allAvailable[i].style.width = allAvailable[i].naturalWidth * scale
@@ -211,5 +205,4 @@ function Start(){
   }
 
   currentview = new MainMenu();
-
 }
