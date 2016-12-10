@@ -1,13 +1,18 @@
 var __slice = Array.prototype.slice;
+
 (function($) {
+
   var Sketch;
+
   $.fn.sketch = function() {
+
     var args, key, sketch;
     key = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
     if (this.length > 1) {
       $.error('Sketch.js can only be called on one element at a time.');
     }
     sketch = this.data('sketch');
+
     if (typeof key === 'string' && sketch) {
       if (sketch[key]) {
         if (typeof sketch[key] === 'function') {
@@ -28,8 +33,12 @@ var __slice = Array.prototype.slice;
     }
   };
 
+  //===============================DIFEING SKETCH
+
   Sketch = (function() {
+
     function Sketch(el, opts) {
+
       this.el = el;
       this.canvas = $(el);
       this.context = el.getContext('2d');
@@ -39,6 +48,7 @@ var __slice = Array.prototype.slice;
         defaultColor: '#000000',
         defaultSize: 5
       }, opts);
+
       this.painting = false;
       this.color = this.options.defaultColor;
       this.size = this.options.defaultSize;
@@ -46,8 +56,11 @@ var __slice = Array.prototype.slice;
       this.actions = [];
       this.action = [];
       this.canvas.bind('click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', this.onEvent);
+
       this.drawAlphabet();
+
       if (this.options.toolLinks) {
+
         $('body').delegate("a[href=\"#" + (this.canvas.attr('id')) + "\"]", 'click', function(e) {
           var $canvas, $this, key, sketch, _i, _len, _ref;
           $this = $(this);
@@ -65,6 +78,7 @@ var __slice = Array.prototype.slice;
           }
           return false;
         });
+
       }
     }
 
@@ -103,9 +117,13 @@ var __slice = Array.prototype.slice;
     };
 
     Sketch.prototype.onEvent = function(e) {
+
       if (e.originalEvent && e.originalEvent.targetTouches) {
-        e.pageX = e.originalEvent.targetTouches[0].pageX;
-        e.pageY = e.originalEvent.targetTouches[0].pageY;
+
+        console.log(e)
+
+        e.pageX = e.originalEvent.changedTouches[0].pageX;
+        e.pageY = e.originalEvent.changedTouches[0].pageY;
       }
       $.sketch.tools[$(this).data('sketch').tool].onEvent.call($(this).data('sketch'), e);
       e.preventDefault();
@@ -113,12 +131,15 @@ var __slice = Array.prototype.slice;
     };
 
     Sketch.prototype.drawAlphabet = function() {
-      this.context.font="30px Verdana";
+
+      this.context.font = "30px Verdana";
+
       // Create gradient
       var gradient = this.context.createLinearGradient(0,0, this.el.width,0);
       gradient.addColorStop("0","magenta");
       gradient.addColorStop("0.5","blue");
       gradient.addColorStop("1.0","red");
+
       // Fill with gradient
       this.context.fillStyle = gradient;
       var spacing = (this.el.width - 50) / letters.length;
@@ -129,27 +150,40 @@ var __slice = Array.prototype.slice;
     };
 
     Sketch.prototype.redraw = function() {
+
       var sketch;
       this.el.width = this.canvas.width();
       this.context = this.el.getContext('2d');
       sketch = this;
+
       $.each(this.actions, function() {
         if (this.tool) {
           return $.sketch.tools[this.tool].draw.call(sketch, this);
         }
       });
+
       if (this.painting && this.action) {
         return $.sketch.tools[this.action.tool].draw.call(sketch, this.action);
       }
+
       this.drawAlphabet(); // redraw the alphabet at the bottom
     };
+
     return Sketch;
+
   })();
+
+  //=============================================================================
+  //=============================================================================
+
   $.sketch = {
     tools: {}
   };
+
   $.sketch.tools.marker = {
-    onEvent: function(e) {
+
+    onEvent : function(e) {
+
       switch (e.type) {
         case 'mousedown':
         case 'touchstart':
@@ -162,32 +196,43 @@ var __slice = Array.prototype.slice;
         case 'touchcancel':
           this.stopPainting();
       }
+
       if (this.painting) {
+
         this.action.events.push({
           x: e.pageX - this.canvas.offset().left,
           y: e.pageY - this.canvas.offset().top,
           event: e.type
         });
+
         return this.redraw();
+
       }
     },
-    draw: function(action) {
+
+    draw : function(action) {
+
       var event, previous, _i, _len, _ref;
+
       this.context.lineJoin = "round";
       this.context.lineCap = "round";
       this.context.beginPath();
       this.context.moveTo(action.events[0].x, action.events[0].y);
+
       _ref = action.events;
+
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
         this.context.lineTo(event.x, event.y);
         previous = event;
       }
+
       this.context.strokeStyle = action.color;
       this.context.lineWidth = action.size;
       return this.context.stroke();
     }
   };
+
   return $.sketch.tools.eraser = {
     onEvent: function(e) {
       return $.sketch.tools.marker.onEvent.call(this, e);
@@ -201,6 +246,7 @@ var __slice = Array.prototype.slice;
       return this.context.globalCompositeOperation = oldcomposite;
     }
   };
+
 })(jQuery);
 
 var Sketch = function() {
@@ -216,7 +262,6 @@ var Sketch = function() {
   //canvas.style.background = "url(sketch_alphabet_bg_sm.png) no-repeat center center";
   document.getElementById("header-exp").style.display = 'inline';
   document.getElementById("sketch-tools").style.display = 'inline';
-
   document.getElementById("container-exp").appendChild(canvas);
 
   this.destroy = function() {
