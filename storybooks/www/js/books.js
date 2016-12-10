@@ -45,13 +45,14 @@ books.swahili.push({id:12, title:"Rafiki Ninaye Mkosa", text:"rafiki_ninaye_mkos
 books.swahili.push({id:13, title:"Shati la Hamisi la Kijani Kibichi", text:"shati_la_hamisi_la_kijani_kibichi", images:"shati"});
 
 //books.english.push({id:0, title:"Adhabu", text:"adhabu", images:"adhabu", audio:"adhabu"});
-books.english.push({id:0, title:"Anansi and Turtle", text:"anansi_and_turtle", images:"anansi_and_turtle", audio:"anansi_and_turtle"});
-books.english.push({id:1, title:"Anansi and Vulture", text:"anansi_and_vulture", images:"anansi_and_vulture", audio:"anansi_and_vulture"});
-books.english.push({id:2, title:"Anansi and Wisdom", text:"anansi_and_wisdom", images:"anansi_and_wisdom", audio:"anansi_and_wisdom"});
-books.english.push({id:3, title:"Anansi, the Crows, and the Crocodiles", text:"anansi_crows_crocodiles", images:"anansi_the_crows", audio:"anansi_crows_crocodiles"});
-books.english.push({id:4, title:"Hyena and Raven", text:"hyena_and_raven", images:"hyena_and_raven", audio:"hyena_and_raven"});
-books.english.push({id:5, title:"Mulongo and the Hyenas", text:"mulongo_en", images:"mulongo", audio:"mulongo_en"});
-books.english.push({id:6, title:"Nozibele and the Three Hairs", text:"nozibele_en", images:"nozibele", audio:"nozibele_en"});
+books.english.push({id:0, title:"No Pigs Allowed", text:"no_pigs_allowed", images:"no_pigs_allowed", audio:"no_pigs_allowed"});
+books.english.push({id:1, title:"Anansi and Turtle", text:"anansi_and_turtle", images:"anansi_and_turtle", audio:"anansi_and_turtle"});
+books.english.push({id:2, title:"Anansi and Vulture", text:"anansi_and_vulture", images:"anansi_and_vulture", audio:"anansi_and_vulture"});
+books.english.push({id:3, title:"Anansi and Wisdom", text:"anansi_and_wisdom", images:"anansi_and_wisdom", audio:"anansi_and_wisdom"});
+books.english.push({id:4, title:"Anansi, the Crows, and the Crocodiles", text:"anansi_crows_crocodiles", images:"anansi_the_crows", audio:"anansi_crows_crocodiles"});
+books.english.push({id:5, title:"Hyena and Raven", text:"hyena_and_raven", images:"hyena_and_raven", audio:"hyena_and_raven"});
+books.english.push({id:6, title:"Mulongo and the Hyenas", text:"mulongo_en", images:"mulongo", audio:"mulongo_en"});
+books.english.push({id:7, title:"Nozibele and the Three Hairs", text:"nozibele_en", images:"nozibele", audio:"nozibele_en"});
 
 
 function loadBook(book_id) {

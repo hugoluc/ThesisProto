@@ -19,7 +19,7 @@ var LAST_TRIAL_KEY; // incremented each time a trial is logged
 var chunkSize = 7; // number of stimuli to be put in at each priority (i.e., put in one 'round')
 // which queues have been modified and need to be re-stored: set true when a game uses the stack
 
-var localDB = new PouchDB('egoteach_tz1');
+var localDB = new PouchDB('egoteach_alpha');
 localDB.info().then(console.log.bind(console)); // sqlite or indexedDB/webSQL?
 
 var queuesToUpdate = {
