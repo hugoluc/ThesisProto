@@ -54,56 +54,74 @@ books.english.push({id:5, title:"Hyena and Raven", text:"hyena_and_raven", image
 books.english.push({id:6, title:"Mulongo and the Hyenas", text:"mulongo_en", images:"mulongo", audio:"mulongo_en"});
 books.english.push({id:7, title:"Nozibele and the Three Hairs", text:"nozibele_en", images:"nozibele", audio:"nozibele_en"});
 
+var Book = function(book_id) {
+	var self = this;
 
-function loadBook(book_id) {
-	slideIndex = 1;
 	$("#menu").hide();
-	// should draw a back button that hides content and shows menu
-	var book = books[language][book_id];
-  // get listing of images in imgdir, load the text and split into pages, and show the first page (title?)
-	console.log(imgdir+book.images);
-  $.ajax({
-  url: imgdir+book.images+'/', //"http://yoursite.com/images/",
-    success: function(data){
-      // $(data).find("td > a").each(function(){
-      //   console.log("file: " + $(this).attr("href"));
-      // });
-			$(data).find("a:contains(.jpg)").each(function (index, value) {
-				var fname = $(this).attr("href");
-				//console.log(fname);
-				if(fname!="0.jpg") {
-					var fileloc = imgdir + book.images + '/' + $(this).attr("href");
-        	$("#book-image").append("<img class='mySlides' src='" + fileloc + "'>");
-					$("#page-btns").append("<button class='w3-btn pg-btn' onclick='currentDiv(" + index + ")'>" + index + "</button>");
-				}
-      });
-    }
-  });
 
-	// var num_images = $(".mySlides").length;
-	// console.log("images found: " +num_images);
-	// for (var i = 1; i <= num_images; i++) {
-	//
-	// }
+	self.id = book_id;
+	self.info = books[language][self.id];
+	self.pages = [];
 
-  $.get(textdir+book.text+".txt", function (raw) {
-    pages = LoadFile(raw);
-		console.log(pages);
-    showPage(slideIndex);
-  });
+	self.load = function() {
+		slideIndex = 1;
+		// should draw a back button that hides content and shows menu
+	  // get listing of images in imgdir, load the text and split into pages, and show the first page (title?)
+		console.log(imgdir+self.info.images);
+	  $.ajax({
+	  url: imgdir+self.info.images+'/', //"http://yoursite.com/images/",
+	    success: function(data){
+	      // $(data).find("td > a").each(function(){
+	      //   console.log("file: " + $(this).attr("href"));
+	      // });
+				$(data).find("a:contains(.jpg)").each(function (index, value) {
+					var fname = $(this).attr("href");
+					//console.log(fname);
+					if(fname!="0.jpg") {
+						var fileloc = imgdir + self.info.images + '/' + $(this).attr("href");
+	        	$("#book-image").append("<img class='mySlides' src='" + fileloc + "'>");
+						$("#page-btns").append("<button class='w3-btn pg-btn' onclick='curBook.currentDiv(" + index + ")'>" + index + "</button>");
+					}
+	      });
+	    }
+	  });
 
-	$("#content").show();
-}
+	  $.get(textdir+self.info.text+".txt", function (raw) {
+	    self.pages = self.loadFile(raw);
+			console.log(self.pages);
+	    self.showPage(slideIndex);
+	  });
 
-var pages;
+		$("#content").show();
+	}
 
-function preload(arrayOfImages) {
+	// fix: add back button that calls this and returns to main menu
+	this.destroy = function() {
+		//logTime("book",'stop');
+		//mp.stop();
+		clickStart('shapes-container','container-chooser');
+		currentview = new MainMenu(assets);
+	}
+
+	this.preload = function(arrayOfImages) {
     $(arrayOfImages).each(function () {
         $('<img />').attr('src',this).appendTo('body').css('display','none');
     });
-}
+	}
 
-function LoadFile(strRawContents) {
+	self.loadAudioFiles = function(nlines, bookdir) {
+		var book_audio = [];
+	  for (var i = 0; i < nlines; i++) {
+	    book_audio[i] = new Howl({
+	      src: [audiodir+bookdir+'/'+i+'.mp3'],
+	      autoplay: false,
+	      buffer: true
+	    });
+	  }
+		return(book_audio);
+	}
+
+ 	self.loadFile = function(strRawContents) {
     //var oFrame = document.getElementById("frmFile");
     //var strRawContents = oFrame.contentWindow.document.body.childNodes[0].innerHTML;
     var pages = [];
@@ -128,33 +146,38 @@ function LoadFile(strRawContents) {
     }
     //console.log(pages);
     return(pages);
-}
-
-function plusDivs(n) {
-  showPage(slideIndex += n);
-}
-
-function currentDiv(n) {
-  showPage(slideIndex = n);
-}
-
-function showPage(n) {
-	var i;
-	var x = document.getElementsByClassName("mySlides");
-	var dots = document.getElementsByClassName("pg-btn");
-	if (n > x.length) {slideIndex = 1}
-	if (n < 1) {slideIndex = x.length} ;
-	for (i = 0; i < x.length; i++) {
-		x[i].style.display = "none";
 	}
-	for (i = 0; i < dots.length; i++) {
-		dots[i].className = dots[i].className.replace(" w3-red", "");
-	}
-	x[slideIndex-1].style.display = "block";
-	dots[slideIndex-1].className += " w3-red";
 
-	document.getElementById("book-text").innerHTML = "";
-	for(i = 0; i < pages[slideIndex-1].length; i++) {
-	document.getElementById("book-text").innerHTML+='<p>'+pages[slideIndex-1][i]+'</p>';
+	self.plusDivs = function(n) {
+	  self.showPage(slideIndex += n);
 	}
+
+	self.currentDiv = function(n) {
+	  self.showPage(slideIndex = n);
+	}
+
+	self.showPage = function(n) {
+		var i;
+		var x = document.getElementsByClassName("mySlides");
+		var dots = document.getElementsByClassName("pg-btn");
+		if (n > x.length) {slideIndex = 1}
+		if (n < 1) {slideIndex = x.length} ;
+		for (i = 0; i < x.length; i++) {
+			x[i].style.display = "none";
+		}
+		for (i = 0; i < dots.length; i++) {
+			dots[i].className = dots[i].className.replace(" w3-red", "");
+		}
+		x[slideIndex-1].style.display = "block";
+		dots[slideIndex-1].className += " w3-red";
+
+		document.getElementById("book-text").innerHTML = "";
+		for(i = 0; i < self.pages[slideIndex-1].length; i++) {
+			document.getElementById("book-text").innerHTML+='<p>'+self.pages[slideIndex-1][i]+'</p>';
+		}
+	}
+
+	self.loadAudioFiles(self.info.audio);
+	self.load();
+
 }
