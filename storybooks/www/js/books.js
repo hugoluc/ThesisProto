@@ -58,13 +58,14 @@ var Book = function(book_id) {
 	var self = this;
 
 	$("#menu").hide();
+	slideIndex = 1;
 
 	self.id = book_id;
 	self.info = books[language][self.id];
 	self.pages = [];
+	self.audio = [];
 
 	self.load = function() {
-		slideIndex = 1;
 		// should draw a back button that hides content and shows menu
 	  // get listing of images in imgdir, load the text and split into pages, and show the first page (title?)
 		console.log(imgdir+self.info.images);
@@ -86,6 +87,25 @@ var Book = function(book_id) {
 	    }
 	  });
 
+		// load audio if defined
+		if(self.info.audio) {
+			$.ajax({
+		  url: audiodir+self.info.audio+'/',
+		    success: function(data){
+					$(data).find("a:contains(.mp3)").each(function (index, value) {
+						var fname = $(this).attr("href");
+						//console.log(fname);
+						var fileloc = audiodir + self.info.audio + '/' + $(this).attr("href");
+						self.audio[index] = new Howl({
+				      src: [fileloc],
+				      autoplay: true,
+				      buffer: true
+				    });
+					});
+		    }
+		  });
+		}
+		
 	  $.get(textdir+self.info.text+".txt", function (raw) {
 	    self.pages = self.loadFile(raw);
 			console.log(self.pages);
@@ -109,27 +129,27 @@ var Book = function(book_id) {
     });
 	}
 
-	self.loadAudioFiles = function(nlines, bookdir) {
-		var book_audio = [];
-	  for (var i = 0; i < nlines; i++) {
-	    book_audio[i] = new Howl({
-	      src: [audiodir+bookdir+'/'+i+'.mp3'],
-	      autoplay: false,
-	      buffer: true
-	    });
-	  }
-		return(book_audio);
-	}
+	// self.loadAudioFiles = function(nlines, bookdir) {
+	// 	var book_audio = [];
+	//   for (var i = 0; i < nlines; i++) {
+	//     book_audio[i] = new Howl({
+	//       src: [audiodir+bookdir+'/'+i+'.mp3'],
+	//       autoplay: false,
+	//       buffer: true
+	//     });
+	//   }
+	// 	return(book_audio);
+	// }
 
  	self.loadFile = function(strRawContents) {
     //var oFrame = document.getElementById("frmFile");
     //var strRawContents = oFrame.contentWindow.document.body.childNodes[0].innerHTML;
-    var pages = [];
     while (strRawContents.indexOf("\r") >= 0)
         strRawContents = strRawContents.replace("\r", "");
     var arrLines = strRawContents.split("\n");
     //console.log("File " + oFrame.src + " has " + arrLines.length + " lines");
     var title = arrLines[0]; // title
+		var pages = [[title]];
     var sentences = [];
     for (var i = 1; i < arrLines.length; i++) {
         var curLine = arrLines[i];
@@ -168,6 +188,7 @@ var Book = function(book_id) {
 		for (i = 0; i < dots.length; i++) {
 			dots[i].className = dots[i].className.replace(" w3-red", "");
 		}
+		console.log(x);
 		x[slideIndex-1].style.display = "block";
 		dots[slideIndex-1].className += " w3-red";
 
@@ -177,7 +198,7 @@ var Book = function(book_id) {
 		}
 	}
 
-	self.loadAudioFiles(self.info.audio);
+	//self.loadAudioFiles(self.info.audio);
 	self.load();
 
 }
