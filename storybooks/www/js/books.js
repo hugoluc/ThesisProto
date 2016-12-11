@@ -81,7 +81,8 @@ var Book = function(book_id) {
 					if(fname!="0.jpg") {
 						var fileloc = imgdir + self.info.images + '/' + $(this).attr("href");
 	        	$("#book-image").append("<img class='mySlides' src='" + fileloc + "'>");
-						$("#page-btns").append("<button class='w3-btn pg-btn' onclick='curBook.currentDiv(" + index + ")'>" + index + "</button>");
+						//$("#page-btns").append("<button class='w3-btn pg-btn' onclick='curBook.currentDiv(" + index + ")'>" + index + "</button>");
+						$("#page-btns").append("<button class='w3-btn pg-btn'>" + index + "</button>");
 					}
 	      });
 	    }
@@ -105,11 +106,11 @@ var Book = function(book_id) {
 		    }
 		  });
 		}
-		
+
 	  $.get(textdir+self.info.text+".txt", function (raw) {
 	    self.pages = self.loadFile(raw);
 			console.log(self.pages);
-	    self.showPage(slideIndex);
+			setTimeout(function(){ self.showPage(slideIndex); }, 500);
 	  });
 
 		$("#content").show();
@@ -176,26 +177,38 @@ var Book = function(book_id) {
 	  self.showPage(slideIndex = n);
 	}
 
+	self.playAudio = function(ind) {
+		if(ind<self.audio.length) self.audio[ind].play();
+		// if it's in range, and if it's not already playing
+		console.log("playing: "+ind);
+		console.log(self.audio)
+	}
+
 	self.showPage = function(n) {
+		var aud_index = self.aud_index;
+		if(n==1) aud_index = 0;
+
 		var i;
 		var x = document.getElementsByClassName("mySlides");
 		var dots = document.getElementsByClassName("pg-btn");
 		if (n > x.length) {slideIndex = 1}
-		if (n < 1) {slideIndex = x.length} ;
+		if (n < 1) {slideIndex = 1}; // x.length (wrap around? nah)
 		for (i = 0; i < x.length; i++) {
 			x[i].style.display = "none";
 		}
 		for (i = 0; i < dots.length; i++) {
 			dots[i].className = dots[i].className.replace(" w3-red", "");
 		}
-		console.log(x);
 		x[slideIndex-1].style.display = "block";
 		dots[slideIndex-1].className += " w3-red";
 
 		document.getElementById("book-text").innerHTML = "";
 		for(i = 0; i < self.pages[slideIndex-1].length; i++) {
-			document.getElementById("book-text").innerHTML+='<p>'+self.pages[slideIndex-1][i]+'</p>';
+			document.getElementById("book-text").innerHTML+='<p id="aud'+ aud_index +'" onclick="curBook.playAudio('+aud_index+')">'+self.pages[slideIndex-1][i]+'</p>';
+			//$("#id"+aud_index).click(self.audio[aud_index].play());
+			aud_index++;
 		}
+		self.aud_index = aud_index;
 	}
 
 	//self.loadAudioFiles(self.info.audio);
