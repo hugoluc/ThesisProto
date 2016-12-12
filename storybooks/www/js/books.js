@@ -14,6 +14,7 @@
 
 var slideIndex;
 
+var playing = false; // audio playing now?
 // console.log(getFiles("book_images/hyena_and_raven"));
 
 // directory with flat text (.txt) files, one sentence per line,
@@ -26,7 +27,6 @@ var imgdir = "book_images/";
 var audiodir = "book_audio/";
 
 var books = {"english":[], "swahili":[]};
-
 
 books.swahili.push({id:0, title:"Adhabu", text:"adhabu", images:"adhabu", audio:"adhabu"})
 books.swahili.push({id:1, title:"Anansi, Kunguru na Mamba", text:"anansi_kunguru", images:"anansi_the_crows", audio:"anansi_kunguru"});
@@ -64,6 +64,7 @@ var Book = function(book_id) {
 	self.info = books[language][self.id];
 	self.pages = [];
 	self.audio = [];
+	self.playIndex = -1;
 
 	self.load = function() {
 		// should draw a back button that hides content and shows menu
@@ -95,12 +96,17 @@ var Book = function(book_id) {
 		    success: function(data){
 					$(data).find("a:contains(.mp3)").each(function (index, value) {
 						var fname = $(this).attr("href");
-						//console.log(fname);
 						var fileloc = audiodir + self.info.audio + '/' + $(this).attr("href");
-						self.audio[index] = new Howl({
-				      src: [fileloc],
-				      autoplay: true,
-				      buffer: true
+						console.log(fname);
+						var ind = fname.split(".")[0];
+						self.audio[parseInt(ind)] = new Howl({
+				      src: [fileloc], // book_audio/adhabu/6.mp3
+				      autoplay: false,
+				      buffer: true,
+							onend: function() {
+						    playing = false;
+								$("#aud"+self.playIndex).css({ 'color':'black', 'font-size':'100%' });
+						  }
 				    });
 					});
 		    }
@@ -109,7 +115,7 @@ var Book = function(book_id) {
 
 	  $.get(textdir+self.info.text+".txt", function (raw) {
 	    self.pages = self.loadFile(raw);
-			console.log(self.pages);
+			//console.log(self.pages);
 			setTimeout(function(){ self.showPage(slideIndex); }, 500);
 	  });
 
@@ -178,10 +184,18 @@ var Book = function(book_id) {
 	}
 
 	self.playAudio = function(ind) {
-		if(ind<self.audio.length) self.audio[ind].play();
-		// if it's in range, and if it's not already playing
-		console.log("playing: "+ind);
-		console.log(self.audio)
+		//if(ind<self.audio.length)
+		if(!playing) {
+			playing = true;
+			self.playIndex = ind;
+			$("#aud"+ind).css({ 'color': 'red', 'font-size': '125%' });
+			self.audio[ind].play();
+			// setTimeout(function(){
+			// 	$("#aud"+ind).css({ 'color': 'black', 'font-size': '100%' });
+			// }, self.audio[ind]._duration);
+			// if it's in range, and if it's not already playing
+			console.log("playing: "+ind);
+		}
 	}
 
 	self.showPage = function(n) {
@@ -213,5 +227,8 @@ var Book = function(book_id) {
 
 	//self.loadAudioFiles(self.info.audio);
 	self.load();
-
+	// console.log(self.audio);
+	// self.audio[0].once('load', function(){
+	// 	self.audio[0].play();
+	// });
 }
