@@ -1,0 +1,77 @@
+<!-- for testing need to use a local HTTP server:
+python -m SimpleHTTPServer 8000
+-->
+
+<html>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <script src="lib/howler.min.js"></script>
+    <script src="lib/jquery.min.js"></script>
+    <script src="js/books.js"></script>
+
+    <link rel="stylesheet" href="css/w3.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <style>
+        .mySlides {
+          display:none;
+          width:100%;
+        }
+        p {
+          margin-top: .4em;
+          margin-bottom: .4em;
+        }
+        #content {display:none}
+
+    </style>
+
+  </head>
+  <body>
+
+
+  <div class="w3-container" id="menu">
+    <table id="storyList" class="storyList"></table>
+
+  </div>
+
+  <div id="content" class="w3-content" style="max-width:1024px">
+    <div class="w3-container w3-half" id="book-image">
+    </div>
+    <div class="w3-container w3-half" id="book-text">
+    </div>
+
+    <div class="w3-container w3-center">
+      <div class="w3-section">
+        <button class="w3-btn" onclick="curBook.plusDivs(-1)">&#10094;</button>
+        <button class="w3-btn" onclick="curBook.plusDivs(1)">&#10095;</button>
+      </div>
+      <div class="w3-section" id="page-btns">
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    var language = "swahili"; // "english"
+    console.log(books[language]);
+    var curBook;
+    // show the list of books with first image
+    var r = new Array(), j = -1;
+    console.log(books[language].length);
+    for (var key=0; key<books[language].length; key++){
+       r[++j] ='<tr> <td class="storyTitle" vertical-align="center" align="right">';
+       r[++j] = books[language][key]["title"];
+       r[++j] = '</td><td class="storyImage" align="left">';
+       r[++j] = '<img onclick="javascript:curBook = new Book('+books[language][key]["id"]+')" src="'+imgdir+books[language][key]["images"]+'/0.jpg" width=200>';
+       //r[++j] = '</td><td class="storyImage">';
+       //r[++j] = '<img src="'+imgdir+books[language][key]["images"]+'/0.jpg" width=200>';
+       r[++j] = '</td> </tr>';
+    }
+    //console.log(r.join(''));
+    $('#storyList').html(r.join(''));
+  </script>
+
+  </body>
+
+</html>

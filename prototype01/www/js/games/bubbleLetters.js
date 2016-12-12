@@ -16,13 +16,19 @@ var coolColors = ['#355dff', '#1037b7', '#00186b', '#6f2fc4', '#ffffff'] // non-
 
 function bubbleLetters(){
   bubblegameloaded = true;
-  queuesToUpdate['alphabetstim'] = true;
-  logTime('alphabet','start');
-  var stimQ = stimQueues['alphabetstim'];
-  var dragonfly_start_pos = {'x':250, 'y':250};
-
   var stimCount = store.get('bee_problems_solved');
   if(!stimCount) stimCount = 0;
+  //if(stimCount < 5) { // fast switch for judges; slower for kids
+    queuesToUpdate['alphabetstim'] = true;
+    logTime('alphabet','start');
+    var stimQ = stimQueues['alphabetstim'];
+  // } else {
+  //   queuesToUpdate['alphabetstim'] = true;
+  //   logTime('words','start');
+  //   var stimQ = stimQueues['wordstim'];
+  // }
+
+  var dragonfly_start_pos = {'x':250, 'y':250};
 
   var Nfoils = store.get('num_bee_foils');
   if(!Nfoils) Nfoils = 1;
