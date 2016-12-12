@@ -65,6 +65,7 @@ var Book = function(book_id) {
 	self.pages = [];
 	self.audio = [];
 	self.playIndex = -1;
+	self.page_sent_map = []; // index of first sentence on each page
 
 	self.load = function() {
 		// should draw a back button that hides content and shows menu
@@ -97,7 +98,7 @@ var Book = function(book_id) {
 					$(data).find("a:contains(.mp3)").each(function (index, value) {
 						var fname = $(this).attr("href");
 						var fileloc = audiodir + self.info.audio + '/' + $(this).attr("href");
-						console.log(fname);
+						//console.log(fname);
 						var ind = fname.split(".")[0];
 						self.audio[parseInt(ind)] = new Howl({
 				      src: [fileloc], // book_audio/adhabu/6.mp3
@@ -136,17 +137,6 @@ var Book = function(book_id) {
     });
 	}
 
-	// self.loadAudioFiles = function(nlines, bookdir) {
-	// 	var book_audio = [];
-	//   for (var i = 0; i < nlines; i++) {
-	//     book_audio[i] = new Howl({
-	//       src: [audiodir+bookdir+'/'+i+'.mp3'],
-	//       autoplay: false,
-	//       buffer: true
-	//     });
-	//   }
-	// 	return(book_audio);
-	// }
 
  	self.loadFile = function(strRawContents) {
     //var oFrame = document.getElementById("frmFile");
@@ -171,7 +161,12 @@ var Book = function(book_id) {
         }
         //console.log("Line #" + (i + 1) + " is: '" + curLine + "'");
     }
-    //console.log(pages);
+		//console.log(pages);
+		var sent_ind = 0;
+		for (var i = 0; i < pages.length; i++) {
+			self.page_sent_map[i] = sent_ind;
+			sent_ind += pages[i].length;
+		}
     return(pages);
 	}
 
@@ -184,23 +179,17 @@ var Book = function(book_id) {
 	}
 
 	self.playAudio = function(ind) {
-		//if(ind<self.audio.length)
-		if(!playing) {
+		if(!playing & ind<self.audio.length) {
 			playing = true;
 			self.playIndex = ind;
 			$("#aud"+ind).css({ 'color': 'red', 'font-size': '125%' });
 			self.audio[ind].play();
-			// setTimeout(function(){
-			// 	$("#aud"+ind).css({ 'color': 'black', 'font-size': '100%' });
-			// }, self.audio[ind]._duration);
-			// if it's in range, and if it's not already playing
-			console.log("playing: "+ind);
+			//console.log("playing: "+ind);
 		}
 	}
 
 	self.showPage = function(n) {
-		var aud_index = self.aud_index;
-		if(n==1) aud_index = 0;
+		var aud_index = self.page_sent_map[n-1];
 
 		var i;
 		var x = document.getElementsByClassName("mySlides");
@@ -222,7 +211,7 @@ var Book = function(book_id) {
 			//$("#id"+aud_index).click(self.audio[aud_index].play());
 			aud_index++;
 		}
-		self.aud_index = aud_index;
+		//self.aud_index = aud_index;
 	}
 
 	//self.loadAudioFiles(self.info.audio);
